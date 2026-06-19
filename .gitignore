@@ -11,4 +11,5 @@ desktop.ini
 
 # Temporary archives
 *.zip
-
+!dist/
+!dist/*.zip
