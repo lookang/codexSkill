@@ -1,0 +1,14 @@
+# OS/editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local review artifacts
+*.xlsx
+*.csv
+*.tsv
+*.log
+
+# Temporary archives
+*.zip
+

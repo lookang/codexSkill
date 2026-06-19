@@ -1,0 +1,4 @@
+interface:
+  display_name: "SLS Community Reviewer"
+  short_description: "Review SLS modules and track follow-ups."
+  default_prompt: "Use $sls-community-reviewer to review pending SLS Community Gallery modules, publish those that pass, draft follow-up emails, and update the reviewer tracker."
