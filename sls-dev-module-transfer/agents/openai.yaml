@@ -1,0 +1,7 @@
+interface:
+  display_name: "SLS DEV Module Transfer"
+  short_description: "Transfer SLS modules to DEV safely"
+  default_prompt: "Use $sls-dev-module-transfer to move a production SLS module into DEV while preserving formatting, version URLs, quiz settings, and saved state."
+
+policy:
+  allow_implicit_invocation: true
