@@ -1,0 +1,7 @@
+interface:
+  display_name: "Simulation YouTube Tutorial"
+  short_description: "Create HD simulation tutorial videos"
+  default_prompt: "Use $simulation-youtube-tutorial to turn this interactive simulation into an HD YouTube tutorial with highlighted cursor, Kokoro narration, captions, thumbnail, and upload-ready metadata."
+
+policy:
+  allow_implicit_invocation: true
