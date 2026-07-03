@@ -154,14 +154,77 @@ Pass criteria:
 
 ## YouTube package
 
-Prepare:
+Prepare a complete upload submission pack, not only a short note.
 
-- Recommended title and alternatives.
-- Description with simulation link.
-- Chapters based on final timestamps.
-- Tags and hashtags.
-- Thumbnail at `1280x720`.
-- Pinned comment with the simulation URL and key learning rule.
-- Visibility suggestion: upload unlisted first, review playback, then switch public.
+Required files:
+
+```text
+99_notes/youtube_metadata.json
+99_notes/youtube_upload_prep.md
+05_previews/thumbnail_1280x720.jpg or 05_previews/thumbnail_3840x2160.jpg
+02_audio/narration.srt
+```
+
+`youtube_upload_prep.md` must include:
+
+- Final video file path.
+- Thumbnail path or detailed thumbnail brief.
+- Recommended title plus two alternate titles.
+- Copy-ready description with simulation link near the top.
+- Hidden tags/keywords.
+- Visible hashtags for the end of the description.
+- Chapters starting at `00:00`.
+- Pinned comment with simulation link and student question.
+- Upload settings: visibility, category, playlist, audience setting recommendation, language, caption path, and license.
+- Verification notes for MP4, audio, captions, thumbnail, and metadata.
+
+`youtube_metadata.json` must include:
+
+```json
+{
+  "title": "Recommended title",
+  "alternate_titles": ["Search title", "Curiosity title"],
+  "description": "Full YouTube description",
+  "tags": ["primary topic", "science simulation"],
+  "hashtags": ["#ScienceEducation", "#InquiryLearning", "#OpenSourcePhysics"],
+  "chapters": [{ "time": "00:00", "title": "Hook" }],
+  "thumbnail": { "path": "05_previews/thumbnail_1280x720.jpg", "status": "ready", "brief": "..." },
+  "pinned_comment": "Try the simulation here: https://...",
+  "category": "Education",
+  "playlist_suggestion": "Science simulations",
+  "audience_setting": "ask channel owner; do not guess if Made for Kids compliance matters",
+  "language": "English",
+  "captions_path": "02_audio/narration.srt",
+  "visibility_recommendation": "unlisted first for review, then public",
+  "verification": {
+    "mp4_ready": true,
+    "audio_ready": true,
+    "captions_ready": true,
+    "thumbnail_ready": true,
+    "metadata_ready": true
+  }
+}
+```
+
+Title rules:
+
+- Put the science topic or learner question near the beginning.
+- Keep the recommended title around 55 to 70 characters when possible and under YouTube's 100-character limit.
+- Provide a searchable classroom title, a curiosity title, and a teacher/resource title.
+- Avoid misleading clickbait; the title and thumbnail must match what the video shows.
+
+Description rules:
+
+- First two lines should state the learning promise and include the simulation URL.
+- Include 3 to 5 learning outcomes.
+- Include chapters, credits, and classroom-use notes.
+- End with 3 to 5 relevant hashtags.
+
+Thumbnail rules:
+
+- Use an honest frame or composition showing the actual simulation.
+- Use a 16:9 image. Prefer `3840x2160` when file size allows, or `1280x720` as a safe HD target.
+- Keep one short readable phrase, one clear focal object, and high contrast.
+- Export a proof image and check it at small size.
 
 For API upload, use YouTube Data API only after the user provides/authorizes credentials for the intended channel. Keep tokens local and ignored.

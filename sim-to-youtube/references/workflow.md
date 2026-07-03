@@ -179,22 +179,29 @@ Aim for:
 - the sim visible
 - a human face only if the user explicitly wants it and provides an allowed reference
 
-Avoid clutter. The thumbnail should communicate the contrast between transparent, translucent, and opaque at a glance.
+Avoid clutter. The thumbnail should communicate the main inquiry contrast at a glance. Follow the detailed packaging checklist in [youtube-upload-package.md](youtube-upload-package.md).
 
 ## YouTube Package
 
-Prepare:
-- title
-- description
-- tags or keywords
-- concept overview text
-- timestamps or chapter list
-- audience/category suggestions if asked
+Prepare a complete upload submission pack, not a vague metadata note. The pack should include:
+- `youtube_metadata.json` with structured fields for upload tools or later automation
+- `youtube_upload_prep.md` with copy-paste text for YouTube Studio
+- title options, including one recommended title and two alternatives
+- final description with simulation link, learning goal, lesson flow, chapters, credits, and hashtags
+- thumbnail file path or a detailed thumbnail generation brief
+- hidden tags/keywords and visible hashtags
+- chapters that start at `00:00` and are in ascending order
+- pinned comment with the simulation link and the key learning prompt
+- audience setting recommendation, category, playlist suggestion, language, caption file path, and visibility recommendation
+- verification notes confirming the MP4, audio, captions, thumbnail, and metadata are ready
 
 Optimize for:
 - scientific accuracy
 - classroom searchability
 - strong click-through without exaggeration
+- alignment between title, thumbnail, narration, and what the video actually shows
+
+Read [youtube-upload-package.md](youtube-upload-package.md) before writing upload metadata.
 
 ## Reusable Assumptions
 

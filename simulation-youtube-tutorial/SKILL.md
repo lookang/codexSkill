@@ -43,7 +43,7 @@ Do not upload credentials, OAuth tokens, raw private recordings, or screenshots 
    - Keep pacing aligned with the visible actions and captions.
    - Add AAC audio and H.264 video unless the user requests otherwise.
 6. Prepare YouTube packaging.
-   - Create title, description, chapters, tags, thumbnail path, and pinned comment.
+   - Create title options, final description, chapters, tags, hashtags, thumbnail path or thumbnail brief, pinned comment, audience setting recommendation, category, playlist suggestion, caption path, and upload checklist.
    - Suggest unlisted first, then public after playback review.
    - Upload only after credentials and destination channel are explicit.
 7. Verify before reporting completion.
@@ -70,5 +70,5 @@ Do not upload credentials, OAuth tokens, raw private recordings, or screenshots 
 - Kokoro narration was generated from clean UTF-8 no-BOM text, when requested.
 - Final captions were generated after final audio render.
 - MP4 has both video and audio streams.
-- YouTube metadata includes title, description, chapters, tags, thumbnail, and visibility guidance.
+- YouTube metadata includes title options, final description, chapters, tags, hashtags, thumbnail, pinned comment, audience setting recommendation, category, playlist suggestion, caption path, and visibility guidance.
 - Credentials, OAuth tokens, local secrets, and learner/private data were not committed.

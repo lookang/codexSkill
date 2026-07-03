@@ -46,7 +46,7 @@ Unless the user asks otherwise, aim to deliver:
 - an improved source file or a clear review
 - one main narrated MP4
 - one thumbnail image
-- a YouTube upload package with title, description, tags, timestamps, and concept overview
+- a YouTube upload package with title options, final description, thumbnail brief/path, tags, hashtags, chapters, pinned comment, audience settings, and upload checklist
 
 ## Guardrails
 
@@ -58,4 +58,5 @@ Unless the user asks otherwise, aim to deliver:
 - If WebEJS compilation is not available in the current environment, sync the minimum necessary runtime export changes for capture and clearly label that capture source as provisional.
 - Avoid unexplained visual jumps in tutorial recordings. If the view must move to a lower or different part of the interactive, animate the cursor and scroll movement so the learner sees how to navigate there.
 - Keep short overlay text readable. Reaction bubbles, snap labels, and navigation hints must remain visible for at least 3 seconds, with longer holds for longer phrases.
+- For YouTube submission, produce complete copy-paste metadata, not notes only. Include the upload title, alternate titles, description, thumbnail file/brief, tags, hashtags, chapters, pinned comment, audience setting recommendation, playlist/category suggestion, and verification status.
 - When YouTube upload is requested, prepare the assets and metadata; only perform publishing through a supported user-approved workflow.
