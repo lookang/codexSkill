@@ -32,6 +32,8 @@ Do not upload credentials, OAuth tokens, raw private recordings, or screenshots 
    - Minimum video size is 1280x720. Prefer 1366x768 or 1920x1080.
    - For automated browser capture, use Playwright video recording with an explicit viewport and final `ffprobe` verification.
    - Inject a visible cursor and highlight/pulse the relevant simulation targets.
+   - Treat the cursor as the teacher's hand: when narration names a visible object, move directly to it, pause, and use a short pulse, sweep, or circle.
+   - Avoid unexplained scene jumps. When the view moves to another part of the interactive, show the route with visible scrolling, clicking, tab changes, or selection changes.
 4. Generate narration with Kokoro when voiceover is needed.
    - Save clean narration text as UTF-8 without BOM.
    - Generate WAV first, then encode or assemble into MP4.
@@ -63,6 +65,8 @@ Do not upload credentials, OAuth tokens, raw private recordings, or screenshots 
 - Screen recording is HD minimum: `width >= 1280` and `height >= 720`.
 - Cursor or pointer is visible and highlighted.
 - Important targets are highlighted or pulsed during explanation.
+- Page-area changes show the navigation path rather than cutting abruptly to the next view.
+- Reaction bubbles, snap labels, and navigation hints stay readable for at least 3 seconds, with longer holds for longer phrases.
 - Kokoro narration was generated from clean UTF-8 no-BOM text, when requested.
 - Final captions were generated after final audio render.
 - MP4 has both video and audio streams.

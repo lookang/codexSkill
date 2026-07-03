@@ -4,6 +4,7 @@ This repository contains Codex skills for Singapore MOE SLS workflows.
 
 ## Skills
 
+- [`sim-to-youtube`](sim-to-youtube/) turns science simulations into classroom-ready tutorial video packages, including pedagogy checks, screen-recorded walkthroughs, cursor choreography, readable overlays, narration, captions, thumbnails, and YouTube metadata.
 - [`sls-community-reviewer`](sls-community-reviewer/) reviews SLS Community Gallery modules awaiting approval.
 - [`sls-dev-module-transfer`](sls-dev-module-transfer/) transfers MOE SLS production modules into DEV draft modules while preserving rich formatting, response scaffolds, quiz settings, tags, and saved state.
 - [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
@@ -25,17 +26,17 @@ Copy that skill folder into your Codex skills folder.
 On Windows:
 
 ```powershell
-Expand-Archive .\sls-dev-module-transfer.zip -DestinationPath "$env:TEMP\sls-dev-module-transfer-install" -Force
+Expand-Archive .\sim-to-youtube.zip -DestinationPath "$env:TEMP\sim-to-youtube-install" -Force
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills" | Out-Null
-Copy-Item -Recurse -Force "$env:TEMP\sls-dev-module-transfer-install\sls-dev-module-transfer" "$env:USERPROFILE\.codex\skills\sls-dev-module-transfer"
+Copy-Item -Recurse -Force "$env:TEMP\sim-to-youtube-install\sim-to-youtube" "$env:USERPROFILE\.codex\skills\sim-to-youtube"
 ```
 
 On macOS or Linux:
 
 ```bash
-unzip sls-dev-module-transfer.zip -d /tmp/sls-dev-module-transfer-install
+unzip sim-to-youtube.zip -d /tmp/sim-to-youtube-install
 mkdir -p ~/.codex/skills
-cp -R /tmp/sls-dev-module-transfer-install/sls-dev-module-transfer ~/.codex/skills/
+cp -R /tmp/sim-to-youtube-install/sim-to-youtube ~/.codex/skills/
 ```
 
 If your Codex app supports file attachments, you can also drag the ZIP into a new Codex chat and ask:
@@ -53,7 +54,7 @@ On Windows:
 ```powershell
 git clone https://github.com/lookang/codexSkill.git
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.codex\skills" | Out-Null
-Copy-Item -Recurse -Force .\codexSkill\sls-dev-module-transfer "$env:USERPROFILE\.codex\skills\sls-dev-module-transfer"
+Copy-Item -Recurse -Force .\codexSkill\sim-to-youtube "$env:USERPROFILE\.codex\skills\sim-to-youtube"
 ```
 
 On macOS or Linux:
@@ -61,7 +62,7 @@ On macOS or Linux:
 ```bash
 git clone https://github.com/lookang/codexSkill.git
 mkdir -p ~/.codex/skills
-cp -R codexSkill/sls-dev-module-transfer ~/.codex/skills/
+cp -R codexSkill/sim-to-youtube ~/.codex/skills/
 ```
 
 ### Option 3: Copy from a downloaded repository ZIP
@@ -69,19 +70,19 @@ cp -R codexSkill/sls-dev-module-transfer ~/.codex/skills/
 If you use GitHub's green **Code** button and choose **Download ZIP**, unzip the repository, then copy the wanted skill folder, for example:
 
 ```text
-codexSkill-main/sls-dev-module-transfer
+codexSkill-main/sim-to-youtube
 ```
 
 into:
 
 ```text
-~/.codex/skills/sls-dev-module-transfer
+~/.codex/skills/sim-to-youtube
 ```
 
 On Windows, that usually means:
 
 ```powershell
-%USERPROFILE%\.codex\skills\sls-dev-module-transfer
+%USERPROFILE%\.codex\skills\sim-to-youtube
 ```
 
 After installation, restart Codex or start a new Codex session so the skill is discovered.
@@ -89,6 +90,11 @@ After installation, restart Codex or start a new Codex session so the skill is d
 ## Use
 
 Ask Codex to use a skill by name:
+
+```text
+Use $sim-to-youtube to create a tutorial video package for this science simulation:
+https://iwant2study.org/lookangejss/...
+```
 
 ```text
 Use $sls-dev-module-transfer to transfer this SLS production activity into DEV:

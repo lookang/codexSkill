@@ -55,6 +55,33 @@ Inject overlays into the page:
 - Rule card for definitions or thinking heuristics.
 - Fake cursor with a bright outline.
 - Pulse/highlight class on the current target.
+- Guided scroll hint when moving to another part of the interactive.
+- Short reaction bubble when an evidence moment needs emotional emphasis.
+
+Cursor and navigation rules:
+
+- Use the cursor as the teacher's hand. If the narration says "oil film", "water level", "temperature", "save", or "graph", move the cursor to that exact target and hold long enough for the learner to notice.
+- Make the cursor visibly different from the simulation palette. If the simulation uses green controls, prefer magenta, cyan, yellow, or white glow.
+- Do not use direct `scrollIntoView()` or instant page jumps in the final capture when the learner needs to understand how to navigate. Scroll in visible steps with the cursor near the side of the browser, then align precisely after the movement.
+- Review the entire narration/script and add pointing cues wherever the spoken words refer to a specific on-screen object, control, data table, graph, or explanation area.
+- Concept cards, icons, small pictures, and reaction bubbles may add warmth and variety, but they must not cover active controls, apparatus labels, tables, graph evidence, or the cursor target.
+
+Readable overlay timing:
+
+- Keep every reaction bubble, snap label, and scroll hint visible for at least 3 seconds.
+- Add about 0.18 seconds for each word beyond six words.
+- Cap routine overlays around 6.2 seconds so they stay readable without dominating the screen.
+- Use proof frames or contact sheets to verify text is visible and readable across more than one sampled frame.
+
+Reusable timing helper:
+
+```js
+function readableHoldMs(text, requestedMs = 3000) {
+  const words = String(text || '').trim().split(/\s+/).filter(Boolean).length;
+  const calculated = 3000 + Math.max(0, words - 6) * 180;
+  return Math.max(requestedMs, Math.min(calculated, 6200));
+}
+```
 
 Keep steps as timed objects:
 
@@ -122,6 +149,8 @@ Pass criteria:
 - Audio stream exists.
 - Duration matches expected tutorial length.
 - Visual overlays do not hide essential simulation UI.
+- Cursor movements and guided scrolls make page-area changes understandable.
+- Overlay text remains readable for at least 3 seconds.
 
 ## YouTube package
 
