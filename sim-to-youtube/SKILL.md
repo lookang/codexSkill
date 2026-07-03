@@ -1,6 +1,6 @@
 ---
 name: sim-to-youtube
-description: Use this skill when the user gives a WebEJS/EJS simulation URL or source file and wants the workflow handled end to end: inspect the sim, prefer editing WebEJS `_source.json` when appropriate, improve the pedagogy, preserve WebEJS-compatible encoding, create a narrated screen-recorded lesson video, generate a thumbnail, and prepare YouTube-ready metadata.
+description: "Use this skill when the user gives a WebEJS/EJS simulation URL or source file and wants the workflow handled end to end: inspect the sim, prefer editing WebEJS `_source.json` when appropriate, improve the pedagogy, preserve WebEJS-compatible encoding, create a narrated screen-recorded lesson video, generate a thumbnail, and prepare YouTube-ready metadata."
 ---
 
 # Sim To YouTube
