@@ -1,0 +1,4 @@
+interface:
+  display_name: "Website Simulation to YouTube"
+  short_description: "Build polished live website tutorial videos"
+  default_prompt: "Use $websitesim-to-youtube to turn this live website or simulation workflow into a narrated, step-captioned YouTube tutorial."

@@ -8,6 +8,7 @@ This repository contains Codex skills for Singapore MOE SLS workflows.
 - [`sls-community-reviewer`](sls-community-reviewer/) reviews SLS Community Gallery modules awaiting approval.
 - [`sls-dev-module-transfer`](sls-dev-module-transfer/) transfers MOE SLS production modules into DEV draft modules while preserving rich formatting, response scaffolds, quiz settings, tags, and saved state.
 - [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
+- [`websitesim-to-youtube`](websitesim-to-youtube/) turns live websites, browser apps, and simulations into narrated tutorial MP4s with human-looking cursor actions, numbered teaching captions, narration-first synchronization, correction takes, and final QA.
 
 ## Install
 
@@ -110,6 +111,12 @@ https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/...
 ```text
 Use $simulation-youtube-tutorial to turn this simulation into an HD YouTube tutorial:
 https://iwant2study.org/lookangejss/00workshop/2026TFL/sortingDragandDrop/
+```
+
+```text
+Use $websitesim-to-youtube to record this live browser workflow, explain each
+click and drag, add numbered teaching captions, and deliver a verified MP4:
+https://example.com/simulation/
 ```
 
 ## Privacy
