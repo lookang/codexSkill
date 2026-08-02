@@ -189,7 +189,9 @@ def main() -> int:
                     marker in html
                     for marker in (
                         "normalizedRatioModel",
+                        "ratioAnswerShape",
                         "ratioChoiceOptions",
+                        "Ratio choices must share one response format",
                         "ratioStaticHTML",
                         "ratioOrderHTML",
                         "ratioCountAnimationHTML",
@@ -206,6 +208,7 @@ def main() -> int:
                         "q===1?[3,6,1]",
                         "mode:'equivalent'",
                         "mode:'divide'",
+                        "kind==='p6_divide_ratio'?[`${secondShare} and ${firstShare}`",
                         "mode:'simplify'",
                         "mode:'find'",
                         "mode:'missing'",
