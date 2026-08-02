@@ -1219,7 +1219,7 @@
     // The build script replaces this object once per curriculum objective.
     const CONFIG = __ACTIVITY_CONFIG__;
     const TOTAL_QUESTIONS = 6;
-    const GENERATOR_VERSION = '2026-08-02-fraction-meaning-v7';
+    const GENERATOR_VERSION = '2026-08-02-concealed-formative-answer-v8';
     const startedAt = Date.now();
     const sessionKey = `famath::${GENERATOR_VERSION}::${CONFIG.id}::session`;
     const state = {
@@ -1425,9 +1425,9 @@
       }).join('')}</div>`;
     }
     function fractionDivisionStoryHTML(model){
-      const m=normalizedFractionDivision(model),left=fractionValueLabel(m.dividend.n,m.dividend.d),right=fractionValueLabel(m.divisor.n,m.divisor.d),answer=fractionValueLabel(m.quotient.n,m.quotient.d);
-      if(m.mode==='share')return `<div class="fraction-story"><div class="fraction-story-amount"><span class="fraction-context-icon" aria-hidden="true">🍕</span><strong>${esc(left)}</strong><small>of a whole to share</small></div><div class="fraction-story-question"><span>Share ${esc(left)} equally among ${m.divisor.n} learners.</span><small>How much does each learner receive? The answer must be smaller than ${esc(left)}.</small></div></div><div class="fraction-division-summary"><span>${esc(left)}</span><span>÷</span><span>${m.divisor.n}</span><span class="answer">each share = ?</span></div>`;
-      return `<div class="fraction-story"><div class="fraction-story-amount"><span class="fraction-context-icon" aria-hidden="true">🧃</span><strong>${esc(left)} ℓ</strong><small>juice available</small></div><div class="fraction-story-question"><span>Each cup holds ${esc(right)} ℓ. How many cups can be filled?</span><small>This asks: how many ${esc(right)}-sized groups are contained in ${esc(left)}?</small></div></div><div class="fraction-division-summary"><span>${esc(left)}</span><span>÷</span><span>${esc(right)}</span><span class="answer">${esc(answer)} groups</span></div>`;
+      const m=normalizedFractionDivision(model),left=fractionValueLabel(m.dividend.n,m.dividend.d),right=fractionValueLabel(m.divisor.n,m.divisor.d);
+      if(m.mode==='share')return `<div class="fraction-story"><div class="fraction-story-amount"><span class="fraction-context-icon" aria-hidden="true">🍕</span><strong>${esc(left)}</strong><small>of a whole to share</small></div><div class="fraction-story-question"><span>Share ${esc(left)} equally among ${m.divisor.n} learners.</span><small>How much does each learner receive? The answer must be smaller than ${esc(left)}.</small></div></div><div class="fraction-division-summary"><span>${esc(left)}</span><span>÷</span><span>${m.divisor.n}</span></div>`;
+      return `<div class="fraction-story"><div class="fraction-story-amount"><span class="fraction-context-icon" aria-hidden="true">🧃</span><strong>${esc(left)} ℓ</strong><small>juice available</small></div><div class="fraction-story-question"><span>Each cup holds ${esc(right)} ℓ. How many cups can be filled?</span><small>This asks: how many ${esc(right)}-sized groups are contained in ${esc(left)}?</small></div></div><div class="fraction-division-summary"><span>${esc(left)}</span><span>÷</span><span>${esc(right)}</span></div>`;
     }
     function fractionMeasureGroupsHTML(model,{interactive=false}={}){
       const m=normalizedFractionDivision(model),commonDen=p4Lcm(m.dividend.d,m.divisor.d),dividendUnits=m.dividend.n*(commonDen/m.dividend.d),divisorUnits=m.divisor.n*(commonDen/m.divisor.d),full=Math.floor(dividendUnits/divisorUnits),remainder=dividendUnits%divisorUnits,total=full+(remainder?1:0),answer=fractionValueLabel(dividendUnits,divisorUnits);
@@ -1455,8 +1455,8 @@
     }
     function fractionDivisionOverviewHTML(model){
       const m=normalizedFractionDivision(model);
-      if(m.mode==='share')return `<div class="fraction-division-scene">${fractionDivisionStoryHTML(m)}<div class="fraction-share-source">${fractionWholesBoardHTML(m)}<div class="p4-caption">Start with the amount being shared. The divisor tells how many equal recipients there are.</div></div></div>`;
-      return `<div class="fraction-division-scene">${fractionDivisionStoryHTML(m)}${fractionWholesBoardHTML(m,{common:true,showGroups:true})}<div class="p4-caption">Split the dividend into pieces the same size as the divisor, then count those groups.</div></div>`;
+      if(m.mode==='share')return `<div class="fraction-division-scene" data-precheck-model="fraction-division" data-answer-concealed="true">${fractionDivisionStoryHTML(m)}<div class="fraction-share-source">${fractionWholesBoardHTML(m)}<div class="p4-caption">Start with the amount being shared. The divisor tells how many equal recipients there are.</div></div></div>`;
+      return `<div class="fraction-division-scene" data-precheck-model="fraction-division" data-answer-concealed="true">${fractionDivisionStoryHTML(m)}${fractionWholesBoardHTML(m,{common:true})}<div class="p4-caption">Split the dividend into pieces the same size as the divisor, then count those groups.</div></div>`;
     }
     function fractionDivisionTutorialSteps(p){
       const m=normalizedFractionDivision(p.fractionDivision),left=fractionValueLabel(m.dividend.n,m.dividend.d),right=fractionValueLabel(m.divisor.n,m.divisor.d),answer=fractionValueLabel(m.quotient.n,m.quotient.d);

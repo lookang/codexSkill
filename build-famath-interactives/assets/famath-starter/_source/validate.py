@@ -242,8 +242,14 @@ def main() -> int:
                         "fraction-equal-sharing-completed",
                         "mode:'measure'",
                         "mode:'share'",
+                        "data-precheck-model=\"fraction-division\"",
+                        "data-answer-concealed=\"true\"",
                         "Meaning first → rule second",
                     )
+                ),
+                "formative_answers_concealed_before_check": (
+                    'class="answer"' not in html
+                    and 'data-answer-concealed="true"' in html
                 ),
                 "narrated_am_pm_day_journey": all(
                     marker in html
