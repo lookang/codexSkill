@@ -189,6 +189,7 @@ def main() -> int:
                     marker in html
                     for marker in (
                         "normalizedRatioModel",
+                        "ratioRowColumns",
                         "ratioAnswerShape",
                         "ratioChoiceOptions",
                         "Ratio choices must share one response format",
@@ -204,6 +205,8 @@ def main() -> int:
                         "ratio-animation-replayed",
                         "ratio-term-inspected",
                         "ratio-main-concealed",
+                        "--ratio-columns",
+                        "--ratio-unit-size:clamp(27px,4vw,45px)",
                         "data-precheck-model=\"ratio\"",
                         "q===1?[3,6,1]",
                         "mode:'equivalent'",
