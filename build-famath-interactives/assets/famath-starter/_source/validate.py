@@ -209,6 +209,22 @@ def main() -> int:
                         "primary-area-grid",
                     )
                 ),
+                "choice_safety_and_diagnostics": all(
+                    marker in html
+                    for marker in (
+                        "validOptionValue",
+                        "optionFallbacks",
+                        "problemHasValidChoices",
+                        "Invalid generated problem choices",
+                        "optionFeedback",
+                        "misconceptionFor",
+                        "misconception:correct?null",
+                        "window.__famathChoiceAudit",
+                        "choiceAuditFor",
+                        "dataset.choiceAudit",
+                        "answerPresent",
+                    )
+                ),
                 "narrated_am_pm_day_journey": all(
                     marker in html
                     for marker in (
@@ -677,6 +693,7 @@ def main() -> int:
             "middle-primary base-ten, equal-group, fraction, money, measurement, time, geometry and graph models",
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
+            "finite unique answer choices and option-specific misconception diagnostics",
             "required files",
             "self-contained app CSS and JavaScript",
             "offline local references",

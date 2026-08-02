@@ -1218,8 +1218,9 @@
     // The build script replaces this object once per curriculum objective.
     const CONFIG = __ACTIVITY_CONFIG__;
     const TOTAL_QUESTIONS = 6;
+    const GENERATOR_VERSION = '2026-08-02-choice-audit-v6';
     const startedAt = Date.now();
-    const sessionKey = `famath::${CONFIG.id}::session`;
+    const sessionKey = `famath::${GENERATOR_VERSION}::${CONFIG.id}::session`;
     const state = {
       q: 0, problems: [], selected: null, response: null, attempts: Array(TOTAL_QUESTIONS).fill(0),
       awarded: Array(TOTAL_QUESTIONS).fill(0), completed: Array(TOTAL_QUESTIONS).fill(false),
@@ -1299,6 +1300,7 @@
       return `<div class="spoken-choice"><button type="button" class="choice tap-target" data-choice="${esc(value)}">${esc(value)}</button><button type="button" class="word-audio tap-target" data-speak-word="${esc(value)}" data-speak-meaning="answer choice" aria-label="Hear ${esc(value)}" title="Hear ${esc(value)}"><span class="speaker" aria-hidden="true">🔊</span></button></div>`;
     }
     function numericOptions(correct, min=0, max=100){
+      if(typeof correct!=='number'||!Number.isFinite(correct))throw new Error(`Invalid numeric answer: ${correct}`);
       const set=new Set([correct]); const offsets=shuffle([-10,-5,-2,-1,1,2,5,10]);
       offsets.forEach(d=>{ if(set.size<4){ const v=correct+d; if(v>=min&&v<=max)set.add(v); }});
       while(set.size<4)set.add(rand(min,max));
@@ -1321,8 +1323,49 @@
       n=Math.round(n);if(n<100)return numberWords(n);if(n<1000)return `${numberWords(Math.floor(n/100))} hundred${n%100?' and '+numberWords(n%100):''}`;
       const thousands=Math.floor(n/1000),rest=n%1000;return `${p4NumberWords(thousands)} thousand${rest?(rest<100?' and ':' ')+p4NumberWords(rest):''}`;
     }
-    function p4Options(answer,distractors=[]){return shuffle([...new Set([answer,...distractors])]).slice(0,4);}
-    function p4Fraction(n,d){const g=p4Gcd(n,d);return `${n/g}/${d/g}`;}
+    function validOptionValue(value){
+      if(value===null||value===undefined)return false;
+      if(typeof value==='number')return Number.isFinite(value);
+      const text=String(value).trim();
+      return text!==''&&!/\b(?:NaN|Infinity|undefined|null)\b/i.test(text)&&!/(?:^|\s)-?\d+\/0(?:\s|$)/.test(text);
+    }
+    function optionFallbacks(answer){
+      const out=[];
+      if(typeof answer==='number'&&Number.isFinite(answer)){
+        const text=String(answer),places=(text.split('.')[1]||'').length;
+        const step=places?10**(-Math.min(3,places)):Math.max(1,10**Math.max(0,Math.floor(Math.log10(Math.max(1,Math.abs(answer))))-1));
+        [answer-step,answer+step,answer-2*step,answer+2*step,answer*10,answer/10].forEach(value=>{const rounded=Number(value.toFixed(Math.max(0,places)));if(rounded>=0)out.push(rounded);});
+        return out;
+      }
+      const text=String(answer).trim(),fraction=text.match(/^(?:(\d+)\s+)?(\d+)\/(\d+)$/);
+      if(fraction){
+        const whole=Number(fraction[1]||0),n=Number(fraction[2]),d=Number(fraction[3]),raw=whole*d+n;
+        const format=(num,den)=>{const w=Math.floor(num/den),r=num%den;return r?(w?`${w} ${r}/${den}`:`${r}/${den}`):String(w);};
+        out.push(format(raw+1,d),format(Math.max(1,raw-1),d),format(raw,d+1),format(raw+2,d));
+        return out;
+      }
+      const money=text.match(/^\$(\d+)\.(\d{2})$/);
+      if(money){const cents=Number(money[1])*100+Number(money[2]),format=value=>`$${Math.floor(value/100)}.${String(value%100).padStart(2,'0')}`;[cents-5,cents+5,cents-10,cents+10].filter(value=>value>=0).forEach(value=>out.push(format(value)));return out;}
+      const percent=text.match(/^(\d+(?:\.\d+)?)%(.*)$/);
+      if(percent){const value=Number(percent[1]),suffix=percent[2];[value-5,value+5,value-10,value+10].filter(v=>v>=0).forEach(v=>out.push(`${v}%${suffix}`));return out;}
+      const quantity=text.match(/^(\d+(?:\.\d+)?)\s+(.+)$/);
+      if(quantity){const value=Number(quantity[1]),unit=quantity[2];[value-1,value+1,value-2,value+2].filter(v=>v>=0).forEach(v=>out.push(`${v} ${unit}`));}
+      return out;
+    }
+    function p4Options(answer,distractors=[]){
+      if(!validOptionValue(answer))throw new Error(`Invalid answer option: ${answer}`);
+      const answerKey=String(answer),uniqueDistractors=[...new Map(distractors.filter(validOptionValue).filter(value=>String(value)!==answerKey).map(value=>[String(value),value])).values()];
+      for(const fallback of optionFallbacks(answer)){
+        if(validOptionValue(fallback)&&String(fallback)!==answerKey&&!uniqueDistractors.some(value=>String(value)===String(fallback)))uniqueDistractors.push(fallback);
+        if(uniqueDistractors.length>=3)break;
+      }
+      return shuffle([answer,...uniqueDistractors.slice(0,3)]);
+    }
+    function p4Fraction(n,d){
+      n=Number(n);d=Number(d);
+      if(!Number.isFinite(n)||!Number.isFinite(d)||d===0)throw new Error(`Invalid fraction: ${n}/${d}`);
+      const g=p4Gcd(n,d);return `${n/g}/${d/g}`;
+    }
     function p4Base(data){return {visual:'p4',instruction:'Use the visual model, record your strategy, then check your answer.',hint:'Use the highlighted structure before calculating.',misconception:'Check what each number, mark or region represents before choosing.',...data};}
     function p4PlaceGridHTML(number,focus=-1,decimal=false){
       if(decimal){const fixed=Number(number).toFixed(3),digits=fixed.replace('.','').split(''),heads=['ones','tenths','hundredths','thousandths'];return `<div class="p4-place-grid decimal">${digits.map((d,i)=>`<div class="p4-place-cell ${i===focus?'focus':''}"><small>${heads[i]}</small><b>${d}</b></div>`).join('')}</div>`;}
@@ -1355,7 +1398,12 @@
     function upperNumberWords(n){
       n=Math.round(n);if(n<1000000)return p4NumberWords(n);const millions=Math.floor(n/1000000),rest=n%1000000;return `${p4NumberWords(millions)} million${rest?' '+p4NumberWords(rest):''}`;
     }
-    function upperFraction(n,d){const g=p4Gcd(n,d);return {n:n/g,d:d/g,text:`${n/g}/${d/g}`,value:(n/g)/(d/g)};}
+    function upperFraction(n,d){
+      n=Number(n);d=Number(d);
+      if(!Number.isFinite(n)||!Number.isFinite(d)||d===0)throw new Error(`Invalid upper-primary fraction: ${n}/${d}`);
+      if(d<0){n=-n;d=-d;}
+      const g=p4Gcd(n,d);return {n:n/g,d:d/g,text:`${n/g}/${d/g}`,value:(n/g)/(d/g)};
+    }
     function upperMixed(n,d){const f=upperFraction(n,d),w=Math.floor(f.n/f.d),r=f.n%f.d;return !r?String(w):w?`${w} ${r}/${f.d}`:`${r}/${f.d}`;}
     function upperSceneHTML(d={}){
       const scene=d.scene||'expression';
@@ -1526,6 +1574,20 @@
     // ---------- Primary 2 and Primary 3 shared middle-primary generators ----------
     function primaryBase(data){return p4Base({instruction:'Build or inspect the visual model, explain the relationship, then check your answer.',...data});}
     function primaryOpts(answer,values=[]){return p4Options(answer,values.filter(v=>String(v)!==String(answer)));}
+    function middleFractionOptions(answer,visibleFractions=[]){
+      const candidates=visibleFractions.slice(),match=String(answer).match(/^(-?\d+)\/(\d+)$/);
+      if(match){
+        const n=Number(match[1]),d=Number(match[2]);
+        if(n!==0)candidates.push(`${d}/${Math.abs(n)}`);
+        candidates.push(`${n}/${d+1}`);
+        candidates.push(`${Math.min(d,Math.max(0,n+1))}/${d}`);
+        candidates.push(`${Math.max(0,n-1)}/${d}`);
+        candidates.push(`${n+1}/${d+1}`);
+      }
+      const options=primaryOpts(answer,candidates);
+      if(options.length!==4)throw new Error(`Middle-primary fraction needs four unique choices: ${answer}`);
+      return options;
+    }
     function makePrimary2Problem(kind,q){
       if(kind==='p2_count_tens_hundreds'||kind==='p2_sequences'){
         const step=kind==='p2_count_tens_hundreds'?pick(q<3?[10,100]:[10,20,50,100]):pick([2,5,10,20,50,100]),down=q%3===2,maxStart=Math.max(4,Math.floor((1000-(down?0:step*4))/step)),start=rand(down?4:0,maxStart)*step,seq=Array.from({length:5},(_,i)=>start+(down?-i:i)*step),missing=kind==='p2_count_tens_hundreds'?4:rand(1,3),answer=seq[missing];
@@ -1568,7 +1630,7 @@
         else if(kind==='p2_fraction_notation'){prompt=`Which fraction notation matches ${n1} shaded parts out of ${den} equal parts?`;answer=`${n1}/${den}`;}
         else if(kind==='p2_fraction_compare'){const unit=q%2===0,d2=unit?pick([2,3,4,5,6,8,10,12].filter(x=>x!==den)):den,a=unit?1:n1,b=unit?1:n2;parts=[{n:a,d:den,label:`${a}/${den}`},{n:b,d:d2,label:`${b}/${d2}`}];prompt=`Which fraction is greater: ${a}/${den} or ${b}/${d2}?`;answer=a/den>b/d2?`${a}/${den}`:`${b}/${d2}`;operator='compare';}
         else {const left=add?Math.min(n1,n2):Math.max(n1,n2),right=add?Math.min(n2,den-left):Math.min(n1,n2),result=add?left+right:left-right;parts=[{n:left,d:den,label:`${left}/${den}`},{n:right,d:den,label:`${right}/${den}`}];operator=add?'+':'−';prompt=`Calculate ${left}/${den} ${operator} ${right}/${den}.`;answer=`${result}/${den}`;}
-        return primaryBase({type:'choice',prompt,p4:{model:'primary',scene:'fraction',parts,operator,caption:'Compare or combine equal-sized parts. Like denominators mean every piece has the same size.'},answer,options:primaryOpts(answer,[`${Math.max(1,n1-1)}/${den}`,`${Math.min(den-1,n1+1)}/${den}`,`${n1}/${Math.max(2,den-1)}`]),worked:['Identify one complete whole','Check that all parts are equal','Count or compare the selected parts','Write numerator over denominator'],bridge:String(answer),hint:'Use the shaded equal parts before reading the fraction symbols.',misconception:'The denominator names the size and total number of equal parts; it is not added for like fractions.'});
+        return primaryBase({type:'choice',prompt,p4:{model:'primary',scene:'fraction',parts,operator,caption:'Compare or combine equal-sized parts. Like denominators mean every piece has the same size.'},answer,options:middleFractionOptions(answer,parts.map(part=>part.label)),worked:['Identify one complete whole','Check that all parts are equal','Count or compare the selected parts','Write numerator over denominator'],bridge:String(answer),hint:'Use the shaded equal parts before reading the fraction symbols.',misconception:'The denominator names the size and total number of equal parts; it is not added for like fractions.'});
       }
       if(['p2_money_count','p2_money_decimal','p2_money_compare','p2_money_convert'].includes(kind)){
         const dollars=rand(1,9),cents=pick([5,10,20,25,50,75,90]),total=dollars*100+cents,decimal=`$${dollars}.${String(cents).padStart(2,'0')}`,items=[...Array(dollars).fill({label:'$1',type:'note'}),...Array(Math.floor(cents/50)).fill({label:'50¢',type:'coin'}),...Array(Math.floor((cents%50)/20)).fill({label:'20¢',type:'coin'}),...(cents%20?[{label:`${cents%20}¢`,type:'coin'}]:[])];let prompt,answer;
@@ -1824,6 +1886,17 @@
     // ---------- Primary 5 and Primary 6 shared upper-primary generators ----------
     function upperBase(data){return p4Base({instruction:'Represent the quantities, explain the relationship, then calculate and check.',...data});}
     function upperOpts(answer,values=[]){return p4Options(answer,values.filter(v=>String(v)!==String(answer)));}
+    function upperFractionOptions(answer,values,numerator,denominator){
+      const candidates=values.slice();
+      for(let delta=1;delta<=6;delta++){
+        candidates.push(upperMixed(Math.max(1,numerator-delta),denominator));
+        candidates.push(upperMixed(numerator+delta,denominator));
+        candidates.push(upperMixed(numerator,denominator+delta));
+      }
+      const options=upperOpts(answer,candidates);
+      if(options.length!==4)throw new Error(`Fraction division needs four unique choices: ${answer}`);
+      return options;
+    }
     function makePrimary5Problem(kind,q){
       if(kind==='p5_number_words_10m'){
         const number=q===0?7050406:rand(100000,9999999),word=upperNumberWords(number),askWords=q%2===0,answer=askWords?word:number;
@@ -1915,13 +1988,40 @@
     }
     function makePrimary6Problem(kind,q){
       if(kind==='p6_fraction_div_whole'||kind==='p6_divide_by_fraction'){
-        let left,right,n,d,answer;
+        let left,right,n,d,answer,answerNumerator,answerDenominator,distractors=[],optionFeedback={};
         if(kind==='p6_fraction_div_whole'){
           d=pick([3,4,5,6,8]),n=rand(1,d-1);const whole=rand(2,5),f=upperFraction(n,d*whole);left=`${n}/${d}`;right=String(whole);answer=f.text;
+          answerNumerator=f.n;answerDenominator=f.d;
+          const unchanged=upperFraction(n,d).text,directProduct=upperMixed(n*whole,d),addInstead=upperMixed(n+whole*d,d),reciprocalResult=upperMixed(d*whole,n);
+          distractors=[unchanged,directProduct,addInstead,reciprocalResult];
+          optionFeedback={
+            [unchanged]:'You kept the dividend unchanged. Dividing it into equal shares must make each share smaller.',
+            [directProduct]:'You multiplied by the whole number instead of dividing the fraction into that many equal shares.',
+            [addInstead]:'You added the whole number instead of dividing the fraction into equal shares.',
+            [reciprocalResult]:'You inverted the final result. Only the divisor is changed to its reciprocal before multiplying.'
+          };
         } else {
-          const wholeFirst=q%2===0,d1=pick([2,3,4,5]),n1=wholeFirst?rand(2,5):rand(1,d1-1),den1=wholeFirst?1:d1,d2=pick([2,3,4,5]),n2=rand(1,d2-1),f=upperFraction(n1*d2,den1*n2);left=wholeFirst?String(n1):`${n1}/${den1}`;right=`${n2}/${d2}`;answer=upperMixed(f.n,f.d);n=n1;d=den1;
+          const wholeFirst=q%2===0;let d1=pick([2,3,4,5]),n1=wholeFirst?rand(2,5):rand(1,d1-1),den1=wholeFirst?1:d1;
+          let d2,n2;
+          if(q===0){n1=2;den1=1;d2=2;n2=1;}
+          else do{d2=pick([2,3,4,5]);n2=rand(1,d2-1);}while(!wholeFirst&&n1*d2===n2*den1);
+          const f=upperFraction(n1*d2,den1*n2);left=wholeFirst?String(n1):`${n1}/${den1}`;right=`${n2}/${d2}`;answer=upperMixed(f.n,f.d);n=n1;d=den1;
+          answerNumerator=f.n;answerDenominator=f.d;
+          const directProduct=upperMixed(n1*n2,den1*d2);
+          const addInstead=upperMixed(n1*d2+n2*den1,den1*d2);
+          const reciprocalQuotient=upperMixed(den1*n2,n1*d2);
+          const unchanged=upperMixed(n1,den1);
+          const closeLow=upperMixed(Math.max(1,f.n-1),f.d);
+          const closeHigh=upperMixed(f.n+1,f.d);
+          distractors=[directProduct,addInstead,reciprocalQuotient,unchanged,closeLow,closeHigh];
+          optionFeedback={
+            [directProduct]:'You multiplied by the divisor itself. Division by a fraction asks how many divisor-sized groups fit, so multiply by its reciprocal.',
+            [addInstead]:'You added the two quantities. The division symbol asks how many equal divisor-sized groups fit in the dividend.',
+            [reciprocalQuotient]:'You inverted the final quotient. Keep the dividend fixed and take the reciprocal of the divisor only.',
+            [unchanged]:'You left the dividend unchanged. A proper-fraction divisor is smaller than one, so more than one group can fit.'
+          };
         }
-        return upperBase({type:'choice',prompt:`Calculate ${left} ÷ ${right}.`,p4:{model:'upper',scene:'fraction',parts:[{n:n,d:d,label:left},{n:Number(right.split('/')[0]),d:Number(right.split('/')[1]||1),label:right}],operator:'÷',caption:'Ask how many divisor-sized groups fit in the dividend. Equal partitioning explains the reciprocal rule.'},answer,options:upperOpts(answer,[`${n}/${d*Number(right)}`,upperMixed(n*Number(right),d),`${d}/${n}`]),worked:['Model the dividend as equal parts','Mark groups the size of the divisor','Rewrite division as multiplication by the reciprocal','Simplify and check by multiplication'],bridge:`${left} ÷ ${right} = ${answer}`,hint:'Use “how many groups of the divisor fit?” before applying keep-change-flip.',misconception:'Taking a reciprocal is a consequence of measuring equal groups, not a rule without meaning.'});
+        return upperBase({type:'choice',prompt:`Calculate ${left} ÷ ${right}.`,p4:{model:'upper',scene:'fraction',parts:[{n:n,d:d,label:left},{n:Number(right.split('/')[0]),d:Number(right.split('/')[1]||1),label:right}],operator:'÷',caption:'Ask how many divisor-sized groups fit in the dividend. Equal partitioning explains the reciprocal rule.'},answer,options:upperFractionOptions(answer,distractors,answerNumerator,answerDenominator),optionFeedback,worked:['Model the dividend as equal parts','Mark groups the size of the divisor','Rewrite division as multiplication by the reciprocal','Simplify and check by multiplication'],bridge:`${left} ÷ ${right} = ${answer}`,hint:'Use “how many groups of the divisor fit?” before applying keep-change-flip.',misconception:'Taking a reciprocal is a consequence of measuring equal groups, not a rule without meaning.'});
       }
       if(kind==='p6_find_whole_percent'||kind==='p6_percent_change'){
         if(kind==='p6_find_whole_percent'){
@@ -2119,7 +2219,7 @@
       if(kind==='tell_time'){
         const minute=pick(Array.from({length:12},(_,i)=>i*5)),hour=rand(1,12),answer=formatTime(hour,minute);
         const distractors=[formatTime(hour,(minute+5)%60),formatTime(hour,(minute+55)%60),formatTime(hour===12?1:hour+1,minute)];
-        return {type:'choice',prompt:'What time does the clock show?',instruction:guided?'Read the short hour hand, then count minutes by fives.':'Use both hands to tell the time to 5 minutes.',visual:'clock',hour,minute,answer,options:shuffle([answer,...distractors.filter(x=>x!==answer)]).slice(0,4),hint:'Each number around the clock represents 5 minutes for the minute hand.',misconception:'The short hand shows the hour; the long hand shows minutes.'};
+        return {type:'choice',prompt:'What time does the clock show?',instruction:guided?'Read the short hour hand, then count minutes by fives.':'Use both hands to tell the time to 5 minutes.',visual:'clock',hour,minute,answer,options:p4Options(answer,distractors),hint:'Each number around the clock represents 5 minutes for the minute hand.',misconception:'The short hand shows the hour; the long hand shows minutes.'};
       }
       if(kind==='am_pm'){
         const morning=q%2===0;
@@ -2152,7 +2252,7 @@
       }
       if(kind==='classify_shapes'){
         const shape=shapeNames[q%shapeNames.length],answer=shape;
-        return {type:'choice',prompt:'What is the name of this 2D shape?',instruction:guided?'Look at straight sides, curved edges and corners.':'Use defining properties, not size or colour.',visual:'shape',shape,answer,options:shuffle([answer,...shapeNames.filter(x=>x!==answer)]).slice(0,4),hint:shape==='circle'?'It has one fully curved edge and no corners.':shape.includes('circle')?'It is part of a circle.':'Count its straight sides and corners.',misconception:'A shape keeps its name when it is turned, resized or recoloured.'};
+        return {type:'choice',prompt:'What is the name of this 2D shape?',instruction:guided?'Look at straight sides, curved edges and corners.':'Use defining properties, not size or colour.',visual:'shape',shape,answer,options:p4Options(answer,shapeNames.filter(x=>x!==answer)),hint:shape==='circle'?'It has one fully curved edge and no corners.':shape.includes('circle')?'It is part of a circle.':'Count its straight sides and corners.',misconception:'A shape keeps its name when it is turned, resized or recoloured.'};
       }
       if(kind==='compose_shapes'){
         const sets=[
@@ -2186,7 +2286,26 @@
       throw new Error(`Unknown activity kind: ${kind}`);
     }
 
-    function makeProblems(){ return Array.from({length:TOTAL_QUESTIONS},(_,q)=>makeProblem(CONFIG.kind,q)); }
+    function problemHasValidChoices(problem){
+      if(!problem||!validOptionValue(problem.answer))return false;
+      if(problem.type!=='choice')return true;
+      if(!Array.isArray(problem.options)||problem.options.length<2)return false;
+      const clean=problem.options.filter(validOptionValue),unique=new Set(clean.map(value=>String(value)));
+      return clean.length===problem.options.length&&unique.size===clean.length&&clean.some(value=>String(value)===String(problem.answer));
+    }
+    function choiceAuditFor(problems){
+      return problems.map((problem,index)=>{
+        const options=Array.isArray(problem.options)?problem.options:[],keys=options.map(value=>String(value));
+        return {question:index+1,type:problem.type,optionCount:options.length,invalidOptions:options.filter(value=>!validOptionValue(value)).length,duplicateOptions:keys.length-new Set(keys).size,answerPresent:problem.type!=='choice'||keys.includes(String(problem.answer))};
+      });
+    }
+    function makeProblems(){
+      const problems=Array.from({length:TOTAL_QUESTIONS},(_,q)=>makeProblem(CONFIG.kind,q));
+      const invalidIndex=problems.findIndex(problem=>!problemHasValidChoices(problem));
+      if(invalidIndex>=0)throw new Error(`Invalid generated problem choices for ${CONFIG.id} question ${invalidIndex+1}: ${JSON.stringify(problems[invalidIndex])}`);
+      window.__famathChoiceAudit=choiceAuditFor(problems);
+      return problems;
+    }
 
     // ---------- Code-native visual representations ----------
     function dots(n,mini=false){ return Array.from({length:n},()=>`<span class="${mini?'mini-dot':'dot'}">${mini?'':'●'}</span>`).join(''); }
@@ -3248,6 +3367,7 @@
       return {
         question:state.q,type:p.type,visual:p.visual||'',at:Date.now(),
         response:Array.isArray(response)?response.slice():response,
+        misconception:misconceptionFor(p,response),
         selected:state.selected,
         counters:{tens:state.counters.tens,ones:state.counters.ones},
         order:state.order.map(item=>item?{i:item.i,value:item.value}:null),
@@ -3309,7 +3429,8 @@
       const attempt=learnerAttemptFor(p),label=learnerResponseLabel(p,attempt);
       if(!attempt)return null;
       const descriptions={counter:`You built ${label}. We will compare each place with the target.`,money:`You made ${label}. We will check the value of every coin or note.`,line_builder:`You drew ${label}. We will compare its endpoint with the requested centimetre mark.`,grid_copy:`You coloured ${label}. We will compare those exact cells with the target row by row.`,ordinal:`You selected the ${label} runner. We will count from the left flag to test that position.`};
-      return {learnerAttempt:true,title:'Start with your answer',text:descriptions[p.type]||`You chose ${label}. We will keep that choice visible first and test why it does or does not fit the question.`,html:learnerAttemptHTML(p,attempt)};
+      const baseText=descriptions[p.type]||`You chose ${label}. We will keep that choice visible first and test why it does or does not fit the question.`;
+      return {learnerAttempt:true,title:'Start with your answer',text:`${baseText}${attempt.misconception?` This choice may show: ${attempt.misconception}`:''}`,html:learnerAttemptHTML(p,attempt)};
     }
     function withLearnerAttempt(p,steps){
       const first=learnerAttemptStep(p);
@@ -3808,9 +3929,14 @@
         speechSynthesis.speak(utterance);log('🔊','Read tutorial step aloud',`Step ${state.tutorialStep+1}`);
       }
     }
-    function feedbackWithTutorial(p){
+    function misconceptionFor(p,response){
+      const key=Array.isArray(response)?response.join(', '):String(response);
+      return p.optionFeedback&&p.optionFeedback[key]?p.optionFeedback[key]:p.misconception;
+    }
+    function feedbackWithTutorial(p,response){
+      const misconception=misconceptionFor(p,response);
       els.feedback.className='status incorrect';
-      els.feedback.innerHTML=`<strong>Not yet</strong><span>${esc(p.misconception)}</span><button class="show-me tap-target" id="showTutorialBtn" type="button">👀 Show me visually</button>`;
+      els.feedback.innerHTML=`<strong>Not yet</strong><span>${esc(misconception)}</span><button class="show-me tap-target" id="showTutorialBtn" type="button">👀 Show me visually</button>`;
       $('showTutorialBtn').addEventListener('click',openTutorial); attachTouchFeedback(els.feedback);
     }
 
@@ -3842,7 +3968,7 @@
         feedback('Choose or build an answer first.','Use the large controls in the work area.','incorrect'); log('⚠️','Check attempted without a response','No answer'); return;
       }
       state.attempts[state.q]++; const correct=isCorrect(p,response), expected=expectedValue(p);
-      const event={t:Date.now(),type:'answer',q:`Q${state.q+1}/6 ${p.prompt}`,value:Array.isArray(response)?response.join(', '):String(response),expected:Array.isArray(expected)?expected.join(', '):String(expected),correct,result:correct?'correct':'incorrect',attempt:state.attempts[state.q],phase:phaseFor(state.q),objective:CONFIG.objective};
+      const event={t:Date.now(),type:'answer',q:`Q${state.q+1}/6 ${p.prompt}`,value:Array.isArray(response)?response.join(', '):String(response),expected:Array.isArray(expected)?expected.join(', '):String(expected),correct,result:correct?'correct':'incorrect',attempt:state.attempts[state.q],phase:phaseFor(state.q),objective:CONFIG.objective,misconception:correct?null:misconceptionFor(p,response)};
       state.history.push(event);
       if(correct){
         state.lastIncorrectAttempt=null;
@@ -3851,7 +3977,7 @@
         els.next.hidden=false; els.check.disabled=true; log('✅','Correct answer',event.value);
       } else {
         state.lastIncorrectAttempt=captureLearnerAttempt(p,response);
-        feedbackWithTutorial(p); log('❌',`Incorrect attempt ${state.attempts[state.q]}`,`${event.value}; expected ${event.expected}`);
+        feedbackWithTutorial(p,response); log('❌',`Incorrect attempt ${state.attempts[state.q]}`,`${event.value}; expected ${event.expected}; ${event.misconception}`);
       }
       renderAnalytics(); persist(); sendXapi(correct?'answer-correct':'answer-incorrect');
     }
@@ -3971,7 +4097,10 @@
     }
     function restore(){
       try{
-        const saved=JSON.parse(localStorage.getItem(sessionKey)||'null'); if(!saved||!Array.isArray(saved.problems)||saved.problems.length!==TOTAL_QUESTIONS)return false;
+        const saved=JSON.parse(localStorage.getItem(sessionKey)||'null');
+        if(!saved||!Array.isArray(saved.problems)||saved.problems.length!==TOTAL_QUESTIONS||!saved.problems.every(problemHasValidChoices)){
+          localStorage.removeItem(sessionKey);return false;
+        }
         ['q','problems','attempts','awarded','completed','history','actions','tutorialViews','tutorialInteractions'].forEach(k=>{ if(saved[k]!==undefined)state[k]=saved[k]; }); return true;
       }catch(_){ return false; }
     }
@@ -4029,6 +4158,7 @@
       const gradeMatch=String(CONFIG.id||'').match(/^P(\d+)-/),gradeLabel=gradeMatch?`Primary ${gradeMatch[1]}`:'Mathematics';
       document.title=`${CONFIG.shortTitle} — FAMath ${gradeLabel}`; els.title.textContent=CONFIG.shortTitle; els.objective.textContent=CONFIG.objective;
       const restored=restore(); if(!restored)state.problems=makeProblems();
+      document.documentElement.dataset.choiceAudit=JSON.stringify(choiceAuditFor(state.problems));
       $('helpBtn').addEventListener('click',()=>{els.help.showModal();log('❔','Opened help','Help dialog');});
       $('closeHelpBtn').addEventListener('click',()=>els.help.close());
       $('closeTutorialBtn').addEventListener('click',()=>closeTutorial(false));
