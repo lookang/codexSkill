@@ -48,7 +48,7 @@ def extract_inline_app_js(html: str) -> str:
 
 def main() -> int:
     activities = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    expected_counts = {1: 32, 4: 42, 5: 37, 6: 27}
+    expected_counts = {1: 32, 2: 30, 3: 34, 4: 42, 5: 37, 6: 27}
     grade_activities: dict[int, list[dict[str, object]]] = defaultdict(list)
     for activity in activities:
         match = re.match(r"^P(\d+)-", activity["id"])
@@ -58,7 +58,9 @@ def main() -> int:
     actual_counts = {grade: len(items) for grade, items in grade_activities.items()}
     if actual_counts != expected_counts:
         fail(f"Expected grade counts {expected_counts}, found {actual_counts}")
-    for field in ("id", "folder", "objective", "shortTitle", "kind"):
+    # Official learning-objective wording can repeat across grades (for example,
+    # reading and writing numbers); identity and routing fields must remain unique.
+    for field in ("id", "folder", "shortTitle", "kind"):
         values = [activity[field] for activity in activities]
         if len(set(values)) != len(values):
             fail(f"Duplicate manifest field: {field}")
@@ -181,6 +183,30 @@ def main() -> int:
                         "upper-bar-model",
                         "upper-balance",
                         "upper-average-bars",
+                    )
+                ),
+                "middle_primary_visual_system": all(
+                    marker in html
+                    for marker in (
+                        "makePrimary2Problem",
+                        "makePrimary3Problem",
+                        "primarySceneHTML",
+                        "startsWith('p2_')",
+                        "startsWith('p3_')",
+                        "scene==='base10'",
+                        "scene==='groups'",
+                        "scene==='money'",
+                        "scene==='measure'",
+                        "scene==='clock'",
+                        "scene==='shape'",
+                        "scene==='graph'",
+                        "scene==='area'",
+                        "scene==='lines'",
+                        "scene==='timeline'",
+                        "primary-base10",
+                        "primary-money-board",
+                        "primary-bar-chart",
+                        "primary-area-grid",
                     )
                 ),
                 "narrated_am_pm_day_journey": all(
@@ -641,11 +667,14 @@ def main() -> int:
             "syllabus-order folder prefixes and legacy-name migration",
             "HTML and Markdown syllabus-order catalogues",
             "42 Primary 4 objectives in official pages 37-40 sequence",
+            "30 Primary 2 objectives in official syllabus sequence",
+            "34 Primary 3 objectives in official syllabus sequence",
             "37 Primary 5 objectives in official pages 41-42 sequence",
             "27 Primary 6 objectives in official pages 43-44 sequence",
             "Primary 4 place-value, number-line, factor, algorithm, fraction and decimal models",
             "Primary 4 area, angle, symmetry, net and data representations",
             "misconception-first Primary 4 visual tutorial and notation bridge",
+            "middle-primary base-ten, equal-group, fraction, money, measurement, time, geometry and graph models",
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "required files",

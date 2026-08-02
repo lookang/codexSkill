@@ -29,7 +29,7 @@ powershell -ExecutionPolicy Bypass -File "<skill-folder>\scripts\bootstrap_famat
 
 Add or replace objectives in the copied `_source/activities.json`, extend the shared template by mathematical family, update explicit completeness checks in `_source/validate.py`, then build.
 
-Use `-Build` only when reproducing the bundled Primary 1, 4, 5 and 6 starter unchanged.
+Use `-Build` only when reproducing the bundled complete Primary 1 to Primary 6 starter unchanged.
 
 ### Extend an existing collection
 
