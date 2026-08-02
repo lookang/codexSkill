@@ -42,7 +42,20 @@ After an incorrect answer, begin the tutorial with the learner's actual arrangem
 - Money: show recognisable denominations, support tap/drag to a wallet, and visualize the largest usable denomination before composing the remainder.
 - Length: point to the zero line, align the left endpoint, then traverse equal intervals to the right endpoint. Count intervals, not tick marks.
 - Angles: align the centre and 0-degree ray before reading or marking the scale.
-- Circles: mark the exact centre explicitly. Every displayed radius must begin at that centre and end on the circumference; adapt the centre and endpoint geometry for whole circles, semicircles and quarter circles instead of reusing one fixed line. In remediation, bridge the picture to notation gradually: select the formula, substitute π and the labelled radius, simplify the power and factors, then reveal the answer with the correct linear or square unit. For semicircle and quarter-circle perimeter, colour-link the curved-circumference term and straight-edge term to the matching drawing parts; make either term clickable so both representations flash together and record that inspection as evidence.
+- Circles: mark the exact centre explicitly. Every displayed radius must begin at that centre and end on the circumference; adapt the centre and endpoint geometry for whole circles, semicircles and quarter circles instead of reusing one fixed line. In remediation, bridge the picture to notation gradually: select the formula, substitute π and the labelled radius, simplify the power and factors, then reveal the answer with the correct linear or square unit. Colour-link every meaningful formula component to its exact pictorial referent: full-disk area, selected half/quarter region, curved boundary, straight boundary, rectangle region or attached semicircle. Make the term, key and drawing part independently clickable so every matching representation flashes together, speaks its meaning and records inspection evidence.
+
+## Targeted visual association scaffolds
+
+Use a reusable formula-part ↔ visual-part association whenever a learner must coordinate symbolic notation with a measurable region or segment.
+
+- Preserve one colour meaning within a tutorial. A base, height, inside region, whole region, removed region or fractional region must retain its colour across the diagram, formula, substitution and simplification steps.
+- Make both directions executable: tapping a formula term must flash its diagram part, and tapping the diagram must flash the formula term and key. Support keyboard activation and spoken coaching as well as touch.
+- For rectangles, distinguish inside area from outside perimeter, and link length and width to the corresponding sides.
+- For triangles and parallelograms, link the base and perpendicular height; explicitly show the right-angle relationship. For a triangle, show the half relationship with a matching rectangle or parallelogram rather than presenting 1/2 as an unexplained rule.
+- For trapezia, link both parallel sides, the perpendicular height and the average-length or one-half relationship.
+- For composite figures, assign different colours to the whole/added region and removed/secondary region; use the same colours in the addition or subtraction expression.
+- Do not reveal the final numerical answer before the learner has seen the model, formula, substitution and a still-incomplete simplification. Reveal the result only in the final remediation step and attach the correct unit.
+- Record a generic `visual-component-associated` evidence event with the association family, selected part and spoken label; retain family-specific compatibility events when an existing analytics contract requires them.
 - Symmetry: compare corresponding points at equal perpendicular distances; include genuinely asymmetric counterexamples.
 - Nets: use the correct number and shapes of faces; animate or mentally rehearse folding without overlapping faces.
 - Data: make title, labels, units, key, and scale visible before interpretation. Never ask for a missing table value without stating a determining relationship.

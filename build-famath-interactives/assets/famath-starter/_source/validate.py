@@ -462,13 +462,42 @@ def main() -> int:
                         "circleAssociatedExpressionHTML",
                         "circleBoundaryAssociationHTML",
                         "data-circle-boundary-association",
-                        "data-circle-association-key=\"curve\"",
-                        "data-circle-association-key=\"straight\"",
-                        "data-circle-association-part=\"curve\"",
-                        "data-circle-association-part=\"straight\"",
-                        "circle-boundary-associated",
-                        "Linked formula term to circle boundary",
-                        "Tap either coloured term to flash its matching boundary",
+                        "data-visual-association-key",
+                        "data-visual-association-part",
+                        "tutorial-circle-boundary-associated",
+                        "Linked formula term to visual component",
+                        "Tap any coloured term or matching visual part",
+                    )
+                ),
+                "targeted_visual_measure_association": all(
+                    marker in html
+                    for marker in (
+                        "targetedMeasureData",
+                        "targetedMeasureDiagramHTML",
+                        "targetedMeasureTutorialSteps",
+                        "if(p.measureAssociation)return targetedMeasureTutorialSteps(p)",
+                        "data-targeted-visual",
+                        "data-visual-association-family",
+                        "visual-component-associated",
+                        "tutorial-visual-component-associated",
+                        "Matching parts will flash together",
+                        "'rectangle-area'",
+                        "type:'composite-area'",
+                        "type:'triangle-area'",
+                        "type:'parallelogram-area'",
+                        "type:'trapezium-area'",
+                    )
+                ),
+                "circle_area_region_association": all(
+                    marker in html
+                    for marker in (
+                        "mode==='whole-area'",
+                        "mode==='semi-area'",
+                        "mode==='quarter-area'",
+                        "mode==='composite-area'",
+                        "full circle reference",
+                        "selected region",
+                        "rectangle + purple semicircle",
                     )
                 ),
                 "narrated_am_pm_day_journey": all(
@@ -950,7 +979,10 @@ def main() -> int:
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "whole-circle, semicircle and quarter-circle radii begin at explicit centres and end on their circumferences",
             "circle tutorials bridge the visual radius to formula, numerical substitution, simplification and final units in separate steps",
+            "whole-circle, semicircle, quarter-circle and composite-area tutorials colour-link formula terms to clickable flashing regions",
             "semicircle and quarter-circle perimeter tutorials colour-link curved and straight formula terms to clickable flashing boundary parts",
+            "reusable targeted visual association scaffolds for rectangle, composite, triangle, parallelogram and trapezium measurement families",
+            "colour-linked visual-component interaction evidence in teacher-visible xAPI analytics",
             "finite unique answer choices and option-specific misconception diagnostics",
             "computed solution flows concealed until check or guided remediation",
             "unknown-letter tasks vary letter names and assess representation rather than solving",
