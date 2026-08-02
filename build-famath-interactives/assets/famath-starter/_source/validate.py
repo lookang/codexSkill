@@ -185,6 +185,33 @@ def main() -> int:
                         "upper-average-bars",
                     )
                 ),
+                "animated_ratio_visual_family": all(
+                    marker in html
+                    for marker in (
+                        "normalizedRatioModel",
+                        "ratioChoiceOptions",
+                        "ratioStaticHTML",
+                        "ratioOrderHTML",
+                        "ratioCountAnimationHTML",
+                        "ratioTransformationHTML",
+                        "ratioNotationAnimationHTML",
+                        "ratioTutorialSteps",
+                        "data-ratio-animation",
+                        "data-ratio-replay",
+                        "data-ratio-label",
+                        "ratio-animation-replayed",
+                        "ratio-term-inspected",
+                        "ratio-main-concealed",
+                        "data-precheck-model=\"ratio\"",
+                        "q===1?[3,6,1]",
+                        "mode:'equivalent'",
+                        "mode:'divide'",
+                        "mode:'simplify'",
+                        "mode:'find'",
+                        "mode:'missing'",
+                        "mode:'fraction'",
+                    )
+                ),
                 "middle_primary_visual_system": all(
                     marker in html
                     for marker in (

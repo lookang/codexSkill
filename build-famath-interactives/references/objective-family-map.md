@@ -14,6 +14,7 @@ Map by mathematical meaning rather than keyword alone.
 | Whole-number algorithms | aligned columns, place-value blocks, regroup animation | unexplained carrying/borrowing digits |
 | Fractions | equal partitions, sets, number bonds, equivalent scaling | unequal part sizes |
 | Decimals | aligned place chart, hundredths grid, number line | counting decimal digits mechanically |
+| Ratio | ordered labels, equal-unit rows, animated counting and whole-term scaling | unequal units, reordered terms, or answer-revealing count labels |
 | Money | recognisable coins/notes, wallet target, tap and drag | text-only denomination strategy |
 | Measurement | zero-aligned ruler, highlighted intervals/endpoints, unit labels | counting ticks instead of spaces |
 | Area and perimeter | tiled regions, boundary tracing, decompose/recompose animation | formula-first hints |
@@ -40,4 +41,3 @@ Use approximately this sequence:
 6. short challenge or explanation check.
 
 Vary values and surface context while preserving the target construct. Do not introduce a new construct merely to make the final question harder.
-
