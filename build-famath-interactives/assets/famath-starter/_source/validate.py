@@ -284,6 +284,40 @@ def main() -> int:
                     'class="answer"' not in html
                     and 'data-answer-concealed="true"' in html
                 ),
+                "precheck_solution_flow_concealment": all(
+                    marker in html
+                    for marker in (
+                        "p4ModelHTML(p,{revealSolution=false}={})",
+                        "p4ModelHTML(p,{revealSolution:true})",
+                        "data-solution-state=\"${d.revealSolution?'revealed':'concealed'}\"",
+                        "const flow=d.revealSolution?(d.flow||[]):[]",
+                        "d.showArea&&d.revealSolution",
+                        "const flow=d.revealSolution?`<div class=\"upper-operation-flow\"",
+                        "Equal-share level = ${d.revealSolution?avg:'?'}",
+                        "d.concealFocus&&!d.revealSolution",
+                        "unknownDimension",
+                    )
+                ),
+                "unknown_letter_formative_family": all(
+                    marker in html
+                    for marker in (
+                        "2026-08-02-formative-unknowns-v15",
+                        "unknownLetterModelHTML",
+                        "unknownLetterBridgeHTML",
+                        "unknownEquationMapHTML",
+                        "unknownLetterTutorialSteps",
+                        "if(p.unknownLetter)return unknownLetterTutorialSteps(p)",
+                        "letters=['n','p','k','m','q','r']",
+                        "Which equation uses ${letter} to represent the unknown number?",
+                        "what does ${letter} represent?",
+                        "Why is a letter useful in ${equation}?",
+                        "It holds the place of the unknown number.",
+                        "Do not calculate its value.",
+                        "Represent the unknown with the named letter, preserve the equation, then check.",
+                        "This learning objective is about representing the unknown, not calculating its value.",
+                        "It does not reveal the number.",
+                    )
+                ) and "Which letter can represent the unknown number?" not in html,
                 "narrated_am_pm_day_journey": all(
                     marker in html
                     for marker in (
@@ -753,6 +787,9 @@ def main() -> int:
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "finite unique answer choices and option-specific misconception diagnostics",
+            "computed solution flows concealed until check or guided remediation",
+            "unknown-letter tasks vary letter names and assess representation rather than solving",
+            "question-mark-to-letter bridge preserves operation and equality without disclosing a value",
             "concrete group-counting, equal-sharing, number-line and reciprocal-rule fraction division sequence",
             "required files",
             "self-contained app CSS and JavaScript",
