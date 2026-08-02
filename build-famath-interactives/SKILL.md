@@ -29,7 +29,7 @@ powershell -ExecutionPolicy Bypass -File "<skill-folder>\scripts\bootstrap_famat
 
 Add or replace objectives in the copied `_source/activities.json`, extend the shared template by mathematical family, update explicit completeness checks in `_source/validate.py`, then build.
 
-Use `-Build` only when reproducing the bundled Primary 1 and Primary 4 starter unchanged.
+Use `-Build` only when reproducing the bundled Primary 1, 4, 5 and 6 starter unchanged.
 
 ### Extend an existing collection
 
@@ -95,4 +95,3 @@ Then perform representative real-browser QA across every newly added family, inc
 ## Report completion
 
 Lead with the outcome. Give exact paths to the chronological catalogue, manifest, master template, packages, and validation report. State objective/folder/ZIP counts, browser-tested families, mobile result, xAPI result, and any remaining blocker. Do not call the work complete when generated folders, ZIPs, or source files disagree.
-

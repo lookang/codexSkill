@@ -780,5 +780,197 @@
     "objective": "1.2 reading and interpreting data from tables, line graphs and pie charts",
     "shortTitle": "Data Story Explorer",
     "kind": "p4_data_interpretation"
+  },
+  {
+    "id": "P5-WN-1.1", "grade": 5, "folder": "Primary5_01_WN_1.1_Reading_and_writing_numbers_up_to_10_million", "strand": "Number and Algebra", "subStrand": "Whole Numbers", "section": "Numbers up to 10 million", "objective": "1.1 reading and writing numbers in numerals and in words", "shortTitle": "Ten-Million Number Studio", "kind": "p5_number_words_10m"
+  },
+  {
+    "id": "P5-OPS-2.1", "grade": 5, "folder": "Primary5_02_OPS_2.1_Multiplying_and_dividing_by_powers_of_10_and_multiples", "strand": "Number and Algebra", "subStrand": "Whole Numbers", "section": "Four Operations", "objective": "2.1 multiplying and dividing by 10, 100, 1000 and their multiples without calculator", "shortTitle": "Place-Shift Operations Lab", "kind": "p5_power10_operations"
+  },
+  {
+    "id": "P5-OPS-2.2", "grade": 5, "folder": "Primary5_03_OPS_2.2_Order_of_operations_without_calculator", "strand": "Number and Algebra", "subStrand": "Whole Numbers", "section": "Four Operations", "objective": "2.2 order of operations without calculator", "shortTitle": "Operation Order Investigator", "kind": "p5_order_operations"
+  },
+  {
+    "id": "P5-OPS-2.3", "grade": 5, "folder": "Primary5_04_OPS_2.3_Use_of_brackets_without_calculator", "strand": "Number and Algebra", "subStrand": "Whole Numbers", "section": "Four Operations", "objective": "2.3 use of brackets without calculator", "shortTitle": "Bracket Priority Lab", "kind": "p5_brackets"
+  },
+  {
+    "id": "P5-FRAC-1.1", "grade": 5, "folder": "Primary5_05_FRAC_1.1_Whole_number_division_as_a_fraction", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Fraction and Division", "objective": "1.1 dividing a whole number by a whole number with quotient as a fraction", "shortTitle": "Share-to-Fraction Lab", "kind": "p5_division_as_fraction"
+  },
+  {
+    "id": "P5-FRAC-1.2", "grade": 5, "folder": "Primary5_06_FRAC_1.2_Expressing_fractions_as_decimals", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Fraction and Division", "objective": "1.2 expressing fractions as decimals", "shortTitle": "Fraction Decimal Bridge", "kind": "p5_fraction_decimal"
+  },
+  {
+    "id": "P5-FRAC-2.1", "grade": 5, "folder": "Primary5_07_FRAC_2.1_Adding_and_subtracting_mixed_numbers", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "2.1 adding and subtracting mixed numbers", "shortTitle": "Mixed-Number Operations Lab", "kind": "p5_mixed_add_sub"
+  },
+  {
+    "id": "P5-FRAC-2.2", "grade": 5, "folder": "Primary5_08_FRAC_2.2_Multiplying_a_fraction_and_a_whole_number", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "2.2 multiplying a proper or improper fraction and a whole number without calculator", "shortTitle": "Fraction Groups Multiplier", "kind": "p5_fraction_times_whole"
+  },
+  {
+    "id": "P5-FRAC-2.3", "grade": 5, "folder": "Primary5_09_FRAC_2.3_Multiplying_a_proper_fraction_by_a_fraction", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "2.3 multiplying a proper fraction and a proper or improper fraction without calculator", "shortTitle": "Fraction-of-a-Fraction Lab", "kind": "p5_proper_times_fraction"
+  },
+  {
+    "id": "P5-FRAC-2.4", "grade": 5, "folder": "Primary5_10_FRAC_2.4_Multiplying_two_improper_fractions", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "2.4 multiplying two improper fractions", "shortTitle": "Improper Fraction Product Lab", "kind": "p5_improper_product"
+  },
+  {
+    "id": "P5-FRAC-2.5", "grade": 5, "folder": "Primary5_11_FRAC_2.5_Multiplying_a_mixed_number_and_a_whole_number", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "2.5 multiplying a mixed number and a whole number", "shortTitle": "Mixed-Number Scaling Lab", "kind": "p5_mixed_times_whole"
+  },
+  {
+    "id": "P5-DEC-1.1", "grade": 5, "folder": "Primary5_12_DEC_1.1_Decimal_operations_by_powers_of_10_and_multiples", "strand": "Number and Algebra", "subStrand": "Decimals", "section": "Four Operations", "objective": "1.1 multiplying and dividing decimals up to 3 decimal places by 10, 100, 1000 and their multiples without calculator", "shortTitle": "Decimal Place-Shift Lab", "kind": "p5_decimal_power10"
+  },
+  {
+    "id": "P5-DEC-1.2", "grade": 5, "folder": "Primary5_13_DEC_1.2_Converting_metric_measurements_in_decimal_form", "strand": "Number and Algebra", "subStrand": "Decimals", "section": "Four Operations", "objective": "1.2 converting a measurement from a smaller unit to a larger unit in decimal form, and vice versa: kilometres and metres; metres and centimetres; kilograms and grams; litres and millilitres", "shortTitle": "Metric Conversion Bridge", "kind": "p5_metric_conversion"
+  },
+  {
+    "id": "P5-PCT-1.1", "grade": 5, "folder": "Primary5_14_PCT_1.1_Expressing_a_part_of_a_whole_as_percentage", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.1 expressing a part of a whole as a percentage", "shortTitle": "Hundred-Grid Percentage Lab", "kind": "p5_part_as_percent"
+  },
+  {
+    "id": "P5-PCT-1.2", "grade": 5, "folder": "Primary5_15_PCT_1.2_Use_of_percent_symbol", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.2 use of %", "shortTitle": "Percent Symbol Decoder", "kind": "p5_percent_symbol"
+  },
+  {
+    "id": "P5-PCT-1.3", "grade": 5, "folder": "Primary5_16_PCT_1.3_Finding_a_percentage_part_of_a_whole", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.3 finding a percentage part of a whole", "shortTitle": "Percentage Part Finder", "kind": "p5_percent_of_whole"
+  },
+  {
+    "id": "P5-PCT-1.4", "grade": 5, "folder": "Primary5_17_PCT_1.4_Discount_GST_and_annual_interest", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.4 finding discount, GST and annual interest", "shortTitle": "Everyday Percentage Lab", "kind": "p5_financial_percentage"
+  },
+  {
+    "id": "P5-RATE-1.1", "grade": 5, "folder": "Primary5_18_RATE_1.1_Rate_as_quantity_per_unit", "strand": "Number and Algebra", "subStrand": "Rate", "section": "Rate", "objective": "1.1 rate as the amount of a quantity per unit of another quantity", "shortTitle": "Per-Unit Rate Explorer", "kind": "p5_rate_concept"
+  },
+  {
+    "id": "P5-RATE-1.2", "grade": 5, "folder": "Primary5_19_RATE_1.2_Finding_rate_total_or_number_of_units", "strand": "Number and Algebra", "subStrand": "Rate", "section": "Rate", "objective": "1.2 finding rate, total amount or number of units given the other two quantities", "shortTitle": "Rate Triangle Solver", "kind": "p5_rate_solver"
+  },
+  {
+    "id": "P5-AREA-1.1", "grade": 5, "folder": "Primary5_20_AREA_1.1_Concepts_of_base_and_height_of_a_triangle", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area of Triangle", "objective": "1.1 concepts of base and height of a triangle", "shortTitle": "Triangle Base-Height Lab", "kind": "p5_triangle_base_height"
+  },
+  {
+    "id": "P5-AREA-1.2", "grade": 5, "folder": "Primary5_21_AREA_1.2_Area_of_triangle", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area of Triangle", "objective": "1.2 area of triangle", "shortTitle": "Triangle Area Transformer", "kind": "p5_triangle_area"
+  },
+  {
+    "id": "P5-AREA-1.3", "grade": 5, "folder": "Primary5_22_AREA_1.3_Area_of_composite_rectangles_squares_and_triangles", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area of Triangle", "objective": "1.3 finding the area of composite figures made up of rectangles, squares and triangles", "shortTitle": "Composite Area Decomposer", "kind": "p5_composite_area_triangles"
+  },
+  {
+    "id": "P5-VOL-2.1", "grade": 5, "folder": "Primary5_23_VOL_2.1_Building_solids_with_unit_cubes", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.1 building solids with unit cubes", "shortTitle": "Unit-Cube Builder", "kind": "p5_unit_cube_build"
+  },
+  {
+    "id": "P5-VOL-2.2", "grade": 5, "folder": "Primary5_24_VOL_2.2_Measuring_volume_in_cubic_units_cm3_and_m3", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.2 measuring volume in cubic units, cm³ and m³, excluding conversion between cm³ and m³", "shortTitle": "Cubic-Unit Measurement Lab", "kind": "p5_cubic_units"
+  },
+  {
+    "id": "P5-VOL-2.3", "grade": 5, "folder": "Primary5_25_VOL_2.3_Drawing_cubes_and_cuboids_on_isometric_grid", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.3 drawing cubes and cuboids on isometric grid", "shortTitle": "Isometric Solid Sketcher", "kind": "p5_isometric_drawing"
+  },
+  {
+    "id": "P5-VOL-2.4", "grade": 5, "folder": "Primary5_26_VOL_2.4_Volume_of_cube_and_cuboid", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.4 volume of a cube or cuboid", "shortTitle": "Cuboid Volume Lab", "kind": "p5_volume_formula"
+  },
+  {
+    "id": "P5-VOL-2.5", "grade": 5, "folder": "Primary5_27_VOL_2.5_Volume_of_liquid_in_a_rectangular_tank", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.5 finding the volume of liquid in a rectangular tank", "shortTitle": "Tank Volume Explorer", "kind": "p5_tank_volume"
+  },
+  {
+    "id": "P5-VOL-2.6", "grade": 5, "folder": "Primary5_28_VOL_2.6_Relationship_between_litres_millilitres_and_cm3", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.6 relationship between ℓ (or ml) and cm³", "shortTitle": "Liquid-Cubic Unit Bridge", "kind": "p5_liquid_cm3"
+  },
+  {
+    "id": "P5-GEO-ANG-1.1", "grade": 5, "folder": "Primary5_29_GEO_Angles_1.1_Angles_on_a_straight_line", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Angles", "objective": "1.1 angles on a straight line", "shortTitle": "Straight-Line Angle Lab", "kind": "p5_angles_straight_line"
+  },
+  {
+    "id": "P5-GEO-ANG-1.2", "grade": 5, "folder": "Primary5_30_GEO_Angles_1.2_Angles_at_a_point", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Angles", "objective": "1.2 angles at a point", "shortTitle": "Angles-at-a-Point Lab", "kind": "p5_angles_point"
+  },
+  {
+    "id": "P5-GEO-ANG-1.3", "grade": 5, "folder": "Primary5_31_GEO_Angles_1.3_Vertically_opposite_angles", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Angles", "objective": "1.3 vertically opposite angles", "shortTitle": "Opposite-Angle Explorer", "kind": "p5_vertical_angles"
+  },
+  {
+    "id": "P5-GEO-ANG-1.4", "grade": 5, "folder": "Primary5_32_GEO_Angles_1.4_Finding_unknown_angles", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Angles", "objective": "1.4 finding unknown angles", "shortTitle": "Unknown Angle Solver", "kind": "p5_unknown_angles"
+  },
+  {
+    "id": "P5-GEO-TRI-2.1", "grade": 5, "folder": "Primary5_33_GEO_Triangle_2.1_Properties_of_special_triangles", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Triangle", "objective": "2.1 properties of isosceles, equilateral and right-angled triangles", "shortTitle": "Special Triangle Classifier", "kind": "p5_triangle_properties"
+  },
+  {
+    "id": "P5-GEO-TRI-2.2", "grade": 5, "folder": "Primary5_34_GEO_Triangle_2.2_Angle_sum_of_a_triangle", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Triangle", "objective": "2.2 angle sum of a triangle", "shortTitle": "Triangle Angle-Sum Lab", "kind": "p5_triangle_angle_sum"
+  },
+  {
+    "id": "P5-GEO-TRI-2.3", "grade": 5, "folder": "Primary5_35_GEO_Triangle_2.3_Finding_unknown_angles_without_extra_lines", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Triangle", "objective": "2.3 finding unknown angles without additional construction of lines", "shortTitle": "Triangle Unknown-Angle Solver", "kind": "p5_triangle_unknown"
+  },
+  {
+    "id": "P5-GEO-QUAD-3.1", "grade": 5, "folder": "Primary5_36_GEO_Quadrilaterals_3.1_Properties_of_parallelogram_rhombus_and_trapezium", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Parallelogram, Rhombus and Trapezium", "objective": "3.1 properties of parallelogram, rhombus and trapezium", "shortTitle": "Quadrilateral Property Lab", "kind": "p5_quadrilateral_properties"
+  },
+  {
+    "id": "P5-GEO-QUAD-3.2", "grade": 5, "folder": "Primary5_37_GEO_Quadrilaterals_3.2_Finding_unknown_angles_without_extra_lines", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Parallelogram, Rhombus and Trapezium", "objective": "3.2 finding unknown angles without additional construction of lines", "shortTitle": "Quadrilateral Angle Solver", "kind": "p5_quadrilateral_angles"
+  },
+  {
+    "id": "P6-FRAC-1.1", "grade": 6, "folder": "Primary6_01_FRAC_1.1_Dividing_a_proper_fraction_by_a_whole_number", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "1.1 dividing a proper fraction by a whole number without calculator", "shortTitle": "Fraction Sharing Lab", "kind": "p6_fraction_div_whole"
+  },
+  {
+    "id": "P6-FRAC-1.2", "grade": 6, "folder": "Primary6_02_FRAC_1.2_Dividing_a_whole_number_or_fraction_by_a_fraction", "strand": "Number and Algebra", "subStrand": "Fractions", "section": "Four Operations", "objective": "1.2 dividing a whole number or proper fraction by a proper fraction without calculator", "shortTitle": "Fraction Quotient Lab", "kind": "p6_divide_by_fraction"
+  },
+  {
+    "id": "P6-PCT-1.1", "grade": 6, "folder": "Primary6_03_PCT_1.1_Finding_the_whole_from_part_and_percentage", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.1 finding the whole given a part and the percentage", "shortTitle": "Reverse Percentage Lab", "kind": "p6_find_whole_percent"
+  },
+  {
+    "id": "P6-PCT-1.2", "grade": 6, "folder": "Primary6_04_PCT_1.2_Percentage_increase_and_decrease", "strand": "Number and Algebra", "subStrand": "Percentage", "section": "Percentage", "objective": "1.2 finding percentage increase or decrease", "shortTitle": "Percentage Change Lab", "kind": "p6_percent_change"
+  },
+  {
+    "id": "P6-RATIO-1.1", "grade": 6, "folder": "Primary6_05_RATIO_1.1_Ratio_notation_representations_and_interpretation", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.1 notation, representations and interpretation of a:b and a:b:c, where a, b and c are whole numbers, excluding ratios involving fractions and decimals", "shortTitle": "Ratio Representation Lab", "kind": "p6_ratio_representation"
+  },
+  {
+    "id": "P6-RATIO-1.2", "grade": 6, "folder": "Primary6_06_RATIO_1.2_Equivalent_ratios", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.2 equivalent ratios", "shortTitle": "Equivalent Ratio Scaler", "kind": "p6_equivalent_ratios"
+  },
+  {
+    "id": "P6-RATIO-1.3", "grade": 6, "folder": "Primary6_07_RATIO_1.3_Dividing_a_quantity_in_a_given_ratio", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.3 dividing a quantity in a given ratio", "shortTitle": "Ratio Share Divider", "kind": "p6_divide_ratio"
+  },
+  {
+    "id": "P6-RATIO-1.4", "grade": 6, "folder": "Primary6_08_RATIO_1.4_Expressing_a_ratio_in_simplest_form", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.4 expressing a ratio in its simplest form", "shortTitle": "Ratio Simplifier", "kind": "p6_simplify_ratio"
+  },
+  {
+    "id": "P6-RATIO-1.5", "grade": 6, "folder": "Primary6_09_RATIO_1.5_Finding_ratio_of_two_or_three_quantities", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.5 finding the ratio of two or three given quantities", "shortTitle": "Quantity-to-Ratio Lab", "kind": "p6_find_ratio"
+  },
+  {
+    "id": "P6-RATIO-1.6", "grade": 6, "folder": "Primary6_10_RATIO_1.6_Missing_term_in_equivalent_ratios", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.6 finding the missing term in a pair of equivalent ratios", "shortTitle": "Missing Ratio Term Solver", "kind": "p6_ratio_missing"
+  },
+  {
+    "id": "P6-RATIO-1.7", "grade": 6, "folder": "Primary6_11_RATIO_1.7_Relationship_between_fraction_and_ratio", "strand": "Number and Algebra", "subStrand": "Ratio", "section": "Ratio", "objective": "1.7 relationship between fraction and ratio", "shortTitle": "Fraction-Ratio Bridge", "kind": "p6_fraction_ratio"
+  },
+  {
+    "id": "P6-ALG-1.1", "grade": 6, "folder": "Primary6_12_ALG_1.1_Letter_as_an_unknown_number", "strand": "Number and Algebra", "subStrand": "Algebra", "section": "Algebra", "objective": "1.1 using a letter to represent an unknown number", "shortTitle": "Unknown Letter Lab", "kind": "p6_letter_unknown"
+  },
+  {
+    "id": "P6-ALG-1.2", "grade": 6, "folder": "Primary6_13_ALG_1.2_Simple_algebraic_expression_notation", "strand": "Number and Algebra", "subStrand": "Algebra", "section": "Algebra", "objective": "1.2 notation, representations and interpretation of simple algebraic expressions such as a ± 3, a × 3 or 3a, and a ÷ 3 or a/3", "shortTitle": "Algebra Notation Decoder", "kind": "p6_expression_notation"
+  },
+  {
+    "id": "P6-ALG-1.3", "grade": 6, "folder": "Primary6_14_ALG_1.3_Simplifying_simple_linear_expressions", "strand": "Number and Algebra", "subStrand": "Algebra", "section": "Algebra", "objective": "1.3 simplifying simple linear expressions excluding brackets", "shortTitle": "Like-Term Combiner", "kind": "p6_simplify_linear"
+  },
+  {
+    "id": "P6-ALG-1.4", "grade": 6, "folder": "Primary6_15_ALG_1.4_Evaluating_expressions_by_substitution", "strand": "Number and Algebra", "subStrand": "Algebra", "section": "Algebra", "objective": "1.4 evaluating simple linear expressions by substitution", "shortTitle": "Substitution Machine", "kind": "p6_substitution"
+  },
+  {
+    "id": "P6-ALG-1.5", "grade": 6, "folder": "Primary6_16_ALG_1.5_Simple_linear_equations", "strand": "Number and Algebra", "subStrand": "Algebra", "section": "Algebra", "objective": "1.5 simple linear equations involving whole number coefficient only", "shortTitle": "Balance Equation Solver", "kind": "p6_linear_equations"
+  },
+  {
+    "id": "P6-CIRCLE-1.1", "grade": 6, "folder": "Primary6_17_CIRCLE_1.1_Area_and_circumference_of_circle", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area and Circumference of Circle", "objective": "1.1 area and circumference of circle", "shortTitle": "Circle Measure Lab", "kind": "p6_circle_area_circumference"
+  },
+  {
+    "id": "P6-CIRCLE-1.2", "grade": 6, "folder": "Primary6_18_CIRCLE_1.2_Area_and_perimeter_of_semicircle_and_quarter_circle", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area and Circumference of Circle", "objective": "1.2 finding the area and perimeter of semicircle and quarter circle", "shortTitle": "Circle-Part Measure Lab", "kind": "p6_circle_parts"
+  },
+  {
+    "id": "P6-CIRCLE-1.3", "grade": 6, "folder": "Primary6_19_CIRCLE_1.3_Composite_area_and_perimeter_with_circle_parts", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Area and Circumference of Circle", "objective": "1.3 finding the area and perimeter of composite figures made up of square, rectangle, triangle, semicircle and quarter circle", "shortTitle": "Composite Circle Figure Lab", "kind": "p6_circle_composite"
+  },
+  {
+    "id": "P6-VOL-2.1", "grade": 6, "folder": "Primary6_20_VOL_2.1_Finding_missing_cuboid_dimension_from_volume", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.1 finding one dimension of a cuboid given its volume and the other dimensions", "shortTitle": "Missing Cuboid Dimension Lab", "kind": "p6_cuboid_missing_dimension"
+  },
+  {
+    "id": "P6-VOL-2.2", "grade": 6, "folder": "Primary6_21_VOL_2.2_Finding_cube_edge_from_volume", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.2 finding the length of one edge of a cube given its volume", "shortTitle": "Cube Edge Investigator", "kind": "p6_cube_edge"
+  },
+  {
+    "id": "P6-VOL-2.3", "grade": 6, "folder": "Primary6_22_VOL_2.3_Finding_cuboid_height_from_volume_and_base_area", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.3 finding the height of a cuboid given its volume and base area", "shortTitle": "Cuboid Height Solver", "kind": "p6_cuboid_height"
+  },
+  {
+    "id": "P6-VOL-2.4", "grade": 6, "folder": "Primary6_23_VOL_2.4_Finding_face_area_from_volume_and_dimension", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.4 finding the area of a face of a cuboid given its volume and one dimension", "shortTitle": "Cuboid Face-Area Solver", "kind": "p6_face_area"
+  },
+  {
+    "id": "P6-VOL-2.5", "grade": 6, "folder": "Primary6_24_VOL_2.5_Use_of_square_root_and_cube_root", "strand": "Measurement and Geometry", "subStrand": "Area and Volume", "section": "Volume of Cube and Cuboid", "objective": "2.5 use of √ and ∛", "shortTitle": "Root Dimension Lab", "kind": "p6_roots"
+  },
+  {
+    "id": "P6-GEO-1.1", "grade": 6, "folder": "Primary6_25_GEO_1.1_Unknown_angles_in_composite_special_quadrilaterals", "strand": "Measurement and Geometry", "subStrand": "Geometry", "section": "Special Quadrilaterals", "objective": "1.1 finding unknown angles, without additional construction of lines, in composite geometric figures involving square, rectangle, triangle, parallelogram, rhombus and trapezium", "shortTitle": "Composite Angle Detective", "kind": "p6_composite_angles"
+  },
+  {
+    "id": "P6-STAT-1.1", "grade": 6, "folder": "Primary6_26_STAT_1.1_Average_as_total_divided_by_number_of_data", "strand": "Statistics", "subStrand": "Data Analysis", "section": "Average of a Set of Data", "objective": "1.1 average as total value ÷ number of data", "shortTitle": "Average Balance Lab", "kind": "p6_average_concept"
+  },
+  {
+    "id": "P6-STAT-1.2", "grade": 6, "folder": "Primary6_27_STAT_1.2_Relationship_between_average_total_and_number_of_data", "strand": "Statistics", "subStrand": "Data Analysis", "section": "Average of a Set of Data", "objective": "1.2 relationship between average, total value and number of data", "shortTitle": "Average Relationship Solver", "kind": "p6_average_relationship"
   }
 ]

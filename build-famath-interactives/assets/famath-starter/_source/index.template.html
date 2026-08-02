@@ -858,9 +858,25 @@
     .p4-data-table{width:min(650px,100%);margin:auto;border-collapse:collapse;background:#fff}.p4-data-table th,.p4-data-table td{padding:10px;border:2px solid #9bb6d2;text-align:center}.p4-data-table th{background:#e9f8f8}.p4-data-table .unknown{background:#fff0bb;color:var(--coral);font-size:24px;font-weight:900}
     .p4-worked{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;gap:9px}.p4-worked-step{min-width:150px;max-width:240px;display:grid;align-content:center;gap:5px;padding:12px;border:2px solid #9fc5d7;border-radius:13px;background:#fff;text-align:center;font-weight:800;animation:p4-rise .55s both}.p4-worked-step strong{color:#087c82;font-size:20px}.p4-worked-step:nth-child(2){animation-delay:.22s}.p4-worked-step:nth-child(3){animation-delay:.44s}.p4-worked-step:nth-child(4){animation-delay:.66s}
     .p4-answer-bridge{display:grid;gap:12px;text-align:center}.p4-answer-bridge .equation{font-size:clamp(27px,5vw,48px)}
+    /* Upper-primary concrete-pictorial-abstract model families */
+    .upper-scene{display:grid;gap:12px;padding:12px;border:2px solid #b8d1e3;border-radius:16px;background:#f7fcfd;overflow:hidden}
+    .upper-place{display:grid;grid-template-columns:repeat(var(--places),minmax(68px,1fr));border:3px solid var(--navy);border-radius:14px;overflow:auto;background:#fff}
+    .upper-place span{display:grid;place-items:center;min-height:78px;padding:6px;border-right:2px solid #acc2dc;text-align:center}.upper-place span:last-child{border-right:0}.upper-place small{color:#4f6786;font-weight:800}.upper-place b{font-size:clamp(24px,3vw,38px)}
+    .upper-expression{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:clamp(25px,4vw,42px);font-weight:900}.upper-expression .token{padding:10px 14px;border:3px solid #8fb6d4;border-radius:12px;background:#fff}.upper-expression .priority{border-color:var(--coral);background:#fff0c7;animation:upper-pulse 1.2s ease-in-out infinite alternate}.upper-expression .result{border-color:var(--teal);background:#ddfbf5}
+    .upper-operation-flow{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px}.upper-operation-flow span{padding:8px 12px;border-radius:999px;background:#e8f8f8;border:2px solid var(--teal);font-weight:900}.upper-operation-flow b{color:var(--coral);font-size:25px}
+    .upper-hundred-grid{display:grid;grid-template-columns:repeat(10,20px);justify-content:center;gap:2px}.upper-hundred-grid i{width:20px;height:20px;border:1px solid #7399b9;background:#fff}.upper-hundred-grid i.on{background:#20b7ad}.upper-hundred-grid i.focus{background:#ffcf32}
+    .upper-fraction-pair{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px}.upper-fraction-card{display:grid;gap:8px;min-width:170px;padding:10px;border:2px solid #9fc4d7;border-radius:14px;background:#fff;text-align:center}.upper-fraction-card strong{font-size:25px}.upper-times{font-size:34px;font-weight:900;color:var(--coral)}
+    .upper-rate-table{width:min(650px,100%);margin:auto;border-collapse:collapse;background:#fff}.upper-rate-table th,.upper-rate-table td{padding:10px;border:2px solid #92b3cf;text-align:center}.upper-rate-table th{background:#e8f8f8}.upper-rate-table .focus{background:#fff0bb;color:#b33a3a;font-weight:900}
+    .upper-bar-model{display:grid;gap:8px}.upper-bar-row{display:flex;align-items:stretch;justify-content:center;gap:3px}.upper-bar-row i{display:grid;place-items:center;min-width:45px;min-height:42px;padding:4px;border:2px solid #087f82;background:#8de0d8;font-style:normal;font-weight:900}.upper-bar-row.alt i{border-color:#b16800;background:#ffdf6b}.upper-bar-label{text-align:center;font-weight:900}
+    .upper-geo-svg{width:100%;max-height:310px;border:2px solid #b8d1e3;border-radius:14px;background:#fff}.upper-geo-svg text{font:800 16px Arial;fill:var(--navy)}.upper-geo-svg .main{fill:#9be3dc;stroke:#082653;stroke-width:5}.upper-geo-svg .accent{fill:none;stroke:#ef5f5b;stroke-width:6}.upper-geo-svg .guide{fill:none;stroke:#079a9a;stroke-width:4;stroke-dasharray:8 6}.upper-geo-svg .liquid{fill:#5aa7e8;opacity:.72}
+    .upper-cubes{display:grid;grid-template-columns:repeat(var(--cols),34px);justify-content:center;gap:4px}.upper-cubes i{width:34px;height:34px;border:2px solid #07517f;background:linear-gradient(135deg,#bdeee9 0 55%,#68cfc5 56%);box-shadow:4px -4px 0 #d9f8f5;font-style:normal}.upper-cubes i.layer2{filter:hue-rotate(25deg)}
+    .upper-angle-equation{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:clamp(22px,3vw,34px);font-weight:900}.upper-angle-equation span{padding:8px 12px;border:2px solid #9bb9d2;border-radius:10px;background:#fff}.upper-angle-equation .unknown{border-color:var(--coral);background:#fff0bb}
+    .upper-balance{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:12px}.upper-pan{min-height:92px;display:flex;align-items:end;justify-content:center;flex-wrap:wrap;gap:7px;padding:12px;border-bottom:7px solid var(--navy);background:#fff}.upper-pan i{display:grid;place-items:center;width:46px;height:46px;border:3px solid #087f82;border-radius:10px;background:#a9e8e1;font-style:normal;font-weight:900}.upper-pan i.unknown{background:#fff0bb;border-color:var(--coral)}.upper-balance strong{font-size:35px}
+    .upper-average-bars{min-height:190px;display:flex;align-items:flex-end;justify-content:center;gap:16px;border-bottom:5px solid var(--navy);padding-top:16px}.upper-average-bars span{display:grid;align-content:end;justify-items:center;gap:5px;font-weight:900}.upper-average-bars i{width:54px;height:calc(var(--v) * 10px);max-height:150px;border:3px solid #087f82;border-bottom:0;border-radius:8px 8px 0 0;background:linear-gradient(#55cbc3,#079a9a)}.upper-average-line{border-top:5px dashed var(--coral);text-align:center;color:#b23c3c;font-weight:900}
+    @keyframes upper-pulse{to{transform:translateY(-4px);box-shadow:0 7px 0 #ef5f5b55}}
     @keyframes p4-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}@keyframes p4-fold{to{transform:perspective(120px) rotateY(55deg)}}
     @media (max-width:760px) {
-      .p4-place-grid{grid-template-columns:repeat(5,minmax(54px,1fr));overflow:auto}.p4-place-cell{min-height:66px;padding:4px}.p4-factor-board{grid-template-columns:1fr}.p4-model{font-size:15px}.p4-sym-grid{grid-template-columns:repeat(var(--size),30px)}.p4-sym-grid i{width:30px;height:30px}.p4-net{grid-template-columns:repeat(5,39px);grid-template-rows:repeat(4,39px)}
+      .p4-place-grid{grid-template-columns:repeat(5,minmax(54px,1fr));overflow:auto}.p4-place-cell{min-height:66px;padding:4px}.p4-factor-board{grid-template-columns:1fr}.p4-model{font-size:15px}.p4-sym-grid{grid-template-columns:repeat(var(--size),30px)}.p4-sym-grid i{width:30px;height:30px}.p4-net{grid-template-columns:repeat(5,39px);grid-template-rows:repeat(4,39px)}.upper-place{grid-template-columns:repeat(var(--places),minmax(56px,1fr))}.upper-place span{min-height:66px}.upper-balance{grid-template-columns:1fr}.upper-balance>strong{justify-self:center}.upper-hundred-grid{grid-template-columns:repeat(10,17px)}.upper-hundred-grid i{width:17px;height:17px}
       .topbar { grid-template-columns:minmax(0,1fr) auto; }
       .utility { grid-column:1 / -1; justify-content:flex-end; display:none; }
       main { padding:8px; }
@@ -1327,8 +1343,72 @@
       };
       return `<svg class="p4-geo-svg p4-solid-svg" viewBox="0 0 360 230" role="img" aria-label="A 2D representation of a 3D solid"><g fill="#b3e8e2" stroke="#082653" stroke-width="5" stroke-linejoin="round">${shapes[kind]||shapes.cube}</g></svg>`;
     }
+    function upperNumberWords(n){
+      n=Math.round(n);if(n<1000000)return p4NumberWords(n);const millions=Math.floor(n/1000000),rest=n%1000000;return `${p4NumberWords(millions)} million${rest?' '+p4NumberWords(rest):''}`;
+    }
+    function upperFraction(n,d){const g=p4Gcd(n,d);return {n:n/g,d:d/g,text:`${n/g}/${d/g}`,value:(n/g)/(d/g)};}
+    function upperMixed(n,d){const f=upperFraction(n,d),w=Math.floor(f.n/f.d),r=f.n%f.d;return !r?String(w):w?`${w} ${r}/${f.d}`:`${r}/${f.d}`;}
+    function upperSceneHTML(d={}){
+      const scene=d.scene||'expression';
+      if(scene==='place'){
+        const heads=['ten millions','millions','hundred thousands','ten thousands','thousands','hundreds','tens','ones'],digits=String(Math.round(d.number||0)).padStart(8,'0').split('');
+        return `<div class="upper-scene"><div class="upper-place" style="--places:8">${digits.map((x,i)=>`<span><small>${heads[i]}</small><b>${x}</b></span>`).join('')}</div><div class="p4-caption">Read from the highest non-zero place. Every move right divides the place value by 10.</div></div>`;
+      }
+      if(scene==='expression'){
+        const tokens=d.tokens||[d.expression||''],priority=d.priority||[];
+        return `<div class="upper-scene"><div class="upper-expression">${tokens.map((t,i)=>`<span class="token ${priority.includes(i)?'priority':''}">${esc(t)}</span>`).join('')}</div><div class="upper-operation-flow">${(d.flow||[]).map((x,i)=>`${i?'<b>→</b>':''}<span>${esc(x)}</span>`).join('')}</div><div class="p4-caption">${esc(d.caption||'Calculate the highlighted operation first, then update the expression.')}</div></div>`;
+      }
+      if(scene==='fraction'){
+        const parts=d.parts||[{n:d.n||1,d:d.d||2,label:d.label}];
+        return `<div class="upper-scene"><div class="upper-fraction-pair">${parts.map((f,i)=>`${i?`<span class="upper-times">${esc(d.operator||'×')}</span>`:''}<div class="upper-fraction-card">${p4FractionBarsHTML(f.n,f.d,f.label||`${f.n}/${f.d}`)}</div>`).join('')}</div><div class="p4-caption">${esc(d.caption||'The shaded equal parts show the fraction before the symbolic operation.')}</div></div>`;
+      }
+      if(scene==='percent'){
+        const on=clamp(Math.round(d.percent||0),0,100);
+        return `<div class="upper-scene"><div class="upper-hundred-grid" aria-label="${on} of 100 squares shaded">${Array.from({length:100},(_,i)=>`<i class="${i<on?'on':''} ${i===on-1?'focus':''}"></i>`).join('')}</div><div class="upper-operation-flow"><span>${esc(d.part??on)} part</span><b>of</b><span>${esc(d.whole??100)} whole</span><b>→</b><span>${on}%</span></div><div class="p4-caption">${esc(d.caption||'Percent means per hundred. Scale the whole to 100 equal parts.')}</div></div>`;
+      }
+      if(scene==='rate'||scene==='metric'){
+        const rows=d.rows||[['Quantity',d.quantity||12],['Units',d.units||3],['Per unit',d.rate||4]];
+        return `<div class="upper-scene"><table class="upper-rate-table"><thead><tr>${(d.heads||['Meaning','Value']).map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map((r,i)=>`<tr>${r.map((x,j)=>`<td class="${d.focus===i?'focus':''}">${esc(x)}</td>`).join('')}</tr>`).join('')}</tbody></table><div class="p4-caption">${esc(d.caption||'Keep the unit attached to every value and scale both quantities consistently.')}</div></div>`;
+      }
+      if(scene==='ratio'){
+        const values=d.values||[2,3],labels=d.labels||values.map((_,i)=>String.fromCharCode(65+i));
+        return `<div class="upper-scene"><div class="upper-bar-model">${values.map((v,i)=>`<div><div class="upper-bar-label">${esc(labels[i])}: ${v} unit${v===1?'':'s'}</div><div class="upper-bar-row ${i%2?'alt':''}">${Array.from({length:v},(_,j)=>`<i>${j+1}</i>`).join('')}</div></div>`).join('')}</div><div class="p4-caption">${esc(d.caption||'Equal-sized bar units make multiplicative comparison visible.')}</div></div>`;
+      }
+      if(scene==='triangle'){
+        const b=d.base||8,h=d.height||5,area=b*h/2;
+        return `<div class="upper-scene"><svg class="upper-geo-svg" viewBox="0 0 440 260" role="img" aria-label="Triangle with base ${b} and perpendicular height ${h}"><path class="main" d="M70 210 L370 210 L245 45 Z"/><path class="guide" d="M245 45 V210"/><path class="accent" d="M245 190 H265 V210"/><text x="205" y="242">base = ${b} cm</text><text x="255" y="120">height = ${h} cm</text>${d.showArea?`<text x="150" y="155">½ × ${b} × ${h} = ${area} cm²</text>`:''}</svg><div class="p4-caption">${esc(d.caption||'The height is the perpendicular distance from a chosen base to the opposite vertex.')}</div></div>`;
+      }
+      if(scene==='volume'){
+        const l=d.length||4,w=d.width||3,h=d.height||2,count=l*w*h;
+        return `<div class="upper-scene"><svg class="upper-geo-svg" viewBox="0 0 460 260" role="img" aria-label="Cuboid ${l} by ${w} by ${h}"><path class="main" d="M85 85 L300 55 L385 110 L170 145 Z M85 85 V205 L170 245 V145 M170 245 L385 215 V110"/><path class="guide" d="M85 205 L300 175 L385 215 M300 55 V175"/><text x="225" y="242">length ${l}</text><text x="350" y="235">width ${w}</text><text x="95" y="155">height ${h}</text>${d.liquid?'<path class="liquid" d="M90 150 L300 125 L380 165 L170 198 L90 170 Z"/>':''}</svg><div class="upper-operation-flow"><span>${l} per row</span><b>×</b><span>${w} rows</span><b>×</b><span>${h} layers</span><b>→</b><span>${count} cubic units</span></div><div class="p4-caption">${esc(d.caption||'Volume counts equal unit cubes in every row, layer and height.')}</div></div>`;
+      }
+      if(scene==='cubes'){
+        const count=d.count||12,cols=d.cols||4;
+        return `<div class="upper-scene"><div class="upper-cubes" style="--cols:${cols}">${Array.from({length:count},(_,i)=>`<i class="${i>=cols*Math.ceil(count/cols)/2?'layer2':''}"></i>`).join('')}</div><div class="p4-caption">${esc(d.caption||'Count cubes in one layer, then multiply by the number of equal layers.')}</div></div>`;
+      }
+      if(scene==='angle'||scene==='quadrilateral'){
+        const a=d.a||65,b=d.b||115,total=d.total||180,unknown=d.unknown||total-a;
+        return `<div class="upper-scene"><svg class="upper-geo-svg" viewBox="0 0 440 260" role="img" aria-label="Related angles"><path class="main" d="M55 190 H385"/><path class="guide" d="M220 190 L300 45 M220 190 L145 55"/><path class="accent" d="M165 190 A55 55 0 0 1 195 140 M245 142 A55 55 0 0 1 276 190"/><text x="150" y="155">${a}°</text><text x="270" y="155">${d.showUnknown===false?b:'x'}°</text><text x="150" y="235">${esc(d.rule||`${total}° total`)}</text></svg><div class="upper-angle-equation"><span>${a}°</span><b>+</b><span class="unknown">${d.showUnknown===false?b:'x'}°</span><b>=</b><span>${total}°</span></div><div class="p4-caption">${esc(d.caption||'Name the angle relationship first; then write one equation for the complete angle.')}</div></div>`;
+      }
+      if(scene==='algebra'){
+        const left=d.left||['x',3],right=d.right||[11];
+        const pan=x=>`<div class="upper-pan">${x.map(v=>`<i class="${v==='x'?'unknown':''}">${esc(v)}</i>`).join('')}</div>`;
+        return `<div class="upper-scene"><div class="upper-balance">${pan(left)}<strong>=</strong>${pan(right)}</div><div class="upper-operation-flow">${(d.flow||[]).map((x,i)=>`${i?'<b>→</b>':''}<span>${esc(x)}</span>`).join('')}</div><div class="p4-caption">${esc(d.caption||'Keep the balance equal by applying the same operation to both sides.')}</div></div>`;
+      }
+      if(scene==='circle'){
+        const r=d.radius||7,part=d.part||'whole';
+        const path=part==='semi'?'M80 190 A120 120 0 0 1 320 190 Z':part==='quarter'?'M90 195 L90 55 A140 140 0 0 1 230 195 Z':'M200 35 A120 120 0 1 1 199.9 35';
+        return `<div class="upper-scene"><svg class="upper-geo-svg" viewBox="0 0 400 250" role="img" aria-label="${esc(part)} circle radius ${r}"><path class="main" d="${path}"/><path class="accent" d="M200 125 H320"/><text x="248" y="116">r = ${r} cm</text><text x="135" y="230">${esc(d.label||part+' circle')}</text></svg><div class="p4-caption">${esc(d.caption||'Area covers the curved region; perimeter includes every curved and straight boundary segment.')}</div></div>`;
+      }
+      if(scene==='average'){
+        const values=d.values||[4,8,6,10],avg=values.reduce((a,b)=>a+b,0)/values.length;
+        return `<div class="upper-scene"><div class="upper-average-bars">${values.map(v=>`<span><b>${v}</b><i style="--v:${v}"></i></span>`).join('')}</div><div class="upper-average-line">Equal-share level = ${avg}</div><div class="p4-caption">${esc(d.caption||'Move excess above the average line to fill shortages below it; the total stays unchanged.')}</div></div>`;
+      }
+      return `<div class="upper-scene"><div class="upper-expression"><span class="token">${esc(d.label||'Mathematical model')}</span></div></div>`;
+    }
     function p4ModelHTML(p){
       const d=p.p4||{},title=d.title?`<div class="p4-model-title">${esc(d.title)}</div>`:'';
+      if(d.model==='upper')return `<div class="p4-model">${title}${upperSceneHTML(d)}</div>`;
       if(d.model==='place')return `<div class="p4-model">${title}${p4PlaceGridHTML(d.number,d.focus,false)}<div class="p4-caption">Each step left is 10 times the value.</div></div>`;
       if(d.model==='decimal')return `<div class="p4-model">${title}${p4PlaceGridHTML(d.number,d.focus,true)}<div class="p4-caption">The decimal point fixes every digit in its place.</div></div>`;
       if(d.model==='order'){
@@ -1519,10 +1599,172 @@
       return p4Base({type:'choice',prompt:CONFIG.objective,p4:{model:'place',number:12345,title:'Primary 4 visual model'},answer:'Ready',options:['Ready'],worked:['Read the objective','Build a model','Choose a strategy','Check the result']});
     }
 
+    // ---------- Primary 5 and Primary 6 shared upper-primary generators ----------
+    function upperBase(data){return p4Base({instruction:'Represent the quantities, explain the relationship, then calculate and check.',...data});}
+    function upperOpts(answer,values=[]){return p4Options(answer,values.filter(v=>String(v)!==String(answer)));}
+    function makePrimary5Problem(kind,q){
+      if(kind==='p5_number_words_10m'){
+        const number=q===0?7050406:rand(100000,9999999),word=upperNumberWords(number),askWords=q%2===0,answer=askWords?word:number;
+        return upperBase({type:'choice',prompt:askWords?`Which number word names ${number.toLocaleString('en-SG')}?`:`Which numeral means “${word}”?`,p4:{model:'upper',scene:'place',number,title:'Read the place-value periods'},answer,options:askWords?upperOpts(answer,[upperNumberWords(number+1000),upperNumberWords(number+100000),upperNumberWords(number-10)]):upperOpts(answer,[number+1000,number+100000,number-10]),worked:['Separate millions, thousands and ones periods','Read each three-digit period','Keep zero placeholders','Match the complete numeral and words'],bridge:`${number.toLocaleString('en-SG')} = ${word}`,hint:'Read the numeral in groups of three digits from the right.',misconception:'A zero may be silent in words, but it still holds its place in the numeral.'});
+      }
+      if(kind==='p5_power10_operations'){
+        const factor=pick([10,100,1000]),mult=q%2===0,base=rand(12,900),a=mult?base:base*factor,answer=mult?base*factor:base,op=mult?'×':'÷';
+        return upperBase({type:'choice',prompt:`Calculate ${a.toLocaleString('en-SG')} ${op} ${factor.toLocaleString('en-SG')} without a calculator.`,p4:{model:'upper',scene:'expression',tokens:[a,op,factor],priority:[1],flow:[`${factor}=10${factor===10?'':factor===100?' × 10':' × 10 × 10'}`,'shift place values',answer],caption:`Every digit becomes ${factor.toLocaleString('en-SG')} times as valuable under multiplication and one-${factor} as valuable under division.`},answer,options:upperOpts(answer,[answer*10,Math.max(1,answer/10),answer+(mult?factor:-factor)]),worked:['Express the factor as powers of 10','Track each digit, not the decimal point','Shift every place together','Estimate the answer size'],bridge:`${a} ${op} ${factor} = ${answer}`,hint:'Use place value: multiplying by 10 makes each digit ten times as valuable.',misconception:'Zeros are not merely attached or removed; every digit changes place value.'});
+      }
+      if(kind==='p5_order_operations'||kind==='p5_brackets'){
+        const a=rand(8,24),b=rand(2,9),c=rand(2,7),brackets=kind==='p5_brackets',answer=brackets?(a+b)*c:a+b*c,tokens=brackets?['(',a,'+',b,')','×',c]:[a,'+',b,'×',c],priority=brackets?[0,1,2,3,4]:[3];
+        return upperBase({type:'choice',prompt:`Evaluate ${brackets?`(${a} + ${b}) × ${c}`:`${a} + ${b} × ${c}`} without a calculator.`,p4:{model:'upper',scene:'expression',tokens,priority,flow:brackets?[`${a}+${b}=${a+b}`,`${a+b}×${c}=${answer}`]:[`${b}×${c}=${b*c}`,`${a}+${b*c}=${answer}`],caption:brackets?'Brackets create the first calculation group.':'Multiplication and division are completed before addition and subtraction.'},answer,options:upperOpts(answer,[(a+b)*c,a*b+c,answer+c]),worked:[brackets?'Locate the brackets':'Locate multiplication or division',`Calculate the priority operation`,'Rewrite the shorter expression','Complete the remaining operation'],bridge:`${brackets?`(${a}+${b})×${c}`:`${a}+${b}×${c}`} = ${answer}`,hint:brackets?'Calculate inside the brackets first.':'Do multiplication or division before addition or subtraction.',misconception:'Reading strictly left to right can change the value; operation priority controls the grouping.'});
+      }
+      if(kind==='p5_division_as_fraction'){
+        const dividend=rand(2,11),divisor=rand(dividend+1,14),f=upperFraction(dividend,divisor),answer=f.text;
+        return upperBase({type:'choice',prompt:`Express ${dividend} ÷ ${divisor} as a fraction in simplest form.`,p4:{model:'upper',scene:'fraction',parts:[{n:dividend,d:divisor,label:`${dividend} wholes shared among ${divisor}`}],caption:'Division and fraction notation describe the same sharing: dividend ÷ divisor = dividend/divisor.'},answer,options:upperOpts(answer,[`${divisor}/${dividend}`,`${dividend}/${divisor+1}`,`${dividend+1}/${divisor}`]),worked:['Treat the dividend as the total shared','The divisor tells the number of equal groups','Write dividend over divisor','Simplify by a common factor'],bridge:`${dividend} ÷ ${divisor} = ${answer}`,hint:'The dividend becomes the numerator and the divisor becomes the denominator.',misconception:'Reversing numerator and denominator changes how much each group receives.'});
+      }
+      if(kind==='p5_fraction_decimal'){
+        const den=pick([2,4,5,8,10,20,25]),num=rand(1,den-1),f=upperFraction(num,den),answer=Number(f.value.toFixed(3));
+        return upperBase({type:'choice',prompt:`Express ${f.text} as a decimal.`,p4:{model:'upper',scene:'fraction',parts:[{n:f.n,d:f.d,label:f.text}],caption:'Rename the fraction in tenths, hundredths or thousandths, or divide numerator by denominator.'},answer,options:upperOpts(answer,[Number((answer*10).toFixed(3)),Number((answer+.1).toFixed(3)),Number((1-answer).toFixed(3))]),worked:['Find an equivalent denominator of 10, 100 or 1000','Scale numerator by the same factor','Place the numerator in the matching decimal place','Check that the value is between 0 and 1'],bridge:`${f.text} = ${answer}`,hint:'Try to rename the denominator as 10, 100 or 1000.',misconception:'Multiplying only the denominator changes the fraction; scale numerator and denominator equally.'});
+      }
+      if(kind==='p5_mixed_add_sub'){
+        const d=pick([4,5,6,8]),w1=rand(1,4),w2=rand(1,3),n1=rand(1,d-1),n2=rand(1,d-1),add=q%2===0,total=add?(w1*d+n1)+(w2*d+n2):(w1+w2+2)*d+n1-(w2*d+n2),left=add?`${w1} ${n1}/${d}`:`${w1+w2+2} ${n1}/${d}`,right=`${w2} ${n2}/${d}`,answer=upperMixed(total,d),op=add?'+':'−';
+        return upperBase({type:'choice',prompt:`Calculate ${left} ${op} ${right}.`,p4:{model:'upper',scene:'fraction',parts:[{n:add?w1*d+n1:(w1+w2+2)*d+n1,d,label:left},{n:w2*d+n2,d,label:right}],operator:op,caption:'Keep whole units visible, then rename one whole when the fractional parts require regrouping.'},answer,options:upperOpts(answer,[upperMixed(Math.abs(total+d),d),upperMixed(Math.max(1,total-d),d),`${Math.floor(total/d)} ${(n1+n2)%d}/${d}`]),worked:['Represent both mixed numbers','Operate on equal-sized fractional parts','Regroup one whole when needed','Simplify the final mixed number'],bridge:`${left} ${op} ${right} = ${answer}`,hint:'Work with equal denominators and watch whether the fractional part crosses one whole.',misconception:'A whole can be renamed as denominator/denominator without changing its value.'});
+      }
+      if(['p5_fraction_times_whole','p5_proper_times_fraction','p5_improper_product','p5_mixed_times_whole'].includes(kind)){
+        let n1,d1,n2,d2,left,right;
+        if(kind==='p5_fraction_times_whole'){d1=pick([3,4,5,6,8]);n1=rand(1,d1+2);n2=rand(2,7);d2=1;left=`${n1}/${d1}`;right=String(n2);}
+        else if(kind==='p5_proper_times_fraction'){d1=pick([3,4,5,6]);n1=rand(1,d1-1);d2=pick([3,4,5,6]);n2=rand(1,d2+2);left=`${n1}/${d1}`;right=`${n2}/${d2}`;}
+        else if(kind==='p5_improper_product'){d1=pick([3,4,5]);n1=rand(d1+1,d1*2);d2=pick([3,4,5]);n2=rand(d2+1,d2*2);left=`${n1}/${d1}`;right=`${n2}/${d2}`;}
+        else {d1=pick([3,4,5]);const w=rand(1,3),r=rand(1,d1-1);n1=w*d1+r;n2=rand(2,5);d2=1;left=`${w} ${r}/${d1}`;right=String(n2);}
+        const f=upperFraction(n1*n2,d1*d2),answer=upperMixed(f.n,f.d);
+        return upperBase({type:'choice',prompt:`Calculate ${left} × ${right}.`,p4:{model:'upper',scene:'fraction',parts:[{n:n1,d:d1,label:left},{n:n2,d:d2,label:right}],operator:'×',caption:'Multiplication scales the shaded amount. Cancel common factors before multiplying when possible.'},answer,options:upperOpts(answer,[upperMixed(n1+n2,d1+d2),upperMixed(n1*n2,d1),upperMixed(n1+n2,d1*d2)]),worked:['Rename any mixed number as an improper fraction','Look for common factors to cancel','Multiply numerators and denominators','Simplify and rename the answer'],bridge:`${left} × ${right} = ${answer}`,hint:'A whole number can be written over 1. Cancel common factors before multiplying.',misconception:'Denominators are multiplied for products; they are not made equal as in addition.'});
+      }
+      if(kind==='p5_decimal_power10'){
+        const factor=pick([10,100,1000]),mult=q%2===0,base=Number((rand(12,9999)/1000).toFixed(3)),a=mult?base:Number((base*factor).toFixed(3)),answer=mult?Number((base*factor).toFixed(3)):base,op=mult?'×':'÷';
+        return upperBase({type:'choice',prompt:`Calculate ${a} ${op} ${factor} without a calculator.`,p4:{model:'upper',scene:'expression',tokens:[a,op,factor],priority:[1],flow:['name every decimal place',`${op}${factor}`,answer],caption:'Digits shift place value together; the decimal point remains the boundary between ones and tenths.'},answer,options:upperOpts(answer,[answer*10,answer/10,Number((answer+.01).toFixed(3))]),worked:['Name the value of each digit','Count powers of ten in the factor','Shift every digit by that many places','Estimate the magnitude'],bridge:`${a} ${op} ${factor} = ${answer}`,hint:'Track the digits across a place-value chart instead of moving the decimal point mechanically.',misconception:'Multiplication by 100 changes every digit by two places, not merely the final digit.'});
+      }
+      if(kind==='p5_metric_conversion'){
+        const systems=[['km','m',1000],['m','cm',100],['kg','g',1000],['ℓ','ml',1000]],s=pick(systems),toSmall=q%2===0,large=Number((rand(12,95)/10).toFixed(1)),small=large*s[2],answer=toSmall?small:large,prompt=toSmall?`${large} ${s[0]} = ? ${s[1]}`:`${small} ${s[1]} = ? ${s[0]}`;
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'metric',heads:['Unit','Amount','Relationship'],rows:[[s[0],large,`1 ${s[0]} = ${s[2]} ${s[1]}`],[s[1],small,`÷ or × ${s[2]}`]],focus:toSmall?1:0,caption:'A smaller unit needs more units for the same physical quantity; a larger unit needs fewer.'},answer,options:upperOpts(answer,[answer*10,answer/10,answer+s[2]]),worked:['Identify the larger and smaller unit','Write the unit relationship','Choose multiplication toward smaller units or division toward larger','Attach the target unit'],bridge:prompt.replace('?',answer),hint:'Ask whether the target unit is smaller or larger before choosing × or ÷.',misconception:'The physical quantity stays equal even though the numerical value changes with the unit size.'});
+      }
+      if(['p5_part_as_percent','p5_percent_symbol','p5_percent_of_whole','p5_financial_percentage'].includes(kind)){
+        let percent=pick([5,10,20,25,30,40,50,75]),whole=pick([40,80,100,120,200,400]),part=whole*percent/100,answer,prompt,flow;
+        if(kind==='p5_part_as_percent'){prompt=`${part} out of ${whole} is what percentage?`;answer=`${percent}%`;flow:[part,whole,percent];}
+        else if(kind==='p5_percent_symbol'){prompt=`Which notation means ${percent} per hundred?`;answer=`${percent}%`;flow:[percent,100,percent];}
+        else if(kind==='p5_percent_of_whole'){prompt=`Find ${percent}% of ${whole}.`;answer=part;flow:[percent,whole,part];}
+        else {const mode=q%3,price=pick([80,120,200,400]),rate=mode===0?pick([10,20,25]):mode===1?9:pick([2,3,4,5]),amount=price*rate/100;prompt=mode===0?`Find the ${rate}% discount on $${price}.`:mode===1?`Find ${rate}% GST on $${price}.`:`Find ${rate}% annual interest on $${price} for 1 year.`;answer=amount;percent=rate;whole=price;part=amount;flow:[rate,price,amount];}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'percent',percent,part,whole,caption:'Represent the whole as 100 equal parts, then identify or scale the required percentage.'},answer,options:upperOpts(answer,[typeof answer==='string'?`${Math.max(0,percent-10)}%`:whole-part,percent,part+whole/10]),worked:['Identify the whole as 100%','Find the value of 1% or a helpful benchmark','Scale to the required percent','Check that the part is reasonable'],bridge:`${percent}% of ${whole} = ${part}`,hint:'Find 10%, 5%, 1% or 25% as a helpful benchmark.',misconception:'The percentage rate and the percentage amount are different quantities; keep their units visible.'});
+      }
+      if(kind==='p5_rate_concept'||kind==='p5_rate_solver'){
+        const units=rand(3,8),rate=rand(4,15),total=units*rate,mode=kind==='p5_rate_concept'?0:q%3,answer=mode===0?rate:mode===1?total:units,prompt=mode===0?`${total} km are travelled in ${units} h. Find the rate in km/h.`:mode===1?`A machine makes ${rate} parts per minute for ${units} minutes. Find the total.`:`${total} pages are read at ${rate} pages per minute. Find the number of minutes.`;
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'rate',heads:['Quantity','Value'],rows:[['total amount',total],['number of units',units],['amount per unit',rate]],focus:mode===0?2:mode===1?0:1,caption:'Rate is the amount for one unit: total = rate × number of units.'},answer,options:upperOpts(answer,[answer+rate,Math.max(1,answer-rate),total+units]),worked:['Name the two different quantities','Circle the “per one” unit','Use total = rate × units','Check the compound unit'],bridge:`${total} = ${rate} × ${units}`,hint:'Cover the unknown in total = rate × units to see whether to multiply or divide.',misconception:'A rate has two units, such as km/h; it is not merely a total amount.'});
+      }
+      if(['p5_triangle_base_height','p5_triangle_area','p5_composite_area_triangles'].includes(kind)){
+        const b=pick([6,8,10,12,14]),h=pick([4,5,6,8]),area=b*h/2;let prompt,answer;
+        if(kind==='p5_triangle_base_height'){prompt='Which segment is the height for the highlighted base?';answer='the perpendicular segment';}
+        else if(kind==='p5_triangle_area'){prompt=`Find the area of a triangle with base ${b} cm and perpendicular height ${h} cm.`;answer=area;}
+        else {const rect=b*h,answerValue=rect+area;prompt=`A composite figure contains a ${b} cm by ${h} cm rectangle and a triangle with the same base and height. Find its area.`;answer=answerValue;}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'triangle',base:b,height:h,showArea:kind!=='p5_triangle_base_height',caption:kind==='p5_composite_area_triangles'?'Decompose the figure into a rectangle and a triangle; shared edges do not change area.':'A perpendicular height may lie inside or outside the triangle depending on the chosen base.'},answer,options:typeof answer==='number'?upperOpts(answer,[b*h,area/2,area+b]):upperOpts(answer,['a sloping side','the longest side','any line from the base']),worked:['Choose and label a base','Draw the perpendicular height','Use ½ × base × height',kind==='p5_composite_area_triangles'?'Add non-overlapping component areas':'Include square units'],bridge:kind==='p5_triangle_base_height'?'height ⟂ base':`½ × ${b} × ${h} = ${area} cm²`,hint:'Look for the right-angle mark between the base line and the height.',misconception:'A sloping side is not automatically the height; height must be perpendicular to the chosen base.'});
+      }
+      if(['p5_unit_cube_build','p5_cubic_units','p5_isometric_drawing','p5_volume_formula','p5_tank_volume','p5_liquid_cm3'].includes(kind)){
+        const l=rand(3,7),w=rand(2,5),h=rand(2,4),volume=l*w*h;let prompt,answer,scene='volume';
+        if(kind==='p5_unit_cube_build'){prompt=`How many unit cubes build a ${l} by ${w} by ${h} cuboid?`;answer=volume;scene='cubes';}
+        else if(kind==='p5_cubic_units'){prompt=`Which unit correctly measures a cuboid volume of ${volume}?`;answer=q%2?'m³':'cm³';}
+        else if(kind==='p5_isometric_drawing'){prompt=`Which sketch represents a ${l} by ${w} by ${h} cuboid on an isometric grid?`;answer=`${l} by ${w} by ${h}`;}
+        else if(kind==='p5_volume_formula'){prompt=`Find the volume of a ${l} cm by ${w} cm by ${h} cm cuboid.`;answer=volume;}
+        else if(kind==='p5_tank_volume'){prompt=`A rectangular tank is ${l} cm by ${w} cm and filled to ${h} cm. Find the liquid volume.`;answer=volume;}
+        else {const cm3=pick([250,500,750,1000,1500,2000]),asMl=q%2===0;prompt=asMl?`${cm3} cm³ equals how many ml?`:`${cm3} ml equals how many cm³?`;answer=cm3;}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene,length:l,width:w,height:h,count:volume,cols:l,liquid:kind==='p5_tank_volume',caption:kind==='p5_liquid_cm3'?'One millilitre occupies exactly one cubic centimetre; 1000 ml = 1 ℓ.':'Count one base layer, then multiply by the number of equal layers.'},answer,options:typeof answer==='number'?upperOpts(answer,[l*w+h,l+w+h,volume*2]):upperOpts(answer,['cm²','m²','ml']),worked:['Count cubes in one row','Multiply by rows for one layer','Multiply by the number of layers','State a cubic unit'],bridge:kind==='p5_liquid_cm3'?'1 ml = 1 cm³':`${l} × ${w} × ${h} = ${volume}`,hint:'Volume = base area × height. Cubic units measure three dimensions.',misconception:'Area counts squares in one layer; volume counts cubes through all layers.'});
+      }
+      if(['p5_angles_straight_line','p5_angles_point','p5_vertical_angles','p5_unknown_angles'].includes(kind)){
+        const a=pick([35,45,55,65,70,80]),total=kind==='p5_angles_point'?360:180,answer=kind==='p5_vertical_angles'?a:total-a,prompt=kind==='p5_angles_straight_line'?`Two adjacent angles on a straight line include ${a}°. Find the other angle.`:kind==='p5_angles_point'?`Angles at a point include angles totalling ${a}°. Find the remaining angle.`:kind==='p5_vertical_angles'?`One angle formed by intersecting lines is ${a}°. Find its vertically opposite angle.`:`Use the shown relationship to find x when one angle is ${a}°.`;
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'angle',a,total,unknown:answer,rule:kind==='p5_angles_point'?'angles at a point = 360°':kind==='p5_vertical_angles'?'vertically opposite angles are equal':'angles on a straight line = 180°',caption:'Identify the complete angle relationship before subtracting or matching.'},answer,options:upperOpts(answer,[180-a,360-a,a+10]),worked:['Name the angle relationship','Write its total or equality','Substitute the known angle','Solve and check the size'],bridge:kind==='p5_vertical_angles'?`x = ${a}°`:`${total}° − ${a}° = ${answer}°`,hint:'Use 180° for a straight line, 360° at a point, and equality for vertical opposites.',misconception:'Angles that merely look opposite or adjacent do not share the same rule; name the relationship first.'});
+      }
+      if(['p5_triangle_properties','p5_triangle_angle_sum','p5_triangle_unknown','p5_quadrilateral_properties','p5_quadrilateral_angles'].includes(kind)){
+        if(kind==='p5_triangle_properties'){
+          const tri=pick(['isosceles','equilateral','right-angled']),answer=tri==='isosceles'?'two equal sides and two equal angles':tri==='equilateral'?'three equal sides and three 60° angles':'one 90° angle';
+          return upperBase({type:'choice',prompt:`Which property identifies a ${tri} triangle?`,p4:{model:'upper',scene:'triangle',base:8,height:6,caption:'Side marks and angle marks carry exact properties; orientation does not change the triangle type.'},answer,options:upperOpts(answer,['four equal sides','one pair of parallel sides','angles total 360°']),worked:['Inspect equal-side marks','Inspect right-angle marks','Match the defining property','Ignore orientation'],bridge:`${tri}: ${answer}`,hint:'Use exact side and angle properties, not how the triangle is turned.',misconception:'A rotated right-angled triangle still contains one 90° angle.'});
+        }
+        if(kind==='p5_quadrilateral_properties'){
+          const shape=pick(['parallelogram','rhombus','trapezium']),answer=shape==='parallelogram'?'two pairs of opposite parallel sides':shape==='rhombus'?'four equal sides and opposite sides parallel':'one pair of parallel sides';
+          return upperBase({type:'choice',prompt:`Which property identifies a ${shape}?`,p4:{model:'upper',scene:'quadrilateral',a:70,total:180,showUnknown:false,caption:'Parallel arrows, equal-side ticks and angle marks describe properties more reliably than appearance.'},answer,options:upperOpts(answer,['four right angles only','no parallel sides','three equal sides']),worked:['Count pairs of parallel sides','Inspect equal-side marks','Compare opposite angles','Match the defining property'],bridge:`${shape}: ${answer}`,hint:'Look for arrow marks that show parallel sides.',misconception:'A slanted shape may still have parallel or equal sides; appearance is not a measurement.'});
+        }
+        const a=pick([40,50,60,70]),b=pick([45,55,65]),total=kind==='p5_quadrilateral_angles'?360:180,answer=kind==='p5_quadrilateral_angles'?total-a-b-90:total-a-b;
+        return upperBase({type:'choice',prompt:kind==='p5_triangle_angle_sum'?`What is the sum of the interior angles of every triangle?`:`Find the unknown angle when the known angles are ${a}°, ${b}°${kind==='p5_quadrilateral_angles'?' and 90°':''}.`,p4:{model:'upper',scene:kind==='p5_quadrilateral_angles'?'quadrilateral':'angle',a:a+b+(kind==='p5_quadrilateral_angles'?90:0),total,rule:`interior angle sum = ${total}°`,caption:'Treat the complete figure as one angle-sum relationship; no extra construction line is needed.'},answer:kind==='p5_triangle_angle_sum'?180:answer,options:upperOpts(kind==='p5_triangle_angle_sum'?180:answer,[90,360,Math.abs(180-answer)]),worked:['Identify the complete polygon','Recall its angle sum','Add all known interior angles','Subtract from the total'],bridge:`x = ${answer}°`,hint:`The interior angle sum is ${total}° for this figure.`,misconception:'Only interior angles belonging to the same polygon are included in its angle sum.'});
+      }
+      return upperBase({type:'choice',prompt:CONFIG.objective,p4:{model:'upper',scene:'expression',tokens:['Represent','Reason','Check'],priority:[1]},answer:'Ready',options:['Ready'],worked:['Represent the quantities','Identify the relationship','Calculate','Check']});
+    }
+    function makePrimary6Problem(kind,q){
+      if(kind==='p6_fraction_div_whole'||kind==='p6_divide_by_fraction'){
+        let left,right,n,d,answer;
+        if(kind==='p6_fraction_div_whole'){
+          d=pick([3,4,5,6,8]),n=rand(1,d-1);const whole=rand(2,5),f=upperFraction(n,d*whole);left=`${n}/${d}`;right=String(whole);answer=f.text;
+        } else {
+          const wholeFirst=q%2===0,d1=pick([2,3,4,5]),n1=wholeFirst?rand(2,5):rand(1,d1-1),den1=wholeFirst?1:d1,d2=pick([2,3,4,5]),n2=rand(1,d2-1),f=upperFraction(n1*d2,den1*n2);left=wholeFirst?String(n1):`${n1}/${den1}`;right=`${n2}/${d2}`;answer=upperMixed(f.n,f.d);n=n1;d=den1;
+        }
+        return upperBase({type:'choice',prompt:`Calculate ${left} ÷ ${right}.`,p4:{model:'upper',scene:'fraction',parts:[{n:n,d:d,label:left},{n:Number(right.split('/')[0]),d:Number(right.split('/')[1]||1),label:right}],operator:'÷',caption:'Ask how many divisor-sized groups fit in the dividend. Equal partitioning explains the reciprocal rule.'},answer,options:upperOpts(answer,[`${n}/${d*Number(right)}`,upperMixed(n*Number(right),d),`${d}/${n}`]),worked:['Model the dividend as equal parts','Mark groups the size of the divisor','Rewrite division as multiplication by the reciprocal','Simplify and check by multiplication'],bridge:`${left} ÷ ${right} = ${answer}`,hint:'Use “how many groups of the divisor fit?” before applying keep-change-flip.',misconception:'Taking a reciprocal is a consequence of measuring equal groups, not a rule without meaning.'});
+      }
+      if(kind==='p6_find_whole_percent'||kind==='p6_percent_change'){
+        if(kind==='p6_find_whole_percent'){
+          const percent=pick([20,25,40,50,60,75]),whole=pick([80,120,160,200,240]),part=whole*percent/100,answer=whole;
+          return upperBase({type:'choice',prompt:`${part} is ${percent}% of a whole. Find the whole.`,p4:{model:'upper',scene:'percent',percent,part,whole,caption:'The known part occupies the known percentage of a 100% bar. Scale from the part back to all 100%.'},answer,options:upperOpts(answer,[part*100/Math.max(1,100-percent),whole-part,part+percent]),worked:[`Label ${percent}% as ${part}`,'Find 1% or a useful unit percent','Scale to 100%','Check by finding the given percent of the answer'],bridge:`${part} ÷ ${percent} × 100 = ${whole}`,hint:'Find the value of 1%, then multiply by 100.',misconception:'The given part is not the amount left over; it represents the stated percentage of the whole.'});
+        }
+        const original=pick([80,100,120,160,200]),rate=pick([10,20,25]),increase=q%2===0,change=original*rate/100,newValue=increase?original+change:original-change,answer=`${rate}% ${increase?'increase':'decrease'}`;
+        return upperBase({type:'choice',prompt:`A value changes from ${original} to ${newValue}. Find the percentage ${increase?'increase':'decrease'}.`,p4:{model:'upper',scene:'percent',percent:rate,part:change,whole:original,caption:'Percentage change compares the change with the original value, not the new value.'},answer,options:upperOpts(answer,[`${change}% ${increase?'increase':'decrease'}`,`${rate}% ${increase?'decrease':'increase'}`,`${100-rate}% ${increase?'increase':'decrease'}`]),worked:['Find the numerical change','Keep the original as the reference whole','Calculate change ÷ original × 100%','State increase or decrease'],bridge:`${change} ÷ ${original} × 100% = ${rate}%`,hint:'Use the original value as the denominator.',misconception:'Percentage change is based on the original value, even when the new value is smaller.'});
+      }
+      if(String(kind).startsWith('p6_ratio_')||['p6_equivalent_ratios','p6_divide_ratio','p6_simplify_ratio','p6_find_ratio','p6_fraction_ratio'].includes(kind)){
+        const a=rand(2,5),b=rand(2,6),c=kind==='p6_ratio_representation'||kind==='p6_find_ratio'?rand(1,4):null,g=p4Gcd(a,b),simpleA=a/g,simpleB=b/g,k=rand(2,5);let prompt,answer,values=[a,b],labels=['A','B'];
+        if(kind==='p6_ratio_representation'){if(q%2&&c){values=[a,b,c];labels=['red','blue','green'];answer=`${a}:${b}:${c}`;prompt=`Write the ratio red : blue : green shown by the bars.`;}else{answer=`${a}:${b}`;prompt='Write the ratio A : B shown by the bars.';}}
+        else if(kind==='p6_equivalent_ratios'){prompt=`Which ratio is equivalent to ${a}:${b}?`;answer=`${a*k}:${b*k}`;}
+        else if(kind==='p6_divide_ratio'){const total=(a+b)*k;prompt=`Divide ${total} in the ratio ${a}:${b}. Give the two shares.`;answer=`${a*k} and ${b*k}`;}
+        else if(kind==='p6_simplify_ratio'){prompt=`Express ${a*k}:${b*k} in simplest form.`;answer=`${simpleA}:${simpleB}`;values=[a*k,b*k];}
+        else if(kind==='p6_find_ratio'){const unit=rand(2,6);values=c?[a*unit,b*unit,c*unit]:[a*unit,b*unit];labels=c?['A','B','C']:['A','B'];prompt=`Find the ratio ${labels.join(' : ')} from the quantities shown.`;answer=values.map(v=>v/unit).join(':');}
+        else if(kind==='p6_ratio_missing'){prompt=`Find x: ${a}:${b} = ${a*k}:x.`;answer=b*k;}
+        else {prompt=`In the ratio ${a}:${b}, what fraction of the total is the first part?`;answer=upperFraction(a,a+b).text;}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'ratio',values,labels,caption:'Ratio compares equal-sized units. The fraction of the total uses all ratio units as the denominator.'},answer,options:upperOpts(answer,[`${b}:${a}`,`${a+b}:${b}`,kind==='p6_ratio_missing'?a*k:`${a*k}:${b}`]),worked:['Represent each quantity with equal-sized units','Preserve the order named in the question','Scale or divide every term by the same factor','Check the comparison, not only the total'],bridge:kind==='p6_fraction_ratio'?`${a}:${b} → ${a}/${a+b}`:String(answer),hint:'Use equal bar units and operate on every ratio term with the same scale factor.',misconception:'A ratio compares parts, while a fraction of the whole uses the sum of all parts as its denominator.'});
+      }
+      if(['p6_letter_unknown','p6_expression_notation','p6_simplify_linear','p6_substitution','p6_linear_equations'].includes(kind)){
+        const x=rand(2,9),coef=rand(2,6),constant=rand(2,10);let prompt,answer,left=['x',constant],right=[x+constant],flow=[];
+        if(kind==='p6_letter_unknown'){prompt=`A number plus ${constant} equals ${x+constant}. Which letter can represent the unknown number?`;answer='x';flow=[`x + ${constant} = ${x+constant}`,`x = ${x}`];}
+        else if(kind==='p6_expression_notation'){const form=q%3;prompt=form===0?`Which expression means “${constant} more than a”?`:form===1?`Which expression means “${coef} times a”?`:`Which expression means “a divided by ${coef}”?`;answer=form===0?`a + ${constant}`:form===1?`${coef}a`:`a/${coef}`;left=['a',form===0?constant:coef];right=[answer];flow=[prompt.replace('Which expression means ','').replace('?',''),answer];}
+        else if(kind==='p6_simplify_linear'){const c2=rand(2,5);prompt=`Simplify ${coef}a + ${c2}a + ${constant}.`;answer=`${coef+c2}a + ${constant}`;left=Array(coef).fill('a').concat(Array(c2).fill('a')).concat([constant]);right=[`${coef+c2}a`,constant];flow=[`${coef}a + ${c2}a`,`${coef+c2}a`,answer];}
+        else if(kind==='p6_substitution'){prompt=`Evaluate ${coef}a + ${constant} when a = ${x}.`;answer=coef*x+constant;left=Array(coef).fill('a').concat([constant]);right=[answer];flow=[`a = ${x}`,`${coef} × ${x} + ${constant}`,answer];}
+        else {const total=coef*x+constant;prompt=`Solve ${coef}x + ${constant} = ${total}.`;answer=x;left=Array(coef).fill('x').concat([constant]);right=[total];flow=[`subtract ${constant} from both sides`,`${coef}x = ${coef*x}`,`divide both sides by ${coef}`,`x = ${x}`];}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'algebra',left,right,flow,caption:'Letters stand for numbers. Equal algebra tiles can combine; unlike terms keep different meanings.'},answer,options:upperOpts(answer,typeof answer==='number'?[answer+coef,Math.max(0,answer-coef),coef+constant]:[`a + ${coef+constant}`,`${coef+constant}a`,`a × ${constant}`]),worked:['Translate every symbol into a quantity or operation','Group only like terms or substitute the given value','Keep an equation balanced on both sides','Check by replacing the letter'],bridge:String(answer),hint:'Use the balance or tile model to preserve the meaning of each term.',misconception:'A term with a letter and a constant are unlike terms; they cannot be combined by adding their coefficients.'});
+      }
+      if(['p6_circle_area_circumference','p6_circle_parts','p6_circle_composite'].includes(kind)){
+        const r=pick([7,14,21]),pi=22/7,wholeArea=pi*r*r,circ=2*pi*r;let prompt,answer,part='whole';
+        if(kind==='p6_circle_area_circumference'){const areaMode=q%2===0;prompt=`Find the ${areaMode?'area':'circumference'} of a circle of radius ${r} cm using π = 22/7.`;answer=areaMode?wholeArea:circ;}
+        else if(kind==='p6_circle_parts'){const semi=q%2===0;part=semi?'semi':'quarter';const area=wholeArea/(semi?2:4),perimeter=(circ/(semi?2:4))+(semi?2*r:2*r);prompt=`Find the ${q%3?'area':'perimeter'} of a ${semi?'semicircle':'quarter circle'} of radius ${r} cm.`;answer=q%3?area:perimeter;}
+        else {part='semi';const rect=2*r*r,semi=wholeArea/2;prompt=`A composite figure is a ${2*r} cm by ${r} cm rectangle joined to a semicircle of radius ${r} cm. Find its area.`;answer=rect+semi;}
+        answer=Number(answer.toFixed(2));
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'circle',radius:r,part,label:part==='whole'?'radius, diameter and curved boundary':part==='semi'?'semicircle plus its diameter':'quarter circle plus two radii',caption:'Separate curved boundaries from straight radii or diameters. Decompose composite regions without overlap.'},answer,options:upperOpts(answer,[Number((wholeArea/2).toFixed(2)),Number(circ.toFixed(2)),Number((answer+2*r).toFixed(2))]),worked:['Label radius and diameter','Choose area or boundary length','Use the required fraction of the full circle','Add any straight edges or composite regions'],bridge:`Answer = ${answer} cm${prompt.includes('area')?'²':''}`,hint:'Area uses πr². Circumference uses 2πr. A part-circle perimeter also includes straight edges.',misconception:'The perimeter of a semicircle is not half the circumference alone; include its diameter.'});
+      }
+      if(['p6_cuboid_missing_dimension','p6_cube_edge','p6_cuboid_height','p6_face_area','p6_roots'].includes(kind)){
+        const l=rand(3,8),w=rand(2,6),h=rand(2,5),volume=l*w*h;let prompt,answer,flow;
+        if(kind==='p6_cuboid_missing_dimension'){prompt=`A cuboid has volume ${volume} cm³, length ${l} cm and width ${w} cm. Find its height.`;answer=h;flow=[`base area ${l}×${w}=${l*w}`,`${volume}÷${l*w}=${h}`];}
+        else if(kind==='p6_cube_edge'){const edge=rand(3,8),v=edge**3;prompt=`A cube has volume ${v} cm³. Find one edge.`;answer=edge;flow=[`edge³ = ${v}`,`∛${v} = ${edge}`];}
+        else if(kind==='p6_cuboid_height'){const base=l*w;prompt=`A cuboid has volume ${volume} cm³ and base area ${base} cm². Find its height.`;answer=h;flow=[`volume = base area × height`,`${volume}÷${base}=${h}`];}
+        else if(kind==='p6_face_area'){prompt=`A cuboid has volume ${volume} cm³ and length ${l} cm. Find the area of the face perpendicular to its length.`;answer=w*h;flow=[`volume = face area × length`,`${volume}÷${l}=${w*h}`];}
+        else {const square=rand(4,12),cube=rand(3,8),squareMode=q%2===0;prompt=squareMode?`Find √${square**2}.`:`Find ∛${cube**3}.`;answer=squareMode?square:cube;flow=[squareMode?`${square}×${square}=${square**2}`:`${cube}×${cube}×${cube}=${cube**3}`,String(answer)];}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'volume',length:l,width:w,height:h,caption:'Use volume = base area × perpendicular height. Square root recovers a square side; cube root recovers a cube edge.'},answer,options:upperOpts(answer,[answer+1,Math.max(1,answer-1),l*w]),worked:['Identify the known product and missing factor','Group the known face or base area','Divide volume by the known factor','Use √ or ∛ only for equal dimensions'],bridge:flow.join(' → '),hint:'A missing dimension is a missing factor in length × width × height.',misconception:'Square root applies to a square area; cube root applies to a cube volume with three equal edges.'});
+      }
+      if(kind==='p6_composite_angles'){
+        const a=pick([40,50,60,70]),b=pick([45,55,65]),answer=360-90-a-b;
+        return upperBase({type:'choice',prompt:`A composite quadrilateral has interior angles 90°, ${a}° and ${b}°. Find the fourth angle.`,p4:{model:'upper',scene:'quadrilateral',a:90+a+b,total:360,rule:'quadrilateral interior angles = 360°',caption:'Use marked properties of squares, rectangles, parallelograms, rhombi and trapezia before applying angle sums.'},answer,options:upperOpts(answer,[180-a,360-a-b,90]),worked:['Identify every special-shape property','Mark right, equal or supplementary angles','Write one complete angle-sum equation','Solve without adding an unproved construction line'],bridge:`x = 360° − 90° − ${a}° − ${b}° = ${answer}°`,hint:'Use only the given figure and known quadrilateral properties.',misconception:'An extra line can introduce unjustified assumptions; first exhaust the properties already shown.'});
+      }
+      if(kind==='p6_average_concept'||kind==='p6_average_relationship'){
+        const values=[rand(3,7),rand(6,10),rand(8,12),rand(10,14)],total=values.reduce((a,b)=>a+b,0),adjust=total%values.length;values[values.length-1]-=adjust;const fixedTotal=values.reduce((a,b)=>a+b,0),avg=fixedTotal/values.length;let prompt,answer;
+        if(kind==='p6_average_concept'){prompt=`Find the average of ${values.join(', ')}.`;answer=avg;}
+        else {const mode=q%2;prompt=mode?`The average of ${values.length} values is ${avg}. Find their total.`:`A total of ${fixedTotal} is shared with average ${avg}. Find the number of data values.`;answer=mode?fixedTotal:values.length;}
+        return upperBase({type:'choice',prompt,p4:{model:'upper',scene:'average',values,caption:'Average is the equal-share level: redistribute without changing the total.'},answer,options:upperOpts(answer,[avg+1,Math.max(1,avg-1),fixedTotal-values.length]),worked:['Add all data values','Count the number of data values','Use average = total ÷ number','Reverse with total = average × number when needed'],bridge:`${fixedTotal} ÷ ${values.length} = ${avg}`,hint:'Imagine leveling all bars while keeping their combined total unchanged.',misconception:'The average is not necessarily one of the original data values; it is the equal-share value.'});
+      }
+      return upperBase({type:'choice',prompt:CONFIG.objective,p4:{model:'upper',scene:'expression',tokens:['Represent','Reason','Check'],priority:[1]},answer:'Ready',options:['Ready'],worked:['Represent the quantities','Identify the relationship','Calculate','Check']});
+    }
+
     // ---------- Objective-specific problem generation ----------
     function makeProblem(kind,q){
       const guided=q<2;
       if(String(kind).startsWith('p4_'))return makePrimary4Problem(kind,q);
+      if(String(kind).startsWith('p5_'))return makePrimary5Problem(kind,q);
+      if(String(kind).startsWith('p6_'))return makePrimary6Problem(kind,q);
       if(kind==='count_objects'){
         const limits=[6,10,20,40,70,100], count=rand(q?2:1,limits[q]);
         return {type:'choice', prompt:`How many ${count===1?'counter is':'counters are'} in the set?`, instruction:guided?'Touch each counter once as you count.':'Count efficiently. Look for groups of ten.', visual:'objects', count, answer:count, options:numericOptions(count,0,100), hint:count>10?'Circle groups of ten in your mind, then count the ones.':'Point to each counter and say one number.', misconception:'The count must match each object one-to-one. Check that none was skipped or counted twice.'};
@@ -2904,7 +3146,7 @@
       ];
     }
     function tutorialSteps(p){
-      if(String(CONFIG.kind).startsWith('p4_'))return withLearnerAttempt(p,p4TutorialSteps(p));
+      if(/^p[456]_/.test(String(CONFIG.kind)))return withLearnerAttempt(p,p4TutorialSteps(p));
       if(isPlaceValueOperation(p))return withLearnerAttempt(p,htoTutorialSteps(p));
       if(CONFIG.kind==='mental_calculation')return withLearnerAttempt(p,mentalCalculationTutorialSteps(p));
       if(CONFIG.kind==='length_measure')return withLearnerAttempt(p,lengthMeasureTutorialSteps(p));

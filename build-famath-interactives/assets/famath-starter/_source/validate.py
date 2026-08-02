@@ -48,7 +48,7 @@ def extract_inline_app_js(html: str) -> str:
 
 def main() -> int:
     activities = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    expected_counts = {1: 32, 4: 42}
+    expected_counts = {1: 32, 4: 42, 5: 37, 6: 27}
     grade_activities: dict[int, list[dict[str, object]]] = defaultdict(list)
     for activity in activities:
         match = re.match(r"^P(\d+)-", activity["id"])
@@ -155,6 +155,32 @@ def main() -> int:
                         "p4-sym-grid",
                         "p4-data-table",
                         "startsWith('p4_')",
+                    )
+                ),
+                "upper_primary_visual_system": all(
+                    marker in html
+                    for marker in (
+                        "makePrimary5Problem",
+                        "makePrimary6Problem",
+                        "upperSceneHTML",
+                        "upperNumberWords",
+                        "upperFraction",
+                        "upperMixed",
+                        "startsWith('p5_')",
+                        "startsWith('p6_')",
+                        "scene==='fraction'",
+                        "scene==='percent'",
+                        "scene==='ratio'",
+                        "scene==='triangle'",
+                        "scene==='volume'",
+                        "scene==='angle'",
+                        "scene==='algebra'",
+                        "scene==='circle'",
+                        "scene==='average'",
+                        "upper-hundred-grid",
+                        "upper-bar-model",
+                        "upper-balance",
+                        "upper-average-bars",
                     )
                 ),
                 "narrated_am_pm_day_journey": all(
@@ -615,9 +641,13 @@ def main() -> int:
             "syllabus-order folder prefixes and legacy-name migration",
             "HTML and Markdown syllabus-order catalogues",
             "42 Primary 4 objectives in official pages 37-40 sequence",
+            "37 Primary 5 objectives in official pages 41-42 sequence",
+            "27 Primary 6 objectives in official pages 43-44 sequence",
             "Primary 4 place-value, number-line, factor, algorithm, fraction and decimal models",
             "Primary 4 area, angle, symmetry, net and data representations",
             "misconception-first Primary 4 visual tutorial and notation bridge",
+            "upper-primary expression, fraction, decimal, percentage and rate models",
+            "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "required files",
             "self-contained app CSS and JavaScript",
             "offline local references",

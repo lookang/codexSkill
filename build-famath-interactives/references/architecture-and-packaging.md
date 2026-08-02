@@ -13,7 +13,7 @@ Generated activity folders and `_packages/*.zip` are products of those files. Re
 
 ## Portable starter
 
-The skill asset `assets/famath-starter/` contains the proven Primary 1 and Primary 4 canonical generator plus the xAPI sample ZIP. Copy it with `scripts/bootstrap_famath.ps1`; do not edit the asset in place during a user project.
+The skill asset `assets/famath-starter/` contains the proven Primary 1, 4, 5 and 6 canonical generator plus the xAPI sample ZIP. Copy it with `scripts/bootstrap_famath.ps1`; do not edit the asset in place during a user project.
 
 For a new grade:
 
@@ -66,4 +66,3 @@ Prefer one coherent state object that includes:
 - concise evidence useful to a teacher.
 
 Preserve existing working keys and wrapper behavior when extending a project.
-
