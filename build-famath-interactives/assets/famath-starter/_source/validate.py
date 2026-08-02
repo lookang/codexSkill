@@ -301,7 +301,7 @@ def main() -> int:
                 "computed_results_concealed_until_scaffold": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-circle-radius-centre-v17",
+                        "2026-08-02-circle-boundary-association-v19",
                         "data-precheck-result=\"concealed\"",
                         "side==='right'&&d.maskRight&&!d.revealSolution?['?']:values",
                         "maskRight=['p6_expression_notation','p6_simplify_linear','p6_substitution'].includes(kind)",
@@ -322,7 +322,7 @@ def main() -> int:
                 "unknown_letter_formative_family": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-circle-radius-centre-v17",
+                        "2026-08-02-circle-boundary-association-v19",
                         "unknownLetterModelHTML",
                         "unknownLetterBridgeHTML",
                         "unknownEquationMapHTML",
@@ -350,6 +350,37 @@ def main() -> int:
                         "circle-centre-dot",
                         "radius: centre → circumference",
                         "Every radius starts at the centre",
+                    )
+                ),
+                "circle_formula_substitution_ladder": all(
+                    marker in html
+                    for marker in (
+                        "circleFormulaData",
+                        "circleFormulaHTML",
+                        "circleTutorialSteps",
+                        "if(p.circleTutorial)return circleTutorialSteps(p)",
+                        "data-circle-substitution-ladder",
+                        "data-circle-formula-stage",
+                        "Choose the formula that matches the question",
+                        "Substitute π = 22/7 and r =",
+                        "Simplify one operation at a time",
+                        "Calculate and attach the correct unit",
+                        "circleTutorial:{mode:circleMode,radius:r,answer}",
+                    )
+                ),
+                "circle_boundary_term_association": all(
+                    marker in html
+                    for marker in (
+                        "circleAssociatedExpressionHTML",
+                        "circleBoundaryAssociationHTML",
+                        "data-circle-boundary-association",
+                        "data-circle-association-key=\"curve\"",
+                        "data-circle-association-key=\"straight\"",
+                        "data-circle-association-part=\"curve\"",
+                        "data-circle-association-part=\"straight\"",
+                        "circle-boundary-associated",
+                        "Linked formula term to circle boundary",
+                        "Tap either coloured term to flash its matching boundary",
                     )
                 ),
                 "narrated_am_pm_day_journey": all(
@@ -821,6 +852,8 @@ def main() -> int:
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "whole-circle, semicircle and quarter-circle radii begin at explicit centres and end on their circumferences",
+            "circle tutorials bridge the visual radius to formula, numerical substitution, simplification and final units in separate steps",
+            "semicircle and quarter-circle perimeter tutorials colour-link curved and straight formula terms to clickable flashing boundary parts",
             "finite unique answer choices and option-specific misconception diagnostics",
             "computed solution flows concealed until check or guided remediation",
             "unknown-letter tasks vary letter names and assess representation rather than solving",
