@@ -298,10 +298,31 @@ def main() -> int:
                         "unknownDimension",
                     )
                 ),
+                "computed_results_concealed_until_scaffold": all(
+                    marker in html
+                    for marker in (
+                        "2026-08-02-precheck-answer-concealment-v16",
+                        "data-precheck-result=\"concealed\"",
+                        "side==='right'&&d.maskRight&&!d.revealSolution?['?']:values",
+                        "maskRight=['p6_expression_notation','p6_simplify_linear','p6_substitution'].includes(kind)",
+                        "const result=d.revealSolution?",
+                        "const written=d.revealSolution?",
+                        "d.revealSolution?v*scale:'?'",
+                        "d.revealSolution?`${total} square units`:'? square units'",
+                        "d.concealTotalLabel&&!d.revealSolution?'?'",
+                        "d.concealReading&&!d.revealSolution?'?'",
+                        "const hidden=new Set(d.concealIndices||[])",
+                        "d.concealJump?'?':jump",
+                        "concealIndices:[2]",
+                        "concealJump:true",
+                        "Use the blocks to test each choice without displaying the completed number word.",
+                        "title:'Build the number from its place values'",
+                    )
+                ),
                 "unknown_letter_formative_family": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-formative-unknowns-v15",
+                        "2026-08-02-precheck-answer-concealment-v16",
                         "unknownLetterModelHTML",
                         "unknownLetterBridgeHTML",
                         "unknownEquationMapHTML",
