@@ -4,7 +4,8 @@
 
 Keep four canonical surfaces under `_source/`:
 
-- `activities.json`: official objective order, folder names, titles, and kind routing.
+- `activities.json`: official Primary objective order, folder names, titles, and kind routing.
+- `secondary_syllabus.json`: compact Secondary objective blocks, including shared Sec 3/4 content, expanded deterministically by the build and validator.
 - `index.template.html`: shared self-contained UI, generators, models, tutorial engine, analytics, accessibility, and responsive CSS.
 - `build.ps1`: ordered-folder generation, proven-library extraction, catalogue creation, and ZIP packaging.
 - `validate.py`: completeness, syntax, package, library, interaction, and pedagogy contracts.
@@ -13,7 +14,7 @@ Generated activity folders and `_packages/*.zip` are products of those files. Re
 
 ## Portable starter
 
-The skill asset `assets/famath-starter/` contains the proven complete Primary 1 to Primary 6 canonical generator plus the xAPI sample ZIP. Copy it with `scripts/bootstrap_famath.ps1`; do not edit the asset in place during a user project.
+The skill asset `assets/famath-starter/` contains the proven complete Primary 1 to Secondary 5 canonical generator plus the xAPI sample ZIP. Copy it with `scripts/bootstrap_famath.ps1`; do not edit the asset in place during a user project.
 
 For a new grade:
 
@@ -22,6 +23,8 @@ For a new grade:
 3. Add or reuse family-level `kind` routes in the template.
 4. Update explicit grade counts and new visual contracts in `validate.py`.
 5. Build all affected folders and packages from source.
+
+For Secondary levels, add the compact syllabus record to `secondary_syllabus.json`. Reuse a shared block when the official syllabus does so, but expand every final activity into its own chronological folder and ZIP.
 
 ## Folder and package contract
 
@@ -42,6 +45,8 @@ Create grade catalogues:
 - `Primary<grade>_Syllabus_Order.html`
 - `SYLLABUS_ORDER.md` for Primary 1
 - `PRIMARY<grade>_SYLLABUS_ORDER.md` for other grades
+- `Secondary<grade>_Syllabus_Order.html`
+- `SECONDARY<grade>_SYLLABUS_ORDER.md`
 
 ## xAPI invariants
 

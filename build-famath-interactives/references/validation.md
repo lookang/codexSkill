@@ -7,7 +7,7 @@ Do not rely on visual inspection of one activity.
 Run the canonical build and validator. Require:
 
 - manifest IDs, folders, and `kind` values are unique;
-- per-grade folder prefixes are continuous and catalogue counts match;
+- Primary and Secondary per-grade folder prefixes are continuous and catalogue counts match;
 - every folder has required files and no unresolved template placeholder;
 - every script parses successfully;
 - local references resolve and no external runtime dependency is required;
@@ -33,9 +33,8 @@ Serve the project locally over HTTP. Test at least one activity from each new fa
 8. animations finish in a clear stable state and respect reduced motion;
 9. SLS-local xAPI absence produces only the expected missing-launch-parameters warning.
 
-Also inspect boundary cases: zero, exact midpoint, exact division, remainder, regrouping across zero, equal values, repeated values, 90-degree angles, and symmetric/asymmetric figures.
+Also inspect boundary cases: zero, exact midpoint, exact division, remainder, regrouping across zero, equal values, repeated values, 90-degree angles, and symmetric/asymmetric figures. For a large generated expansion, visit every generated page and inspect its six-question choice audit for finite, unique options and a present correct answer.
 
 ## Package evidence
 
 Report exact counts and paths. Sample several ZIPs across early, middle, and final syllabus positions. Inspect archive member names, not timestamps. Preserve validation output as `validation-report.json` when the project already uses that convention.
-

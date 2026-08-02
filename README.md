@@ -4,7 +4,7 @@ This repository contains Codex skills for Singapore MOE SLS workflows.
 
 ## Skills
 
-- [`build-famath-interactives`](build-famath-interactives/) builds, extends, regenerates, packages, and validates chronological FAMath-style formative mathematics interactives with concrete-pictorial-abstract models, misconception-first visual tutorials, touch and keyboard support, and proven SLS xAPI ZIP packaging.
+- [`build-famath-interactives`](build-famath-interactives/) builds, extends, regenerates, packages, and validates chronological FAMath-style formative mathematics interactives with concrete-pictorial-abstract models, misconception-first visual tutorials, touch and keyboard support, and proven SLS xAPI ZIP packaging. Its portable starter now reproduces the complete Primary 1 to Secondary 5 generator (397 activities), including the teenager-oriented animated Secondary model families.
 - [`sim-to-youtube`](sim-to-youtube/) turns science simulations into classroom-ready tutorial video packages, including pedagogy checks, screen-recorded walkthroughs, cursor choreography, readable overlays, narration, captions, thumbnails, and YouTube metadata.
 - [`sls-community-reviewer`](sls-community-reviewer/) reviews SLS Community Gallery modules awaiting approval.
 - [`sls-dev-module-transfer`](sls-dev-module-transfer/) transfers MOE SLS production modules into DEV draft modules while preserving rich formatting, response scaffolds, quiz settings, tags, and saved state.

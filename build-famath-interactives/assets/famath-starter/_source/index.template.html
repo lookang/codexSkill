@@ -1088,6 +1088,54 @@
       button { min-height:52px; padding-top:12px; padding-bottom:12px; }
       button:hover { filter:none; }
     }
+    /* Secondary model system: compact enough for teenagers, but still touch-first. */
+    .secondary-lab { width:min(100%,980px); display:grid; gap:12px; padding:14px; border:2px solid #9cc9d2; border-radius:18px; background:linear-gradient(145deg,#f9feff,#eef8fb); box-shadow:0 10px 24px rgba(8,38,83,.1); overflow:hidden; }
+    .secondary-lab-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .secondary-mission { padding:6px 11px; border-radius:999px; background:var(--navy); color:#fff; font:800 13px/1 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
+    .secondary-lab-head strong { color:var(--navy); font-size:clamp(17px,2.5vw,23px); }
+    .secondary-scene { position:relative; min-height:190px; display:grid; place-items:center; gap:10px; padding:16px; border:2px solid #b8d7df; border-radius:15px; background:#fff; overflow:hidden; }
+    .secondary-inspect-grid { width:100%; display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); align-items:stretch; gap:10px; }
+    .secondary-hotspot { position:relative; min-width:0; min-height:70px; padding:10px; border:2px solid #7ba9bd; background:#f1fbfc; color:var(--navy); font-weight:900; overflow:hidden; }
+    .secondary-hotspot small { display:block; margin-top:4px; color:#526f8f; font:700 12px/1.25 Arial,sans-serif; }
+    .secondary-hotspot::after { content:"tap to inspect"; position:absolute; right:5px; bottom:3px; color:#34788b; font:700 9px/1 Arial,sans-serif; letter-spacing:.03em; text-transform:uppercase; opacity:.72; }
+    .secondary-hotspot.inspected { border-color:var(--coral); background:#fff4d5; box-shadow:0 0 0 4px rgba(239,85,79,.16); animation:secondary-pulse .55s ease; }
+    .secondary-coachline { min-height:48px; padding:10px 13px; border-left:6px solid var(--yellow); border-radius:10px; background:#fff7d7; color:var(--navy); font:800 15px/1.35 Arial,sans-serif; }
+    .secondary-model-equation { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; font-size:clamp(23px,4vw,40px); font-weight:900; color:var(--navy); }
+    .secondary-model-equation .unknown { min-width:62px; padding:5px 12px; border:3px dashed var(--coral); border-radius:11px; background:#fff4d5; text-align:center; }
+    .secondary-number-line { position:relative; width:min(100%,760px); height:110px; margin:8px auto; border-bottom:5px solid var(--navy); }
+    .secondary-number-line .tick { position:absolute; bottom:-11px; width:3px; height:20px; background:var(--navy); transform:translateX(-50%); }
+    .secondary-number-line .tick b { position:absolute; top:23px; left:50%; transform:translateX(-50%); white-space:nowrap; font-size:13px; }
+    .secondary-number-line .point { position:absolute; bottom:-5px; width:22px; height:22px; border-radius:50%; background:var(--coral); border:4px solid #fff; box-shadow:0 0 0 2px var(--coral); transform:translateX(-50%); }
+    .secondary-bars { width:100%; min-height:145px; display:flex; align-items:flex-end; justify-content:center; gap:10px; padding:12px 6px 0; border-bottom:4px solid var(--navy); }
+    .secondary-bar { width:clamp(44px,8vw,82px); height:var(--bar-height,90px); display:grid; place-items:end center; padding:7px; border:2px solid #087e83; border-bottom:0; border-radius:9px 9px 0 0; background:linear-gradient(#67d2ca,#13a39f); color:var(--navy); font-weight:900; transform-origin:bottom; animation:secondary-grow .75s cubic-bezier(.2,.8,.2,1) both; }
+    .secondary-bar.alt { border-color:#c67a00; background:linear-gradient(#ffe389,#ffc928); }
+    .secondary-coordinate { width:min(100%,520px); aspect-ratio:1.7/1; border-left:4px solid var(--navy); border-bottom:4px solid var(--navy); background:linear-gradient(rgba(8,38,83,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(8,38,83,.08) 1px,transparent 1px); background-size:10% 16.67%; position:relative; }
+    .secondary-graph-line { position:absolute; left:8%; bottom:14%; width:84%; height:5px; background:var(--teal); transform:rotate(var(--graph-angle,-18deg)); transform-origin:left center; }
+    .secondary-graph-point { position:absolute; left:var(--x); bottom:var(--y); width:19px; height:19px; border-radius:50%; background:var(--coral); border:3px solid #fff; box-shadow:0 0 0 2px var(--coral); transform:translate(-50%,50%); }
+    .secondary-geometry { width:min(100%,500px); min-height:190px; display:grid; place-items:center; }
+    .secondary-geometry svg { width:100%; max-height:240px; overflow:visible; }
+    .secondary-geometry .geo-part { cursor:pointer; transition:filter .15s,stroke-width .15s; }
+    .secondary-geometry .geo-part.inspected { filter:drop-shadow(0 0 6px #ef554f); stroke-width:8!important; }
+    .secondary-matrix { display:grid; grid-template-columns:repeat(var(--matrix-cols,2),minmax(64px,100px)); gap:5px; padding:10px 18px; border-left:5px solid var(--navy); border-right:5px solid var(--navy); border-radius:12px; }
+    .secondary-matrix button { min-height:54px; border-color:#82a9c3; background:#eef7fb; color:var(--navy); font-weight:900; }
+    .secondary-flow { width:100%; display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; }
+    .secondary-flow-step { min-width:120px; padding:10px; border:2px solid #85b2c4; border-radius:11px; background:#fff; color:var(--navy); font-weight:900; text-align:center; opacity:.38; transform:translateY(12px); animation:secondary-reveal .52s ease forwards; animation-delay:var(--delay,0s); }
+    .secondary-flow-arrow { color:var(--coral); font-size:28px; font-weight:900; opacity:.38; animation:secondary-reveal .4s ease forwards; animation-delay:var(--delay,0s); }
+    .secondary-answer-mask { min-width:70px; padding:6px 12px; border:3px dashed var(--coral); border-radius:10px; background:#fff4d5; color:var(--coral); font-size:30px; font-weight:900; text-align:center; }
+    .secondary-stage-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; }
+    .secondary-stage-strip span { min-height:35px; padding:7px; border-radius:8px; background:#dce8f4; color:#48657f; font:800 12px/1.2 Arial,sans-serif; text-align:center; }
+    .secondary-stage-strip span.active { background:var(--navy); color:#fff; }
+    @keyframes secondary-pulse { 50% { transform:scale(1.035); } }
+    @keyframes secondary-grow { from { transform:scaleY(.08); opacity:.2; } to { transform:scaleY(1); opacity:1; } }
+    @keyframes secondary-reveal { to { opacity:1; transform:none; } }
+    @media (max-width:760px) {
+      .secondary-lab { padding:9px; border-radius:14px; }
+      .secondary-scene { min-height:160px; padding:10px; }
+      .secondary-inspect-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .secondary-hotspot { min-height:62px; padding:8px; }
+      .secondary-stage-strip { grid-template-columns:repeat(2,1fr); }
+      .secondary-coordinate { aspect-ratio:1.35/1; }
+    }
     @media (prefers-reduced-motion:reduce) {
       *, *::before, *::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; }
       .exchange-motion { display:none!important; }
@@ -1121,6 +1169,7 @@
       .attention-pointer,.attention-arrow { opacity:1!important; animation:none!important; }
       .attention-pointer.ruler-pointer-incorrect { margin-left:0!important; }
       .ratio-animated-unit,.ratio-count-sentence,.ratio-notation-build,.ratio-transform-flow { opacity:1!important; transform:none!important; }
+      .secondary-bar,.secondary-flow-step,.secondary-flow-arrow { opacity:1!important; transform:none!important; }
     }
   </style>
 </head>
@@ -1223,7 +1272,7 @@
     // The build script replaces this object once per curriculum objective.
     const CONFIG = __ACTIVITY_CONFIG__;
     const TOTAL_QUESTIONS = 6;
-    const GENERATOR_VERSION = '2026-08-02-circle-boundary-association-v19';
+    const GENERATOR_VERSION = '2026-08-02-secondary-interactive-families-v20';
     const startedAt = Date.now();
     const sessionKey = `famath::${GENERATOR_VERSION}::${CONFIG.id}::session`;
     const state = {
@@ -2370,9 +2419,472 @@
       return upperBase({type:'choice',prompt:CONFIG.objective,p4:{model:'upper',scene:'expression',tokens:['Represent','Reason','Check'],priority:[1]},answer:'Ready',options:['Ready'],worked:['Represent the quantities','Identify the relationship','Calculate','Check']});
     }
 
+    // ---------- Secondary objective families ----------
+    function secondaryOptions(answer,distractors=[]){
+      const values=[answer,...distractors].filter(validOptionValue),unique=[];
+      values.forEach(value=>{if(!unique.some(item=>String(item)===String(value)))unique.push(value);});
+      if(typeof answer==='number'){
+        let step=1;
+        while(unique.length<4){const candidate=answer+(unique.length%2?step:-step);if(Number.isFinite(candidate)&&!unique.includes(candidate))unique.push(candidate);step++;}
+      } else {
+        const text=String(answer),fallbacks=[];
+        if(/^\d+(?:\.\d+)?:\d+/.test(text)){
+          const parts=text.split(':').map(Number);fallbacks.push(parts.slice().reverse().join(':'),parts.map(value=>value+1).join(':'),parts.map((value,i)=>i?value:value*2).join(':'));
+        } else if(text.includes('×')){
+          fallbacks.push(text.replace('²','³'),text.replace('³','²'),text.replace(/\b3\b/,'5'),text.replace(/\b2\b/,'4'));
+        } else if(text.startsWith('{')){
+          fallbacks.push('∅','{1, 2, 3, 4}','{1, 3}','{2, 3}');
+        } else if(text.startsWith('[')){
+          fallbacks.push(text.replace(/\d+/,value=>String(Number(value)+1)),text.replace(/\d+(?!.*\d)/,value=>String(Number(value)+1)),'[1, 0; 0, 1]');
+        } else if(text.startsWith('(')){
+          const numbers=text.match(/-?\d+(?:\.\d+)?/g)||[];fallbacks.push(numbers.length>=2?`(${numbers[1]}, ${numbers[0]})`:'(0, 0)',numbers.length>=2?`(${-Number(numbers[0])}, ${numbers[1]})`:'(1, 1)','(1, 0)');
+        } else if(text.includes('=')){
+          fallbacks.push(text.replace(' - ',' + '),text.replace(' + ',' - '),text.replace(' / ',' × '),`${text} + 1`);
+        } else {
+          fallbacks.push(`${text} + 1`,`${text} - 1`,`${text} × 2`,`${text} ÷ 2`);
+        }
+        fallbacks.filter(validOptionValue).forEach(value=>{if(unique.length<4&&!unique.some(item=>String(item)===String(value)))unique.push(value);});
+        let n=1;while(unique.length<4){const value=`${text} ${n%2?'+':'-'} ${n}`;if(!unique.includes(value))unique.push(value);n++;}
+      }
+      return shuffle(unique.slice(0,4));
+    }
+    function secondaryBase(data){
+      const family=CONFIG.family||'number_structure';
+      return {type:'choice',visual:'secondary',family,instruction:'Inspect the mathematical structure, choose a strategy, then justify your answer.',hint:'Tap the labelled parts of the model. Use the relationship they reveal before calculating.',misconception:'A correct method must preserve the relationships shown in the model, not only produce a plausible number.',...data,sec:{family,title:CONFIG.shortTitle,code:(CONFIG.objective.match(/^\S+/)||[''])[0],...(data.sec||{})}};
+    }
+    function makeSecondaryProblem(q){
+      const family=CONFIG.family||'number_structure',objective=String(CONFIG.objective||'').toLowerCase(),code=(CONFIG.objective.match(/^\S+/)||[''])[0];
+      if(family==='number_structure'){
+        if(objective.includes('prime')&&objective.includes('hcf')){
+          const pairs=[[84,126,42],[72,120,24],[90,150,30],[96,144,48],[105,140,35],[132,198,66]],item=pairs[q];
+          return secondaryBase({prompt:`Find the HCF of ${item[0]} and ${item[1]}.`,answer:item[2],options:secondaryOptions(item[2],[item[2]/2,item[2]*2,item[0]]),sec:{scene:'factor',tokens:[item[0],item[1]],labels:['first number','second number'],steps:['factor both numbers','circle shared primes','use each shared prime once','HCF = ?'],bridge:`${item[0]} and ${item[1]} share prime factors; HCF = ?`},hint:'Build both prime-factor lists and keep only the factors shared by both.',misconception:'The HCF uses shared prime factors; the LCM uses every required prime factor.'});
+        }
+        if(objective.includes('prime')){
+          const items=[[84,'2² × 3 × 7'],[90,'2 × 3² × 5'],[72,'2³ × 3²'],[126,'2 × 3² × 7'],[150,'2 × 3 × 5²'],[168,'2³ × 3 × 7']],item=items[q];
+          return secondaryBase({prompt:`Write ${item[0]} as a product of prime factors.`,answer:item[1],options:secondaryOptions(item[1],[`2 × 3 × ${item[0]/6}`,`2² × 3 × ${Math.max(2,item[0]/12)}`,`${item[0]} × 1`]),sec:{scene:'factor',tokens:[item[0],'prime?'],labels:['number to split','prime leaves'],steps:['split into factors','split composite factors again','check every leaf is prime','write with indices']},hint:'Continue every branch until each leaf is prime.',misconception:'A factor tree is unfinished while any leaf is composite.'});
+        }
+        if(objective.includes('standard form')){
+          const items=[[482000,'4.82 × 10⁵'],[0.0064,'6.4 × 10⁻³'],[7350000,'7.35 × 10⁶'],[0.00091,'9.1 × 10⁻⁴'],[120000,'1.2 × 10⁵'],[0.045,'4.5 × 10⁻²']],item=items[q];
+          return secondaryBase({prompt:`Express ${item[0]} in standard form.`,answer:item[1],options:secondaryOptions(item[1],[`${item[0]} × 10⁰`,`48.2 × 10⁴`,`0.482 × 10⁶`]),sec:{scene:'place',tokens:[item[0],'A × 10ⁿ'],labels:['original value','standard-form frame'],steps:['move decimal point','make 1 ≤ A < 10','count places moved','choose sign of n']},hint:'The first factor must be at least 1 but less than 10.',misconception:'The exponent records direction and number of decimal-place moves; it is not always positive.'});
+        }
+        if(objective.includes('indices')){
+          const base=['a','m','p','x','y','k'][q],left=q+2,right=q%3+2,answer=`${base}${left+right===1?'':`^${left+right}`}`;
+          return secondaryBase({prompt:`Simplify ${base}^${left} × ${base}^${right}.`,answer,options:secondaryOptions(answer,[`${base}^${left*right}`,`${base}^${Math.abs(left-right)}`,`2${base}^${left+right}`]),sec:{scene:'factor',tokens:[`${base}^${left}`,`${base}^${right}`],labels:['first repeated product','second repeated product'],steps:['keep the common base','count repeated factors','add exponents','simplified power = ?']},hint:'When multiplying powers with the same base, count all repeated factors.',misconception:'Add exponents for multiplication of the same base; do not multiply the exponents.'});
+        }
+        if(objective.includes('approximation')){
+          const value=[47.386,912.58,0.07846,6384.2,15.995,28496][q],places=q%2?2:1,answer=Number(value.toFixed(places));
+          return secondaryBase({prompt:`Round ${value} to ${places} decimal place${places===1?'':'s'}.`,answer,options:secondaryOptions(answer,[Number(value.toFixed(Math.max(0,places-1))),Math.floor(value*10**places)/10**places,Math.ceil(value*10**places)/10**places]),sec:{scene:'place',tokens:[value,`${places} d.p.`],labels:['number','required accuracy'],steps:['locate rounding digit','inspect next digit','round once','write trailing zero if needed']},hint:'Underline the required place, then look only at the digit immediately to its right.',misconception:'Rounding changes the required digit once; it does not round each later digit separately.'});
+        }
+        const a=rand(12,38),b=rand(3,9),answer=a+b*2;
+        return secondaryBase({prompt:`Evaluate ${a} + ${b} × 2.`,answer,options:secondaryOptions(answer,[(a+b)*2,a+b,a+2]),sec:{scene:'factor',tokens:[a,`${b} × 2`],labels:['term added','multiplication first'],steps:['identify operations','multiply first','add remaining term','estimate to check']},hint:'Apply multiplication before addition.',misconception:'A calculator follows order of operations; entering a different structure gives a different result.'});
+      }
+      if(family==='number_line'){
+        const a=[-7,-2,0,3.5,-1.25,6][q],b=[-3,4,-0.5,3.05,1.2,-6][q],answer=a<b?'<':a>b?'>':'=';
+        return secondaryBase({prompt:`Choose the relation that makes ${a} □ ${b} true.`,answer,options:secondaryOptions(answer,['<','>','≤','≥']),sec:{scene:'number-line',tokens:[a,b],labels:['first value','second value'],range:[Math.floor(Math.min(a,b))-2,Math.ceil(Math.max(a,b))+2],steps:['place both values','read left to right','choose direction of comparison','relation = ?']},hint:'On a number line, the value farther right is greater.',misconception:'For negative numbers, the value closer to zero is greater.'});
+      }
+      if(family==='ratio_proportion'){
+        if(objective.includes('map scale')){
+          const mapCm=3+q,scale=50000,answer=mapCm*scale/100000;
+          return secondaryBase({prompt:`A map scale is 1:${scale}. A road measures ${mapCm} cm on the map. Find its actual length in km.`,answer,options:secondaryOptions(answer,[mapCm*scale/100,mapCm/scale,mapCm*5]),sec:{scene:'ratio',tokens:[`1:${scale}`,`${mapCm} cm`],labels:['map scale','map distance'],steps:['multiply by scale','convert cm to m','convert m to km','actual distance = ? km']},hint:'First find the actual centimetres, then convert units.',misconception:'A scale of 1:n means one map unit represents n actual units.'});
+        }
+        if(objective.includes('dividing a quantity')){
+          const total=50+10*q,a=2+q%2,b=3,unit=total/(a+b),answer=`${a*unit} and ${b*unit}`;
+          return secondaryBase({prompt:`Divide ${total} in the ratio ${a}:${b}.`,answer,options:secondaryOptions(answer,[`${a*(unit+1)} and ${b*(unit+1)}`,`${a*unit} and ${b*unit+a}`,`${a} and ${b}`]),sec:{scene:'ratio',tokens:[a,b,total],labels:['first share units','second share units','total quantity'],steps:['add ratio units','find value of one unit','multiply each part','two shares = ?'],unitCounts:[a,b]},hint:'Add the ratio terms to find the total number of equal units.',misconception:'The ratio terms are numbers of equal units, not the final shares.'});
+        }
+        if(objective.includes('simplest form')){
+          const pairs=[[12,18,'2:3'],[20,30,'2:3'],[24,36,'2:3'],[15,25,'3:5'],[28,42,'2:3'],[36,54,'2:3']],item=pairs[q];
+          return secondaryBase({prompt:`Write ${item[0]}:${item[1]} in simplest form.`,answer:item[2],options:secondaryOptions(item[2],[`${item[0]/2}:${item[1]/2}`,`${item[1]}:${item[0]}`,`${item[0]-1}:${item[1]-1}`]),sec:{scene:'ratio',tokens:[item[0],item[1]],labels:['first term','second term'],steps:['find common factor','divide both terms','check no common factor remains','simplest ratio = ?'],unitCounts:[item[0]/6,item[1]/6]},hint:'Divide both terms by their highest common factor.',misconception:'A ratio is simplest only when both terms have no common factor greater than 1.'});
+        }
+        if(objective.includes('relationship between ratio and fraction')){
+          const a=2+q%3,b=3+q%2,answer=`${a}/${a+b}`;
+          return secondaryBase({prompt:`In the ratio ${a}:${b}, what fraction of the total is the first part?`,answer,options:secondaryOptions(answer,[`${a}/${b}`,`${b}/${a+b}`,`${a+b}/${a}`]),sec:{scene:'ratio',tokens:[a,b],labels:['first-part units','second-part units'],steps:['count first-part units','add all ratio units','form part / total','fraction = ?'],unitCounts:[a,b]},hint:'The fraction denominator is the sum of all ratio parts.',misconception:'A ratio compares parts; a fraction of the whole uses total parts as denominator.'});
+        }
+        if(objective.includes('rational numbers')){
+          const answer='1:3';
+          return secondaryBase({prompt:'Simplify the ratio 0.5:1.5.',answer,options:secondaryOptions(answer,['0.5:1.5','1:1','3:1']),sec:{scene:'ratio',tokens:[0.5,1.5],labels:['first rational quantity','second rational quantity'],steps:['clear decimals','multiply both terms by 10','divide by common factor','simplest ratio = ?'],unitCounts:[1,3]},hint:'Clear the decimals by multiplying both terms by the same power of 10.',misconception:'Equivalent ratios require the same multiplication or division on every term.'});
+        }
+        if(objective.includes('direct and inverse')&&!objective.includes('inverse proportion')){
+          const x=3+q,y=4*x,answer=4*(x+2);
+          return secondaryBase({prompt:`y is directly proportional to x. When x = ${x}, y = ${y}. Find y when x = ${x+2}.`,answer,options:secondaryOptions(answer,[y+2,4*(x+1),y*(x+2)]),sec:{scene:'ratio',tokens:[x,y,x+2],labels:['known x','known y','new x'],steps:['find y / x','keep ratio constant','multiply new x by constant','new y = ?']},hint:'For direct proportion, y/x remains constant.',misconception:'Direct proportion scales both quantities by the same factor; it is not a fixed difference.'});
+        }
+        if(objective.includes('inverse')){
+          const workers=3+q,days=12,answer=workers*days;
+          return secondaryBase({prompt:`${workers} workers complete a task in ${days} days. What constant product models inverse proportion?`,answer,options:secondaryOptions(answer,[workers+days,days/workers,workers*days*2]),sec:{scene:'ratio',tokens:[workers,days],labels:['workers','days'],steps:['identify inverse relationship','multiply paired values','keep product constant','constant = ?']},hint:'For inverse proportion, one quantity rises while the other falls so their product stays constant.',misconception:'Inverse proportion preserves a product, not a ratio.'});
+        }
+        const a=2+q%3,b=3+q%4,mult=2+q%3,answer=`${a*mult}:${b*mult}`;
+        return secondaryBase({prompt:`Which ratio is equivalent to ${a}:${b}?`,answer,options:secondaryOptions(answer,[`${a+mult}:${b+mult}`,`${b*mult}:${a*mult}`,`${a}:${b*mult}`]),sec:{scene:'ratio',tokens:[a,b],labels:['first part','second part'],steps:['use equal-sized units','choose one scale factor','multiply both terms','equivalent ratio = ?'],unitCounts:[a,b]},hint:'Multiply both terms by the same non-zero scale factor.',misconception:'Adding the same number to both terms does not normally create an equivalent ratio.'});
+      }
+      if(family==='percentage_rate'){
+        if(objective.includes('speed')||objective.includes('rate')){
+          if(objective.includes('conversion of units')||objective.includes('different units')){
+            const kmh=[36,54,72,90,108,126][q],answer=kmh/3.6;
+            return secondaryBase({prompt:`Convert ${kmh} km/h to m/s.`,answer,options:secondaryOptions(answer,[kmh*3.6,kmh/60,kmh*1000]),sec:{scene:'rate',tokens:[kmh,'km/h','m/s'],labels:['speed value','starting unit','target unit'],steps:['convert km to m','convert hour to seconds','divide by 3.6','speed = ? m/s']},hint:'1 km = 1000 m and 1 h = 3600 s, so divide km/h by 3.6.',misconception:'Converting both numerator and denominator creates a division by 3.6, not multiplication.'});
+          }
+          if(objective.includes('relationships between')){
+            const speed=40+10*q,time=2+q%3,answer=speed*time;
+            return secondaryBase({prompt:`A vehicle travels at ${speed} km/h for ${time} h. Find the distance.`,answer,options:secondaryOptions(answer,[speed/time,speed+time,time/speed]),sec:{scene:'rate',tokens:[speed,time],labels:['speed','time'],steps:['use distance = speed × time','align units','multiply','distance = ? km']},hint:'Distance equals speed multiplied by time.',misconception:'Choose the formula that makes the requested unit: km/h × h = km.'});
+          }
+          const distance=[120,150,180,210,240,270][q],time=[2,3,4,3,5,6][q],answer=distance/time;
+          return secondaryBase({prompt:`A journey covers ${distance} km in ${time} h. Find the average speed in km/h.`,answer,options:secondaryOptions(answer,[distance*time,distance-time,time/distance]),sec:{scene:'rate',tokens:[distance,time],labels:['distance (km)','time (h)'],steps:['identify total distance','identify total time','divide distance by time','average speed = ?']},hint:'Average speed is total distance divided by total time.',misconception:'Average speed is not found by multiplying distance and time.'});
+        }
+        if(objective.includes('fraction or decimal')){
+          const percent=[15,25,35,40,62,85][q],answer=percent/100;
+          return secondaryBase({prompt:`Express ${percent}% as a decimal.`,answer,options:secondaryOptions(answer,[percent/10,percent,100/percent]),sec:{scene:'percent',tokens:[`${percent}%`,100],labels:['percentage part','whole percent'],steps:['write percent / 100','divide by 100','move decimal two places','decimal = ?'],bars:[percent,100-percent]},hint:'Percent means per hundred.',misconception:'Converting percent to decimal divides by 100, not by 10.'});
+        }
+        if(objective.includes('one quantity as a percentage')){
+          const part=12+3*q,whole=24+6*q,answer=part/whole*100;
+          return secondaryBase({prompt:`Express ${part} as a percentage of ${whole}.`,answer,options:secondaryOptions(answer,[part/whole,whole/part*100,whole-part]),sec:{scene:'percent',tokens:[part,whole],labels:['part','comparison whole'],steps:['form part / whole','multiply by 100%','include percent sign concept','percentage = ?'],bars:[part,whole]},hint:'Use part ÷ whole × 100%.',misconception:'The comparison whole is the denominator.'});
+        }
+        if(objective.includes('greater than 100')){
+          const percent=120+10*q,whole=50,answer=percent/100*whole;
+          return secondaryBase({prompt:`Find ${percent}% of ${whole}.`,answer,options:secondaryOptions(answer,[percent-whole,percent/100,whole/(percent/100)]),sec:{scene:'percent',tokens:[`${percent}%`,whole],labels:['more than one whole','base quantity'],steps:['convert percent to multiplier','recognise multiplier > 1','multiply by whole','part = ?'],bars:[100,percent-100]},hint:'A percentage above 100% represents more than one whole.',misconception:'Percentages can exceed 100%; the result may be greater than the base quantity.'});
+        }
+        if(objective.includes('reverse')){
+          const rate=20,final=120+12*q,answer=final/1.2;
+          return secondaryBase({prompt:`After a ${rate}% increase, a value is ${final}. Find the original value.`,answer,options:secondaryOptions(answer,[final*.8,final-20,final/20]),sec:{scene:'percent',tokens:[final,'120%'],labels:['final value','final percentage of original'],steps:['represent final as 120%','use multiplier 1.2','divide final by 1.2','original = ?']},hint:'The final value is 120% of the original, so divide by 1.2.',misconception:'Subtracting 20% of the final does not reverse a 20% increase.'});
+        }
+        const original=[80,120,150,200,240,320][q],percent=[15,20,12,25,30,10][q],answer=original*(1+percent/100);
+        return secondaryBase({prompt:`Increase ${original} by ${percent}%.`,answer,options:secondaryOptions(answer,[original*percent/100,original+percent,original*(1-percent/100)]),sec:{scene:'percent',tokens:[original,`${percent}%`],labels:['100% original','increase'],steps:['find percentage part','add it to 100%','use multiplier','new value = ?']},hint:'An increase of p% means multiply by 1 + p/100.',misconception:'The percentage part is added to the original; it is not the new total by itself.'});
+      }
+      if(family==='algebra_structure'){
+        const variable=['x','a','m','p','y','t'][q],coefficient=2+q,constant=3+q%3;
+        if(objective.includes('using letters')){
+          const answer=`${variable} + ${constant}`;
+          return secondaryBase({prompt:`Which expression represents “an unknown number increased by ${constant}”?`,answer,options:secondaryOptions(answer,[`${constant}${variable}`,`${variable} - ${constant}`,`${constant} / ${variable}`]),sec:{scene:'algebra',tokens:['unknown number',`increase by ${constant}`],labels:['quantity that can vary','operation and fixed amount'],steps:['choose a letter','preserve increase as addition','keep order of meaning','expression = ?']},hint:'A letter can stand for any value of the unknown number.',misconception:'The letter represents the number; the operation describes what happens to it.'});
+        }
+        if(objective.includes('interpreting algebraic notations')){
+          const answer=`${coefficient} × (${variable} + ${constant})`;
+          return secondaryBase({prompt:`Which expanded reading matches ${coefficient}(${variable} + ${constant})?`,answer,options:secondaryOptions(answer,[`${coefficient}${variable} + ${constant}`,`${coefficient} + ${variable} + ${constant}`,`${coefficient} × ${variable} + ${constant}`]),sec:{scene:'algebra',tokens:[coefficient,`(${variable} + ${constant})`],labels:['outside multiplier','entire bracketed group'],steps:['read adjacency as multiplication','keep bracket as one group','multiply the whole group','notation meaning = ?']},hint:'The coefficient outside brackets multiplies every value represented by the bracket.',misconception:'Do not apply the outside multiplier to only the first term.'});
+        }
+        if(objective.includes('translation of')||objective.includes('real-world')){
+          const answer=`${coefficient}${variable} + ${constant}`;
+          return secondaryBase({prompt:`A plan costs $${constant} plus $${coefficient} per month. Write its cost for ${variable} months.`,answer,options:secondaryOptions(answer,[`${constant}${variable} + ${coefficient}`,`${coefficient} + ${variable} + ${constant}`,`${coefficient}(${variable} + ${constant})`]),sec:{scene:'algebra',tokens:[`$${constant} fixed`,`$${coefficient} each month`,`${variable} months`],labels:['fixed charge','rate per month','number of months'],steps:['multiply rate by months','keep fixed charge once','add both costs','expression = ?']},hint:'A per-unit cost is multiplied by the number of units.',misconception:'The fixed charge is added once, not once per month.'});
+        }
+        if(objective.includes('nth term')){
+          const d=2+q%3,first=1+q,answer=`${d}n + ${first-d}`;
+          return secondaryBase({prompt:`Find the nth term of ${first}, ${first+d}, ${first+2*d}, ${first+3*d}, ...`,answer,options:secondaryOptions(answer,[`${d}n + ${first}`,`${first}n + ${d}`,`n + ${d}`]),sec:{scene:'algebra',tokens:[first,first+d,first+2*d,first+3*d],labels:['term 1','term 2','term 3','term 4'],steps:['find common difference','start with d × n','adjust to match term 1','nth term = ?']},hint:'For an arithmetic sequence, begin with common difference × n.',misconception:'The constant adjustment is chosen so the formula produces the first term when n = 1.'});
+        }
+        if(objective.includes('addition and subtraction of linear')){
+          const answer=`${coefficient+2}${variable} + ${constant-1}`;
+          return secondaryBase({prompt:`Simplify ${coefficient}${variable} + ${constant} + 2${variable} - 1.`,answer,options:secondaryOptions(answer,[`${coefficient+2}${variable} + ${constant+1}`,`${coefficient+2}${variable}`,`${coefficient}${variable} + ${constant}`]),sec:{scene:'algebra',tokens:[`${coefficient}${variable}`,`2${variable}`,constant,'-1'],labels:['like variable term','like variable term','constant','constant'],steps:['group like terms','add variable coefficients','combine constants','simplified expression = ?']},hint:'Only terms with the same variable part are like terms.',misconception:'Variable terms and constants keep different meanings and cannot be merged.'});
+        }
+        if(objective.includes('expansion')){
+          const answer=`${coefficient}${variable} + ${coefficient*constant}`;
+          return secondaryBase({prompt:`Expand ${coefficient}(${variable} + ${constant}).`,answer,options:secondaryOptions(answer,[`${coefficient}${variable} + ${constant}`,`${coefficient+constant}${variable}`,`${coefficient}${variable} × ${coefficient*constant}`]),sec:{scene:'algebra',tokens:[coefficient,variable,constant],labels:['multiplier','first bracket term','second bracket term'],steps:['multiply first term','multiply second term','preserve addition','expanded form = ?']},hint:'Distribute the outside factor to every term inside the bracket.',misconception:'Expanding requires both products, not only the first.'});
+        }
+        if(objective.includes('identity')||objective.includes('identities')){
+          const answer=`${variable}² + 2${constant}${variable} + ${constant**2}`;
+          return secondaryBase({prompt:`Expand (${variable} + ${constant})² using an identity.`,answer,options:secondaryOptions(answer,[`${variable}² + ${constant**2}`,`${variable}² + ${constant}${variable} + ${constant**2}`,`${variable}² - 2${constant}${variable} + ${constant**2}`]),sec:{scene:'algebra',tokens:[`${variable}²`,`2(${variable})(${constant})`,constant**2],labels:['first square','double product','second square'],steps:['use a² + 2ab + b²','identify a and b','write all three terms','expanded identity = ?']},hint:'The square of a sum includes the middle term 2ab.',misconception:'(a + b)² is not a² + b²; the two cross-products make 2ab.'});
+        }
+        if(objective.includes('algebraic fractions')){
+          const answer=`3/${variable}`;
+          return secondaryBase({prompt:`Simplify 1/${variable} + 2/${variable}.`,answer,options:secondaryOptions(answer,[`3/${variable}²`,`2/${variable}`,`3/(2${variable})`]),sec:{scene:'algebra',tokens:[`1/${variable}`,`2/${variable}`],labels:['first like fraction','second like fraction'],steps:['confirm common denominator','add numerators','keep denominator','sum = ?']},hint:'With identical denominators, add the numerators and keep the denominator.',misconception:'Do not add equal denominators when combining like algebraic fractions.'});
+        }
+        if(objective.includes('subject')){
+          const answer=`${variable} = (y - ${constant}) / ${coefficient}`;
+          return secondaryBase({prompt:`Make ${variable} the subject of y = ${coefficient}${variable} + ${constant}.`,answer,options:secondaryOptions(answer,[`${variable} = y / ${coefficient} + ${constant}`,`${variable} = ${coefficient}(y - ${constant})`,`${variable} = (y + ${constant}) / ${coefficient}`]),sec:{scene:'algebra',tokens:[`y = ${coefficient}${variable} + ${constant}`,variable],labels:['formula','new subject'],steps:[`subtract ${constant} from both sides`,`divide both sides by ${coefficient}`,'keep equality balanced',`${variable} = ?`]},hint:'Undo addition first, then undo multiplication on both sides.',misconception:'Every inverse operation must be applied to both sides of the equation.'});
+        }
+        if(objective.includes('factorisation')||objective.includes('common factor')){
+          const answer=`${coefficient}(${variable} + ${constant})`;
+          return secondaryBase({prompt:`Factorise ${coefficient}${variable} + ${coefficient*constant}.`,answer,options:secondaryOptions(answer,[`${coefficient}(${variable} + ${coefficient*constant})`,`${variable}(${coefficient} + ${coefficient*constant})`,`${coefficient}${variable}(${constant})`]),sec:{scene:'algebra',tokens:[`${coefficient}${variable}`,coefficient*constant],labels:['first term','second term'],steps:['find greatest common factor','divide each term by it','place quotients in brackets','expand to check']},hint:'Find the greatest factor shared by every term.',misconception:'The extracted factor must divide every term exactly.'});
+        }
+        const value=2+q,answer=coefficient*value+constant;
+        return secondaryBase({prompt:`Evaluate ${coefficient}${variable} + ${constant} when ${variable} = ${value}.`,answer,options:secondaryOptions(answer,[coefficient+value+constant,coefficient*(value+constant),value+constant]),sec:{scene:'algebra',tokens:[`${coefficient}${variable} + ${constant}`,`${variable} = ${value}`],labels:['expression','substitution'],steps:['replace the letter','keep the operation signs','multiply before adding','value = ?']},hint:'Substitute with brackets, then follow order of operations.',misconception:'A coefficient beside a letter means multiplication, not concatenation.'});
+      }
+      if(family==='equations_inequalities'){
+        if(objective.includes('inequal')){
+          const limit=3+q,answer=`x ≤ ${limit}`;
+          return secondaryBase({prompt:`Solve 2x + ${2+q} ≤ ${2*limit+2+q}.`,answer,options:secondaryOptions(answer,[`x ≥ ${limit}`,`x < ${limit}`,`x ≤ ${2*limit}`]),sec:{scene:'equation',tokens:[`2x + ${2+q}`,`${2*limit+2+q}`],labels:['left side','right side'],steps:[`subtract ${2+q} from both sides`,'divide both sides by 2','keep inequality direction','solution = ?'],range:[0,limit+4]},hint:'Use balance operations. The sign reverses only when multiplying or dividing by a negative number.',misconception:'Do not reverse the inequality when dividing by a positive number.'});
+        }
+        if(objective.includes('simultaneous')){
+          const x=2+q,y=3,answer=`(${x}, ${y})`;
+          return secondaryBase({prompt:`Solve x + y = ${x+y} and x - y = ${x-y}. Give (x, y).`,answer,options:secondaryOptions(answer,[`(${y}, ${x})`,`(${x+y}, ${x-y})`,`(${x}, ${-y})`]),sec:{scene:'equation',tokens:[`x + y = ${x+y}`,`x - y = ${x-y}`],labels:['first equation','second equation'],steps:['add equations to eliminate y','solve for x','substitute for y','ordered solution = ?']},hint:'Adding the equations eliminates y immediately.',misconception:'The solution must satisfy both equations at the same time.'});
+        }
+        if(objective.includes('quadratic')){
+          const root1=2+q%2,root2=4+q%3,answer=`x = ${root1} or x = ${root2}`;
+          return secondaryBase({prompt:`Solve (x - ${root1})(x - ${root2}) = 0.`,answer,options:secondaryOptions(answer,[`x = ${-root1} or x = ${-root2}`,`x = ${root1+root2}`,`x = ${root1*root2}`]),sec:{scene:'equation',tokens:[`x - ${root1}`,`x - ${root2}`,0],labels:['first factor','second factor','zero product'],steps:['use zero-product rule','set first factor to zero','set second factor to zero','two roots = ?']},hint:'If a product is zero, at least one factor is zero.',misconception:'A quadratic can have two roots; do not combine the factors into one answer.'});
+        }
+        if(objective.includes('fractional equation')){
+          const answer=4+q;
+          return secondaryBase({prompt:`Solve x/2 + ${q+1} = ${answer/2+q+1}.`,answer,options:secondaryOptions(answer,[answer/2,answer+2,answer-2]),sec:{scene:'equation',tokens:['x/2',q+1,answer/2+q+1],labels:['fractional variable term','constant','right side'],steps:[`subtract ${q+1} from both sides`,'multiply both sides by 2','check denominator restriction','x = ?']},hint:'Clear the isolated denominator only after removing the constant term.',misconception:'Multiplying by the denominator must affect both sides of the equation.'});
+        }
+        if(objective.includes('formulating')){
+          const price=3+q,total=price*5+2,answer=`${price}x + 2 = ${total}`;
+          return secondaryBase({prompt:`A taxi charges $2 plus $${price} per kilometre and costs $${total}. Which equation finds distance x?`,answer,options:secondaryOptions(answer,[`${price}+2x=${total}`,`${price}x=${total}+2`,`2${price}x=${total}`]),sec:{scene:'equation',tokens:['$2 fixed',`$${price} per km`,`$${total} total`],labels:['fixed charge','variable charge','total cost'],steps:['write variable cost','add fixed charge','set equal to total','equation = ?']},hint:'Translate each cost component before solving.',misconception:'The fixed charge appears once; the per-kilometre charge multiplies x.'});
+        }
+        const answer=3+q,a=2+q%2,b=4+q,right=a*answer+b;
+        return secondaryBase({prompt:`Solve ${a}x + ${b} = ${right}.`,answer,options:secondaryOptions(answer,[right-b,right/a,(right+b)/a]),sec:{scene:'equation',tokens:[`${a}x + ${b}`,right],labels:['left expression','equal value'],steps:[`remove ${b} from both sides`,`divide both sides by ${a}`,'substitute to check','x = ?']},hint:'Undo the constant term before undoing the coefficient.',misconception:'Balance means performing the same inverse operation on both sides.'});
+      }
+      if(family==='graphs_functions'){
+        if(objective.includes('cartesian coordinates')){
+          const x=q%2?-3:3,y=q<3?4:-4,answer=x>0&&y>0?'Quadrant I':x<0&&y>0?'Quadrant II':x<0?'Quadrant III':'Quadrant IV';
+          return secondaryBase({prompt:`Which quadrant contains (${x}, ${y})?`,answer,options:['Quadrant I','Quadrant II','Quadrant III','Quadrant IV'],sec:{scene:'graph',tokens:[x,y],labels:['x-coordinate','y-coordinate'],steps:['move horizontally by x','move vertically by y','inspect signs','quadrant = ?']},hint:'The signs of (x, y) determine the quadrant.',misconception:'Coordinates are read horizontal first, then vertical.'});
+        }
+        if(objective.includes('ordered pairs')||objective.includes('linear functions y')){
+          const x=2+q,m=2,b=3,answer=m*x+b;
+          return secondaryBase({prompt:`For y = ${m}x + ${b}, find y when x = ${x}.`,answer,options:secondaryOptions(answer,[m+x+b,m*(x+b),x+b]),sec:{scene:'graph',tokens:[`y=${m}x+${b}`,`x=${x}`],labels:['function rule','input'],steps:['substitute input','multiply by gradient','add intercept','output y = ?']},hint:'Replace x with the given input, then use order of operations.',misconception:'The coefficient beside x multiplies the input.'});
+        }
+        if(objective.includes('power functions')||objective.includes('exponential')){
+          const base=2+q%2,x=2+q%3,answer=base**x;
+          return secondaryBase({prompt:`For y = ${base}^x, find y when x = ${x}.`,answer,options:secondaryOptions(answer,[base*x,base+x,x**base]),sec:{scene:'graph',tokens:[base,x],labels:['exponential base','input exponent'],steps:['keep positive base','substitute exponent','evaluate repeated multiplication','output = ?']},hint:'An exponent means repeated multiplication of the base.',misconception:'Exponential growth uses powers, not base × exponent.'});
+        }
+        if(objective.includes('quadratic')){
+          const h=q-2,k=2+q%3,answer=`(${h}, ${k})`;
+          return secondaryBase({prompt:`State the turning point of y = (x - ${h})² + ${k}.`,answer,options:secondaryOptions(answer,[`(${-h}, ${k})`,`(${h}, ${-k})`,`(${k}, ${h})`]),sec:{scene:'graph',tokens:[h,k],labels:['horizontal shift h','vertical shift k'],steps:['recognise vertex form','read x-coordinate h','read y-coordinate k','turning point = ?'],graph:'quadratic'},hint:'In y = (x - h)² + k, the turning point is (h, k).',misconception:'The sign inside the bracket is opposite the x-coordinate of the turning point.'});
+        }
+        const x1=q,x2=q+3,y1=2*q+1,y2=2*(q+3)+1,answer=(y2-y1)/(x2-x1);
+        return secondaryBase({prompt:`Find the gradient through (${x1}, ${y1}) and (${x2}, ${y2}).`,answer,options:secondaryOptions(answer,[y2-y1,x2-x1,(x2-x1)/(y2-y1)]),sec:{scene:'graph',tokens:[`(${x1}, ${y1})`,`(${x2}, ${y2})`],labels:['first point','second point'],steps:['mark both points','find vertical change','find horizontal change','gradient = rise / run'],points:[[x1,y1],[x2,y2]]},hint:'Use change in y divided by change in x in the same direction.',misconception:'Gradient is rise over run, not run over rise.'});
+      }
+      if(family==='angles_polygons'){
+        if(objective.includes('right, acute')){
+          const angle=[35,90,125,225,68,170][q],answer=angle<90?'acute':angle===90?'right':angle<180?'obtuse':'reflex';
+          return secondaryBase({prompt:`Classify an angle of ${angle}°.`,answer,options:['acute','right','obtuse','reflex'],sec:{scene:'geometry',tokens:[`${angle}°`,90,180],labels:['given angle','right-angle benchmark','straight-angle benchmark'],steps:['compare with 90°','compare with 180°','check reflex range','classification = ?'],shape:'triangle'},hint:'Acute is below 90°, obtuse is between 90° and 180°, and reflex is above 180°.',misconception:'Angle type depends on size, not the way the diagram is rotated.'});
+        }
+        if(objective.includes('vertically opposite')||objective.includes('straight line')){
+          const a=50+5*q,answer=180-a;
+          return secondaryBase({prompt:`Two adjacent angles on a straight line are ${a}° and x°. Find x.`,answer,options:secondaryOptions(answer,[a,360-a,90-a]),sec:{scene:'geometry',tokens:[`${a}°`,'180°'],labels:['known adjacent angle','straight-line total'],steps:['recognise straight line','write x + known = 180','subtract known angle','x = ?°'],shape:'triangle'},hint:'Adjacent angles on a straight line sum to 180°.',misconception:'Use 180° for a straight line; 360° is the total around a point.'});
+        }
+        if(objective.includes('parallel lines')){
+          const a=55+5*q,answer=a;
+          return secondaryBase({prompt:`A transversal crosses parallel lines. One alternate angle is ${a}°. Find its matching alternate angle.`,answer,options:secondaryOptions(answer,[180-a,90-a,360-a]),sec:{scene:'geometry',tokens:[`${a}°`,'parallel lines'],labels:['given alternate angle','parallel condition'],steps:['identify Z-shape','match alternate positions','use equality','angle = ?°'],shape:'triangle'},hint:'Alternate angles between parallel lines are equal.',misconception:'Supplementary interior angles are a different pair from alternate angles.'});
+        }
+        if(objective.includes('properties of triangles')){
+          const a=45+5*q,b=55,answer=180-a-b;
+          return secondaryBase({prompt:`A triangle has angles ${a}° and ${b}°. Find the third angle.`,answer,options:secondaryOptions(answer,[180-a,180-b,a+b]),sec:{scene:'geometry',tokens:[`${a}°`,`${b}°`],labels:['first interior angle','second interior angle'],steps:['use triangle sum 180°','add known angles','subtract from 180°','third angle = ?'],shape:'triangle'},hint:'Interior angles of a triangle sum to 180°.',misconception:'Subtract the sum of both known angles, not only one.'});
+        }
+        if(objective.includes('classifying special quadrilaterals')){
+          const answer='parallelogram';
+          return secondaryBase({prompt:'Which quadrilateral has both pairs of opposite sides parallel?',answer,options:['parallelogram','kite','trapezium','irregular quadrilateral'],sec:{scene:'geometry',tokens:['opposite sides','two parallel pairs'],labels:['property to inspect','required number of pairs'],steps:['mark first parallel pair','mark second parallel pair','compare definitions','shape = ?'],shape:'parallelogram'},hint:'Use defining properties rather than appearance.',misconception:'A trapezium has one pair of parallel sides; a parallelogram has two.'});
+        }
+        if(objective.includes('construction')){
+          const answer='compasses and ruler';
+          return secondaryBase({prompt:'Which tools construct a perpendicular bisector accurately?',answer,options:['compasses and ruler','calculator and ruler','protractor only','set square only'],sec:{scene:'geometry',tokens:['equal arcs','straight join'],labels:['compass construction','ruler construction'],steps:['draw equal-radius arcs','intersect arcs twice','join intersections','verify 90° and midpoint'],shape:'triangle'},hint:'Equal-radius arcs locate points equidistant from both endpoints.',misconception:'Measuring by eye does not guarantee an exact perpendicular bisector.'});
+        }
+        const sides=3+q,answer=(sides-2)*180;
+        return secondaryBase({prompt:`Find the sum of the interior angles of a ${sides}-sided polygon.`,answer,options:secondaryOptions(answer,[sides*180,(sides-1)*180,360]),sec:{scene:'geometry',tokens:[sides,'(n - 2) × 180°'],labels:['number of sides','interior-angle formula'],steps:['choose one vertex','divide into triangles',`count ${sides-2} triangles`,'total angle sum = ?'],shape:'polygon'},hint:'An n-sided polygon can be divided into n - 2 triangles from one vertex.',misconception:'The interior-angle sum is not n × 180° because the polygon has n - 2 triangles.'});
+      }
+      if(family==='mensuration_geometry'){
+        if(objective.includes('conversion between')){
+          const metres=2+q,answer=metres*10000;
+          return secondaryBase({prompt:`Convert ${metres} m² to cm².`,answer,options:secondaryOptions(answer,[metres*100,metres*1000,metres/10000]),sec:{scene:'geometry',tokens:[`${metres} m²`,'1 m = 100 cm'],labels:['area to convert','linear conversion'],steps:['square the linear factor','use 100²','multiply area by 10 000','area = ? cm²'],shape:'parallelogram'},hint:'Area conversion squares the length conversion factor.',misconception:'1 m² is 10 000 cm², not 100 cm².'});
+        }
+        if(objective.includes('pyramid, cone and sphere')){
+          const radius=3+q,height=6,answer=Number((Math.PI*radius**2*height/3).toFixed(2));
+          return secondaryBase({prompt:`Find the volume of a cone with radius ${radius} cm and height ${height} cm, to 2 d.p.`,answer,options:secondaryOptions(answer,[Number((Math.PI*radius**2*height).toFixed(2)),Number((2*Math.PI*radius*height).toFixed(2)),Number((Math.PI*radius**2).toFixed(2))]),sec:{scene:'geometry',tokens:[`${radius} cm`,`${height} cm`,'1/3'],labels:['radius','perpendicular height','cone factor'],steps:['find circular base area','multiply by height','divide by 3','volume = ? cm³'],shape:'circle'},hint:'Cone volume is one-third of the matching cylinder: 1/3 πr²h.',misconception:'A cone does not have the full volume of its matching cylinder.'});
+        }
+        if(objective.includes('volume')||objective.includes('surface area')){
+          const l=4+q,w=3,h=2,answer=l*w*h;
+          return secondaryBase({prompt:`Find the volume of a prism with cross-sectional area ${l*w} cm² and length ${h} cm.`,answer,options:secondaryOptions(answer,[2*(l*w+l*h+w*h),l*w,h*(l+w)]),sec:{scene:'geometry',tokens:[`${l*w} cm²`,`${h} cm`],labels:['cross-sectional area','prism length'],steps:['identify constant cross-section','multiply area by length','preserve cubic units','volume = ? cm³'],shape:'parallelogram'},hint:'Prism volume = cross-sectional area × length.',misconception:'Surface area adds faces; volume extends a cross-sectional area through a length.'});
+        }
+        if(objective.includes('trapezium')){
+          const a=6+q,b=10+q,h=4,answer=(a+b)*h/2;
+          return secondaryBase({prompt:`Find the area of a trapezium with parallel sides ${a} cm and ${b} cm and height ${h} cm.`,answer,options:secondaryOptions(answer,[(a+b)*h,a*b*h/2,a+b+h]),sec:{scene:'geometry',tokens:[a,b,h],labels:['parallel side a','parallel side b','perpendicular height'],steps:['add parallel sides','multiply by height','divide by 2','area = ? cm²'],shape:'parallelogram'},hint:'Use one-half × (sum of parallel sides) × height.',misconception:'The trapezium formula averages the parallel sides before multiplying by height.'});
+        }
+        if(objective.includes('composite')){
+          const w=8+q,h=6,cut=2,answer=w*h-cut*cut;
+          return secondaryBase({prompt:`A ${w} cm by ${h} cm rectangle has a ${cut} cm by ${cut} cm square removed. Find the remaining area.`,answer,options:secondaryOptions(answer,[w*h,2*(w+h)-4*cut,w*h+cut*cut]),sec:{scene:'geometry',tokens:[`${w}×${h}`,`${cut}×${cut}`],labels:['whole rectangle','removed square'],steps:['find whole area','find removed area','subtract without overlap','remaining area = ?'],shape:'parallelogram'},hint:'Decompose the figure into non-overlapping regions.',misconception:'A removed region is subtracted from the whole area.'});
+        }
+        const base=6+q,height=4+q%3,answer=base*height;
+        return secondaryBase({prompt:`Find the area of a parallelogram with base ${base} cm and perpendicular height ${height} cm.`,answer,options:secondaryOptions(answer,[2*(base+height),base*height/2,base+height]),sec:{scene:'geometry',tokens:[`${base} cm`,`${height} cm`],labels:['base','perpendicular height'],steps:['identify base','locate perpendicular height','multiply base by height','area = ? cm²'],shape:'parallelogram'},hint:'Use the perpendicular height, not the sloping side.',misconception:'The area of a parallelogram is base × perpendicular height.'});
+      }
+      if(family==='similarity_trigonometry'){
+        if(objective.includes('congruent')){
+          const answer='SSS';
+          return secondaryBase({prompt:'Two triangles have three pairs of equal corresponding sides. Which condition proves congruence?',answer,options:['SSS','AAA','same perimeter only','same area only'],sec:{scene:'geometry',tokens:['side a = side a','side b = side b','side c = side c'],labels:['first side pair','second side pair','third side pair'],steps:['match corresponding vertices','verify three side pairs','apply congruence condition','condition = ?'],shape:'triangle'},hint:'Three equal corresponding side pairs establish SSS congruence.',misconception:'AAA proves similarity, not necessarily congruence.'});
+        }
+        if(objective.includes('similar figures')||objective.includes('similar triangles')){
+          const small=3+q,large=2*small,answer=2;
+          return secondaryBase({prompt:`A corresponding side grows from ${small} cm to ${large} cm. Find the scale factor.`,answer,options:secondaryOptions(answer,[small/large,large-small,small*large]),sec:{scene:'geometry',tokens:[small,large],labels:['original side','image side'],steps:['match corresponding sides','form image / original','check all sides use same factor','scale factor = ?'],shape:'triangle'},hint:'Scale factor = image length ÷ original length.',misconception:'Similarity preserves angle size and multiplies every length by one common factor.'});
+        }
+        if(objective.includes('enlargement')||objective.includes('scale drawing')){
+          const scale=2+q%3,length=4+q,answer=scale*length;
+          return secondaryBase({prompt:`A length ${length} cm is enlarged by scale factor ${scale}. Find the image length.`,answer,options:secondaryOptions(answer,[length+scale,length/scale,length**2]),sec:{scene:'geometry',tokens:[length,scale],labels:['original length','scale factor'],steps:['identify original','multiply by scale factor','retain length unit','image length = ?'],shape:'triangle'},hint:'Every corresponding length is multiplied by the scale factor.',misconception:'An enlargement uses multiplication, not addition of the scale factor.'});
+        }
+        if(objective.includes('bisector')){
+          const answer='equidistant from both endpoints';
+          return secondaryBase({prompt:'Every point on a perpendicular bisector is...',answer,options:['equidistant from both endpoints','closer to the first endpoint','on the original segment','an equal angle from every line'],sec:{scene:'geometry',tokens:['endpoint A','endpoint B','perpendicular bisector'],labels:['first fixed point','second fixed point','locus of equal distance'],steps:['draw equal-radius arcs','join arc intersections','test distances to A and B','property = ?'],shape:'triangle'},hint:'The perpendicular bisector is the locus of points equally distant from the segment endpoints.',misconception:'Perpendicular describes the angle; bisector describes the equal halves.'});
+        }
+        if(objective.includes('ratio of areas')){
+          const k=2+q%3,answer=`1:${k*k}`;
+          return secondaryBase({prompt:`Similar figures have length ratio 1:${k}. Find their area ratio.`,answer,options:secondaryOptions(answer,[`1:${k}`,`1:${k**3}`,`${k}:1`]),sec:{scene:'geometry',tokens:[`1:${k}`,'area'],labels:['length ratio','measure with two dimensions'],steps:['identify scale factor','square both ratio terms','keep stated order','area ratio = ?'],shape:'triangle'},hint:'Area scales with the square of the length factor.',misconception:'Area ratio is the square, not the same as the length ratio.'});
+        }
+        if(objective.includes('ratio of volumes')){
+          const k=2+q%2,answer=`1:${k**3}`;
+          return secondaryBase({prompt:`Similar solids have length ratio 1:${k}. Find their volume ratio.`,answer,options:secondaryOptions(answer,[`1:${k}`,`1:${k*k}`,`${k**3}:1`]),sec:{scene:'geometry',tokens:[`1:${k}`,'volume'],labels:['length ratio','measure with three dimensions'],steps:['identify scale factor','cube both ratio terms','keep stated order','volume ratio = ?'],shape:'triangle'},hint:'Volume scales with the cube of the length factor.',misconception:'Volume ratio is the cube of the linear ratio.'});
+        }
+        if(objective.includes('sine')||objective.includes('cosine')||objective.includes('trigonometric')){
+          const opposite=3+q,adjacent=4,answer=Number((opposite/adjacent).toFixed(2));
+          return secondaryBase({prompt:`For an acute angle, opposite = ${opposite} and adjacent = ${adjacent}. Find tan θ to 2 d.p.`,answer,options:secondaryOptions(answer,[adjacent/opposite,opposite/Math.hypot(opposite,adjacent),adjacent/Math.hypot(opposite,adjacent)]),sec:{scene:'geometry',tokens:[opposite,adjacent],labels:['opposite side','adjacent side'],steps:['choose tangent ratio','use opposite / adjacent','substitute lengths','tan θ = ?'],shape:'triangle'},hint:'Tangent compares opposite to adjacent.',misconception:'Choose the ratio by side names, not by memorising a diagram orientation.'});
+        }
+        if(objective.includes('area of a triangle')){
+          const a=6+q,b=8,answer=a*b/2;
+          return secondaryBase({prompt:`Find the area of a right triangle with perpendicular sides ${a} cm and ${b} cm.`,answer,options:secondaryOptions(answer,[a*b,a+b,(a+b)/2]),sec:{scene:'geometry',tokens:[a,b],labels:['base','perpendicular height'],steps:['identify perpendicular pair','multiply base by height','divide by 2','area = ? cm²'],shape:'triangle'},hint:'Triangle area is one-half × base × perpendicular height.',misconception:'A triangle occupies half the matching parallelogram or rectangle.'});
+        }
+        const triples=[[3,4,5],[5,12,13],[6,8,10],[7,24,25],[8,15,17],[9,12,15]],item=triples[q],answer=item[2];
+        return secondaryBase({prompt:`A right triangle has perpendicular sides ${item[0]} cm and ${item[1]} cm. Find the hypotenuse.`,answer,options:secondaryOptions(answer,[item[0]+item[1],Math.abs(item[1]-item[0]),item[0]*item[1]]),sec:{scene:'geometry',tokens:[item[0],item[1]],labels:['perpendicular side a','perpendicular side b'],steps:['identify right angle','square both shorter sides','add the squares','take positive square root'],shape:'triangle'},hint:'Use c² = a² + b², with c opposite the right angle.',misconception:'Add the squares before taking the square root; do not add the side lengths directly.'});
+      }
+      if(family==='circle_coordinate'){
+        if(CONFIG.section==='G6'){
+          if(objective.includes('gradient')){
+            const x1=1,y1=2+q,x2=4,y2=8+q,answer=(y2-y1)/(x2-x1);
+            return secondaryBase({prompt:`Find the gradient through (${x1}, ${y1}) and (${x2}, ${y2}).`,answer,options:secondaryOptions(answer,[y2-y1,x2-x1,(x2-x1)/(y2-y1)]),sec:{scene:'graph',tokens:[`(${x1}, ${y1})`,`(${x2}, ${y2})`],labels:['first point','second point'],steps:['find change in y','find change in x','divide rise by run','gradient = ?']},hint:'Use the same point order in both coordinate differences.',misconception:'Gradient is vertical change divided by horizontal change.'});
+          }
+          if(objective.includes('equation of a straight line')){
+            const m=2+q%2,c=3+q,answer=`y = ${m}x + ${c}`;
+            return secondaryBase({prompt:`A line has gradient ${m} and y-intercept ${c}. Write its equation.`,answer,options:secondaryOptions(answer,[`y = ${c}x + ${m}`,`x = ${m}y + ${c}`,`y = ${m}x - ${c}`]),sec:{scene:'graph',tokens:[m,c],labels:['gradient m','vertical intercept c'],steps:['use y = mx + c','insert gradient','insert y-intercept','equation = ?']},hint:'In y = mx + c, m is gradient and c is the y-intercept.',misconception:'Do not swap the gradient and intercept.'});
+          }
+          const a=[0,1],b=[3+q,4+q],answer=Number(Math.sqrt((b[0]-a[0])**2+(b[1]-a[1])**2).toFixed(2));
+          return secondaryBase({prompt:`Find the distance from (${a[0]}, ${a[1]}) to (${b[0]}, ${b[1]}) to 2 d.p.`,answer,options:secondaryOptions(answer,[(b[0]-a[0])+(b[1]-a[1]),Math.abs(b[1]-b[0]),(b[0]-a[0])**2+(b[1]-a[1])**2]),sec:{scene:'graph',tokens:[`(${a.join(', ')})`,`(${b.join(', ')})`],labels:['point A','point B'],steps:['find horizontal change','find vertical change','apply Pythagoras','distance = ?'],points:[a,b]},hint:'Coordinate distance is the hypotenuse of a right triangle.',misconception:'The distance formula includes a square root after adding squared changes.'});
+        }
+        if(objective.includes('symmetry properties')){
+          const answer='perpendicular to the chord';
+          return secondaryBase({prompt:'A line from the centre bisects a chord. How is it related to the chord?',answer,options:['perpendicular to the chord','parallel to the chord','tangent to the circle','an arc of the circle'],sec:{scene:'geometry',tokens:['centre','chord midpoint'],labels:['fixed circle centre','equal chord halves'],steps:['join centre to midpoint','use circle symmetry','mark right angle','relationship = ?'],shape:'circle'},hint:'The line from the centre to a chord midpoint is perpendicular to the chord.',misconception:'A chord joins two points on the circle; a tangent touches at one point.'});
+        }
+        if(objective.includes('angle properties')){
+          const circumference=30+5*q,answer=2*circumference;
+          return secondaryBase({prompt:`An angle at the circumference is ${circumference}° and subtends the same arc as a central angle. Find the central angle.`,answer,options:secondaryOptions(answer,[circumference,180-circumference,360-circumference]),sec:{scene:'geometry',tokens:[`${circumference}°`,'same arc'],labels:['circumference angle','shared subtended arc'],steps:['match the same arc','use centre = 2 × circumference','double the angle','central angle = ?'],shape:'circle'},hint:'For the same arc, the angle at the centre is twice the angle at the circumference.',misconception:'This doubling relation requires both angles to subtend the same arc.'});
+        }
+        if(objective.includes('radian')){
+          const degrees=[30,45,60,90,120,180][q],answer=`${degrees===180?'π':degrees===90?'π/2':degrees===60?'π/3':degrees===45?'π/4':degrees===30?'π/6':'2π/3'}`;
+          return secondaryBase({prompt:`Convert ${degrees}° to radians.`,answer,options:secondaryOptions(answer,[`${degrees}π/180`,`π/${degrees}`,`${degrees}/π`]),sec:{scene:'geometry',tokens:[`${degrees}°`,'π radians = 180°'],labels:['degree measure','conversion equality'],steps:['multiply by π/180','cancel common factor','retain radians','angle = ?'],shape:'circle'},hint:'Radians = degrees × π/180.',misconception:'The factor π/180 converts degrees to radians; its reciprocal converts back.'});
+        }
+        if(objective.includes('area of a segment')){
+          const sector=80+5*q,triangle=30+2*q,answer=sector-triangle;
+          return secondaryBase({prompt:`A sector has area ${sector} cm² and its central triangle has area ${triangle} cm². Find the minor segment area.`,answer,options:secondaryOptions(answer,[sector+triangle,sector,triangle]),sec:{scene:'geometry',tokens:[sector,triangle],labels:['sector area','central triangle area'],steps:['identify sector region','identify triangle inside it','subtract triangle from sector','segment area = ?'],shape:'circle'},hint:'Minor segment area = sector area - central triangle area.',misconception:'The segment is the curved cap left after removing the central triangle.'});
+        }
+        if(objective.includes('sector area')){
+          const radius=6+q,angle=90,answer=Number((angle/360*Math.PI*radius**2).toFixed(2));
+          return secondaryBase({prompt:`Find the sector area for radius ${radius} cm and angle ${angle}°, to 2 d.p.`,answer,options:secondaryOptions(answer,[Number((angle/360*2*Math.PI*radius).toFixed(2)),Number((Math.PI*radius**2).toFixed(2)),radius*angle]),sec:{scene:'geometry',tokens:[`${radius} cm`,`${angle}°`],labels:['radius','central angle'],steps:['find full circle area','take angle / 360','multiply','sector area = ?'],shape:'circle'},hint:'Sector area is angle/360 of πr².',misconception:'Use πr² for area; 2πr measures circumference.'});
+        }
+        const radius=5+q,angle=[60,90,120,135,150,210][q],answer=Number((angle/360*2*Math.PI*radius).toFixed(2));
+        return secondaryBase({prompt:`Find the arc length for radius ${radius} cm and central angle ${angle}°, to 2 d.p.`,answer,options:secondaryOptions(answer,[Number((angle/360*Math.PI*radius**2).toFixed(2)),Number((2*Math.PI*radius).toFixed(2)),Number((angle/180*radius).toFixed(2))]),sec:{scene:'geometry',tokens:[`${radius} cm`,`${angle}°`],labels:['radius','central angle'],steps:['identify fraction of full turn','find full circumference','multiply by angle / 360','arc length = ?'],shape:'circle'},hint:'Arc length is angle/360 of the full circumference.',misconception:'Use 2πr for length; πr² is an area formula.'});
+      }
+      if(family==='data_probability'){
+        if(CONFIG.section==='S2'){
+          if(objective.includes('combined')||objective.includes('addition and multiplication')){
+            const answer='1/4';
+            return secondaryBase({prompt:'A fair coin is tossed twice. Find P(two heads).',answer,options:secondaryOptions(answer,['1/2','3/4','1/3']),sec:{scene:'data',tokens:['H or T','H or T'],labels:['first toss outcomes','second toss outcomes'],steps:['draw possibility tree','count four equal outcomes','identify HH','probability = ?'],bars:[2,2]},hint:'Independent stages multiply: 1/2 × 1/2.',misconception:'Two independent required outcomes use multiplication, not addition.'});
+          }
+          const red=2+q,blue=3,total=red+blue,answer=`${red}/${total}`;
+          return secondaryBase({prompt:`A bag has ${red} red and ${blue} blue counters. Find P(red).`,answer,options:secondaryOptions(answer,[`${blue}/${total}`,`${red}/${blue}`,`1/${total}`]),sec:{scene:'data',tokens:[red,blue],labels:['red outcomes','blue outcomes'],steps:['count favourable outcomes','count all outcomes','form favourable / total','probability = ?'],bars:[red,blue]},hint:'Probability equals favourable outcomes divided by total possible outcomes.',misconception:'The denominator counts every equally likely outcome, not only the other colour.'});
+        }
+        if(objective.includes('collecting')||objective.includes('classifying')){
+          const answer='tally and frequency table';
+          return secondaryBase({prompt:'Which method best organises repeated category responses while collecting data?',answer,options:['tally and frequency table','unlabelled pie chart','one isolated average','random decorative icons'],sec:{scene:'data',tokens:['categories','tallies','frequencies'],labels:['classify responses','record each response','summarise counts'],steps:['define categories','tally one response once','total each category','complete table'],bars:[3,5,4]},hint:'A tally records each response and a frequency totals each category.',misconception:'A representation is useful only when labels, counts and categories remain traceable.'});
+        }
+        if(objective.includes('tables, bar graphs')||objective.includes('analysis and interpretation of dot')||objective.includes('cumulative frequency')){
+          const values=[4+q,7+q,5+q],answer=Math.max(...values);
+          return secondaryBase({prompt:`A chart has category frequencies ${values.join(', ')}. What is the greatest frequency?`,answer,options:secondaryOptions(answer,[Math.min(...values),values.reduce((a,b)=>a+b,0),values.length]),sec:{scene:'data',tokens:values,labels:['category A','category B','category C'],steps:['read scale','compare aligned heights','identify maximum','greatest frequency = ?'],bars:values},hint:'Read every bar from the same zero baseline and scale.',misconception:'Visual height must be interpreted through the axis scale, not by appearance alone.'});
+        }
+        if(objective.includes('purposes')||objective.includes('misinterpretation')){
+          const answer='a truncated vertical axis';
+          return secondaryBase({prompt:'Which design choice can exaggerate a small difference between bars?',answer,options:['a truncated vertical axis','a labelled zero baseline','equal-width bars','a stated data source'],sec:{scene:'data',tokens:['axis starts at 90','bars show 94 and 96'],labels:['truncated baseline','small numerical difference'],steps:['inspect axis start','compare numeric difference','compare visual difference','identify distortion'],bars:[94,96]},hint:'Check whether the axis begins at zero and uses equal intervals.',misconception:'A technically accurate value can still be visually misleading when scale choices distort comparison.'});
+        }
+        if(objective.includes('mode and median')||objective.includes('purposes and use of mean')){
+          const values=[2,3,3,5,7+q],answer=3;
+          return secondaryBase({prompt:`Find the median of ${values.join(', ')}.`,answer,options:secondaryOptions(answer,[values.reduce((a,b)=>a+b,0)/values.length,2,values.at(-1)]),sec:{scene:'data',tokens:values,labels:values.map((_,i)=>`ordered value ${i+1}`),steps:['order values','count positions','locate middle','median = ?'],bars:values},hint:'The median is the middle value after ordering.',misconception:'Median depends on position, while mean uses the total.'});
+        }
+        if(objective.includes('grouped data')){
+          const midpoints=[5,15],frequencies=[2+q,3],answer=(midpoints[0]*frequencies[0]+midpoints[1]*frequencies[1])/(frequencies[0]+frequencies[1]);
+          return secondaryBase({prompt:`Class midpoints are 5 and 15 with frequencies ${frequencies[0]} and ${frequencies[1]}. Find the estimated mean.`,answer,options:secondaryOptions(answer,[20/(frequencies[0]+frequencies[1]),10,midpoints[0]*frequencies[0]+midpoints[1]*frequencies[1]]),sec:{scene:'data',tokens:[5,15,...frequencies],labels:['midpoint 1','midpoint 2','frequency 1','frequency 2'],steps:['multiply midpoint by frequency','sum estimated totals','sum frequencies','divide totals'],bars:frequencies},hint:'Estimated mean = Σ(midpoint × frequency) ÷ Σfrequency.',misconception:'Each midpoint must be weighted by its frequency.'});
+        }
+        if(objective.includes('quartiles')||objective.includes('interquartile')){
+          const q1=10+q,q3=24+q,answer=q3-q1;
+          return secondaryBase({prompt:`A data set has Q1 = ${q1} and Q3 = ${q3}. Find its interquartile range.`,answer,options:secondaryOptions(answer,[q3+q1,q3,q1]),sec:{scene:'data',tokens:[q1,q3],labels:['lower quartile Q1','upper quartile Q3'],steps:['locate middle 50%','subtract Q1 from Q3','retain data unit','IQR = ?'],bars:[q1,q3]},hint:'IQR = Q3 - Q1.',misconception:'Interquartile range measures the middle half, not the full maximum-minus-minimum range.'});
+        }
+        if(objective.includes('standard deviation')||objective.includes('mean and standard')){
+          const answer='Data set A';
+          return secondaryBase({prompt:'Data set A has SD 2.1 and data set B has SD 5.4. Which is less spread out?',answer,options:['Data set A','Data set B','both have equal spread','cannot compare spread'],sec:{scene:'data',tokens:[2.1,5.4],labels:['SD of A','SD of B'],steps:['interpret SD as spread','compare SD values','choose smaller spread','less variable set = ?'],bars:[2.1,5.4]},hint:'A smaller standard deviation indicates values lie more closely around the mean.',misconception:'The larger standard deviation represents greater, not smaller, spread.'});
+        }
+        const values=[4+q,6+q,8+q,10+q],answer=values.reduce((a,b)=>a+b,0)/values.length;
+        return secondaryBase({prompt:`Find the mean of ${values.join(', ')}.`,answer,options:secondaryOptions(answer,[values.reduce((a,b)=>a+b,0),values[1],values.length]),sec:{scene:'data',tokens:values,labels:values.map((_,i)=>`data ${i+1}`),steps:['add all values','count data values','divide total by count','mean = ?'],bars:values},hint:'Mean = total of values ÷ number of values.',misconception:'The mean is not the total and need not be one of the original values.'});
+      }
+      if(family==='sets_matrices'){
+        if(CONFIG.section==='N8'){
+          const answer='{2, 4}';
+          return secondaryBase({prompt:'Let A = {1, 2, 4} and B = {2, 3, 4}. Find A ∩ B.',answer,options:secondaryOptions(answer,['{1, 2, 3, 4}','{1, 3}','∅']),sec:{scene:'set',tokens:['A','B'],labels:['set A','set B'],steps:['place A elements','place B elements','inspect overlap','intersection = ?'],sets:[[1,2,4],[2,3,4]]},hint:'The intersection contains elements that belong to both sets.',misconception:'Union combines all elements; intersection keeps only shared elements.'});
+        }
+        const scalar=2+q%3,matrix=[[1,q+1],[2,3]],answer=`[${scalar}, ${scalar*(q+1)}; ${2*scalar}, ${3*scalar}]`;
+        return secondaryBase({prompt:`Multiply the matrix [1, ${q+1}; 2, 3] by ${scalar}.`,answer,options:secondaryOptions(answer,[`[${1+scalar}, ${q+1+scalar}; ${2+scalar}, ${3+scalar}]`,`[${scalar}, ${q+1}; 2, ${3*scalar}]`,`[${scalar}, ${scalar*(q+1)}]`]),sec:{scene:'matrix',tokens:[1,q+1,2,3],labels:['row 1 column 1','row 1 column 2','row 2 column 1','row 2 column 2'],steps:['keep matrix order','multiply every entry',`use scalar ${scalar}`,'result matrix = ?'],matrix:[[1,q+1],[2,3]]},hint:'A scalar multiplies every matrix entry.',misconception:'Do not add the scalar or multiply only one row.'});
+      }
+      if(family==='vectors'){
+        const a=[2+q,1-q%2],b=[-1,3+q%2],answer=`(${a[0]+b[0]}, ${a[1]+b[1]})`;
+        return secondaryBase({prompt:`Add vectors (${a[0]}, ${a[1]}) and (${b[0]}, ${b[1]}).`,answer,options:secondaryOptions(answer,[`(${a[0]-b[0]}, ${a[1]-b[1]})`,`(${a[0]*b[0]}, ${a[1]*b[1]})`,`(${a[0]+b[1]}, ${a[1]+b[0]})`]),sec:{scene:'vector',tokens:[`(${a.join(', ')})`,`(${b.join(', ')})`],labels:['first vector','second vector'],steps:['add horizontal components','add vertical components','keep component order','resultant = ?'],vectors:[a,b]},hint:'Add corresponding horizontal components and corresponding vertical components.',misconception:'Vector addition is component-by-component; do not cross the coordinates.'});
+      }
+      return secondaryBase({prompt:CONFIG.objective,answer:'Ready',options:['Ready','Review','Skip','Guess'],sec:{scene:'factor',tokens:['represent','reason'],labels:['model','relationship'],steps:['inspect givens','choose representation','apply relationship','check']}});
+    }
+
+    function secondaryHotspots(p){
+      const tokens=p.sec.tokens||[],labels=p.sec.labels||tokens.map((_,i)=>`quantity ${i+1}`);
+      return `<div class="secondary-inspect-grid">${tokens.map((token,i)=>`<button type="button" class="secondary-hotspot tap-target" data-secondary-inspect data-secondary-message="${esc(labels[i]||`quantity ${i+1}`)}: ${esc(token)}"><span>${esc(token)}</span><small>${esc(labels[i]||`quantity ${i+1}`)}</small></button>`).join('')}</div>`;
+    }
+    function secondaryNumberLineHTML(p){
+      const range=p.sec.range||[-10,10],min=Number(range[0]),max=Number(range[1]),span=Math.max(1,max-min),ticks=Array.from({length:7},(_,i)=>min+span*i/6);
+      return `<div class="secondary-number-line" aria-label="number line from ${min} to ${max}">${ticks.map((value,i)=>`<span class="tick" style="left:${i/6*100}%"><b>${Number(value.toFixed(2))}</b></span>`).join('')}${(p.sec.tokens||[]).filter(Number.isFinite).map(value=>`<button type="button" class="point tap-target" data-secondary-inspect data-secondary-message="${value} is at this position on the number line" style="left:${clamp((value-min)/span*100,0,100)}%" aria-label="Inspect ${value}"></button>`).join('')}</div>`;
+    }
+    function secondaryGraphHTML(p){
+      return `<div class="secondary-coordinate" aria-label="coordinate graph"><span class="secondary-graph-line"></span><button type="button" class="secondary-graph-point tap-target" style="--x:25%;--y:30%" data-secondary-inspect data-secondary-message="First point fixes one position on the relation" aria-label="Inspect first point"></button><button type="button" class="secondary-graph-point tap-target" style="--x:72%;--y:70%" data-secondary-inspect data-secondary-message="Second point reveals horizontal and vertical change" aria-label="Inspect second point"></button></div>`;
+    }
+    function secondaryGeometryHTML(p){
+      const shape=p.sec.shape||'triangle';
+      if(shape==='circle')return `<div class="secondary-geometry"><svg viewBox="0 0 420 220" role="img" aria-label="Circle with radius and central angle"><circle cx="210" cy="112" r="82" fill="#dff7f4" stroke="#082653" stroke-width="5"/><line class="geo-part" data-secondary-inspect data-secondary-message="The radius runs from the centre to the circumference" x1="210" y1="112" x2="292" y2="112" stroke="#ef554f" stroke-width="5"/><line class="geo-part" data-secondary-inspect data-secondary-message="The central angle selects a fraction of the full circumference" x1="210" y1="112" x2="251" y2="41" stroke="#079a9a" stroke-width="5"/><circle cx="210" cy="112" r="7" fill="#082653"/></svg></div>`;
+      if(shape==='parallelogram')return `<div class="secondary-geometry"><svg viewBox="0 0 420 220" role="img" aria-label="Parallelogram with base and perpendicular height"><polygon points="90,180 300,180 345,55 135,55" fill="#dff7f4" stroke="#082653" stroke-width="5"/><line class="geo-part" data-secondary-inspect data-secondary-message="Use this base length" x1="90" y1="180" x2="300" y2="180" stroke="#ef554f" stroke-width="8"/><line class="geo-part" data-secondary-inspect data-secondary-message="The perpendicular height meets the base at 90 degrees" x1="300" y1="180" x2="300" y2="55" stroke="#079a9a" stroke-width="6" stroke-dasharray="10 6"/><path d="M282 180v-18h18" fill="none" stroke="#082653" stroke-width="4"/></svg></div>`;
+      if(shape==='polygon')return `<div class="secondary-geometry"><svg viewBox="0 0 420 220" role="img" aria-label="Polygon divided into triangles"><polygon points="75,145 125,45 255,30 350,105 300,190 145,195" fill="#fff4d5" stroke="#082653" stroke-width="5"/><path class="geo-part" data-secondary-inspect data-secondary-message="Diagonals from one vertex divide the polygon into n minus 2 triangles" d="M75 145L255 30M75 145L350 105M75 145L300 190" fill="none" stroke="#ef554f" stroke-width="4"/></svg></div>`;
+      return `<div class="secondary-geometry"><svg viewBox="0 0 420 220" role="img" aria-label="Right triangle"><polygon points="85,180 335,180 85,45" fill="#dff7f4" stroke="#082653" stroke-width="5"/><line class="geo-part" data-secondary-inspect data-secondary-message="This is one perpendicular side" x1="85" y1="180" x2="335" y2="180" stroke="#ef554f" stroke-width="8"/><line class="geo-part" data-secondary-inspect data-secondary-message="This is the second perpendicular side" x1="85" y1="180" x2="85" y2="45" stroke="#079a9a" stroke-width="8"/><line class="geo-part" data-secondary-inspect data-secondary-message="The hypotenuse is opposite the right angle" x1="85" y1="45" x2="335" y2="180" stroke="#1769d2" stroke-width="8"/><path d="M85 160h20v20" fill="none" stroke="#082653" stroke-width="4"/></svg></div>`;
+    }
+    function secondaryBarsHTML(p){
+      const values=(p.sec.bars||p.sec.unitCounts||p.sec.tokens||[3,5]).map(value=>Number(value)).filter(Number.isFinite),max=Math.max(1,...values);
+      return `<div class="secondary-bars">${values.map((value,i)=>`<button type="button" class="secondary-bar ${i%2?'alt':''} tap-target" style="--bar-height:${55+value/max*80}px;animation-delay:${i*.12}s" data-secondary-inspect data-secondary-message="${esc((p.sec.labels||[])[i]||`quantity ${i+1}`)} has value ${value}">${value}</button>`).join('')}</div>`;
+    }
+    function secondaryMatrixHTML(p){
+      const matrix=p.sec.matrix||[[1,2],[3,4]],flat=matrix.flat();
+      return `<div class="secondary-matrix" style="--matrix-cols:${matrix[0].length}">${flat.map((value,i)=>`<button type="button" class="tap-target" data-secondary-inspect data-secondary-message="Matrix entry ${i+1} is ${value}">${value}</button>`).join('')}</div>`;
+    }
+    function secondarySceneHTML(p,mode='main'){
+      const family=p.family||p.sec.family,scene=p.sec.scene||family;let model='';
+      if(scene==='number-line')model=secondaryNumberLineHTML(p);
+      else if(scene==='graph'||scene==='vector')model=secondaryGraphHTML(p);
+      else if(scene==='geometry')model=secondaryGeometryHTML(p);
+      else if(scene==='matrix')model=secondaryMatrixHTML(p);
+      else if(scene==='data'||scene==='ratio'||scene==='percent'||scene==='rate')model=secondaryBarsHTML(p);
+      else if(scene==='set')model=`<div class="secondary-inspect-grid"><button class="secondary-hotspot tap-target" data-secondary-inspect data-secondary-message="Elements only in A stay in the left region">A only</button><button class="secondary-hotspot tap-target" data-secondary-inspect data-secondary-message="Shared elements belong in the intersection">A intersection B</button><button class="secondary-hotspot tap-target" data-secondary-inspect data-secondary-message="Elements only in B stay in the right region">B only</button></div>`;
+      else if(scene==='equation'||scene==='algebra')model=`<div class="secondary-model-equation">${(p.sec.tokens||[]).map((token,i)=>`${i?'<span>=</span>':''}<button type="button" class="secondary-hotspot tap-target" data-secondary-inspect data-secondary-message="${esc((p.sec.labels||[])[i]||`expression part ${i+1}`)}"><span>${esc(token)}</span></button>`).join('')}<span class="secondary-answer-mask">?</span></div>`;
+      else model=secondaryHotspots(p);
+      const steps=p.sec.steps||['inspect','represent','calculate','check'],active=mode==='main'?0:Math.min(3,Math.max(0,['inspect','interact','animate','notation','answer'].indexOf(mode)));
+      const flow=mode==='animate'||mode==='notation'?`<div class="secondary-flow">${steps.map((step,i)=>`${i?`<span class="secondary-flow-arrow" style="--delay:${i*.18}s">→</span>`:''}<span class="secondary-flow-step" style="--delay:${i*.18}s">${esc(step)}</span>`).join('')}</div>`:'';
+      return `<div class="secondary-lab" data-secondary-model data-secondary-mode="${esc(mode)}"><div class="secondary-lab-head"><span class="secondary-mission">Interactive reasoning lab</span><strong>${esc(p.sec.code)} · ${esc(family.replaceAll('_',' '))}</strong></div><div class="secondary-scene">${mode==='animate'||mode==='notation'?flow:model}</div><div class="secondary-stage-strip">${['Inspect','Represent','Transform','Verify'].map((label,i)=>`<span class="${i===active?'active':''}">${label}</span>`).join('')}</div><div class="secondary-coachline" data-secondary-coach role="status" aria-live="polite">Tap a labelled mathematical part. Explain what it controls before choosing an answer.</div></div>`;
+    }
+    function secondaryAnswerHTML(p){
+      return `<div class="secondary-lab"><div class="secondary-lab-head"><span class="secondary-mission">Verification</span><strong>Model, notation and answer agree</strong></div><div class="secondary-scene">${secondarySceneHTML(p,'notation')}<div class="secondary-model-equation"><span>Answer</span><span>=</span><span class="unknown">${esc(p.answer)}</span></div></div><div class="secondary-coachline">Substitute or reverse the process to confirm the result fits every given condition.</div></div>`;
+    }
+    function secondaryTutorialSteps(p){
+      return withLearnerAttempt(p,[
+        {title:'Inspect the evidence before calculating',text:'Tap each given, label or marked feature. Say what it controls in the problem.',html:secondarySceneHTML(p,'inspect')},
+        {title:'Build the mathematical relationship',text:'Connect the quantities with the objective-specific model. Do not compute the final answer yet.',html:secondarySceneHTML(p,'interact')},
+        {title:'Animate one valid transformation at a time',text:'Follow the sequence. Every arrow must preserve the original relationship.',html:secondarySceneHTML(p,'animate')},
+        {title:'Connect the model to notation',text:'Read the symbolic bridge from left to right. The final value remains concealed until the relationship is complete.',html:secondarySceneHTML(p,'notation')},
+        {title:'Verify the corrected result',text:'Now compare the completed calculation with the givens and explain why your earlier response did not fit.',html:secondaryAnswerHTML(p)}
+      ]);
+    }
+    function activateSecondaryInteractions(root=document){
+      root.querySelectorAll('[data-secondary-inspect],.geo-part[data-secondary-inspect]').forEach(target=>{
+        if(target.dataset.secondaryBound)return;target.dataset.secondaryBound='1';
+        const inspect=()=>{
+          root.querySelectorAll('[data-secondary-inspect]').forEach(item=>item.classList.remove('inspected'));target.classList.add('inspected');
+          const model=target.closest('[data-secondary-model]')||root,coach=model.querySelector('[data-secondary-coach]'),message=target.dataset.secondaryMessage||'Inspect this mathematical feature.';
+          if(coach)coach.textContent=message;speakMathPhrase(message,target);
+          const evidence={t:Date.now(),question:state.q+1,step:els.tutorial.open?state.tutorialStep+1:null,event:'secondary-model-inspected',family:CONFIG.family||'',label:message};
+          state.tutorialInteractions.push(evidence);if(state.tutorialInteractions.length>160)state.tutorialInteractions.shift();
+          log('🔎','Inspected secondary model',message,{family:CONFIG.family||''});persist();sendXapi('secondary-model-inspected');
+        };
+        target.addEventListener('click',inspect); if(target instanceof SVGElement){target.setAttribute('tabindex','0');target.setAttribute('role','button');target.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();inspect();}});}
+      });
+    }
+
     // ---------- Objective-specific problem generation ----------
     function makeProblem(kind,q){
       const guided=q<2;
+      if(String(kind).startsWith('s'))return makeSecondaryProblem(q);
       if(String(kind).startsWith('p2_'))return makePrimary2Problem(kind,q);
       if(String(kind).startsWith('p3_'))return makePrimary3Problem(kind,q);
       if(String(kind).startsWith('p4_'))return makePrimary4Problem(kind,q);
@@ -2717,6 +3229,7 @@
       return `<div><div class="grid-caption">${esc(figure)}</div><div class="composite-figure" aria-label="${esc(figure)} made from 2D shapes">${parts.map(shapeHTML).join('')}</div></div>`;
     }
     function visualHTML(p){
+      if(p.visual==='secondary') return secondarySceneHTML(p,'main');
       if(p.visual==='p4') return p.hideMainModel?'':p4ModelHTML(p);
       if(p.visual==='objects') return `<div class="objects" aria-label="${p.count} counters">${dots(p.count)}</div>`;
       if(p.visual==='sets') return `<div class="set-row">${p.counts.map((n,i)=>`<div class="set-box"><b>Group ${String.fromCharCode(65+i)}</b><div class="mini-dots" aria-label="${n} objects">${dots(n,true)}</div></div>`).join('')}</div>`;
@@ -2898,6 +3411,7 @@
       }));
       bindOrderDrag(); bindMoneyDrag(); bindLineDrag(); bindGridPaintDrag();
       activateWordSpeech(els.area);
+      activateSecondaryInteractions(els.area);
       attachTouchFeedback(els.area);
     }
 
@@ -3780,6 +4294,7 @@
       ];
     }
     function tutorialSteps(p){
+      if(/^s\d+_/.test(String(CONFIG.kind)))return secondaryTutorialSteps(p);
       if(/^p[23456]_/.test(String(CONFIG.kind)))return withLearnerAttempt(p,p4TutorialSteps(p));
       if(isPlaceValueOperation(p))return withLearnerAttempt(p,htoTutorialSteps(p));
       if(CONFIG.kind==='mental_calculation')return withLearnerAttempt(p,mentalCalculationTutorialSteps(p));
@@ -3871,6 +4386,7 @@
     function activateTutorialInteractions(){
       const nextButton=$('tutorialNextBtn');
       activateWordSpeech(els.tutorialVisual);
+      activateSecondaryInteractions(els.tutorialVisual);
       function recordRatioAnimation(event,detail={}){
         const evidence={t:Date.now(),question:state.q+1,step:state.tutorialStep+1,event,mode:'ratio-animation',...detail};
         state.tutorialInteractions.push(evidence);if(state.tutorialInteractions.length>160)state.tutorialInteractions.shift();
@@ -4386,6 +4902,7 @@
       const timeUnitInspectionsCompleted=state.tutorialInteractions.filter(v=>v.event==='time-unit-inspection-completed').length;
       const ratioTermsInspected=state.tutorialInteractions.filter(v=>v.event==='ratio-term-inspected').length;
       const ratioAnimationsReplayed=state.tutorialInteractions.filter(v=>v.event==='ratio-animation-replayed').length;
+      const secondaryModelInspections=state.tutorialInteractions.filter(v=>v.event==='secondary-model-inspected').length;
       const dragActions=state.actions.filter(action=>action.inputMode==='drag');
       const tapActions=state.actions.filter(action=>action.inputMode==='tap-or-click');
       return {
@@ -4399,7 +4916,7 @@
         clockFiveMinuteSteps,clockFiveMinuteWalksCompleted,
         dayCycleSteps,dayCycleJourneysCompleted,amPmDecisionsTested,amPmDecisionsCompleted,
         durationQuarterSteps,durationQuarterWalksCompleted,timeUnitPartsInspected,timeUnitInspectionsCompleted,
-        ratioTermsInspected,ratioAnimationsReplayed,
+        ratioTermsInspected,ratioAnimationsReplayed,secondaryModelInspections,
         dragActions:dragActions.length,tapOrClickActions:tapActions.length,lastDragDestinations:dragActions.slice(-10).map(action=>action.destination),
         masteryPercent:Math.round(score()/TOTAL_QUESTIONS*100),
         misconceptionEvidence:wrong.slice(-10).map(h=>({question:h.q,studentAnswer:h.value,correctAnswer:h.expected,attempt:h.attempt})),
@@ -4420,7 +4937,7 @@
         feedback:feedbackText,actionLog:recent,activityTasks:tasks,responses:state.history.slice(-80),
         history:state.history.slice(-80),tutorialEvidence:state.tutorialViews.slice(-80),tutorialInteractionEvidence:state.tutorialInteractions.slice(-120),teacherAnalytics:summary,dashboard:summary,
         quiz:{total:TOTAL_QUESTIONS,completed:summary.questionsCompleted,firstTryCorrect:summary.firstTryCorrect},
-        details:{curriculum:'Singapore Primary Mathematics Syllabus 2021, updated October 2025, pages 31–32',objectiveId:CONFIG.id,phase:phaseFor(state.q),originalFeedback:feedbackText}
+        details:{curriculum:CONFIG.curriculumSource||'Singapore Primary Mathematics Syllabus 2021, updated October 2025',schoolStage:CONFIG.schoolStage||'Primary',objectiveId:CONFIG.id,objectiveFamily:CONFIG.family||CONFIG.kind,phase:phaseFor(state.q),originalFeedback:feedbackText}
       };
     }
     let flushTimer=0;
@@ -4495,7 +5012,7 @@
     }
 
     function init(){
-      const gradeMatch=String(CONFIG.id||'').match(/^P(\d+)-/),gradeLabel=gradeMatch?`Primary ${gradeMatch[1]}`:'Mathematics';
+      const gradeMatch=String(CONFIG.id||'').match(/^([PS])(\d+)-/),gradeLabel=gradeMatch?`${gradeMatch[1]==='P'?'Primary':'Secondary'} ${gradeMatch[2]}`:'Mathematics';
       document.title=`${CONFIG.shortTitle} — FAMath ${gradeLabel}`; els.title.textContent=CONFIG.shortTitle; els.objective.textContent=CONFIG.objective;
       const restored=restore(); if(!restored)state.problems=makeProblems();
       document.documentElement.dataset.choiceAudit=JSON.stringify(choiceAuditFor(state.problems));

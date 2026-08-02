@@ -22,6 +22,12 @@ Map by mathematical meaning rather than keyword alone.
 | 2D/3D geometry | property highlighting, construction steps, accurate solids/nets | labels that reveal the answer |
 | Symmetry | draggable/reflected cells at equal distances, fold animation | centre line assumed sufficient |
 | Data | tables and charts with headings, keys, units and scales | underdetermined missing values |
+| Secondary number structure | prime/factor trees, classification chips, number-line ordering, approximation bands | calculator-only recall |
+| Secondary algebra and equations | tappable terms, tiles, balance or transformation stages, learner-error reconstruction | displaying the solved output before Check |
+| Secondary functions and graphs | coordinate plane, movable/inspectable points, gradient triangle, graph-family animation | formula text with no graph interaction |
+| Secondary similarity and trigonometry | corresponding-part colour links, scale animation, right-triangle side roles | choosing a rule without identifying givens |
+| Secondary sets, matrices and vectors | region/cell/component hotspots, transformations, directed motion | static notation disconnected from structure |
+| Secondary data and probability | selectable chart features, distribution comparisons, animated tree/possibility paths | unlabeled or misleading default scales |
 
 ## Adding a new family
 

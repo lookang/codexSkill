@@ -8,6 +8,7 @@ import re
 import subprocess
 import sys
 import tempfile
+import unicodedata
 import zipfile
 from collections import defaultdict
 from pathlib import Path
@@ -16,6 +17,7 @@ from pathlib import Path
 SOURCE_ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = SOURCE_ROOT.parent
 MANIFEST_PATH = SOURCE_ROOT / "activities.json"
+SECONDARY_MANIFEST_PATH = SOURCE_ROOT / "secondary_syllabus.json"
 SAMPLE_ZIP = PROJECT_ROOT / (
     "scorable_newTab_timeline_countable-nouns-are-nouns-that-can-be-counted-"
     "with-pictures-replacements-by-acp.zip"
@@ -46,42 +48,101 @@ def extract_inline_app_js(html: str) -> str:
     return scripts[0]
 
 
-def main() -> int:
+def folder_slug(value: str) -> str:
+    replacements = {
+        "≤": " less than or equal to ", "≥": " greater than or equal to ",
+        "×": " times ", "÷": " divided by ", "²": " squared ",
+        "³": " cubed ", "ⁿ": " power n ", "−": " minus ", "π": " pi ",
+    }
+    for source, target in replacements.items():
+        value = value.replace(source, target)
+    value = "".join(
+        character for character in unicodedata.normalize("NFD", value)
+        if unicodedata.category(character) != "Mn" and ord(character) < 128
+    )
+    slug = re.sub(r"[^A-Za-z0-9]+", "_", value).strip("_")
+    return slug[:78].rstrip("_")
+
+
+def load_activities() -> list[dict[str, object]]:
     activities = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
-    expected_counts = {1: 32, 2: 30, 3: 34, 4: 42, 5: 37, 6: 27}
-    grade_activities: dict[int, list[dict[str, object]]] = defaultdict(list)
+    syllabus = json.loads(SECONDARY_MANIFEST_PATH.read_text(encoding="utf-8"))
+    for level in range(1, 6):
+        records = syllabus["levels"][str(level)]
+        if isinstance(records, str):
+            records = syllabus[records]
+        for order, (section_code, objective_code, objective_text, family) in enumerate(records, 1):
+            strand, sub_strand = syllabus["sections"][section_code]
+            activities.append(
+                {
+                    "id": f"S{level}-{section_code}-{objective_code}",
+                    "folder": (
+                        f"Secondary{level}_{order:02d}_{section_code}_{objective_code}_"
+                        f"{folder_slug(objective_text)}"
+                    ),
+                    "strand": strand,
+                    "subStrand": f"{section_code}. {sub_strand}",
+                    "section": section_code,
+                    "objective": f"{objective_code} {objective_text}",
+                    "shortTitle": f"{section_code} {objective_code} · {objective_text}",
+                    "kind": f"s{level}_{section_code.lower()}_{objective_code.replace('.', '_')}",
+                    "family": family,
+                    "grade": level,
+                    "schoolStage": "Secondary",
+                    "curriculumSource": syllabus["source"],
+                }
+            )
+    return activities
+
+
+def main() -> int:
+    activities = load_activities()
+    expected_counts = {
+        "P": {1: 32, 2: 30, 3: 34, 4: 42, 5: 37, 6: 27},
+        "S": {1: 51, 2: 38, 3: 43, 4: 43, 5: 20},
+    }
+    grade_activities: dict[tuple[str, int], list[dict[str, object]]] = defaultdict(list)
     for activity in activities:
-        match = re.match(r"^P(\d+)-", activity["id"])
+        match = re.match(r"^([PS])(\d+)-", activity["id"])
         if not match:
             fail(f"Activity id has no grade marker: {activity['id']}")
-        grade_activities[int(match.group(1))].append(activity)
-    actual_counts = {grade: len(items) for grade, items in grade_activities.items()}
+        grade_activities[(match.group(1), int(match.group(2)))].append(activity)
+    actual_counts = {
+        stage: {
+            grade: len(grade_activities[(stage, grade)])
+            for grade in sorted(levels)
+        }
+        for stage, levels in expected_counts.items()
+    }
     if actual_counts != expected_counts:
         fail(f"Expected grade counts {expected_counts}, found {actual_counts}")
     # Official learning-objective wording can repeat across grades (for example,
     # reading and writing numbers); identity and routing fields must remain unique.
-    for field in ("id", "folder", "shortTitle", "kind"):
+    for field in ("id", "folder", "kind"):
         values = [activity[field] for activity in activities]
         if len(set(values)) != len(values):
             fail(f"Duplicate manifest field: {field}")
-    for grade, items in grade_activities.items():
+    for (stage, grade), items in grade_activities.items():
+        stage_name = "Primary" if stage == "P" else "Secondary"
         for index, activity in enumerate(items, start=1):
-            expected_prefix = f"Primary{grade}_{index:02d}_"
+            expected_prefix = f"{stage_name}{grade}_{index:02d}_"
             if not activity["folder"].startswith(expected_prefix):
                 fail(
                     f"{activity['id']}: folder must begin with syllabus-order "
                     f"prefix {expected_prefix}"
                 )
-        catalog_html_path = PROJECT_ROOT / f"Primary{grade}_Syllabus_Order.html"
+        catalog_html_path = PROJECT_ROOT / f"{stage_name}{grade}_Syllabus_Order.html"
         catalog_markdown_path = PROJECT_ROOT / (
-            "SYLLABUS_ORDER.md" if grade == 1 else f"PRIMARY{grade}_SYLLABUS_ORDER.md"
+            "SYLLABUS_ORDER.md"
+            if stage == "P" and grade == 1
+            else f"{stage_name.upper()}{grade}_SYLLABUS_ORDER.md"
         )
         if not catalog_html_path.is_file() or not catalog_markdown_path.is_file():
-            fail(f"Primary {grade} generated syllabus-order catalogues are missing")
+            fail(f"{stage_name} {grade} generated syllabus-order catalogues are missing")
         catalog_html = catalog_html_path.read_text(encoding="utf-8")
         catalog_markdown = catalog_markdown_path.read_text(encoding="utf-8")
         if catalog_html.count("<tr data-order=") != len(items):
-            fail(f"Primary {grade} HTML syllabus catalogue is incomplete")
+            fail(f"{stage_name} {grade} HTML syllabus catalogue is incomplete")
         for activity in items:
             if activity["folder"] not in catalog_html:
                 fail(f"{activity['id']}: missing from HTML syllabus catalogue")
@@ -107,9 +168,11 @@ def main() -> int:
         for activity in activities:
             folder = PROJECT_ROOT / activity["folder"]
             package = PACKAGE_ROOT / f"{activity['folder']}_SLS_xAPI.zip"
-            grade = int(re.match(r"^P(\d+)-", activity["id"]).group(1))
+            identity = re.match(r"^([PS])(\d+)-", activity["id"])
+            stage, grade = identity.group(1), int(identity.group(2))
+            stage_name = "Primary" if stage == "P" else "Secondary"
             legacy_name = re.sub(
-                rf"^Primary{grade}_\d{{2}}_", f"Primary{grade}_", activity["folder"]
+                rf"^{stage_name}{grade}_\d{{2}}_", f"{stage_name}{grade}_", activity["folder"]
             )
             if (PROJECT_ROOT / legacy_name).exists():
                 fail(f"{activity['id']}: legacy unordered folder still exists: {legacy_name}")
@@ -123,7 +186,13 @@ def main() -> int:
             html = (folder / "index.html").read_text(encoding="utf-8")
             checks = {
                 "viewport": 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' in html,
-                "objective": activity["objective"] in html,
+                "objective": activity["objective"] in html or (
+                    activity["objective"]
+                    .replace("<", r"\u003c")
+                    .replace(">", r"\u003e")
+                    .replace("'", r"\u0027")
+                    .replace("&", r"\u0026") in html
+                ),
                 "embedded_css": "<style>" in html and "</style>" in html,
                 "semantic_xapi": "teacherAnalytics" in html and "window.storeState" in html,
                 "analytics": "Learning Analytics" in html and "actionLog" in html,
@@ -183,6 +252,25 @@ def main() -> int:
                         "upper-bar-model",
                         "upper-balance",
                         "upper-average-bars",
+                    )
+                ),
+                "secondary_visual_system": all(
+                    marker in html
+                    for marker in (
+                        "makeSecondaryProblem",
+                        "secondarySceneHTML",
+                        "secondaryTutorialSteps",
+                        "activateSecondaryInteractions",
+                        "secondary-number-line",
+                        "secondary-coordinate",
+                        "secondary-geometry",
+                        "secondary-matrix",
+                        "secondary-flow-step",
+                        "data-secondary-inspect",
+                        "secondary-model-inspected",
+                        "secondaryModelInspections",
+                        "CONFIG.family",
+                        "startsWith('s')",
                     )
                 ),
                 "animated_ratio_visual_family": all(
@@ -301,7 +389,7 @@ def main() -> int:
                 "computed_results_concealed_until_scaffold": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-circle-boundary-association-v19",
+                        "2026-08-02-secondary-interactive-families-v20",
                         "data-precheck-result=\"concealed\"",
                         "side==='right'&&d.maskRight&&!d.revealSolution?['?']:values",
                         "maskRight=['p6_expression_notation','p6_simplify_linear','p6_substitution'].includes(kind)",
@@ -322,7 +410,7 @@ def main() -> int:
                 "unknown_letter_formative_family": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-circle-boundary-association-v19",
+                        "2026-08-02-secondary-interactive-families-v20",
                         "unknownLetterModelHTML",
                         "unknownLetterBridgeHTML",
                         "unknownEquationMapHTML",
@@ -845,6 +933,15 @@ def main() -> int:
             "34 Primary 3 objectives in official syllabus sequence",
             "37 Primary 5 objectives in official pages 41-42 sequence",
             "27 Primary 6 objectives in official pages 43-44 sequence",
+            "51 Secondary 1 objectives in official syllabus order",
+            "38 Secondary 2 objectives in official syllabus order",
+            "43 Secondary 3 and 43 Secondary 4 objectives in the shared official syllabus block",
+            "20 Secondary 5 objectives in official syllabus order",
+            "fourteen reusable Secondary mathematical model families",
+            "Secondary inspect-represent-transform-verify tutorials",
+            "tappable and keyboard-operable Secondary model hotspots with spoken coaching",
+            "animated Secondary transformations with reduced-motion completed states",
+            "Secondary model-inspection evidence in teacher-visible xAPI analytics",
             "Primary 4 place-value, number-line, factor, algorithm, fraction and decimal models",
             "Primary 4 area, angle, symmetry, net and data representations",
             "misconception-first Primary 4 visual tutorial and notation bridge",

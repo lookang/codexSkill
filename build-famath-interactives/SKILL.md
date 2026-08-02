@@ -27,9 +27,9 @@ Run the bundled PowerShell script into a new or empty directory:
 powershell -ExecutionPolicy Bypass -File "<skill-folder>\scripts\bootstrap_famath.ps1" -Destination "C:\path\to\FAMath"
 ```
 
-Add or replace objectives in the copied `_source/activities.json`, extend the shared template by mathematical family, update explicit completeness checks in `_source/validate.py`, then build.
+Add or replace Primary objectives in `_source/activities.json`; add compact shared or level-specific Secondary objectives in `_source/secondary_syllabus.json`. Extend the shared template by mathematical family, update explicit completeness checks in `_source/validate.py`, then build.
 
-Use `-Build` only when reproducing the bundled complete Primary 1 to Primary 6 starter unchanged.
+Use `-Build` only when reproducing the bundled complete Primary 1 to Secondary 5 starter unchanged.
 
 ### Extend an existing collection
 
@@ -52,7 +52,7 @@ Create one manifest record per independently assessed learning objective. Use th
 }
 ```
 
-Keep the two-digit folder sequence continuous within each grade. Keep official LO identifiers visible even when numbering restarts within a sub-strand. Use short, filesystem-safe descriptive names.
+Keep the two-digit folder sequence continuous within each grade. Use `Primary<grade>_<NN>_...` or `Secondary<grade>_<NN>_...`. Keep official LO identifiers visible even when numbering restarts within a sub-strand. Use short, filesystem-safe descriptive names.
 
 Before coding, count the extracted objectives by grade and compare that count with the manifest and the requested scope.
 
@@ -70,6 +70,8 @@ Every activity must provide:
 - a tutorial that begins with the learner's actual attempt when one exists;
 - meaningful teacher analytics rather than raw click noise;
 - responsive operation inside an SLS iframe without network dependencies.
+
+For Secondary learners, preserve the misconception-first workflow while increasing symbolic density and learner agency. Use labelled hotspots, coordinate or number-line inspection, algebra tiles, responsive equal-unit rows, matrices, vectors, graphs, construction cues, and inspect -> represent -> transform -> verify tutorials. Keep every assessed output concealed until Check or learner-invoked remediation.
 
 Use the family decisions in [references/objective-family-map.md](references/objective-family-map.md). Apply time-evolving animation when the concept itself changes over time: regrouping, ordering, counting, taking away, folding, measuring, or transforming.
 
