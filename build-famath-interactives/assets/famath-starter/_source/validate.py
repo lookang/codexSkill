@@ -301,7 +301,7 @@ def main() -> int:
                 "computed_results_concealed_until_scaffold": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-precheck-answer-concealment-v16",
+                        "2026-08-02-circle-radius-centre-v17",
                         "data-precheck-result=\"concealed\"",
                         "side==='right'&&d.maskRight&&!d.revealSolution?['?']:values",
                         "maskRight=['p6_expression_notation','p6_simplify_linear','p6_substitution'].includes(kind)",
@@ -322,7 +322,7 @@ def main() -> int:
                 "unknown_letter_formative_family": all(
                     marker in html
                     for marker in (
-                        "2026-08-02-precheck-answer-concealment-v16",
+                        "2026-08-02-circle-radius-centre-v17",
                         "unknownLetterModelHTML",
                         "unknownLetterBridgeHTML",
                         "unknownEquationMapHTML",
@@ -339,6 +339,19 @@ def main() -> int:
                         "It does not reveal the number.",
                     )
                 ) and "Which letter can represent the unknown number?" not in html,
+                "circle_radius_starts_at_centre": all(
+                    marker in html
+                    for marker in (
+                        "data-circle-radius-model=\"centre-to-circumference\"",
+                        "data-radius-start=\"centre\"",
+                        "data-radius-end=\"circumference\"",
+                        "data-circle-centre",
+                        "circle-centre-ring",
+                        "circle-centre-dot",
+                        "radius: centre → circumference",
+                        "Every radius starts at the centre",
+                    )
+                ),
                 "narrated_am_pm_day_journey": all(
                     marker in html
                     for marker in (
@@ -807,6 +820,7 @@ def main() -> int:
             "middle-primary base-ten, equal-group, fraction, money, measurement, time, geometry and graph models",
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
+            "whole-circle, semicircle and quarter-circle radii begin at explicit centres and end on their circumferences",
             "finite unique answer choices and option-specific misconception diagnostics",
             "computed solution flows concealed until check or guided remediation",
             "unknown-letter tasks vary letter names and assess representation rather than solving",

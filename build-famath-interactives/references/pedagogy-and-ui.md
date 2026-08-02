@@ -42,6 +42,7 @@ After an incorrect answer, begin the tutorial with the learner's actual arrangem
 - Money: show recognisable denominations, support tap/drag to a wallet, and visualize the largest usable denomination before composing the remainder.
 - Length: point to the zero line, align the left endpoint, then traverse equal intervals to the right endpoint. Count intervals, not tick marks.
 - Angles: align the centre and 0-degree ray before reading or marking the scale.
+- Circles: mark the exact centre explicitly. Every displayed radius must begin at that centre and end on the circumference; adapt the centre and endpoint geometry for whole circles, semicircles and quarter circles instead of reusing one fixed line.
 - Symmetry: compare corresponding points at equal perpendicular distances; include genuinely asymmetric counterexamples.
 - Nets: use the correct number and shapes of faces; animate or mentally rehearse folding without overlapping faces.
 - Data: make title, labels, units, key, and scale visible before interpretation. Never ask for a missing table value without stating a determining relationship.
