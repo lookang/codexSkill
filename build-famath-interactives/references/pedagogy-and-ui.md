@@ -33,6 +33,7 @@ After an incorrect answer, begin the tutorial with the learner's actual arrangem
 - Mental calculation: make number-bond parts clickable and name each part before using the bond.
 - Number words: segment meaningful word parts, connect them to place value, and provide tap-to-hear pronunciation.
 - Fractions: use equal-sized regions or sets before symbols; keep wholes visible when converting mixed and improper forms.
+- Fraction division: distinguish the two meanings before using a reciprocal. For a fraction divided by a whole number, split and deal the dividend fairly among equal recipients, then recombine all shares to check. For a whole number or fraction divided by a proper fraction, ask how many divisor-sized groups fit, partition the dividend into matching pieces, animate the group count, and confirm it with equal number-line jumps. Introduce multiplication by the reciprocal only after the concrete and pictorial models have established the quotient.
 - Decimals: align decimal points and show tenths, hundredths, and thousandths as places or partitions.
 - Money: show recognisable denominations, support tap/drag to a wallet, and visualize the largest usable denomination before composing the remainder.
 - Length: point to the zero line, align the left endpoint, then traverse equal intervals to the right endpoint. Count intervals, not tick marks.
@@ -62,4 +63,3 @@ Avoid repeating identical still images across tutorial steps. Each step must cha
 - Preserve learner state while opening and closing help.
 - Use local assets and self-contained CSS/JavaScript; do not depend on a CDN.
 - Keep visual labels, units, symbols, and narration mathematically consistent.
-

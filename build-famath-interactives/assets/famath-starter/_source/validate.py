@@ -225,6 +225,26 @@ def main() -> int:
                         "answerPresent",
                     )
                 ),
+                "fraction_division_concrete_pictorial_abstract": all(
+                    marker in html
+                    for marker in (
+                        "fractionDivisionTutorialSteps",
+                        "fractionDivisionStoryHTML",
+                        "fractionWholesBoardHTML",
+                        "fractionMeasureGroupsHTML",
+                        "fractionNumberLineHTML",
+                        "fractionShareRecipientsHTML",
+                        "fractionRuleBridgeHTML",
+                        "scene==='fraction-division'",
+                        "data-fraction-group-lab",
+                        "data-fraction-share-lab",
+                        "fraction-group-count-completed",
+                        "fraction-equal-sharing-completed",
+                        "mode:'measure'",
+                        "mode:'share'",
+                        "Meaning first → rule second",
+                    )
+                ),
                 "narrated_am_pm_day_journey": all(
                     marker in html
                     for marker in (
@@ -694,6 +714,7 @@ def main() -> int:
             "upper-primary expression, fraction, decimal, percentage and rate models",
             "upper-primary triangle, volume, angle, ratio, algebra, circle and average models",
             "finite unique answer choices and option-specific misconception diagnostics",
+            "concrete group-counting, equal-sharing, number-line and reciprocal-rule fraction division sequence",
             "required files",
             "self-contained app CSS and JavaScript",
             "offline local references",
