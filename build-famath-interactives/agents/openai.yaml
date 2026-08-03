@@ -1,0 +1,4 @@
+interface:
+  display_name: "Build FAMath Interactives"
+  short_description: "Create visual SLS math interactives"
+  default_prompt: "Use $build-famath-interactives to turn these mathematics syllabus objectives into chronological, visual, xAPI-ready formative interactives."

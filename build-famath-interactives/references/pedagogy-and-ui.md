@@ -1,0 +1,83 @@
+# FAMath pedagogy and UI rules
+
+## Core teaching sequence
+
+Use Concrete -> Pictorial -> Abstract:
+
+1. Show or let the learner manipulate the mathematical objects.
+2. Make the relationship visible through position, grouping, length, area, pairing, motion, or transformation.
+3. Connect the visual to concise mathematical notation.
+4. Ask the learner to retry independently.
+
+After an incorrect answer, begin the tutorial with the learner's actual arrangement or selection. Address why that representation fails before showing the correct method.
+
+## Interaction quality
+
+- Make directions executable. If the text says "touch each counter", counters must respond, number off, and prevent double-counting.
+- Offer tap/click as an alternative to dragging. Use drag when spatial placement teaches the concept, not as a motor-skill barrier.
+- Reduce repetition. Require at most two full one-by-one counts before shifting to groups of ten or another efficient structure.
+- Use animation for time-evolving meaning, not decoration. Animate exchanges, regrouping, reordering, removal, jumps, folding, and measured traversal.
+- Respect reduced-motion preferences and keep a readable end state.
+- Keep arrows tangent to curved paths; use SVG markers or correctly rotated arrowheads.
+- Pair speech with a visible target. Number words and important vocabulary must be tappable and spoken in context.
+- Keep Primary 1 text brief and visual; increase notation and abstraction progressively for older learners.
+
+## Proven mathematical moves
+
+- Counting: number each touched object once; show progress; move from ones to ten-groups plus extras.
+- Set comparison: pair objects one-to-one; the unmatched leftovers identify more, while the exhausted set identifies fewer.
+- Ordering: align bars on one baseline; animate the shortest/tallest into the requested position; compare only remaining values.
+- Number sequences: use curved jumps labelled with the change; connect both neighbouring equations to the missing term.
+- Addition/subtraction: act out joining or taking away. Let learners select removed objects, then cross out, fade, or move them.
+- Place value and algorithms: use H/T/O or larger place-value columns. Animate ten ones becoming one ten and one hundred becoming ten tens; preserve equal value through every exchange.
+- Mental calculation: make number-bond parts clickable and name each part before using the bond.
+- Number words: segment meaningful word parts, connect them to place value, and provide tap-to-hear pronunciation.
+- Fractions: use equal-sized regions or sets before symbols; keep wholes visible when converting mixed and improper forms.
+- Fraction division: distinguish the two meanings before using a reciprocal. For a fraction divided by a whole number, split and deal the dividend fairly among equal recipients, then recombine all shares to check. For a whole number or fraction divided by a proper fraction, ask how many divisor-sized groups fit, partition the dividend into matching pieces, animate the group count, and confirm it with equal number-line jumps. Introduce multiplication by the reciprocal only after the concrete and pictorial models have established the quotient.
+- Formative answer concealment: before the learner checks an answer, models may expose the givens, partitions, units, and relationships, but must not print the computed answer, label the correct choice, or number every group in a way that states the result. Reveal and explain the result only after an incorrect check or inside the learner-invoked tutorial.
+- Output-slot rule: when a balance, function machine, substitution machine, equation strip, graph label, clock readout, measurement readout, total, or endpoint contains the assessed result, render `?` before checking. The concrete or pictorial model must remain usable so the learner can derive the result; the completed output belongs only in feedback or the worked tutorial.
+- Unknown letters: when the learning objective is using a letter to represent an unknown, vary the valid letter instead of always using `x`. Assess translation, symbol roles, and interpretation with tasks such as `? + 9 = 15` becoming `n + 9 = 15`. Preserve the operation, known quantities, and equality; do not calculate or display `n = 6` unless solving the equation is itself the stated learning objective.
+- Decimals: align decimal points and show tenths, hundredths, and thousandths as places or partitions.
+- Ratio: keep the named order visible from left to right and use equal-sized units. In the unanswered formative model, conceal printed counts when counting is the assessed action. In the tutorial, animate each labelled row counting itself, then animate the same scale operation across every term before assembling the colon notation. Provide replay and tappable spoken label cues. Within one multiple-choice question, make every option use the same response notation (for example, all `share and share`, all `a:b`, or all fractions) so formatting never identifies the answer. Keep the tutorial shell within its viewport; when a ratio has many units, preserve a shared responsive unit size and wrap the model into balanced rows of at most nine units rather than widening the dialog or clipping the bars.
+- Money: show recognisable denominations, support tap/drag to a wallet, and visualize the largest usable denomination before composing the remainder.
+- Length: point to the zero line, align the left endpoint, then traverse equal intervals to the right endpoint. Count intervals, not tick marks.
+- Angles: align the centre and 0-degree ray before reading or marking the scale.
+- Circles: mark the exact centre explicitly. Every displayed radius must begin at that centre and end on the circumference; adapt the centre and endpoint geometry for whole circles, semicircles and quarter circles instead of reusing one fixed line. In remediation, bridge the picture to notation gradually: select the formula, substitute π and the labelled radius, simplify the power and factors, then reveal the answer with the correct linear or square unit. Colour-link every meaningful formula component to its exact pictorial referent: full-disk area, selected half/quarter region, curved boundary, straight boundary, rectangle region or attached semicircle. Make the term, key and drawing part independently clickable so every matching representation flashes together, speaks its meaning and records inspection evidence.
+
+## Targeted visual association scaffolds
+
+Use a reusable formula-part ↔ visual-part association whenever a learner must coordinate symbolic notation with a measurable region or segment.
+
+- Preserve one colour meaning within a tutorial. A base, height, inside region, whole region, removed region or fractional region must retain its colour across the diagram, formula, substitution and simplification steps.
+- Make both directions executable: tapping a formula term must flash its diagram part, and tapping the diagram must flash the formula term and key. Support keyboard activation and spoken coaching as well as touch.
+- For rectangles, distinguish inside area from outside perimeter, and link length and width to the corresponding sides.
+- For triangles and parallelograms, link the base and perpendicular height; explicitly show the right-angle relationship. For a triangle, show the half relationship with a matching rectangle or parallelogram rather than presenting 1/2 as an unexplained rule.
+- For trapezia, link both parallel sides, the perpendicular height and the average-length or one-half relationship.
+- For composite figures, assign different colours to the whole/added region and removed/secondary region; use the same colours in the addition or subtraction expression.
+- Do not reveal the final numerical answer before the learner has seen the model, formula, substitution and a still-incomplete simplification. Reveal the result only in the final remediation step and attach the correct unit.
+- Record a generic `visual-component-associated` evidence event with the association family, selected part and spoken label; retain family-specific compatibility events when an existing analytics contract requires them.
+- Symmetry: compare corresponding points at equal perpendicular distances; include genuinely asymmetric counterexamples.
+- Nets: use the correct number and shapes of faces; animate or mentally rehearse folding without overlapping faces.
+- Data: make title, labels, units, key, and scale visible before interpretation. Never ask for a missing table value without stating a determining relationship.
+
+## Feedback ladder
+
+Use a short progressive ladder:
+
+1. Neutral prompt to inspect the learner's current model.
+2. One visual clue without giving the answer.
+3. Animated or manipulable worked representation.
+4. Symbolic bridge to the equation or statement.
+5. Model-based answer check and independent retry.
+
+Avoid repeating identical still images across tutorial steps. Each step must change the learner's understanding or action.
+
+## UI and accessibility
+
+- Use large touch targets, strong contrast, visible focus, semantic buttons, and keyboard activation.
+- Provide Read, Help, Restart, Clear, Hint, Check, progress, and concise status feedback when applicable.
+- Prevent horizontal overflow at 390 px and inside an iframe.
+- Keep essential controls reachable without hover.
+- Preserve learner state while opening and closing help.
+- Use local assets and self-contained CSS/JavaScript; do not depend on a CDN.
+- Keep visual labels, units, symbols, and narration mathematically consistent.
