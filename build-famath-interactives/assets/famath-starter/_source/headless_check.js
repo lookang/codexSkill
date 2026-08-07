@@ -136,6 +136,74 @@ function problemLongDecimals(problem) {
   return offenders;
 }
 
+// ---------- SVG label placement scan ----------
+// A label naming a property must sit beside the feature it names and clear of the figure. Dropping one
+// inside a filled shape puts text over the fill and the stroke, so the fact being taught becomes the
+// hardest thing on the diagram to read. Anchor points are computable from the markup, so this needs no
+// browser: find every <text> whose anchor falls inside a drawn <rect> or <polygon>.
+//
+// Two signals, because the real fault is only partly computable. Whether a label sits beside the FEATURE
+// it names is semantic — "one corner = 90°" describes a corner, "whole 9 × 7" describes a whole region,
+// and only a reader can tell those apart. So this reports:
+//
+//   CROSSES AN EDGE — the text runs over a shape outline. Always wrong, always worth fixing.
+//   review          — a descriptive label drawn inside a figure. Correct when it names the region it sits
+//                     on, wrong when it names a localised feature somewhere else in the drawing.
+//
+// The review list is short enough to read. Treat it as a prompt for judgement, not a failure.
+//
+// Short strings are ignored. Numerals and one-word marks legitimately sit inside cells, bars and grid
+// squares; a descriptive phrase does not, and phrases are what this is looking for.
+const LABEL_MIN_LENGTH = 9;
+// These figure labels render around 13-15px, where average glyph advance is close to 7px.
+const LABEL_CHAR_WIDTH = 7;
+function textSpan(x, anchor, text) {
+  const width = text.length * LABEL_CHAR_WIDTH;
+  if (anchor === 'middle') return [x - width / 2, x + width / 2];
+  if (anchor === 'end') return [x - width, x];
+  return [x, x + width];
+}
+function svgBlocks(html) {
+  return [...String(html).matchAll(/<svg\b[^>]*>([\s\S]*?)<\/svg>/g)].map(m => m[1]);
+}
+function shapeBoxes(svg) {
+  const boxes = [];
+  for (const m of svg.matchAll(/<rect\b[^>]*>/g)) {
+    const attr = name => { const hit = m[0].match(new RegExp(`\\b${name}="(-?[\\d.]+)"`)); return hit ? Number(hit[1]) : null; };
+    const x = attr('x'), y = attr('y'), w = attr('width'), h = attr('height');
+    if ([x, y, w, h].every(v => v !== null)) boxes.push({ kind: 'rect', x1: x, y1: y, x2: x + w, y2: y + h });
+  }
+  for (const m of svg.matchAll(/<polygon\b[^>]*\bpoints="([^"]+)"[^>]*>/g)) {
+    const nums = m[1].trim().split(/[\s,]+/).map(Number).filter(Number.isFinite);
+    const xs = nums.filter((_, i) => i % 2 === 0), ys = nums.filter((_, i) => i % 2 === 1);
+    if (xs.length && ys.length) boxes.push({ kind: 'polygon', x1: Math.min(...xs), y1: Math.min(...ys), x2: Math.max(...xs), y2: Math.max(...ys) });
+  }
+  return boxes;
+}
+function labelOverlaps(html) {
+  const hits = [];
+  for (const svg of svgBlocks(html)) {
+    const boxes = shapeBoxes(svg);
+    if (!boxes.length) continue;
+    for (const m of svg.matchAll(/<text\b([^>]*)>([\s\S]*?)<\/text>/g)) {
+      const text = m[2].replace(/<[^>]*>/g, '').trim();
+      if (text.length < LABEL_MIN_LENGTH || !/\s/.test(text)) continue;
+      const x = Number((m[1].match(/\bx="(-?[\d.]+)"/) || [])[1]);
+      const y = Number((m[1].match(/\by="(-?[\d.]+)"/) || [])[1]);
+      if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+      const anchor = (m[1].match(/\btext-anchor="([^"]+)"/) || [])[1] || 'start';
+      const [left, right] = textSpan(x, anchor, text);
+      const inside = boxes.find(b => x > b.x1 + 2 && x < b.x2 - 2 && y > b.y1 + 2 && y < b.y2 - 2);
+      const straddled = boxes.find(b =>
+        y > b.y1 - 4 && y < b.y2 + 4 &&
+        ((left < b.x1 - 1 && right > b.x1 + 1) || (left < b.x2 - 1 && right > b.x2 + 1)));
+      if (straddled) hits.push(`CROSSES AN EDGE  "${text.slice(0, 48)}" spans x ${Math.round(left)}..${Math.round(right)} over ${straddled.kind} ${straddled.x1},${straddled.y1}-${straddled.x2},${straddled.y2}`);
+      else if (inside) hits.push(`review  "${text.slice(0, 48)}" at (${x},${y}) drawn inside ${inside.kind} ${inside.x1},${inside.y1}-${inside.x2},${inside.y2}`);
+    }
+  }
+  return hits;
+}
+
 // ---------- repeated-object row scan ----------
 // The fit-don't-wrap principle: a row of N repeated objects should shrink to stay on ONE line rather than
 // wrap, because a second row pushes the question and the answer buttons below the fold and the learner has
@@ -279,16 +347,23 @@ function checkActivity(script, config, draws) {
       }
     }
   }
-  // Widest repeated-object row this objective can produce, in the activity area and in the tutorial.
+  // Widest repeated-object row this objective can produce, plus labels buried inside a figure — both read
+  // from the same generated markup, in the activity area and in the tutorial.
   const rowMax = {};
+  const buriedLabels = new Set();
   for (let step = 0; step < TOTAL_QUESTIONS; step++) {
     for (let draw = 0; draw < Math.min(draws, 4); draw++) {
       const problem = validAt(1, step);
       if (!problem) continue;
-      try { scanRows(api.visualHTML(problem), rowMax); } catch (_) {}
+      let mainHtml = '';
+      try { mainHtml = api.visualHTML(problem) || ''; } catch (_) { mainHtml = ''; }
+      scanRows(mainHtml, rowMax);
+      labelOverlaps(mainHtml).forEach(hit => buriedLabels.add(hit));
       let steps = null;
       try { steps = api.tutorialSteps(problem); } catch (_) { steps = null; }
-      if (Array.isArray(steps)) steps.forEach(s => { if (s && typeof s.html === 'string') scanRows(s.html, rowMax); });
+      if (Array.isArray(steps)) steps.forEach(s => {
+        if (s && typeof s.html === 'string') { scanRows(s.html, rowMax); labelOverlaps(s.html).forEach(hit => buriedLabels.add(hit)); }
+      });
     }
   }
 
@@ -303,7 +378,7 @@ function checkActivity(script, config, draws) {
     if (Array.isArray(steps)) usesRepr = steps.some(s => s && typeof s.html === 'string' && s.html.includes('repr-holder'));
   }
 
-  return { issues, levels, ramps, usesRepr, rowMax, decimals: [...decimals], scores: scores.map(s => Number(s.toFixed(2))) };
+  return { issues, levels, ramps, usesRepr, rowMax, buriedLabels: [...buriedLabels], decimals: [...decimals], scores: scores.map(s => Number(s.toFixed(2))) };
 }
 
 // ---------- run ----------
@@ -327,6 +402,7 @@ function main() {
   const withRepr = [];
   const rowStats = {};   // class -> { max, worstFolder, activities }
   const longDecimals = [];
+  const buried = [];
   let checked = 0;
 
   for (const folder of folders) {
@@ -341,6 +417,7 @@ function main() {
     if (result.issues.length) failures.push(`${folder} (${config.kind})\n    ${result.issues.join('\n    ')}`);
     if (!result.ramps) flat.push(`${folder} (${config.kind}) scores ${result.scores.join(' → ')}`);
     if (result.usesRepr) withRepr.push(`${folder} (${config.kind})`);
+    if (result.buriedLabels.length) buried.push(`${folder} (${config.kind})\n      ${result.buriedLabels.slice(0, 4).join('\n      ')}`);
     if (result.decimals.length) longDecimals.push(`${folder} (${config.kind})\n      ${result.decimals.slice(0, 6).join('  ')}`);
     for (const [cls, n] of Object.entries(result.rowMax)) {
       const stat = rowStats[cls] || (rowStats[cls] = { max: 0, worstFolder: '', activities: 0, crowded: 0 });
@@ -359,6 +436,9 @@ function main() {
   Object.entries(levelCounts).sort().forEach(([k, v]) => console.log(`  [${k}] : ${v}`));
   console.log(`\nValues shown to a learner with more than ${MAX_DECIMALS} decimal places (${longDecimals.length} activities):`);
   longDecimals.forEach(line => console.log('  ' + line));
+
+  console.log(`\nFigure labels: edge collisions, plus in-figure labels to review (${buried.length}):`);
+  buried.forEach(line => console.log('  ' + line));
 
   console.log('\nRepeated-object rows — widest row each component can produce:');
   console.log('  packed?  max  crowded/used  component            worst case');

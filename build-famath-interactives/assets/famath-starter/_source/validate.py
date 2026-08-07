@@ -536,6 +536,21 @@ def main() -> int:
                         "noteSupportUsed()",
                         "window.__famathAdaptive=",
                         "famathTest=1",
+                        # Changing challenge level must add to the record, never zero it.
+                        "function archiveCurrentRun(reason)",
+                        "function beginRun(level,reason)",
+                        "function allRuns()",
+                        "function bestScore()",
+                        "runs:state.runs",
+                        "levelRuns:allRuns()",
+                        # Response evidence must span every attempt, not just the current run.
+                        "function allResponses()",
+                        "const responses=allResponses()",
+                        "responses:allResponses().slice(-160)",
+                        "misconceptionEvidence:sessionWrong",
+                        "level-tag",
+                        "score:bestScore()",
+                        'id="runLog"',
                         "steps:state.steps",
                         "support:state.support",
                     )
@@ -624,7 +639,7 @@ def main() -> int:
                 "computed_results_concealed_until_scaffold": all(
                     marker in html
                     for marker in (
-                        "2026-08-06-adaptive-difficulty-ladder-v1",
+                        "2026-08-07-per-level-attempt-records-v1",
                         "data-precheck-result=\"concealed\"",
                         "side==='right'&&d.maskRight&&!d.revealSolution?['?']:values",
                         "maskRight=['p6_expression_notation','p6_simplify_linear','p6_substitution'].includes(kind)",
@@ -645,7 +660,7 @@ def main() -> int:
                 "unknown_letter_formative_family": all(
                     marker in html
                     for marker in (
-                        "2026-08-06-adaptive-difficulty-ladder-v1",
+                        "2026-08-07-per-level-attempt-records-v1",
                         "unknownLetterModelHTML",
                         "unknownLetterBridgeHTML",
                         "unknownEquationMapHTML",

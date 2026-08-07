@@ -15,6 +15,7 @@ It reports, for every activity:
 - which challenge levels are offered;
 - values reaching a learner with too many decimal places;
 - the widest repeated-object row each layout component can produce;
+- figure labels that cross a shape outline, plus in-figure labels listed for review — whether a label sits beside the feature it names is semantic, so the reviewer judges that list rather than the tool failing it;
 - which objectives genuinely emit alternative representations.
 
 Run it three times when levels or availability are involved. Identical counts prove the availability probe is deterministic; drifting counts mean a control will appear and disappear between page loads.

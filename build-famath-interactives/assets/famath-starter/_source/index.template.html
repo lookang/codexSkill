@@ -706,6 +706,14 @@
     .adaptive-dot.on { background:var(--teal,#0f9d8f); border-color:var(--teal-dark,#08765a); }
     .adaptive-note { margin:0; font:700 13px/1.35 Arial,sans-serif; color:#3f7963; }
     .celebrate-path { font:800 15px/1.3 Arial,sans-serif; color:#3f7963; }
+    .celebrate-runs { margin:10px auto 0; padding:10px 14px; border:2px solid #cfe4d8; border-radius:12px; background:#f3fbf7; text-align:left; }
+    .celebrate-runs h3 { margin:0 0 6px; font-size:15px; color:#3f7963; }
+    .celebrate-runs p { margin:2px 0; font:700 14px/1.35 Arial,sans-serif; color:var(--navy); }
+    .run-log { margin-bottom:8px; padding:8px 10px; border-left:6px solid var(--teal); border-radius:9px; background:#f3fbf7; font:700 13px/1.45 Arial,sans-serif; color:var(--navy); }
+    .run-log b { display:block; margin-bottom:3px; color:#3f7963; text-transform:uppercase; font-size:12px; letter-spacing:.04em; }
+    .run-log-best { margin-top:4px; padding-top:4px; border-top:2px dashed #9dc6b3; color:#3f7963; }
+    .level-tag { display:inline-block; padding:1px 7px; border-radius:999px; background:#e8eef6; color:#4f6786; font:800 11px/1.5 Arial,sans-serif; white-space:nowrap; }
+    .level-tag.current { background:var(--navy); color:#fff; }
     .tutorial-head {display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); }
     .tutorial-head h2 { margin:0; text-align:center; color:var(--navy); font-size:22px; }
     .tutorial-head .read-btn { justify-self:start; width:auto; }
@@ -1349,6 +1357,7 @@
           </section>
           <section>
             <h3>Response evidence</h3>
+            <div class="log" id="runLog"></div>
             <div class="log" id="responseLog"></div>
           </section>
         </div>
@@ -1402,7 +1411,7 @@
     // The build script replaces this object once per curriculum objective.
     const CONFIG = __ACTIVITY_CONFIG__;
     const TOTAL_QUESTIONS = 6;
-    const GENERATOR_VERSION = '2026-08-06-adaptive-difficulty-ladder-v1';
+    const GENERATOR_VERSION = '2026-08-07-per-level-attempt-records-v1';
     // Every generator already treats its `q` argument as a difficulty dial (0 = easiest ... 5 = hardest):
     // `rand(q?2:1,limits[q])`, `q<2?…:…`, `size=q<2?3:q<4?4:5` and so on. Adaptive difficulty therefore does
     // not need per-generator work — it decouples the question SLOT (1/6 … 6/6) from the difficulty STEP that
@@ -1415,6 +1424,9 @@
       problems: [], selected: null, response: null, attempts: Array(TOTAL_QUESTIONS).fill(0),
       awarded: Array(TOTAL_QUESTIONS).fill(0), completed: Array(TOTAL_QUESTIONS).fill(false),
       history: [], actions: [], counters: { tens:0, ones:0 }, order: [], money: [],
+      // Finished or abandoned attempts at a challenge level, kept so that changing level adds to the
+      // evidence instead of destroying it. `runArchived` stops one attempt being filed twice.
+      runs: [], runArchived: false, runStartedAt: Date.now(),
       lineLength:0, grid:[], tutorialStep:0, tutorialViews:[], tutorialInteractions:[],
       lastIncorrectAttempt:null, tutorialAttemptShown:false,
       resetNonce: Date.now()
@@ -1424,7 +1436,7 @@
       title:$('title'), objective:$('objective'), questionNo:$('questionNo'), phase:$('phase'),
       prompt:$('prompt'), instruction:$('instruction'), area:$('activityArea'), feedback:$('feedback'),
       clear:$('clearBtn'), hint:$('hintBtn'), check:$('checkBtn'), next:$('nextBtn'),
-      actionLog:$('actionLog'), responseLog:$('responseLog'), help:$('helpDialog'),
+      actionLog:$('actionLog'), responseLog:$('responseLog'), runLog:$('runLog'), help:$('helpDialog'),
       tutorial:$('tutorialDialog'), tutorialContent:document.querySelector('.tutorial-content'), tutorialTitle:$('tutorialStepTitle'),
       tutorialText:$('tutorialStepText'), tutorialVisual:$('tutorialVisual'),
       tutorialProgress:$('tutorialProgress')
@@ -1900,20 +1912,78 @@
       // No native confirm(): sandboxed SLS iframes block modals silently. Ask for a second tap instead.
       if(state.attempts.some(a=>a>0)&&pendingLevel!==level){
         clearPendingLevel(); pendingLevel=level;
-        $('levelNote').textContent=`Tap Level ${level} again to start new questions. Your current answers will be cleared.`;
+        $('levelNote').textContent=`Tap Level ${level} again for a new set of questions. This attempt is saved in your record.`;
         pendingLevelTimer=setTimeout(()=>{ clearPendingLevel(); renderLevelPicker(); },6000);
         return;
       }
       clearPendingLevel();
-      state.level=level;
-      state.q=0; startAdaptiveSession();
-      state.attempts=Array(TOTAL_QUESTIONS).fill(0); state.awarded=Array(TOTAL_QUESTIONS).fill(0);
-      state.completed=Array(TOTAL_QUESTIONS).fill(false); state.history=[]; state.selected=null; state.response=null;
+      const filed=archiveCurrentRun('changed-level');
+      beginRun(level,'changed-level');
       renderLevelPicker(); renderQuestion(); persist();
+      if(filed){ const previous=state.runs[state.runs.length-1]; log('🗄️','Saved the previous attempt',`Level ${previous.level}: ${previous.score} of ${TOTAL_QUESTIONS}`); }
       log('🎚️','Changed challenge level',`Level ${level} — ${LEVEL_NOTES[level].split(' — ')[0]}`);
       sendXapi('level-changed');
     }
     function score(){ return Math.round(state.awarded.reduce((a,b)=>a+b,0)*100)/100; }
+
+    // ---------- Per-level attempt records ----------
+    // Changing challenge level used to zero every score, so a pupil who did well at Build and then looked
+    // at Think was recorded by the lower of the two — the design punished curiosity. Each attempt is now
+    // filed before the next one starts, so exploring a level can only ever add evidence.
+    function runHasActivity(){ return state.history.length>0||state.attempts.some(a=>a>0); }
+    function archiveCurrentRun(reason){
+      if(state.runArchived||!runHasActivity())return false;
+      const wrong=state.history.filter(h=>!h.correct);
+      state.runs.push({
+        level:currentLevel(),levelLabel:LEVEL_NOTES[currentLevel()].split(' — ')[0],
+        endedBecause:reason,startedAt:state.runStartedAt,endedAt:Date.now(),
+        durationSeconds:Math.max(0,Math.round((Date.now()-state.runStartedAt)/1000)),
+        score:score(),max:TOTAL_QUESTIONS,
+        questionsCompleted:state.completed.filter(Boolean).length,
+        questionsReached:state.q+1,
+        firstTryCorrect:state.history.filter(h=>h.correct&&h.attempt===1).length,
+        totalAttempts:state.history.length,incorrectAttempts:wrong.length,
+        supportRequests:(state.support||[]).reduce((a,b)=>a+(Number(b)||0),0),
+        difficultyPath:adaptivePath(),
+        misconceptions:[...new Set(wrong.map(h=>h.misconceptionCode).filter(Boolean))],
+        responses:state.history.slice(-40)
+      });
+      state.runArchived=true;
+      return true;
+    }
+    // A fresh attempt at `level`. The previous one is filed first, never overwritten.
+    function beginRun(level,reason){
+      archiveCurrentRun(reason);
+      state.level=level; state.q=0; startAdaptiveSession();
+      state.attempts=Array(TOTAL_QUESTIONS).fill(0); state.awarded=Array(TOTAL_QUESTIONS).fill(0);
+      state.completed=Array(TOTAL_QUESTIONS).fill(false); state.history=[];
+      state.selected=null; state.response=null;
+      state.runArchived=false; state.runStartedAt=Date.now();
+    }
+    function allRuns(){
+      const finished=state.runs.slice();
+      if(runHasActivity()&&!state.runArchived){
+        finished.push({level:currentLevel(),levelLabel:LEVEL_NOTES[currentLevel()].split(' — ')[0],
+          endedBecause:'in-progress',score:score(),max:TOTAL_QUESTIONS,
+          questionsCompleted:state.completed.filter(Boolean).length,
+          difficultyPath:adaptivePath(),inProgress:true});
+      }
+      return finished;
+    }
+    // The headline score is the learner's BEST attempt, not the most recent one. Reporting the latest run
+    // would mean a pupil who tries a harder level after succeeding at an easier one is graded down for it.
+    function bestScore(){ return allRuns().reduce((best,run)=>Math.max(best,Number(run.score)||0),score()); }
+    function levelsAttempted(){ return [...new Set(allRuns().map(run=>run.level))].sort(); }
+    // Every checked response from every attempt, oldest first. Each event already records the level and
+    // difficulty step it was answered at, so archived runs need no re-tagging. The evidence table reads
+    // from this rather than the live run: a learner reflecting on their work should see what they did at
+    // Think while sitting in Build, and a teacher should not have to guess what an earlier level looked like.
+    function allResponses(){
+      const rows=[];
+      state.runs.forEach(run=>{ (run.responses||[]).forEach(event=>rows.push(event)); });
+      state.history.forEach(event=>rows.push(event));
+      return rows;
+    }
     function placeValueText(tens,ones){ return `${tens} ${tens===1?'ten':'tens'} and ${ones} ${ones===1?'one':'ones'}`; }
     function formatTime(hour,minute){ return `${hour}:${String(minute).padStart(2,'0')}`; }
     function addMinutes(hour,minute,amount){
@@ -2408,6 +2478,12 @@
         const point=(cx,cy,r,deg)=>[clean(cx+r*Math.cos(deg*Math.PI/180)),clean(cy-r*Math.sin(deg*Math.PI/180))];
         const arc=(cx,cy,r,start,end,kind)=>{const p1=point(cx,cy,r,start),p2=point(cx,cy,r,end),delta=((end-start)%360+360)%360;return `<path class="angle-arc ${kind}" d="M${p1[0]} ${p1[1]} A${r} ${r} 0 ${delta>180?1:0} 0 ${p2[0]} ${p2[1]}"/>`;};
         const label=(cx,cy,r,deg,text,kind)=>{const p=point(cx,cy,r,deg);return `<text class="angle-label-${kind}" x="${p[0]}" y="${p[1]}" text-anchor="middle">${esc(text)}</text>`;};
+        // A label that names a property belongs beside the feature it names, and outside the figure.
+        // Centring "one corner = 90°" across the top of the square laid teal text over the fill and the
+        // stroke, so the very fact being taught was the hardest thing on the diagram to read. Anchor the
+        // label to the marked vertex and push it clear of the outline instead.
+        const featureLabel=(fx,fy,text,{dx=0,dy=26,anchor='start'}={})=>
+          `<text class="angle-shape-name" x="${clean(fx+dx)}" y="${clean(fy+dy)}" text-anchor="${anchor}">${esc(text)}</text>`;
         let art='',shapeName='',ariaLabel=d.ariaLabel||'Composite special-quadrilateral angle model';
         if(variant==='square-corner'||variant==='rectangle-corner'){
           const square=variant==='square-corner',x=105,y=45,w=square?175:270,h=175,vx=x,vy=y+h,rayEnd=point(vx,vy,Math.min(w,h)-16,a);shapeName=square?'square':'rectangle';
@@ -2416,7 +2492,7 @@
             `<path class="angle-right-mark" d="M${vx} ${vy-24} H${vx+24} V${vy}"/>`+
             arc(vx,vy,48,0,a,'given')+arc(vx,vy,67,a,90,'unknown')+
             label(vx,vy,82,a/2,`${a}°`,'given')+label(vx,vy,98,(a+90)/2,shownUnknown,'unknown')+
-            `<text class="angle-shape-name" x="${x+w/2}" y="${y+22}" text-anchor="middle">${shapeName}: one corner = 90°</text>`;
+            featureLabel(vx,vy,`${shapeName}: one corner = 90°`);
         }else if(variant==='parallelogram'){
           const blx=70,bly=218,brx=330,bry=218,height=135,offset=clean(height/Math.tan(a*Math.PI/180)),tlx=clean(blx+offset),trx=clean(brx+offset),ty=83;shapeName='parallelogram';
           art=`<polygon class="angle-shape" points="${blx},${bly} ${brx},${bry} ${trx},${ty} ${tlx},${ty}"/>`+
@@ -6912,7 +6988,12 @@
       els.questionNo.textContent=6; els.phase.textContent='Complete'; els.prompt.textContent='You completed this learning objective.';
       const firstTry=state.history.filter(h=>h.correct&&h.attempt===1).length;
       els.instruction.textContent='Review the evidence below and explain one strategy that helped you.';
-      els.area.innerHTML=`<div class="celebrate"><div class="big">🌟</div><h2>${esc(CONFIG.shortTitle)} complete</h2><p><strong>Learning score: ${score()} / 6</strong></p><p>${firstTry} question(s) correct on the first attempt.</p><p class="celebrate-path">Difficulty path: ${esc(adaptivePath())} of ${TOTAL_QUESTIONS}</p><button class="next tap-target" id="practiceAgainBtn">Practise again</button></div>`;
+      // File this attempt before listing, so the completed run appears once and survives the pupil simply
+      // closing the page. Every attempt at every level is shown: finishing one level never hides another.
+      archiveCurrentRun('completed');
+      const runList=state.runs.length>1?`<div class="celebrate-runs"><h3>Every attempt this session</h3>${state.runs.map(run=>
+        `<p><strong>Level ${run.level} ${esc(run.levelLabel)}</strong> — ${run.score} of ${run.max}, ${run.questionsCompleted} question(s) finished, difficulty ${esc(run.difficultyPath||'1')}</p>`).join('')}</div>`:'';
+      els.area.innerHTML=`<div class="celebrate"><div class="big">🌟</div><h2>${esc(CONFIG.shortTitle)} complete</h2><p><strong>Learning score: ${score()} / 6</strong></p><p>${firstTry} question(s) correct on the first attempt.</p><p class="celebrate-path">Difficulty path: ${esc(adaptivePath())} of ${TOTAL_QUESTIONS}</p>${runList}<button class="next tap-target" id="practiceAgainBtn">Practise again</button></div>`;
       feedback('Learning captured','SLS-ready evidence includes each response, attempt, misconception and action.','correct');
       els.clear.hidden=true; els.hint.hidden=true; els.check.hidden=true; els.next.hidden=true;
       $('practiceAgainBtn').addEventListener('click',restart);
@@ -6933,16 +7014,27 @@
     }
     function renderAnalytics(){
       els.actionLog.innerHTML=state.actions.length?state.actions.map((a,index)=>`<div><b>${index+1}. Q${esc(a.question||'?')}/${TOTAL_QUESTIONS} ${esc(relativeTime(a.t))} ${esc(a.icon)}</b> ${esc(a.description)}<br><span>${esc(a.value)}</span></div>`).join(''):'<div>No actions logged yet.</div>';
-      els.responseLog.innerHTML=state.history.length?`<table class="attempt-table"><thead><tr><th>Q &amp; Question Task</th><th>Answer</th><th>Result</th></tr></thead><tbody>${state.history.slice().reverse().map(h=>{
+      // Attempts at other levels would otherwise be invisible here, since the response table only holds the
+      // current run. Stated as plain results, with no judgement attached to the order they were tried in.
+      const runs=allRuns();
+      els.runLog.innerHTML=runs.length>1?`<div class="run-log"><b>Attempts this session</b>${runs.map(run=>
+        `<div>Level ${run.level} ${esc(run.levelLabel)} — <strong>${run.score} of ${run.max}</strong>, ${run.questionsCompleted} finished, difficulty ${esc(run.difficultyPath||'1')}${run.inProgress?' (in progress)':''}</div>`).join('')}<div class="run-log-best">Best: ${bestScore()} of ${TOTAL_QUESTIONS}</div></div>`:'';
+      const responses=allResponses(),liveCount=state.history.length;
+      els.responseLog.innerHTML=responses.length?`<table class="attempt-table"><thead><tr><th>Q &amp; Question Task</th><th>Answer</th><th>Result</th></tr></thead><tbody>${responses.map((h,index)=>({h,current:index>=responses.length-liveCount})).reverse().map(({h,current})=>{
         const qHeader=esc(h.q?h.q.split(' ')[0]:`Q${h.question||'?'}`);
         const promptText=h.prompt||(h.q?h.q.substring(h.q.indexOf(' ')+1):'');
-        return `<tr><td><strong>${qHeader}</strong> <small class="attempt-tag">(A${h.attempt})</small><span class="analytics-question-text">${mathifyFractions(promptText)}</span></td><td>${mathifyFractions(h.value)}</td><td>${h.correct?'✅':'❌'}</td></tr>`;
+        const levelValue=Number(h.level)||1,levelName=(LEVEL_NOTES[levelValue]||'').split(' — ')[0];
+        // The level badge is what makes this readable across attempts: without it two rows from different
+        // levels look like the same question answered twice.
+        const levelTag=`<small class="level-tag${current?' current':''}">L${levelValue} ${esc(levelName)}</small>`;
+        return `<tr><td><strong>${qHeader}</strong> ${levelTag} <small class="attempt-tag">(A${h.attempt})</small><span class="analytics-question-text">${mathifyFractions(promptText)}</span></td><td>${mathifyFractions(h.value)}</td><td>${h.correct?'✅':'❌'}</td></tr>`;
       }).join('')}</tbody></table>`:'<div>No checked responses yet.</div>';
       typesetMath(els.responseLog);
     }
     function analyticsSummary(){
       const firstTry=state.history.filter(h=>h.correct&&h.attempt===1).length;
       const wrong=state.history.filter(h=>!h.correct);
+      const sessionResponses=allResponses(),sessionWrong=sessionResponses.filter(h=>!h.correct);
       const tutorialOpens=state.tutorialViews.filter(v=>v.event==='opened').length;
       const tutorialCompletions=state.tutorialViews.filter(v=>v.event==='completed').length;
       const touchCountEvents=state.tutorialInteractions.filter(v=>v.event==='counted'||v.event==='completed');
@@ -6986,12 +7078,24 @@
         ratioTermsInspected,ratioAnimationsReplayed,secondaryModelInspections,
         dragActions:dragActions.length,tapOrClickActions:tapActions.length,lastDragDestinations:dragActions.slice(-10).map(action=>action.destination),
         challengeLevel:currentLevel(),challengeLevelLabel:LEVEL_NOTES[currentLevel()].split(' — ')[0],
+        // Every attempt at every level, so a teacher sees the whole session rather than the last thing
+        // touched. Reported descriptively: the sequence and the scores, with no inference about effort or
+        // attitude, which the same observation cannot distinguish — a pupil dropping to an easier level may
+        // be giving up or may be choosing an appropriate challenge well.
+        levelRuns:allRuns(),levelsAttempted:levelsAttempted(),levelRunCount:allRuns().length,
+        bestRunScore:bestScore(),currentRunScore:score(),
+        levelVisitSequence:allRuns().map(run=>run.level).join('→'),
         adaptiveDifficulty:true,adaptiveDifficultyPath:adaptivePath(),startDifficultyStep:1,currentDifficultyStep:currentStep()+1,
         highestDifficultyStep:Math.max(...state.steps.filter(s=>Number.isFinite(Number(s))).map(s=>clampStep(s)+1),1),
         supportRequests:(state.support||[]).reduce((a,b)=>a+(Number(b)||0),0),
         masteryPercent:Math.round(score()/TOTAL_QUESTIONS*100),completeActionCount:state.actions.length,actionLogComplete:true,actionLogOrder:'chronological',
-        misconceptionEvidence:wrong.slice(-10).map(h=>({question:h.q,studentAnswer:h.value,correctAnswer:h.expected,attempt:h.attempt})),
-        recommendation:wrong.length>2?'Review the worked representations and ask the pupil to explain the place or operation that changed.':'Ask the pupil to explain and compare two successful strategies.'
+        // Misconceptions are reported across every attempt, not just the current one. A pupil who met the
+        // same error at Stretch and again at Build has shown a teacher something that one run would hide.
+        misconceptionEvidence:sessionWrong.slice(-12).map(h=>({question:h.q,level:h.level,studentAnswer:h.value,correctAnswer:h.expected,attempt:h.attempt})),
+        currentRunMisconceptions:wrong.slice(-10).map(h=>({question:h.q,studentAnswer:h.value,correctAnswer:h.expected,attempt:h.attempt})),
+        totalAttemptsAllLevels:sessionResponses.length,incorrectAttemptsAllLevels:sessionWrong.length,
+        firstTryCorrectAllLevels:sessionResponses.filter(h=>h.correct&&h.attempt===1).length,
+        recommendation:sessionWrong.length>2?'Review the worked representations and ask the pupil to explain the place or operation that changed.':'Ask the pupil to explain and compare two successful strategies.'
       };
     }
     function buildXapiPayload(reason){
@@ -7004,15 +7108,18 @@
         state:{question:a.question||state.q+1,score:Number.isFinite(a.scoreAtAction)?a.scoreAtAction:score()}
       }));
       const feedbackActions=fullActionLog.length?fullActionLog.map(a=>`${a.sequence}. Q${a.question}/${TOTAL_QUESTIONS} ${esc(a.label)}`).join('<br>'):'No actions logged yet.';
-      const feedbackText=`Interactive Response Assistant<br><strong>FAMath Teacher Learning Analytics</strong><br>Objective: ${esc(CONFIG.objective)}<br>Challenge level: ${currentLevel()}${levelsSupported()?'':' (single level)'}<br>Adaptive difficulty path (step of ${TOTAL_QUESTIONS}): ${esc(adaptivePath())}<br>Score: ${score()} / ${TOTAL_QUESTIONS}<br>Complete Action Log (chronological):<br>${feedbackActions}`;
+      const feedbackText=`Interactive Response Assistant<br><strong>FAMath Teacher Learning Analytics</strong><br>Objective: ${esc(CONFIG.objective)}<br>Challenge level: ${currentLevel()}${levelsSupported()?'':' (single level)'}<br>Adaptive difficulty path (step of ${TOTAL_QUESTIONS}): ${esc(adaptivePath())}<br>Attempts this session:<br>${allRuns().map(run=>`&nbsp;&nbsp;Level ${run.level} ${esc(run.levelLabel)} — ${run.score} of ${run.max}${run.inProgress?' (in progress)':''}`).join('<br>')||'&nbsp;&nbsp;None yet'}<br>Best score: ${bestScore()} / ${TOTAL_QUESTIONS}<br>Score this attempt: ${score()} / ${TOTAL_QUESTIONS}<br>Complete Action Log (chronological):<br>${feedbackActions}`;
       return {
         schema:'https://iwant2study.org/xapi/famath/v1',activityId:CONFIG.id,title:CONFIG.shortTitle,
         objective:CONFIG.objective,strand:CONFIG.strand,subStrand:CONFIG.subStrand,reason,
-        score:score(),max:TOTAL_QUESTIONS,total:TOTAL_QUESTIONS,scaled:score()/TOTAL_QUESTIONS,
+        // The graded figure is the learner's BEST attempt across levels. Reporting the most recent run
+        // would grade a pupil down for trying a harder level after succeeding at an easier one.
+        score:bestScore(),max:TOTAL_QUESTIONS,total:TOTAL_QUESTIONS,scaled:bestScore()/TOTAL_QUESTIONS,
+        currentRunScore:score(),levelRuns:allRuns(),levelsAttempted:levelsAttempted(),
         completed:state.completed.every(Boolean),durationSeconds:Math.round((Date.now()-startedAt)/1000),
         currentQuestion:state.q+1,summary:`${CONFIG.id}: ${summary.masteryPercent}% mastery; ${summary.incorrectAttempts} incorrect attempt(s).`,
-        feedback:feedbackText,actionLog:fullActionLog,actionLogComplete:true,actionLogOrder:'chronological',activityTasks:tasks,responses:state.history.slice(-80),
-        history:state.history.slice(-80),tutorialEvidence:state.tutorialViews.slice(-80),tutorialInteractionEvidence:state.tutorialInteractions.slice(-120),teacherAnalytics:summary,dashboard:summary,
+        feedback:feedbackText,actionLog:fullActionLog,actionLogComplete:true,actionLogOrder:'chronological',activityTasks:tasks,responses:allResponses().slice(-160),
+        currentRunResponses:state.history.slice(-80),history:allResponses().slice(-160),tutorialEvidence:state.tutorialViews.slice(-80),tutorialInteractionEvidence:state.tutorialInteractions.slice(-120),teacherAnalytics:summary,dashboard:summary,
         quiz:{total:TOTAL_QUESTIONS,completed:summary.questionsCompleted,firstTryCorrect:summary.firstTryCorrect},
         details:{curriculum:CONFIG.curriculumSource||'Singapore Primary Mathematics Syllabus 2021, updated October 2025',schoolStage:CONFIG.schoolStage||'Primary',objectiveId:CONFIG.id,objectiveFamily:CONFIG.family||CONFIG.kind,phase:phaseForSlot(state.q),difficultyStep:currentStep()+1,originalFeedback:feedbackText}
       };
@@ -7027,7 +7134,7 @@
 
     // ---------- Session persistence, smartboard touch feedback and controls ----------
     function persist(){
-      try{ localStorage.setItem(sessionKey,JSON.stringify({q:state.q,level:state.level,step:state.step,steps:state.steps,support:state.support,problems:state.problems,attempts:state.attempts,awarded:state.awarded,completed:state.completed,history:state.history,actions:state.actions,tutorialViews:state.tutorialViews,tutorialInteractions:state.tutorialInteractions})); }catch(_){}
+      try{ localStorage.setItem(sessionKey,JSON.stringify({q:state.q,level:state.level,step:state.step,steps:state.steps,support:state.support,runs:state.runs,runArchived:state.runArchived,runStartedAt:state.runStartedAt,problems:state.problems,attempts:state.attempts,awarded:state.awarded,completed:state.completed,history:state.history,actions:state.actions,tutorialViews:state.tutorialViews,tutorialInteractions:state.tutorialInteractions})); }catch(_){}
     }
     function restore(){
       try{
@@ -7040,7 +7147,9 @@
           ||!saved.problems[servedSlot]){
           localStorage.removeItem(sessionKey);return false;
         }
-        ['q','level','step','steps','support','problems','attempts','awarded','completed','history','actions','tutorialViews','tutorialInteractions'].forEach(k=>{ if(saved[k]!==undefined)state[k]=saved[k]; });
+        ['q','level','step','steps','support','runs','runArchived','runStartedAt','problems','attempts','awarded','completed','history','actions','tutorialViews','tutorialInteractions'].forEach(k=>{ if(saved[k]!==undefined)state[k]=saved[k]; });
+        if(!Array.isArray(state.runs))state.runs=[];
+        if(!Number.isFinite(Number(state.runStartedAt)))state.runStartedAt=Date.now();
         if(!Array.isArray(state.steps)||state.steps.length!==TOTAL_QUESTIONS)state.steps=Array(TOTAL_QUESTIONS).fill(null).map((_,i)=>i<=state.q?i:null);
         if(!Array.isArray(state.support)||state.support.length!==TOTAL_QUESTIONS)state.support=Array(TOTAL_QUESTIONS).fill(0);
         state.step=clampStep(state.step); return true;
@@ -7048,7 +7157,9 @@
     }
     function restart(){
       try{localStorage.removeItem(sessionKey);}catch(_){}
-      state.q=0; startAdaptiveSession(); state.attempts=Array(6).fill(0); state.awarded=Array(6).fill(0); state.completed=Array(6).fill(false); state.history=[]; state.actions=[]; state.tutorialViews=[]; state.tutorialInteractions=[]; state.counters={tens:0,ones:0}; state.order=[]; state.money=[]; state.lineLength=0; state.grid=[];
+      // Restart files the attempt rather than erasing it — the pupil did that work, and a teacher looking
+      // at the record should see it. Only the on-screen action log is cleared.
+      beginRun(currentLevel(),'restarted'); state.actions=[]; state.tutorialViews=[]; state.tutorialInteractions=[]; state.counters={tens:0,ones:0}; state.order=[]; state.money=[]; state.lineLength=0; state.grid=[];
       els.clear.hidden=false; els.hint.hidden=false; els.check.hidden=false; log('↻','Restarted activity',CONFIG.id); renderQuestion(); persist(); sendXapi('activity-restarted');
     }
     function attachTouchFeedback(root=document){

@@ -57,6 +57,14 @@ After an incorrect answer, begin the tutorial with the learner's actual arrangem
 - Level 1 applies the objective, Level 2 adds a reasoning step, Level 3 works backwards, combines, or judges reasoning. Offer only the levels an objective can actually produce, and never let a level quietly serve a lower-level item.
 - A generic Level 3 can be built from per-option misconception data: describe the faulty METHOD in third person and ask which answer it produced, keeping the correct answer among the choices. Objectives whose wrong answers are merely other names — naming a shape, choosing a unit — have no method to describe and need authored property-and-claim items instead.
 
+## Label placement in figures
+
+- **Anchor a label to the feature it names.** A property label belongs beside the thing it describes: "one corner = 90°" goes next to that corner, under the right-angle mark, not centred across the top of the shape. A learner reads the label and the feature as one idea, so make them one visual unit.
+- **Derive the position from the feature's coordinates**, not from the figure's bounding box. Centring on the shape puts the label wherever the shape happens to be, which is how a caption ends up furthest from the corner it explains.
+- **Never let text cross an outline.** Text over a stroke is unreadable at any size, and the fact being taught becomes the hardest thing on the diagram to read. Push the label clear of the edge, into the margin the viewBox already provides.
+- A label naming a whole region may sit on that region — "whole 9 × 7" written across the rectangle it measures is correct. The test is whether the label names what it sits on.
+- Keep labels out of the arcs, rays, and marks around a vertex. The space on the far side of the vertex is usually empty; use it.
+
 ## Layout economy
 
 - Keep the model, the question, the coach line, and the answer choices visible together. A learner who must scroll between the model and the question is holding two halves of one idea in memory.
