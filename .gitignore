@@ -13,3 +13,7 @@ desktop.ini
 *.zip
 !dist/
 !dist/*.zip
+
+# build-famath-interactives bundles the proven SLS xAPI sample as a skill asset. Its build script refuses
+# to run without it, so this archive is source, not a temporary artifact.
+!build-famath-interactives/assets/**/*.zip
