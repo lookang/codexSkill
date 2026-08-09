@@ -49,7 +49,7 @@
     .prompt-row .read-btn { flex:0 0 auto; }
     .read-btn { background:var(--teal); color:#fff; font-weight:800; padding:7px 12px; }
     .workbench { min-height:230px; display:grid; grid-template-columns:minmax(0,1fr) minmax(260px,.42fr); gap:12px; }
-    .activity-area { min-width:0; border:2px solid var(--line); border-radius:var(--radius); padding:12px; background:linear-gradient(180deg,#fff,#f7fbfd); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; overflow:hidden; }
+    .activity-area { min-width:0; border:2px solid var(--line); border-radius:var(--radius); padding:12px; background:linear-gradient(180deg,#fff,#f7fbfd); box-shadow:var(--shadow); display:flex; flex-direction:column; align-items:safe center; justify-content:safe center; gap:12px; overflow:hidden; }
     .coach { border:2px solid var(--line); border-radius:var(--radius); padding:12px; display:flex; flex-direction:column; gap:10px; background:#fff; }
     .coach h2 { margin:0; font-size:17px; color:var(--navy); }
     .coach p { margin:0; font-family:Arial,sans-serif; line-height:1.4; }
@@ -77,7 +77,7 @@
     .mini-dot { width:16px; height:16px; border-radius:50%; background:var(--yellow); border:1px solid #d69e00; }
     .equation { font-size:clamp(32px,7vw,64px); font-weight:900; letter-spacing:.04em; color:var(--navy); text-align:center; }
     .equation small { display:block; font-size:16px; font-family:Arial,sans-serif; color:var(--muted); letter-spacing:0; margin-top:8px; }
-    .math-tex{display:inline-flex;align-items:center;max-width:100%;vertical-align:middle;letter-spacing:0}.math-tex.display{display:flex;justify-content:center;width:100%;overflow-x:auto;overflow-y:hidden;padding:.08em .12em}.math-tex .katex{font-size:1em}.math-tex.display .katex-display{margin:.08em 0}.prompt-math{display:inline-flex;align-items:center;white-space:nowrap}.prompt-math .katex{font-size:1.06em}.upper-expression .math-tex,.upper-operation-flow .math-tex{font-size:inherit}
+    .math-tex{display:inline-flex;align-items:center;max-width:100%;vertical-align:middle;letter-spacing:0}.math-tex.display{display:flex;justify-content:safe center;width:100%;overflow-x:auto;overflow-y:hidden;padding:.08em .12em}.math-tex .katex{font-size:1em}.math-tex.display .katex-display{margin:.08em 0}.prompt-math{display:inline-flex;align-items:center;white-space:nowrap}.prompt-math .katex{font-size:1.06em}.upper-expression .math-tex,.upper-operation-flow .math-tex{font-size:inherit}
     .katex span:not(.frac-line):not(.overline-line):not(.underline-line):not(.hline):not(.rule){border-radius:0;box-shadow:none;background:none;padding:0}
     .math-prose{display:inline-block;max-width:100%;white-space:normal;overflow-wrap:break-word;letter-spacing:normal;line-height:1.45}
     .math-prose.display{display:block;width:100%;text-align:center}
@@ -202,7 +202,7 @@
     .motion-lesson.is-playing .sorting-token .sort-length-bar { animation:sorting-token-glow 1.18s ease both; animation-delay:var(--move-delay); }
     @keyframes sorting-token-route { 0%{left:var(--from-left);bottom:123px;transform:translateX(-50%);z-index:5} 18%{left:var(--from-left);bottom:135px;transform:translateX(-50%) scale(1.08);z-index:6} 70%{left:var(--to-left);bottom:var(--final-bottom);transform:translateX(-50%) scale(1.04);z-index:6} 100%{left:var(--to-left);bottom:var(--final-bottom);transform:translateX(-50%);z-index:4} }
     @keyframes sorting-token-glow { 0%{border-color:var(--teal-dark);filter:none} 18%,72%{border-color:var(--coral);filter:drop-shadow(0 0 5px rgba(239,85,79,.5))} 100%{border-color:var(--blue);filter:none} }
-    .story-motion-set { width:min(100%,650px); min-height:148px; display:flex; flex-wrap:wrap; align-content:center; justify-content:center; gap:9px; padding:24px 12px; border:3px solid var(--teal); border-radius:18px; background:#effbfb; overflow:hidden; }
+    .story-motion-set { width:min(100%,650px); min-height:148px; display:flex; flex-wrap:wrap; align-content:safe center; justify-content:safe center; gap:9px; padding:24px 12px; border:3px solid var(--teal); border-radius:18px; background:#effbfb; overflow:hidden; }
     .story-motion-object { width:45px; height:45px; display:grid; place-items:center; border:3px solid #d69e00; border-radius:50%; background:var(--yellow); color:var(--navy); font-weight:900; }
     .motion-lesson.is-playing .story-motion-object.joiner { animation:story-object-join 2.7s cubic-bezier(.18,.84,.25,1) both; animation-delay:var(--motion-delay); }
     .motion-lesson.is-playing .story-motion-object.leaver { animation:story-object-leave 2.7s cubic-bezier(.35,.05,.7,.3) both; animation-delay:var(--motion-delay); }
@@ -712,6 +712,38 @@
     .run-log { margin-bottom:8px; padding:8px 10px; border-left:6px solid var(--teal); border-radius:9px; background:#f3fbf7; font:700 13px/1.45 Arial,sans-serif; color:var(--navy); }
     .run-log b { display:block; margin-bottom:3px; color:#3f7963; text-transform:uppercase; font-size:12px; letter-spacing:.04em; }
     .run-log-best { margin-top:4px; padding-top:4px; border-top:2px dashed #9dc6b3; color:#3f7963; }
+    /* Prime factorisation trial division. Steps arrive one at a time so the answer assembles at the end of
+       the reasoning rather than before it — the whole point is that the learner watches the search. Under
+       prefers-reduced-motion everything is shown at once: that reader has opted out of the staging, and a
+       silent blank list would be worse than an early answer. */
+    .prime-walk { display:grid; gap:8px; padding:12px 14px; border:3px solid #8eb6d0; border-radius:15px; background:#fff; }
+    .pw-head { font:800 16px/1.35 Arial,sans-serif; color:var(--navy); }
+    .pw-caption { margin:0; font:800 13px/1.3 Arial,sans-serif; color:#4f6786; text-transform:uppercase; letter-spacing:.04em; }
+    .pw-steps { display:grid; gap:6px; margin:0; padding:0; list-style:none; }
+    .pw-step { display:flex; align-items:center; flex-wrap:wrap; gap:8px; padding:7px 10px; border-left:6px solid var(--teal); border-radius:9px; background:#f2fbfb; font:800 16px/1.3 Arial,sans-serif; color:var(--navy); }
+    .pw-step.rejected { border-left-color:#c9a227; background:#fffaea; }
+    .pw-value { min-width:52px; font-size:20px; }
+    .pw-op { color:#4f6786; }
+    .pw-verdict { padding:2px 9px; border-radius:999px; font:800 12px/1.6 Arial,sans-serif; }
+    .pw-verdict.yes { background:#d8f5ef; color:#08765a; }
+    .pw-verdict.no { background:#fdeccd; color:#8a6100; }
+    .pw-result { margin-left:auto; font-weight:900; }
+    .pw-collect, .pw-answer, .pw-note { margin:0; padding:9px 12px; border-radius:10px; font:800 16px/1.4 Arial,sans-serif; }
+    .pw-collect { background:#eef4fb; color:var(--navy); }
+    .pw-answer { border:3px solid var(--coral); background:#fff4e6; color:var(--navy); font-size:18px; }
+    .pw-note { background:#f3fbf7; color:#3f7963; font-size:14px; }
+    .pw-answer sup, .pw-collect sup { font-size:.7em; vertical-align:super; }
+    .pw-controls { display:flex; justify-content:center; }
+    .pw-pair { display:grid; gap:10px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .prime-walk.is-playing .pw-step,
+      .prime-walk.is-playing .pw-collect,
+      .prime-walk.is-playing .pw-answer,
+      .prime-walk.is-playing .pw-note {
+        opacity:0; animation:pw-reveal .5s ease forwards; animation-delay:calc(var(--pw-i,0) * .55s);
+      }
+    }
+    @keyframes pw-reveal { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:none; } }
     .level-tag { display:inline-block; padding:1px 7px; border-radius:999px; background:#e8eef6; color:#4f6786; font:800 11px/1.5 Arial,sans-serif; white-space:nowrap; }
     .level-tag.current { background:var(--navy); color:#fff; }
     .tutorial-head {display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:8px 12px; border-bottom:1px solid var(--line); }
@@ -722,10 +754,10 @@
     .tutorial-progress span { width:32px; height:32px; border-radius:50%; display:grid; place-items:center; border:2px solid #9db3cc; color:var(--muted); font-weight:900; }
     .tutorial-progress span.done { border-color:var(--teal); color:var(--teal-dark); }
     .tutorial-progress span.current { background:var(--teal); color:#fff; border-color:var(--teal); }
-    .tutorial-content { padding:6px 18px 10px; display:grid; grid-template-columns:minmax(210px,.42fr) minmax(0,1fr); align-items:center; gap:16px; overflow:auto; flex:1 1 auto; min-height:170px; }
+    .tutorial-content { padding:6px 18px 10px; display:grid; grid-template-columns:minmax(210px,.42fr) minmax(0,1fr); align-items:safe center; gap:16px; overflow:auto; flex:1 1 auto; min-height:170px; }
     .tutorial-copy h3 { color:var(--navy); font-size:clamp(20px,3vw,29px); margin:0 0 7px; }
     .tutorial-copy p { margin:0; font:18px/1.35 Arial,sans-serif; color:var(--ink); }
-    .tutorial-visual { min-height:155px; border:2px solid #b7d9df; border-radius:14px; background:#f7fcfc; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:12px; overflow:hidden; }
+    .tutorial-visual { min-height:155px; border:2px solid #b7d9df; border-radius:14px; background:#f7fcfc; display:flex; flex-direction:column; align-items:safe center; justify-content:safe center; gap:10px; padding:12px; overflow:hidden; }
     .tutorial-objects { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; }
     .tutorial-object { position:relative; width:50px; height:50px; min-width:50px; min-height:50px; padding:0; border-radius:50%; background:var(--yellow); border:3px solid #d69e00; display:grid; place-items:center; color:var(--navy); font-weight:900; box-shadow:none; transition:transform .3s,opacity .3s,filter .3s; }
     .tutorial-object.remove-target { outline:5px solid rgba(239,85,79,.55); outline-offset:3px; }
@@ -944,7 +976,7 @@
     .upper-operation-flow{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px}.upper-operation-flow>span{padding:8px 12px;border-radius:999px;background:#e8f8f8;border:2px solid var(--teal);font-weight:900}.upper-operation-flow>b{color:var(--coral);font-size:25px}
     .upper-hundred-grid{display:grid;grid-template-columns:repeat(10,20px);justify-content:center;gap:2px}.upper-hundred-grid i{width:20px;height:20px;border:1px solid #7399b9;background:#fff}.upper-hundred-grid i.on{background:#20b7ad}.upper-hundred-grid i.focus{background:#ffcf32}
     .upper-fraction-pair{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px}.upper-fraction-card{display:grid;gap:8px;min-width:170px;padding:10px;border:2px solid #9fc4d7;border-radius:14px;background:#fff;text-align:center}.upper-fraction-card strong{font-size:25px}.upper-times{font-size:34px;font-weight:900;color:var(--coral)}
-    .fraction-division-scene{display:grid;gap:12px}.fraction-story{display:grid;grid-template-columns:minmax(120px,.7fr) minmax(220px,1.3fr);align-items:center;gap:12px;padding:12px;border:3px solid #8ebad1;border-radius:16px;background:#fff}.fraction-story-amount{display:grid;place-items:center;gap:4px;padding:12px;border-radius:13px;background:#e8f8f8;text-align:center}.fraction-story-amount strong{font-size:clamp(28px,5vw,48px)}.fraction-story-question{display:grid;gap:7px;font-size:clamp(18px,2.7vw,27px);font-weight:900}.fraction-story-question small{color:#4f6786;font-size:15px}.fraction-wholes-board{display:flex;justify-content:center;align-items:flex-start;flex-wrap:wrap;gap:12px}.fraction-whole-strip{display:grid;grid-template-columns:repeat(var(--fraction-parts),minmax(30px,52px));min-height:76px;border:4px solid var(--navy);border-radius:10px;overflow:hidden;background:#fff}.fraction-unit{position:relative;display:grid;place-items:center;min-width:30px;border-right:2px solid var(--navy);background:#fff}.fraction-unit.boundary-original{border-right-width:4px;border-right-color:var(--navy)}.fraction-unit.boundary-new{border-right-width:2px;border-right-color:#7fa3c2}.fraction-pie{width:100%;height:auto;display:block}.fraction-pie-board{flex-wrap:nowrap;gap:var(--pie-gap,10px);width:100%;overflow-x:auto}.fraction-pie-board>.fraction-whole-wrap{flex:0 0 auto;width:max(46px,min(176px,calc((100% - (var(--pie-count,1) - 1) * var(--pie-gap,10px)) / var(--pie-count,1))))}.p4-fraction-row .fraction-pie{width:clamp(64px,17vw,132px)}.pie-rim,.pie-cut-original{stroke:var(--navy);stroke-width:3.5}.pie-cut-new{stroke:#7fa3c2;stroke-width:1.75}:root[data-repr="circle"] .repr-bar{display:none}:root[data-repr="bar"] .repr-circle{display:none}.repr-toggle{display:inline-flex;align-items:center;gap:7px;font:800 13px/1.1 Arial,sans-serif;color:var(--navy);background:#eef7fb;border:1px solid #9db3cc;border-radius:999px;padding:3px 11px;cursor:pointer}.repr-toggle input{width:15px;height:15px;margin:0;accent-color:var(--teal);cursor:pointer}.repr-toggle em{font-style:normal;font-weight:700;color:#4f6786}@media (max-width:820px){.repr-toggle em{display:none}.repr-toggle{padding:3px 8px;gap:6px}}.cut-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;font:700 14px/1.3 Arial,sans-serif;color:#4f6786}.cut-legend span{display:inline-flex;align-items:center;gap:6px}.cut-swatch{display:inline-block;width:0;height:19px}.cut-swatch.original{border-left:4px solid var(--navy)}.cut-swatch.new{border-left:2px solid #7fa3c2}.fraction-unit:last-child{border-right:0}.fraction-unit.filled{background:#42c8bd}.fraction-unit.group-1{background:#55cec5}.fraction-unit.group-2{background:#ffcf32}.fraction-unit.group-3{background:#6eaaf0}.fraction-unit.group-4{background:#ef8dbb}.fraction-unit .group-badge{width:28px;height:28px;display:grid;place-items:center;border:3px solid #fff;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;font-weight:900;box-shadow:0 0 0 2px var(--navy)}.fraction-whole-wrap{display:grid;justify-items:center;gap:5px;font-weight:900}.fraction-group-lab,.fraction-share-lab{width:100%;display:grid;gap:12px}.fraction-group-tray,.fraction-recipient-tray{display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;gap:9px}.fraction-group-card,.fraction-recipient-card{position:relative;min-width:76px;min-height:74px;display:grid;align-content:center;justify-items:center;gap:5px;padding:8px;border:3px solid #8eb6d0;border-radius:14px;background:#fff;color:var(--navy);font:inherit;font-weight:900;opacity:.38;transform:translateY(8px);transition:.3s ease}.fraction-group-card.revealed,.fraction-recipient-card.revealed{border-color:var(--teal);opacity:1;transform:none;box-shadow:0 5px 0 #079a9a33}.fraction-group-card.partial{border-style:dashed}.fraction-group-pieces{display:flex;gap:3px}.fraction-group-pieces i{width:18px;height:34px;border:2px solid var(--navy);border-radius:4px;background:#42c8bd}.fraction-group-pieces i.empty{background:#fff;opacity:.35}.fraction-group-count{min-width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:var(--coral);color:#fff}.fraction-play-row{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px}.fraction-play-row button{min-height:48px;padding:9px 16px;border-color:var(--teal);background:#e8ffff}.fraction-live-count{min-width:170px;padding:9px 13px;border-radius:999px;background:#fff0ba;text-align:center;font-size:19px;font-weight:900}.fraction-jump-line{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;padding:14px;border-bottom:5px solid var(--navy);background:#fff}.fraction-jump-stop{min-width:48px;padding:7px 8px;border:3px solid #8fb6d4;border-radius:10px;background:#fff;text-align:center;font-weight:900}.fraction-jump-stop.end{border-color:var(--coral);background:#fff0ba}.fraction-jump-arrow{display:grid;justify-items:center;min-width:54px;color:#087c82;font-weight:900}.fraction-jump-arrow::after{content:'↷';font-size:32px;line-height:20px}.fraction-share-source{display:grid;gap:9px}.fraction-share-split{display:grid;grid-template-columns:repeat(var(--fraction-parts),minmax(18px,38px));min-height:72px;border:4px solid var(--navy);border-radius:10px;overflow:hidden;background:#fff}.fraction-share-piece{border-right:2px solid var(--navy);background:#fff}.fraction-share-piece:last-child{border-right:0}.fraction-share-piece.filled.recipient-1{background:#55cec5}.fraction-share-piece.filled.recipient-2{background:#ffcf32}.fraction-share-piece.filled.recipient-3{background:#6eaaf0}.fraction-share-piece.filled.recipient-4{background:#ef8dbb}.fraction-recipient-card strong{font-size:20px}.fraction-recipient-card .recipient-pie,.fraction-group-card .group-pie{width:clamp(44px,10vw,56px);height:auto;display:block}.fraction-recipient-pieces{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:100px}.fraction-recipient-pieces i{width:17px;height:25px;border:2px solid var(--navy);border-radius:3px;background:#42c8bd}.fraction-rule-bridge{display:grid;gap:10px;padding:14px;border:3px solid var(--teal);border-radius:15px;background:#ecffff;text-align:center}.fraction-rule-bridge .equation{font-size:clamp(24px,4.3vw,42px)}.fraction-rule-bridge .after-meaning{padding-top:8px;border-top:3px dashed #8eb6d0;color:#087c82;font-weight:900}.fraction-context-icon{font-size:52px;line-height:1}.story-icon-row{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:6px;margin:2px 0}.story-icon{width:clamp(30px,6vw,46px);height:auto;flex:0 0 auto}.story-icon.learner{width:clamp(20px,4vw,30px)}.story-icon.emoji-icon{width:auto;height:auto;font-size:clamp(22px,4.4vw,34px);line-height:1;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}.story-icon-more{font:900 16px/1 Arial,sans-serif;color:#4f6786;align-self:center}.fraction-division-summary{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;font-size:clamp(21px,3.4vw,32px);font-weight:900}.fraction-division-summary>span{padding:7px 10px;border:2px solid #9ab9d2;border-radius:10px;background:#fff}.fraction-division-summary .answer{border-color:var(--coral);background:#fff0ba}
+    .fraction-division-scene{display:grid;gap:12px}.fraction-story{display:grid;grid-template-columns:minmax(120px,.7fr) minmax(220px,1.3fr);align-items:center;gap:12px;padding:12px;border:3px solid #8ebad1;border-radius:16px;background:#fff}.fraction-story-amount{display:grid;place-items:center;gap:4px;padding:12px;border-radius:13px;background:#e8f8f8;text-align:center}.fraction-story-amount strong{font-size:clamp(28px,5vw,48px)}.fraction-story-question{display:grid;gap:7px;font-size:clamp(18px,2.7vw,27px);font-weight:900}.fraction-story-question small{color:#4f6786;font-size:15px}.fraction-wholes-board{display:flex;justify-content:safe center;align-items:flex-start;flex-wrap:wrap;gap:12px}.fraction-whole-strip{display:grid;grid-template-columns:repeat(var(--fraction-parts),minmax(30px,52px));min-height:76px;border:4px solid var(--navy);border-radius:10px;overflow:hidden;background:#fff}.fraction-unit{position:relative;display:grid;place-items:center;min-width:30px;border-right:2px solid var(--navy);background:#fff}.fraction-unit.boundary-original{border-right-width:4px;border-right-color:var(--navy)}.fraction-unit.boundary-new{border-right-width:2px;border-right-color:#7fa3c2}.fraction-pie{width:100%;height:auto;display:block}.fraction-pie-board{flex-wrap:nowrap;gap:var(--pie-gap,10px);width:100%;overflow-x:auto}.fraction-pie-board>.fraction-whole-wrap{flex:0 0 auto;width:max(46px,min(176px,calc((100% - (var(--pie-count,1) - 1) * var(--pie-gap,10px)) / var(--pie-count,1))))}.p4-fraction-row .fraction-pie{width:clamp(64px,17vw,132px)}.pie-rim,.pie-cut-original{stroke:var(--navy);stroke-width:3.5}.pie-cut-new{stroke:#7fa3c2;stroke-width:1.75}:root[data-repr="circle"] .repr-bar{display:none}:root[data-repr="bar"] .repr-circle{display:none}.repr-toggle{display:inline-flex;align-items:center;gap:7px;font:800 13px/1.1 Arial,sans-serif;color:var(--navy);background:#eef7fb;border:1px solid #9db3cc;border-radius:999px;padding:3px 11px;cursor:pointer}.repr-toggle input{width:15px;height:15px;margin:0;accent-color:var(--teal);cursor:pointer}.repr-toggle em{font-style:normal;font-weight:700;color:#4f6786}@media (max-width:820px){.repr-toggle em{display:none}.repr-toggle{padding:3px 8px;gap:6px}}.cut-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:16px;font:700 14px/1.3 Arial,sans-serif;color:#4f6786}.cut-legend span{display:inline-flex;align-items:center;gap:6px}.cut-swatch{display:inline-block;width:0;height:19px}.cut-swatch.original{border-left:4px solid var(--navy)}.cut-swatch.new{border-left:2px solid #7fa3c2}.fraction-unit:last-child{border-right:0}.fraction-unit.filled{background:#42c8bd}.fraction-unit.group-1{background:#55cec5}.fraction-unit.group-2{background:#ffcf32}.fraction-unit.group-3{background:#6eaaf0}.fraction-unit.group-4{background:#ef8dbb}.fraction-unit .group-badge{width:28px;height:28px;display:grid;place-items:center;border:3px solid #fff;border-radius:50%;background:var(--navy);color:#fff;font-size:14px;font-weight:900;box-shadow:0 0 0 2px var(--navy)}.fraction-whole-wrap{display:grid;justify-items:center;gap:5px;font-weight:900}.fraction-group-lab,.fraction-share-lab{width:100%;display:grid;gap:12px}.fraction-group-tray,.fraction-recipient-tray{display:flex;justify-content:center;align-items:stretch;flex-wrap:wrap;gap:9px}.fraction-group-card,.fraction-recipient-card{position:relative;min-width:76px;min-height:74px;display:grid;align-content:center;justify-items:center;gap:5px;padding:8px;border:3px solid #8eb6d0;border-radius:14px;background:#fff;color:var(--navy);font:inherit;font-weight:900;opacity:.38;transform:translateY(8px);transition:.3s ease}.fraction-group-card.revealed,.fraction-recipient-card.revealed{border-color:var(--teal);opacity:1;transform:none;box-shadow:0 5px 0 #079a9a33}.fraction-group-card.partial{border-style:dashed}.fraction-group-pieces{display:flex;gap:3px}.fraction-group-pieces i{width:18px;height:34px;border:2px solid var(--navy);border-radius:4px;background:#42c8bd}.fraction-group-pieces i.empty{background:#fff;opacity:.35}.fraction-group-count{min-width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:var(--coral);color:#fff}.fraction-play-row{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:9px}.fraction-play-row button{min-height:48px;padding:9px 16px;border-color:var(--teal);background:#e8ffff}.fraction-live-count{min-width:170px;padding:9px 13px;border-radius:999px;background:#fff0ba;text-align:center;font-size:19px;font-weight:900}.fraction-jump-line{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:5px;padding:14px;border-bottom:5px solid var(--navy);background:#fff}.fraction-jump-stop{min-width:48px;padding:7px 8px;border:3px solid #8fb6d4;border-radius:10px;background:#fff;text-align:center;font-weight:900}.fraction-jump-stop.end{border-color:var(--coral);background:#fff0ba}.fraction-jump-arrow{display:grid;justify-items:center;min-width:54px;color:#087c82;font-weight:900}.fraction-jump-arrow::after{content:'↷';font-size:32px;line-height:20px}.fraction-share-source{display:grid;gap:9px}.fraction-share-split{display:grid;grid-template-columns:repeat(var(--fraction-parts),minmax(18px,38px));min-height:72px;border:4px solid var(--navy);border-radius:10px;overflow:hidden;background:#fff}.fraction-share-piece{border-right:2px solid var(--navy);background:#fff}.fraction-share-piece:last-child{border-right:0}.fraction-share-piece.filled.recipient-1{background:#55cec5}.fraction-share-piece.filled.recipient-2{background:#ffcf32}.fraction-share-piece.filled.recipient-3{background:#6eaaf0}.fraction-share-piece.filled.recipient-4{background:#ef8dbb}.fraction-recipient-card strong{font-size:20px}.fraction-recipient-card .recipient-pie,.fraction-group-card .group-pie{width:clamp(44px,10vw,56px);height:auto;display:block}.fraction-recipient-pieces{display:flex;flex-wrap:wrap;justify-content:center;gap:3px;max-width:100px}.fraction-recipient-pieces i{width:17px;height:25px;border:2px solid var(--navy);border-radius:3px;background:#42c8bd}.fraction-rule-bridge{display:grid;gap:10px;padding:14px;border:3px solid var(--teal);border-radius:15px;background:#ecffff;text-align:center}.fraction-rule-bridge .equation{font-size:clamp(24px,4.3vw,42px)}.fraction-rule-bridge .after-meaning{padding-top:8px;border-top:3px dashed #8eb6d0;color:#087c82;font-weight:900}.fraction-context-icon{font-size:52px;line-height:1}.story-icon-row{display:flex;flex-wrap:wrap;justify-content:safe center;align-items:flex-end;gap:6px;margin:2px 0}.story-icon{width:clamp(30px,6vw,46px);height:auto;flex:0 0 auto}.story-icon.learner{width:clamp(20px,4vw,30px)}.story-icon.emoji-icon{width:auto;height:auto;font-size:clamp(22px,4.4vw,34px);line-height:1;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}.story-icon-more{font:900 16px/1 Arial,sans-serif;color:#4f6786;align-self:center}.fraction-division-summary{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px;font-size:clamp(21px,3.4vw,32px);font-weight:900}.fraction-division-summary>span{padding:7px 10px;border:2px solid #9ab9d2;border-radius:10px;background:#fff}.fraction-division-summary .answer{border-color:var(--coral);background:#fff0ba}
     /* ---------- Fit-don't-wrap packing ----------
        A row of N repeated objects keeps ONE line by shrinking each object to its share of the available
        width, down to a legibility floor, and only scrolls sideways past that floor. Wrapping is what this
@@ -1001,7 +1033,7 @@
     .upper-cubes{display:grid;grid-template-columns:repeat(var(--cols),34px);justify-content:center;gap:4px}.upper-cubes i{width:34px;height:34px;border:2px solid #07517f;background:linear-gradient(135deg,#bdeee9 0 55%,#68cfc5 56%);box-shadow:4px -4px 0 #d9f8f5;font-style:normal}.upper-cubes i.layer2{filter:hue-rotate(25deg)}
     .upper-angle-equation{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;font-size:clamp(22px,3vw,34px);font-weight:900}.upper-angle-equation>span{padding:8px 12px;border:2px solid #9bb9d2;border-radius:10px;background:#fff}.upper-angle-equation>.unknown{border-color:var(--coral);background:#fff0bb}.composite-angle-equation{padding:7px 10px;border:3px solid #9bb9d2;border-radius:13px;background:#fff}.composite-angle-equation .math-tex{font-size:clamp(22px,3vw,32px)}.upper-geo-svg .angle-shape{fill:#dff7f4;stroke:#082653;stroke-width:6;stroke-linejoin:round}.upper-geo-svg .angle-shape-secondary{fill:#fff0ba;stroke:#b67a00;stroke-width:5;stroke-linejoin:round}.upper-geo-svg .angle-ray{fill:none;stroke:#079a9a;stroke-width:6;stroke-linecap:round}.upper-geo-svg .angle-arc{fill:none;stroke-width:7;stroke-linecap:round}.upper-geo-svg .angle-arc.given{stroke:#1769d2}.upper-geo-svg .angle-arc.unknown{stroke:#ef554f;stroke-dasharray:8 5}.upper-geo-svg .angle-right-mark{fill:none;stroke:#8a45c4;stroke-width:5}.upper-geo-svg .angle-parallel-mark{fill:none;stroke:#079a9a;stroke-width:4}.upper-geo-svg .angle-label-given{fill:#155ab5}.upper-geo-svg .angle-label-unknown{fill:#b3312d}.upper-geo-svg .angle-shape-name{fill:#087c82;font-size:15px}.upper-geo-svg .angle-equal-mark{stroke:#b67a00;stroke-width:5;stroke-linecap:round}
     .upper-balance{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:12px}.upper-pan{min-height:92px;display:flex;align-items:end;justify-content:center;flex-wrap:wrap;gap:7px;padding:12px;border-bottom:7px solid var(--navy);background:#fff}.upper-pan i{display:grid;place-items:center;width:46px;height:46px;border:3px solid #087f82;border-radius:10px;background:#a9e8e1;font-style:normal;font-weight:900}.upper-pan i.unknown{background:#fff0bb;border-color:var(--coral)}.upper-pan .algebra-operator{align-self:center;color:var(--navy);font-size:27px}.upper-balance strong{font-size:35px}.unknown-letter-bridge{width:min(100%,650px);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:12px;border:3px solid #9fc4d7;border-radius:15px;background:#fff}.unknown-letter-card{min-width:58px;min-height:58px;display:grid;place-items:center;border:4px solid var(--coral);border-radius:13px;background:#fff0bb;color:var(--navy);font-size:30px;font-weight:900}.unknown-letter-card.letter{border-color:var(--teal);background:#e8f8f8}.unknown-letter-arrow{color:var(--coral);font-size:31px;font-weight:900}.unknown-letter-message{flex-basis:100%;text-align:center;color:var(--teal-dark);font-weight:900}.unknown-equation-map{width:min(100%,720px);display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;gap:7px}.unknown-equation-part{min-width:75px;padding:8px 10px;display:grid;place-items:center;gap:4px;border:3px solid #9db7d0;border-radius:11px;background:#fff;color:var(--navy);font-size:24px;font-weight:900}.unknown-equation-part small{color:var(--muted);font:800 11px/1.15 Arial,sans-serif;text-align:center}.unknown-equation-part.unknown{border-color:var(--coral);background:#fff0bb}.unknown-equation-part.equal{border-color:var(--teal);background:#e8f8f8}
-    .upper-average-bars{min-height:190px;display:flex;align-items:flex-end;justify-content:center;gap:16px;border-bottom:5px solid var(--navy);padding-top:16px}.upper-average-bars span{display:grid;align-content:end;justify-items:center;gap:5px;font-weight:900}.upper-average-bars i{width:54px;height:calc(var(--v) * 10px);max-height:150px;border:3px solid #087f82;border-bottom:0;border-radius:8px 8px 0 0;background:linear-gradient(#55cbc3,#079a9a)}.upper-average-line{border-top:5px dashed var(--coral);text-align:center;color:#b23c3c;font-weight:900}.upper-average-givens{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;gap:12px}.upper-average-given{min-width:150px;display:grid;place-items:center;gap:5px;padding:12px;border:3px solid #9fc4d7;border-radius:13px;background:#fff;text-align:center}.upper-average-given strong{font-size:30px}.upper-average-given.unknown{border-color:var(--coral);background:#fff0bb}.average-tutorial{width:min(100%,790px);display:grid;gap:10px;margin:auto;padding:10px;border:3px solid #acd2df;border-radius:16px;background:#f7fcfd;overflow:hidden}.average-source-row,.average-count-row,.average-equal-row{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:10px}.average-value-card{position:relative;min-width:76px;min-height:72px;display:grid;place-items:center;padding:8px;border:3px solid #087f82;border-radius:12px;background:#e5fbf8;color:var(--navy);font-size:25px;font-weight:900;cursor:pointer}.average-value-card::after{content:attr(data-count-label);position:absolute;right:-7px;top:-9px;min-width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#1769d2;color:#fff;font:900 14px Arial;opacity:0;transform:scale(.4)}.average-sum-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;min-height:64px;padding:8px;border:3px solid #9fc4d7;border-radius:12px;background:#fff;font-size:clamp(22px,3vw,31px);font-weight:900}.average-sum-term,.average-sum-operator,.average-sum-result{opacity:0;transform:translateY(14px);animation:average-term-in .38s ease forwards;animation-delay:var(--delay)}.average-sum-result{padding:5px 9px;border:3px solid var(--coral);border-radius:9px;background:#fff0bb}.average-count-row .average-value-card{opacity:0;transform:scale(.75);animation:average-count-in .42s ease forwards;animation-delay:var(--delay)}.average-count-row .average-value-card::after{animation:average-badge-in .35s ease forwards;animation-delay:calc(var(--delay) + .22s)}.average-count-statement,.average-division-statement,.average-conservation{padding:9px 12px;border-left:7px solid var(--yellow);border-radius:9px;background:#fff8dd;text-align:center;font-weight:900}.average-level-board{position:relative;min-height:215px;display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:32px 10px 0;border-bottom:5px solid var(--navy);overflow:hidden}.average-level-stack{position:relative;width:64px;height:160px;display:flex;align-items:flex-end;justify-content:center}.average-level-fill{width:54px;height:var(--start-h);border:3px solid #087f82;border-bottom:0;border-radius:8px 8px 0 0;background:repeating-linear-gradient(to top,#18aaa3 0 9px,#72d9d2 9px 18px);animation:average-level-share 2.2s cubic-bezier(.45,.05,.2,1) forwards}.average-level-stack b{position:absolute;bottom:calc(var(--start-h) + 5px);animation:average-label-share 2.2s cubic-bezier(.45,.05,.2,1) forwards;font-size:16px}.average-level-stack b::after{content:attr(data-end);opacity:0;animation:average-end-label 2.2s ease forwards}.average-level-stack b span{animation:average-start-label 2.2s ease forwards}.average-level-guide{position:absolute;left:5%;right:5%;bottom:var(--end-h);border-top:5px dashed var(--coral);color:#b23c3c;text-align:right;font-weight:900;opacity:0;animation:average-guide-in .5s ease 1.7s forwards}.average-replay{justify-self:center;min-height:44px;padding:7px 15px;border:2px solid #8eb3cd;background:#fff;color:var(--navy);font-weight:900}.average-final-grid{display:grid;grid-template-columns:repeat(var(--count),minmax(45px,1fr));align-items:end;gap:8px;min-height:160px;padding:10px;border-bottom:5px solid var(--navy)}.average-final-stack{height:var(--end-h);display:grid;place-items:start center;padding-top:7px;border:3px solid #1769d2;border-bottom:0;border-radius:8px 8px 0 0;background:repeating-linear-gradient(to top,#3f8ee5 0 9px,#91bff2 9px 18px);color:#fff;font-weight:900}.average-action-note{color:var(--teal-dark);text-align:center;font-weight:900}.average-tutorial:not(.is-playing) .average-sum-term,.average-tutorial:not(.is-playing) .average-sum-operator,.average-tutorial:not(.is-playing) .average-sum-result,.average-tutorial:not(.is-playing) .average-count-row .average-value-card,.average-tutorial:not(.is-playing) .average-count-row .average-value-card::after,.average-tutorial:not(.is-playing) .average-level-fill,.average-tutorial:not(.is-playing) .average-level-stack b,.average-tutorial:not(.is-playing) .average-level-stack b::after,.average-tutorial:not(.is-playing) .average-level-stack b span,.average-tutorial:not(.is-playing) .average-level-guide{animation:none!important}@keyframes average-term-in{to{opacity:1;transform:none}}@keyframes average-count-in{to{opacity:1;transform:none}}@keyframes average-badge-in{to{opacity:1;transform:scale(1)}}@keyframes average-level-share{to{height:var(--end-h)}}@keyframes average-label-share{to{bottom:calc(var(--end-h) + 5px)}}@keyframes average-start-label{0%,64%{opacity:1}100%{opacity:0}}@keyframes average-end-label{0%,64%{opacity:0}100%{opacity:1}}@keyframes average-guide-in{to{opacity:1}}@media(max-width:520px){.average-value-card{min-width:60px;min-height:60px;font-size:21px}.average-level-board{gap:5px}.average-level-stack{width:54px}.average-level-fill{width:44px}.average-final-grid{gap:4px}.average-sum-flow{font-size:20px}}@media(prefers-reduced-motion:reduce){.average-sum-term,.average-sum-operator,.average-sum-result,.average-count-row .average-value-card,.average-count-row .average-value-card::after,.average-level-fill,.average-level-stack b,.average-level-stack b::after,.average-level-stack b span,.average-level-guide{animation:none!important;opacity:1;transform:none}.average-level-fill{height:var(--end-h)}.average-level-stack b{bottom:calc(var(--end-h) + 5px)}.average-level-stack b span{display:none}.average-level-stack b::after{opacity:1}}
+    .upper-average-bars{min-height:190px;display:flex;align-items:flex-end;justify-content:center;gap:16px;border-bottom:5px solid var(--navy);padding-top:16px}.upper-average-bars span{display:grid;align-content:end;justify-items:center;gap:5px;font-weight:900}.upper-average-bars i{width:54px;height:calc(var(--v) * 10px);max-height:150px;border:3px solid #087f82;border-bottom:0;border-radius:8px 8px 0 0;background:linear-gradient(#55cbc3,#079a9a)}.upper-average-line{border-top:5px dashed var(--coral);text-align:center;color:#b23c3c;font-weight:900}.upper-average-givens{display:flex;align-items:stretch;justify-content:center;flex-wrap:wrap;gap:12px}.upper-average-given{min-width:150px;display:grid;place-items:center;gap:5px;padding:12px;border:3px solid #9fc4d7;border-radius:13px;background:#fff;text-align:center}.upper-average-given strong{font-size:30px}.upper-average-given.unknown{border-color:var(--coral);background:#fff0bb}.average-tutorial{width:min(100%,790px);display:grid;gap:10px;margin:auto;padding:10px;border:3px solid #acd2df;border-radius:16px;background:#f7fcfd;overflow:hidden}.average-source-row,.average-count-row,.average-equal-row{display:flex;align-items:flex-end;justify-content:center;flex-wrap:wrap;gap:10px}.average-value-card{position:relative;min-width:76px;min-height:72px;display:grid;place-items:center;padding:8px;border:3px solid #087f82;border-radius:12px;background:#e5fbf8;color:var(--navy);font-size:25px;font-weight:900;cursor:pointer}.average-value-card::after{content:attr(data-count-label);position:absolute;right:-7px;top:-9px;min-width:27px;height:27px;display:grid;place-items:center;border-radius:50%;background:#1769d2;color:#fff;font:900 14px Arial;opacity:0;transform:scale(.4)}.average-sum-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;min-height:64px;padding:8px;border:3px solid #9fc4d7;border-radius:12px;background:#fff;font-size:clamp(22px,3vw,31px);font-weight:900}.average-sum-term,.average-sum-operator,.average-sum-result{opacity:0;transform:translateY(14px);animation:average-term-in .38s ease forwards;animation-delay:var(--delay)}.average-sum-result{padding:5px 9px;border:3px solid var(--coral);border-radius:9px;background:#fff0bb}.average-count-row .average-value-card{opacity:0;transform:scale(.75);animation:average-count-in .42s ease forwards;animation-delay:var(--delay)}.average-count-row .average-value-card::after{animation:average-badge-in .35s ease forwards;animation-delay:calc(var(--delay) + .22s)}.average-count-statement,.average-division-statement,.average-conservation{padding:9px 12px;border-left:7px solid var(--yellow);border-radius:9px;background:#fff8dd;text-align:center;font-weight:900}.average-level-board{position:relative;min-height:215px;display:flex;align-items:flex-end;justify-content:safe center;gap:14px;padding:32px 10px 0;border-bottom:5px solid var(--navy);overflow:hidden}.average-level-stack{position:relative;width:64px;height:160px;display:flex;align-items:flex-end;justify-content:center}.average-level-fill{width:54px;height:var(--start-h);border:3px solid #087f82;border-bottom:0;border-radius:8px 8px 0 0;background:repeating-linear-gradient(to top,#18aaa3 0 9px,#72d9d2 9px 18px);animation:average-level-share 2.2s cubic-bezier(.45,.05,.2,1) forwards}.average-level-stack b{position:absolute;bottom:calc(var(--start-h) + 5px);animation:average-label-share 2.2s cubic-bezier(.45,.05,.2,1) forwards;font-size:16px}.average-level-stack b::after{content:attr(data-end);opacity:0;animation:average-end-label 2.2s ease forwards}.average-level-stack b span{animation:average-start-label 2.2s ease forwards}.average-level-guide{position:absolute;left:5%;right:5%;bottom:var(--end-h);border-top:5px dashed var(--coral);color:#b23c3c;text-align:right;font-weight:900;opacity:0;animation:average-guide-in .5s ease 1.7s forwards}.average-replay{justify-self:center;min-height:44px;padding:7px 15px;border:2px solid #8eb3cd;background:#fff;color:var(--navy);font-weight:900}.average-final-grid{display:grid;grid-template-columns:repeat(var(--count),minmax(45px,1fr));align-items:end;gap:8px;min-height:160px;padding:10px;border-bottom:5px solid var(--navy)}.average-final-stack{height:var(--end-h);display:grid;place-items:start center;padding-top:7px;border:3px solid #1769d2;border-bottom:0;border-radius:8px 8px 0 0;background:repeating-linear-gradient(to top,#3f8ee5 0 9px,#91bff2 9px 18px);color:#fff;font-weight:900}.average-action-note{color:var(--teal-dark);text-align:center;font-weight:900}.average-tutorial:not(.is-playing) .average-sum-term,.average-tutorial:not(.is-playing) .average-sum-operator,.average-tutorial:not(.is-playing) .average-sum-result,.average-tutorial:not(.is-playing) .average-count-row .average-value-card,.average-tutorial:not(.is-playing) .average-count-row .average-value-card::after,.average-tutorial:not(.is-playing) .average-level-fill,.average-tutorial:not(.is-playing) .average-level-stack b,.average-tutorial:not(.is-playing) .average-level-stack b::after,.average-tutorial:not(.is-playing) .average-level-stack b span,.average-tutorial:not(.is-playing) .average-level-guide{animation:none!important}@keyframes average-term-in{to{opacity:1;transform:none}}@keyframes average-count-in{to{opacity:1;transform:none}}@keyframes average-badge-in{to{opacity:1;transform:scale(1)}}@keyframes average-level-share{to{height:var(--end-h)}}@keyframes average-label-share{to{bottom:calc(var(--end-h) + 5px)}}@keyframes average-start-label{0%,64%{opacity:1}100%{opacity:0}}@keyframes average-end-label{0%,64%{opacity:0}100%{opacity:1}}@keyframes average-guide-in{to{opacity:1}}@media(max-width:520px){.average-value-card{min-width:60px;min-height:60px;font-size:21px}.average-level-board{gap:5px}.average-level-stack{width:54px}.average-level-fill{width:44px}.average-final-grid{gap:4px}.average-sum-flow{font-size:20px}}@media(prefers-reduced-motion:reduce){.average-sum-term,.average-sum-operator,.average-sum-result,.average-count-row .average-value-card,.average-count-row .average-value-card::after,.average-level-fill,.average-level-stack b,.average-level-stack b::after,.average-level-stack b span,.average-level-guide{animation:none!important;opacity:1;transform:none}.average-level-fill{height:var(--end-h)}.average-level-stack b{bottom:calc(var(--end-h) + 5px)}.average-level-stack b span{display:none}.average-level-stack b::after{opacity:1}}
     /* Anchor the equal-share guide's dotted edge to the same rendered height as the bar tops. */
     .average-level-guide{border-top:0;border-bottom:5px dashed var(--coral)}
     @keyframes upper-pulse{to{transform:translateY(-4px);box-shadow:0 7px 0 #ef5f5b55}}
@@ -1214,7 +1246,7 @@
     .secondary-lab-head { display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
     .secondary-mission { padding:6px 11px; border-radius:999px; background:var(--navy); color:#fff; font:800 13px/1 Arial,sans-serif; letter-spacing:.08em; text-transform:uppercase; }
     .secondary-lab-head strong { color:var(--navy); font-size:clamp(17px,2.5vw,23px); }
-    .secondary-scene { position:relative; min-height:190px; display:grid; place-items:center; gap:10px; padding:16px; border:2px solid #b8d7df; border-radius:15px; background:#fff; overflow:hidden; }
+    .secondary-scene { position:relative; min-height:190px; display:grid; place-items:safe center; gap:10px; padding:16px; border:2px solid #b8d7df; border-radius:15px; background:#fff; overflow:hidden; }
     .secondary-inspect-grid { width:100%; display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); align-items:stretch; gap:10px; }
     .secondary-hotspot { position:relative; min-width:0; min-height:70px; padding:10px; border:2px solid #7ba9bd; background:#f1fbfc; color:var(--navy); font-weight:900; overflow:hidden; }
     .secondary-hotspot small { display:block; margin-top:4px; color:#526f8f; font:700 12px/1.25 Arial,sans-serif; }
@@ -2403,6 +2435,70 @@
         {title:`Check the result: ${answer}`,text:'Read the required label order again and compare each term with the equal-unit model.',html:answerFrame(ratioNotationAnimationHTML(p),answer,'Every term is connected to the matching quantity in the stated order.')}
       ];
     }
+    // ---------- Foldable nets ----------
+    // A net and the finished solid were shown side by side, so a learner saw the before and the after but
+    // never the becoming. These layouts describe each net as a HINGE TREE: every face hangs off one edge of
+    // its parent and rotates about that edge, so folding a face automatically carries everything attached
+    // beyond it, exactly as a paper net does.
+    //
+    // Each face is authored in a canonical frame: the hinge lies along the local X axis at the origin and
+    // the face extends toward +Z. Folding is then always the same operation — rotate about local X — which
+    // is what keeps the geometry honest instead of a pile of per-face special cases.
+    //   on: which edge of the PARENT this face hangs from, in the parent's own frame
+    //   fold: degrees from flat to folded. 90 for a box; a pyramid's slant faces use the real dihedral.
+    const NET_FACE_ATTACH={far:0,right:90,left:-90,near:180};
+    function pyramidFoldAngle(base,apexHeight){
+      // Interior dihedral between base and slant face; folding travels 180° minus that.
+      return 180-Math.atan2(apexHeight,base/2)*180/Math.PI;
+    }
+    // Geometry for one face, shared by the renderer and by _source/net_fold_check.js so the two can never
+    // drift. A CHILD face starts at its hinge and extends to +Z. The ROOT has no hinge, and the child
+    // placement code measures its edges from its centre (±d/2), so the root's geometry must be centred too
+    // — it was not, which slid the base half a face out from under the walls while every wall stood in the
+    // right place. Geometry and placement have to agree about where a face is.
+    function netFaceGeometry(T,face){
+      const half=face.w/2,depth=face.d,z0=face.parent?0:-depth/2,z1=z0+depth,geometry=new T.BufferGeometry();
+      const vertices=face.shape==='tri'
+        ? [-half,0,z0, half,0,z0, 0,0,z1]
+        : [-half,0,z0, half,0,z0, half,0,z1, -half,0,z0, half,0,z1, -half,0,z1];
+      geometry.setAttribute('position',new T.Float32BufferAttribute(vertices,3));
+      geometry.computeVertexNormals();
+      return geometry;
+    }
+    function netFoldLayout(solid){
+      const s=String(solid||'cube');
+      if(s==='pyramid'){
+        const base=2.1,apex=1.9,fold=pyramidFoldAngle(base,apex),slant=Math.sqrt(apex*apex+(base/2)*(base/2));
+        return {solid:s,label:'square pyramid',faces:[
+          {id:'base',shape:'rect',w:base,d:base,name:'square base'},
+          {id:'f1',parent:'base',on:'far',shape:'tri',w:base,d:slant,fold,name:'front triangular face'},
+          {id:'f2',parent:'base',on:'near',shape:'tri',w:base,d:slant,fold,name:'back triangular face'},
+          {id:'f3',parent:'base',on:'right',shape:'tri',w:base,d:slant,fold,name:'right triangular face'},
+          {id:'f4',parent:'base',on:'left',shape:'tri',w:base,d:slant,fold,name:'left triangular face'}
+        ]};
+      }
+      if(s==='prism'){
+        const w=1.9,len=2.4,h=w*Math.sqrt(3)/2;
+        return {solid:s,label:'triangular prism',faces:[
+          {id:'base',shape:'rect',w,d:len,name:'rectangular base'},
+          {id:'side1',parent:'base',on:'right',shape:'rect',w:len,d:w,fold:120,name:'right sloping rectangle'},
+          {id:'side2',parent:'base',on:'left',shape:'rect',w:len,d:w,fold:120,name:'left sloping rectangle'},
+          {id:'end1',parent:'base',on:'far',shape:'tri',w,d:h,fold:90,name:'front triangular end'},
+          {id:'end2',parent:'base',on:'near',shape:'tri',w,d:h,fold:90,name:'back triangular end'}
+        ]};
+      }
+      // Cube and cuboid share the cross net: a base, four sides, and a top carried on the far side.
+      const w=s==='cuboid'?2.3:1.8,d=s==='cuboid'?1.5:1.8,h=s==='cuboid'?1.1:1.8;
+      return {solid:s,label:s,faces:[
+        {id:'base',shape:'rect',w,d,name:'base'},
+        {id:'front',parent:'base',on:'far',shape:'rect',w,d:h,fold:90,name:'front face'},
+        {id:'back',parent:'base',on:'near',shape:'rect',w,d:h,fold:90,name:'back face'},
+        {id:'right',parent:'base',on:'right',shape:'rect',w:d,d:h,fold:90,name:'right face'},
+        {id:'left',parent:'base',on:'left',shape:'rect',w:d,d:h,fold:90,name:'left face'},
+        {id:'top',parent:'front',on:'far',shape:'rect',w,d,fold:90,name:'top face'}
+      ]};
+    }
+
     function threeModelHTML(spec={},fallback=''){
       const shape=spec.shape||'cuboid',length=Number(spec.length||spec.l||4),width=Number(spec.width||spec.w||3),height=Number(spec.height||spec.h||2),unknown=Array.isArray(spec.unknown)?spec.unknown.join(','):String(spec.unknown||''),unknownParts=new Set(unknown.split(',').map(part=>part.trim()).filter(Boolean)),isUnknown=part=>unknownParts.has('all')||unknownParts.has(part),concealName=spec.concealName===true,hasDimensions=['length','l','width','w','height','h'].some(key=>Object.hasOwn(spec,key)),focusFace=spec.focusFace===true,faceArea=spec.faceArea,baseArea=spec.baseArea;
       const knownLabel=concealName?'Rotatable three-dimensional solid':`Rotatable ${shape.replaceAll('-',' ')} model`;
@@ -2422,7 +2518,17 @@
       }else{
         dimensionButtons.push('<button type="button" class="tap-target" data-three-part="face" aria-pressed="false">inspect a face</button>','<button type="button" class="tap-target" data-three-part="edge" aria-pressed="false">inspect an edge</button>','<button type="button" class="tap-target" data-three-part="vertex" aria-pressed="false">inspect a vertex</button>');
       }
-      return `<div class="famath-three" data-famath-three data-three-shape="${esc(shape)}" data-three-length="${length}" data-three-width="${width}" data-three-height="${height}" data-three-unknown="${esc(unknown)}" data-three-has-dimensions="${hasDimensions?'true':'false'}" data-three-focus-face="${focusFace?'true':'false'}" data-three-face-area="${faceArea===undefined?'':esc(faceArea)}" data-three-base-area="${baseArea===undefined?'':esc(baseArea)}" data-three-liquid="${spec.liquid?'true':'false'}" data-three-unit-cubes="${spec.unitCubes?'true':'false'}" data-three-conceal-name="${concealName?'true':'false'}" data-three-model-version="r150-local"><div class="famath-three-stage"><span class="famath-three-badge">Drag to rotate · labels follow the object</span><canvas tabindex="0" role="img" aria-label="${esc(knownLabel)}. Drag or use the arrow controls to rotate it. Tap a surface or use the labelled part buttons to inspect its mathematical structure."></canvas><div class="famath-three-label-layer" data-three-label-layer aria-hidden="true"></div><div class="famath-three-loading">Preparing the local 3D model…<br>The accessible 2D drawing remains available below.</div></div><div class="famath-three-controls" aria-label="3D view controls"><button type="button" class="tap-target" data-three-action="left" aria-label="Rotate left">↶ Left</button><button type="button" class="tap-target" data-three-action="right" aria-label="Rotate right">Right ↷</button><button type="button" class="tap-target" data-three-action="up" aria-label="Tilt up">↑ Up</button><button type="button" class="tap-target" data-three-action="down" aria-label="Tilt down">↓ Down</button><button type="button" class="tap-target" data-three-action="in" aria-label="Zoom in">＋ Zoom</button><button type="button" class="tap-target" data-three-action="out" aria-label="Zoom out">− Zoom</button><button type="button" class="tap-target" data-three-action="reset">Reset view</button><button type="button" class="tap-target" data-three-action="replay">Replay turn</button></div><div class="famath-three-parts" aria-label="Inspectable mathematical parts">${dimensionButtons.join('')}</div><div class="famath-three-coach" data-three-coach role="status" aria-live="polite">Rotate the model. Follow the labels attached to the matching edges, then tap a part and explain its role.</div>${fallback?`<details class="famath-three-fallback"><summary>2D fallback drawing</summary>${fallback}</details>`:''}</div>`;
+      // One button per foldable face, so folding never depends on hitting a 3D surface with a pointer.
+      const foldButtons=[];
+      if(shape==='net-fold'){
+        netFoldLayout(spec.net||'cube').faces.forEach(face=>{
+          if(!face.parent)return;
+          foldButtons.push(`<button type="button" class="tap-target" data-three-fold="${esc(face.id)}" aria-pressed="false">fold ${esc(face.name)}</button>`);
+        });
+        foldButtons.push('<button type="button" class="tap-target" data-three-fold-action="next">Fold next face</button>');
+        foldButtons.push('<button type="button" class="tap-target" data-three-fold-action="reset">Lay flat again</button>');
+      }
+      return `<div class="famath-three" data-famath-three data-three-shape="${esc(shape)}" data-three-net="${esc(spec.net||'')}" data-three-labels="${spec.partLabels===false||shape==='net-fold'?'off':'on'}" data-three-length="${length}" data-three-width="${width}" data-three-height="${height}" data-three-unknown="${esc(unknown)}" data-three-has-dimensions="${hasDimensions?'true':'false'}" data-three-focus-face="${focusFace?'true':'false'}" data-three-face-area="${faceArea===undefined?'':esc(faceArea)}" data-three-base-area="${baseArea===undefined?'':esc(baseArea)}" data-three-liquid="${spec.liquid?'true':'false'}" data-three-unit-cubes="${spec.unitCubes?'true':'false'}" data-three-conceal-name="${concealName?'true':'false'}" data-three-model-version="r150-local"><div class="famath-three-stage"><span class="famath-three-badge">${shape==='net-fold'?'Tap a face to fold it · drag to rotate':'Drag to rotate · labels follow the object'}</span><canvas tabindex="0" role="img" aria-label="${esc(knownLabel)}. Drag or use the arrow controls to rotate it. Tap a surface or use the labelled part buttons to inspect its mathematical structure."></canvas><div class="famath-three-label-layer" data-three-label-layer aria-hidden="true"></div><div class="famath-three-loading">Preparing the local 3D model…<br>The accessible 2D drawing remains available below.</div></div><div class="famath-three-controls" aria-label="3D view controls"><button type="button" class="tap-target" data-three-action="left" aria-label="Rotate left">↶ Left</button><button type="button" class="tap-target" data-three-action="right" aria-label="Rotate right">Right ↷</button><button type="button" class="tap-target" data-three-action="up" aria-label="Tilt up">↑ Up</button><button type="button" class="tap-target" data-three-action="down" aria-label="Tilt down">↓ Down</button><button type="button" class="tap-target" data-three-action="in" aria-label="Zoom in">＋ Zoom</button><button type="button" class="tap-target" data-three-action="out" aria-label="Zoom out">− Zoom</button><button type="button" class="tap-target" data-three-action="reset">Reset view</button><button type="button" class="tap-target" data-three-action="replay">Replay turn</button></div><div class="famath-three-parts" aria-label="${shape==='net-fold'?'Fold the net':'Inspectable mathematical parts'}">${(foldButtons.length?foldButtons:dimensionButtons).join('')}</div><div class="famath-three-coach" data-three-coach role="status" aria-live="polite">${shape==='net-fold'?'Tap a face, or use the buttons, to fold it up. Predict which faces will meet before you fold them.':'Rotate the model. Follow the labels attached to the matching edges, then tap a part and explain its role.'}</div>${fallback?`<details class="famath-three-fallback"><summary>2D fallback drawing</summary>${fallback}</details>`:''}</div>`;
     }
     function upperSceneHTML(d={}){
       const scene=d.scene||'expression';
@@ -2515,6 +2621,26 @@
             label(brx,bry,86,180-a/2,`${a}°`,'given')+label(trx,ty,92,270-a/2,shownUnknown,'unknown')+
             `<path class="angle-parallel-mark" d="M190 ${bly} l10 -9 M210 ${bly} l10 -9 M165 ${ty} l10 9 M185 ${ty} l10 9"/>`+
             `<text class="angle-shape-name" x="205" y="43" text-anchor="middle">right trapezium: parallel sides give supplementary angles</text>`;
+        }else if(variant==='parallelogram-triangle'){
+          // The Level 3 question turns on TWO shape facts: the triangle's angle sum and the parallelogram's
+          // supplementary adjacent angles. The old figure drew a square, so the parallelogram angle the
+          // question supplies was never on screen and the premise could not be checked against the picture.
+          // Layout is computed rather than hardcoded so every (parallelogram angle, base angle) pair fits:
+          // the widest lean and the tallest apex both stay inside the 470x285 viewBox.
+          const paraAngle=Number(d.parallelogramAngle)||55,baseAngle=a;
+          const height=64,bly=232,ty=bly-height,blx=100,width=120;
+          const lean=clean(height/Math.tan(paraAngle*Math.PI/180));
+          const brx=blx+width,tlx=clean(blx+lean),trx=clean(brx+lean);
+          const apexX=clean((tlx+trx)/2),apexHeight=clean((width/2)*Math.tan(baseAngle*Math.PI/180)),apexY=clean(ty-apexHeight);
+          shapeName='parallelogram and isosceles triangle';
+          art=`<polygon class="angle-shape-secondary" points="${blx},${bly} ${brx},${bly} ${trx},${ty} ${tlx},${ty}"/>`+
+            `<polygon class="angle-shape" points="${tlx},${ty} ${trx},${ty} ${apexX},${apexY}"/>`+
+            arc(blx,bly,40,0,paraAngle,'given')+label(blx,bly,58,paraAngle/2,`${paraAngle}°`,'given')+
+            arc(tlx,ty,34,0,baseAngle,'given')+arc(trx,ty,34,180-baseAngle,180,'given')+
+            label(tlx,ty,48,baseAngle/2,`${baseAngle}°`,'given')+label(trx,ty,48,180-baseAngle/2,`${baseAngle}°`,'given')+
+            arc(apexX,apexY,34,180+baseAngle,360-baseAngle,'unknown')+label(apexX,apexY,32,270,shownUnknown,'unknown')+
+            `<path class="angle-equal-mark" d="M${clean((tlx+apexX)/2-4)} ${clean((ty+apexY)/2)} l12 7 M${clean((trx+apexX)/2-8)} ${clean((ty+apexY)/2+7)} l12 -7"/>`+
+            featureLabel(blx,bly,'parallelogram: adjacent angles add to 180°');
         }else{
           const left=155,right=305,baseY=140,side=150,apexX=230,height=clean((side/2)*Math.tan(a*Math.PI/180)),apexY=clean(baseY-height),bottom=baseY+105;shapeName='square and isosceles triangle';
           art=`<rect class="angle-shape-secondary" x="${left}" y="${baseY}" width="${side}" height="105"/><polygon class="angle-shape" points="${left},${baseY} ${right},${baseY} ${apexX},${apexY}"/>`+
@@ -2680,7 +2806,10 @@
         const size=d.size||7,cells=d.cells||[8,9,15,16,22],mirrored=d.mirrored||[];return `<div class="p4-model">${title}<div class="p4-sym-grid" style="--size:${size}">${Array.from({length:size*size},(_,i)=>`<i class="${cells.includes(i)||mirrored.includes(i)?'on':''} ${i%size===Math.floor(size/2)?'axis':''}"></i>`).join('')}</div><div class="p4-caption">${esc(d.caption||'Equal distance from the mirror line creates matching points.')}</div></div>`;
       }
       if(d.model==='net'){
-        const net=p4NetHTML(d.solid||'cube',!revealSolution),folded=revealSolution?threeModelHTML({shape:d.solid||'cube'},p4SolidHTML(d.solid||'cube')):'',safeTitle=revealSolution?title:'<div class="p4-model-title">Trace the joined faces of this net</div>';
+        // After checking, the flat net becomes a net the learner folds themselves, rather than a finished
+        // solid sitting beside it. Seeing the faces lift is the part that answers "how does this become a
+        // solid?"; the 2D drawing stays as the fallback for devices without WebGL.
+        const net=p4NetHTML(d.solid||'cube',!revealSolution),folded=revealSolution?threeModelHTML({shape:'net-fold',net:d.solid||'cube'},p4SolidHTML(d.solid||'cube')):'',safeTitle=revealSolution?title:'<div class="p4-model-title">Trace the joined faces of this net</div>';
         return `<div class="p4-model">${safeTitle}${net}${folded}<div class="p4-caption">${revealSolution?'Rotate the folded solid and match each face back to the net.':'Predict the solid first. The rotatable folded result appears only in the visual tutorial after you check.'}</div></div>`;
       }
       if(d.model==='data'){
@@ -3440,7 +3569,7 @@
           return upperBase({type:'choice',prompt:`Which property identifies a ${shape}?`,p4:{model:'upper',scene:'quadrilateral',a:70,total:180,showUnknown:false,caption:'Parallel arrows, equal-side ticks and angle marks describe properties more reliably than appearance.'},answer,options:upperOpts(answer,['four right angles only','no parallel sides','three equal sides']),worked:['Count pairs of parallel sides','Inspect equal-side marks','Compare opposite angles','Match the defining property'],bridge:`${shape}: ${answer}`,hint:'Look for arrow marks that show parallel sides.',misconception:'A slanted shape may still have parallel or equal sides; appearance is not a measurement.'});
         }
         const a=pick([40,50,60,70]),b=pick([45,55,65]),total=kind==='p5_quadrilateral_angles'?360:180,answer=kind==='p5_quadrilateral_angles'?total-a-b-90:total-a-b;
-        return upperBase({type:'choice',prompt:kind==='p5_triangle_angle_sum'?`What is the sum of the interior angles of every triangle?`:`Find the unknown angle when the known angles are ${a}°, ${b}°${kind==='p5_quadrilateral_angles'?' and 90°':''}.`,p4:{model:'upper',scene:kind==='p5_quadrilateral_angles'?'quadrilateral':'angle',a:a+b+(kind==='p5_quadrilateral_angles'?90:0),total,rule:`interior angle sum = ${total}°`,caption:'Treat the complete figure as one angle-sum relationship; no extra construction line is needed.'},answer:kind==='p5_triangle_angle_sum'?180:answer,options:upperOpts(kind==='p5_triangle_angle_sum'?180:answer,[90,360,Math.abs(180-answer)]),worked:['Identify the complete polygon','Recall its angle sum','Add all known interior angles','Subtract from the total'],bridge:`x = ${answer}°`,hint:`The interior angle sum is ${total}° for this figure.`,misconception:'Only interior angles belonging to the same polygon are included in its angle sum.'});
+        return upperBase({type:'choice',prompt:kind==='p5_triangle_angle_sum'?`What is the sum of the interior angles of every triangle?`:`Find the unknown angle when the known angles are ${a}°, ${b}°${kind==='p5_quadrilateral_angles'?' and 90°':''}.`,p4:{model:'upper',scene:kind==='p5_quadrilateral_angles'?'quadrilateral':'angle',a:a+b+(kind==='p5_quadrilateral_angles'?90:0),total,rule:`interior angle sum = ${total}°`,caption:'Treat the complete figure as one angle-sum relationship; no extra construction line is needed.'},answer:kind==='p5_triangle_angle_sum'?180:answer,options:upperOpts(kind==='p5_triangle_angle_sum'?180:answer,[90,360,Math.abs(180-answer)]),worked:['Identify the complete polygon','Recall its angle sum','Add all known interior angles','Subtract from the total'],bridge:kind==='p5_triangle_angle_sum'?`${a}° + ${b}° + ${answer}° = 180°`:`x = ${answer}°`,hint:`The interior angle sum is ${total}° for this figure.`,misconception:'Only interior angles belonging to the same polygon are included in its angle sum.'});
       }
       return upperBase({type:'choice',prompt:CONFIG.objective,p4:{model:'upper',scene:'expression',tokens:['Represent','Reason','Check'],priority:[1]},answer:'Ready',options:['Ready'],worked:['Represent the quantities','Identify the relationship','Calculate','Check']});
     }
@@ -3779,12 +3908,16 @@
       if(kind==='p6_composite_angles'){
         const a=pick([35,40,50,55]);
         if(!hard)return upperBase({type:'choice',prompt:`A parallelogram has an interior angle of ${a}°. Find the sum of the two angles adjacent to it.`,answer:2*(180-a),
-          p4:{model:'upper',scene:'composite-angle',variant:'parallelogram',a,answer:180-a,equationTex:`${a}^{\\circ}+x^{\\circ}=180^{\\circ}`,solutionTex:`x^{\\circ}=${180-a}^{\\circ}`,equationLabel:'Adjacent angles in a parallelogram are supplementary.',caption:'Find one adjacent angle, then use that both adjacent angles are equal.'},
+          p4:{model:'upper',scene:'composite-angle',variant:'parallelogram',a,answer:180-a,equationTex:`${a}^{\\circ}+x^{\\circ}=180^{\\circ}`,solutionTex:`x^{\\circ}=2\\times${180-a}^{\\circ}=${2*(180-a)}^{\\circ}`,equationLabel:'Adjacent angles in a parallelogram are supplementary.',caption:'Find one adjacent angle, then use that both adjacent angles are equal.'},
           options:upperOpts(2*(180-a),[180-a,180,360-a]),worked:['Use the supplementary property','Find one adjacent angle','Both adjacent angles are equal','Add them'],
           bridge:`2 × ${180-a}° = ${2*(180-a)}°`,hint:'Find one adjacent angle first.',misconception:'Adjacent angles in a parallelogram are supplementary, not equal to the given angle.'});
         const base=pick([50,55,65]);
-        return upperBase({type:'choice',prompt:`An isosceles triangle sits on top of a parallelogram. The parallelogram angle beneath is ${a}°, and the triangle's two base angles are each ${base}°. Find the angle between the triangle's apex and the parallelogram's adjacent angle.`,answer:(180-2*base)+(180-a),
-          p4:{model:'upper',scene:'composite-angle',variant:'square-triangle',a:base,answer:180-2*base,equationTex:`${base}^{\\circ}+${base}^{\\circ}+x^{\\circ}=180^{\\circ}`,solutionTex:`x^{\\circ}=${180-2*base}^{\\circ}`,equationLabel:'Angles in a triangle total 180°; adjacent angles in a parallelogram total 180°.',caption:'Two different shape properties are needed, one after the other.'},
+        // "the angle between" asked for something that does not exist: there is no single angle between two
+        // angles, while the answer, the worked steps and the bridge all compute a SUM. A learner who read
+        // the words correctly was marked wrong. The displayed algebra made it worse by solving only the
+        // first step, so the panel showed x = the apex angle while the accepted answer was the total.
+        return upperBase({type:'choice',prompt:`An isosceles triangle sits on top of a parallelogram. The parallelogram's angle beneath is ${a}°, and the triangle's two base angles are each ${base}°. Find the sum of the triangle's apex angle and the parallelogram's angle adjacent to the ${a}° angle.`,answer:(180-2*base)+(180-a),
+          p4:{model:'upper',scene:'composite-angle',variant:'parallelogram-triangle',a:base,parallelogramAngle:a,answer:180-2*base,equationTex:`x^{\\circ}=(180^{\\circ}-2\\times${base}^{\\circ})+(180^{\\circ}-${a}^{\\circ})`,solutionTex:`x^{\\circ}=${180-2*base}^{\\circ}+${180-a}^{\\circ}=${(180-2*base)+(180-a)}^{\\circ}`,equationLabel:'Angles in a triangle total 180°; adjacent angles in a parallelogram total 180°.',caption:'Two different shape properties are needed, one after the other.'},
           options:upperOpts((180-2*base)+(180-a),[180-2*base,180-a,180]),
           worked:['Find the apex angle using the triangle sum','Find the adjacent parallelogram angle','Check which two angles the question asks for','Add the two results'],
           bridge:`${180-2*base}° + ${180-a}° = ${(180-2*base)+(180-a)}°`,hint:'Solve each shape separately, then combine only the two angles asked for.',misconception:'A composite figure needs each shape property applied to its own shape before results are combined.'});
@@ -4019,11 +4152,11 @@
       if(family==='number_structure'){
         if(objective.includes('prime')&&objective.includes('hcf')){
           const pairs=[[84,126,42],[72,120,24],[90,150,30],[96,144,48],[105,140,35],[132,198,66]],item=pairs[q];
-          return secondaryBase({prompt:`Find the HCF of ${item[0]} and ${item[1]}.`,answer:item[2],options:secondaryOptions(item[2],[item[2]/2,item[2]*2,item[0]]),sec:{scene:'factor',tokens:[item[0],item[1]],labels:['first number','second number'],steps:['factor both numbers','circle shared primes','use each shared prime once','HCF = ?'],bridge:`${item[0]} and ${item[1]} share prime factors; HCF = ?`},hint:'Build both prime-factor lists and keep only the factors shared by both.',misconception:'The HCF uses shared prime factors; the LCM uses every required prime factor.'});
+          return secondaryBase({primeWalkPair:[item[0],item[1]],prompt:`Find the HCF of ${item[0]} and ${item[1]}.`,answer:item[2],options:secondaryOptions(item[2],[item[2]/2,item[2]*2,item[0]]),sec:{scene:'factor',tokens:[item[0],item[1]],labels:['first number','second number'],steps:['factor both numbers','circle shared primes','use each shared prime once','HCF = ?'],bridge:`${item[0]} and ${item[1]} share prime factors; HCF = ?`},hint:'Build both prime-factor lists and keep only the factors shared by both.',misconception:'The HCF uses shared prime factors; the LCM uses every required prime factor.'});
         }
         if(objective.includes('prime')){
           const items=[[84,'2² × 3 × 7'],[90,'2 × 3² × 5'],[72,'2³ × 3²'],[126,'2 × 3² × 7'],[150,'2 × 3 × 5²'],[168,'2³ × 3 × 7']],item=items[q];
-          return secondaryBase({prompt:`Write ${item[0]} as a product of prime factors.`,answer:item[1],options:secondaryOptions(item[1],[`2 × 3 × ${item[0]/6}`,`2² × 3 × ${Math.max(2,item[0]/12)}`,`${item[0]} × 1`]),sec:{scene:'factor',tokens:[item[0],'prime?'],labels:['number to split','prime leaves'],steps:['split into factors','split composite factors again','check every leaf is prime','write with indices']},hint:'Continue every branch until each leaf is prime.',misconception:'A factor tree is unfinished while any leaf is composite.'});
+          return secondaryBase({primeWalk:item[0],prompt:`Write ${item[0]} as a product of prime factors.`,answer:item[1],options:secondaryOptions(item[1],[`2 × 3 × ${item[0]/6}`,`2² × 3 × ${Math.max(2,item[0]/12)}`,`${item[0]} × 1`]),sec:{scene:'factor',tokens:[item[0],'prime?'],labels:['number to split','prime leaves'],steps:['split into factors','split composite factors again','check every leaf is prime','write with indices']},hint:'Continue every branch until each leaf is prime.',misconception:'A factor tree is unfinished while any leaf is composite.'});
         }
         if(objective.includes('standard form')){
           const items=[[482000,'4.82 × 10⁵'],[0.0064,'6.4 × 10⁻³'],[7350000,'7.35 × 10⁶'],[0.00091,'9.1 × 10⁻⁴'],[120000,'1.2 × 10⁵'],[0.045,'4.5 × 10⁻²']],item=items[q];
@@ -4406,6 +4539,70 @@
       const matrix=p.sec.matrix||[[1,2],[3,4]],flat=matrix.flat();
       return `<div class="secondary-matrix" style="--matrix-cols:${matrix[0].length}">${flat.map((value,i)=>`<button type="button" class="tap-target" data-secondary-inspect data-secondary-message="Matrix entry ${i+1} is ${value}">${value}</button>`).join('')}</div>`;
     }
+    // ---------- Prime factorisation by trial division ----------
+    // The generic Secondary tutorial describes a method in the abstract ("split into factors", "check every
+    // leaf is prime") without ever performing it on the learner's number, which is no help to somebody stuck
+    // on 84. Prime factorisation is a search with a decision at every step, and the REJECTED primes are the
+    // part worth seeing: a learner who only meets the successful divisions never learns why 5 was tried.
+    // Each prime is tested in turn and the verdict shown, so the answer assembles itself at the end of the
+    // reasoning rather than arriving before it.
+    const TRIAL_PRIMES=[2,3,5,7,11,13,17,19,23,29,31,37,41,43];
+    function primeFactorTrial(n){
+      const steps=[],factors=[];let value=Math.max(2,Math.floor(n));
+      for(const prime of TRIAL_PRIMES){
+        if(value===1)break;
+        while(value%prime===0){ steps.push({from:value,prime,divides:true,to:value/prime}); factors.push(prime); value/=prime; }
+        // The failed test is deliberately kept. Skipping it would hide the search and make the next prime
+        // look arbitrary. The square-root stopping rule is a later refinement, not this objective.
+        if(value>1&&prime<value)steps.push({from:value,prime,divides:false});
+        if(value===1)break;
+      }
+      return {steps,factors};
+    }
+    function indexForm(factors){
+      const counts=[];
+      factors.forEach(prime=>{ const last=counts[counts.length-1]; if(last&&last.prime===prime)last.power++; else counts.push({prime,power:1}); });
+      return counts.map(({prime,power})=>power>1?`${prime}<sup>${power}</sup>`:String(prime)).join(' × ');
+    }
+    // stage: 'search' shows only the trial divisions, 'collect' adds the primes taken out, 'indices' adds
+    // the index form. Splitting it this way lets the tutorial reveal the reasoning one step at a time.
+    function primeFactorWalkHTML(n,{stage='search',caption=''}={}){
+      const {steps,factors}=primeFactorTrial(n);
+      // Only the search itself is staggered, and only on the step that introduces it. Re-running the whole
+      // sequence on every later tutorial step would make the learner wait several seconds to reach the one
+      // line that is actually new.
+      const staggerSteps=stage==='search';
+      const rows=steps.map((step,index)=>{
+        const detail=step.divides
+          ? `<span class="pw-op">÷ ${step.prime}</span><span class="pw-verdict yes">divides</span><span class="pw-result">= ${step.to}</span>`
+          : `<span class="pw-op">÷ ${step.prime}</span><span class="pw-verdict no">does not divide</span><span class="pw-result">try the next prime</span>`;
+        return `<li class="pw-step${step.divides?'':' rejected'}" style="--pw-i:${staggerSteps?index:0}"><span class="pw-value">${step.from}</span>${detail}</li>`;
+      }).join('');
+      const base=staggerSteps?steps.length:0;
+      const collected=stage==='collect'||stage==='indices'
+        ? `<p class="pw-collect" style="--pw-i:${base}">Primes taken out: <strong>${factors.join(' × ')}</strong></p>`:'';
+      const indices=stage==='indices'
+        ? `<p class="pw-answer" style="--pw-i:${base+1}">${n} = ${factors.join(' × ')} = <strong>${indexForm(factors)}</strong></p>
+           <p class="pw-note" style="--pw-i:${base+2}">Once a prime multiplied by itself passes what is left, whatever remains is already prime.</p>`:'';
+      return `<div class="prime-walk is-playing" data-prime-walk="${n}">
+        <div class="pw-head">Start at <strong>${n}</strong>. Test every prime in order, smallest first.</div>
+        ${caption?`<p class="pw-caption">${esc(caption)}</p>`:''}
+        <ol class="pw-steps">${rows}</ol>${collected}${indices}
+        <div class="pw-controls"><button type="button" class="secondary tap-target" data-prime-walk-replay>↻ Watch it again</button></div>
+      </div>`;
+    }
+    function primeFactorPairHTML(a,b,{stage='search'}={}){
+      const left=primeFactorTrial(a),right=primeFactorTrial(b);
+      const shared=[];const pool=right.factors.slice();
+      left.factors.forEach(prime=>{ const at=pool.indexOf(prime); if(at>=0){ shared.push(prime); pool.splice(at,1); } });
+      const hcf=shared.reduce((product,prime)=>product*prime,1);
+      const summary=stage==='indices'
+        ? `<p class="pw-answer" style="--pw-i:0">Primes in <strong>both</strong> lists: ${shared.join(' × ')} = <strong>${hcf}</strong></p>`
+        : `<p class="pw-collect" style="--pw-i:0">Factorise each number first, then keep only the primes that appear in both.</p>`;
+      return `<div class="pw-pair">${primeFactorWalkHTML(a,{stage:stage==='indices'?'collect':'search',caption:`First number: ${a}`})}
+        ${primeFactorWalkHTML(b,{stage:stage==='indices'?'collect':'search',caption:`Second number: ${b}`})}${summary}</div>`;
+    }
+
     function secondarySceneHTML(p,mode='main'){
       const family=p.family||p.sec.family,scene=p.sec.scene||family;let model='';
       if(scene==='number-line')model=secondaryNumberLineHTML(p);
@@ -4425,6 +4622,21 @@
     }
     function secondaryTutorialSteps(p){
       if(p.measureAssociation)return targetedMeasureTutorialSteps(p);
+      // Prime factorisation gets the actual search on the learner's own number instead of the generic
+      // shell. The stages reveal the reasoning in order: watch the trial divisions, collect what came out,
+      // only then write the index form.
+      if(p.primeWalkPair)return withLearnerAttempt(p,[
+        {title:'Inspect both numbers',text:'A common factor has to divide both numbers, so each one is broken into primes first.',html:secondarySceneHTML(p,'inspect')},
+        {title:'Test every prime on each number',text:'Watch each division being tried. A prime that fails is still information: it tells you to move on to the next one.',html:primeFactorPairHTML(p.primeWalkPair[0],p.primeWalkPair[1],{stage:'search'})},
+        {title:'Keep only the primes in both lists',text:'A prime shared by both numbers can be taken out of both. Multiply those shared primes to get the highest common factor.',html:primeFactorPairHTML(p.primeWalkPair[0],p.primeWalkPair[1],{stage:'indices'})},
+        {title:'Verify the corrected result',text:'Now compare the completed calculation with the givens and explain why your earlier response did not fit.',html:secondaryAnswerHTML(p)}
+      ]);
+      if(p.primeWalk)return withLearnerAttempt(p,[
+        {title:'Watch the search, one prime at a time',text:'Prime factorisation is a search. Start at the number itself and test the primes in order, smallest first. A prime that fails is not wasted work: ruling it out is exactly what tells you to move to the next one.',html:primeFactorWalkHTML(p.primeWalk,{stage:'search'})},
+        {title:'Collect the primes you removed',text:'Every successful division took one prime out. Multiply them back together and you must return to the number you started from.',html:primeFactorWalkHTML(p.primeWalk,{stage:'collect'})},
+        {title:'Write it with indices',text:'Repeated primes are gathered into powers. The value has not changed; only the notation has.',html:primeFactorWalkHTML(p.primeWalk,{stage:'indices'})},
+        {title:'Verify the corrected result',text:'Now compare the completed calculation with the givens and explain why your earlier response did not fit.',html:secondaryAnswerHTML(p)}
+      ]);
       return withLearnerAttempt(p,[
         {title:'Inspect the evidence before calculating',text:'Tap each given, label or marked feature. Say what it controls in the problem.',html:secondarySceneHTML(p,'inspect')},
         {title:'Build the mathematical relationship',text:'Connect the quantities with the objective-specific model. Do not compute the final answer yet.',html:secondarySceneHTML(p,'interact')},
@@ -4432,6 +4644,19 @@
         {title:'Connect the model to notation',text:'Read the symbolic bridge from left to right. The final value remains concealed until the relationship is complete.',html:secondarySceneHTML(p,'notation')},
         {title:'Verify the corrected result',text:'Now compare the completed calculation with the givens and explain why your earlier response did not fit.',html:secondaryAnswerHTML(p)}
       ]);
+    }
+    function activatePrimeWalks(root=document){
+      root.querySelectorAll('[data-prime-walk-replay]').forEach(button=>{
+        if(button.dataset.primeWalkBound)return; button.dataset.primeWalkBound='1';
+        button.addEventListener('click',()=>{
+          const walk=button.closest('.prime-walk'); if(!walk)return;
+          walk.classList.remove('is-playing'); void walk.offsetWidth; walk.classList.add('is-playing');
+          const number=walk.dataset.primeWalk;
+          const evidence={t:Date.now(),question:state.q+1,step:els.tutorial.open?state.tutorialStep+1:null,event:'prime-walk-replayed',number};
+          state.tutorialInteractions.push(evidence); if(state.tutorialInteractions.length>160)state.tutorialInteractions.shift();
+          log('↻','Replayed the prime factorisation search',`Number ${number}`); persist(); sendXapi('tutorial-prime-walk-replayed');
+        });
+      });
     }
     function activateSecondaryInteractions(root=document){
       root.querySelectorAll('[data-secondary-inspect],.geo-part[data-secondary-inspect]').forEach(target=>{
@@ -4478,6 +4703,51 @@
           }else if(shape==='cylinder'){cylinder(1.25,1.25,2.8,materials.main,'curved').rotation.z=Math.PI/2;}
           else if(shape==='cone'){cylinder(0,1.38,3,materials.main,'curved');}
           else if(shape==='sphere'){const mesh=register(new T.Mesh(new T.SphereGeometry(1.55,40,24),materials.main),'curved');model.add(mesh);edge(mesh);}
+          else if(shape==='net-fold'){
+            // Build the hinge tree. Every face is a flat polygon whose hinge sits at its own origin along
+            // local X, extending toward +Z, so folding is one operation everywhere: rotate about local X.
+            const layout=netFoldLayout(host.dataset.threeNet||'cube');
+            const nodes=new Map();
+            layout.faces.forEach(face=>{
+              // TWO nested groups, not one. Three.js Euler order is XYZ, which composes as Rx·Ry·Rz — the
+              // Y spin is applied BEFORE the X fold. Setting both on a single group therefore folds about
+              // the parent's X axis instead of about this face's own hinge edge, so every face attached to
+              // a left, right or back edge swung the wrong way. The outer group carries position and spin
+              // and never moves again; the inner group only ever rotates about its own X. Children attach
+              // to the inner group so folding a face carries everything beyond it.
+              const hinge=new T.Group(),pivot=new T.Group();
+              hinge.add(pivot);
+              const mesh=register(new T.Mesh(netFaceGeometry(T,face),materials.main.clone()),'face');
+              mesh.material.side=T.DoubleSide;
+              pivot.add(mesh);
+              const lines=new T.LineSegments(new T.EdgesGeometry(mesh.geometry),new T.LineBasicMaterial({color:navy}));
+              pivot.add(lines);
+              if(!face.parent){ model.add(hinge); }
+              else{
+                const parent=nodes.get(face.parent);
+                // Place the hinge on the parent's chosen edge, then turn it so this face's +Z points away
+                // from the parent. The root is centred on its own origin; every other face starts at its
+                // own hinge, so its far edge is at z = d rather than z = d/2.
+                const pw=parent.face.w,pd=parent.face.d,rooted=!parent.face.parent;
+                const on=face.on||'far',spin=(NET_FACE_ATTACH[on]||0)*Math.PI/180;
+                const position=on==='far'?[0,0,rooted?pd/2:pd]
+                  :on==='near'?[0,0,rooted?-pd/2:0]
+                  :on==='right'?[pw/2,0,rooted?0:pd/2]
+                  :[-pw/2,0,rooted?0:pd/2];
+                hinge.position.set(...position); hinge.rotation.y=spin;
+                parent.pivot.add(hinge);
+              }
+              // Folded target is stored in degrees; the render loop eases the live angle toward it.
+              pivot.userData.fold={angle:face.fold||0,current:0,target:0};
+              mesh.userData.foldFace=face.id; mesh.userData.foldHinge=pivot; mesh.userData.foldName=face.name;
+              nodes.set(face.id,{face,hinge,pivot,mesh});
+            });
+            model.userData.netNodes=nodes; model.userData.netLayout=layout;
+            // Test-only handle so the fold can be measured on the real rendered meshes, not on a
+            // re-implementation of the maths. Gated exactly like the other harness hooks.
+            if(/(?:^|[?&])famathTest=1(?:&|$)/.test(location.search))host.__famathNet={nodes,layout,model};
+            model.position.y=-.4;
+          }
           else if(shape==='pyramid'){const mesh=register(new T.Mesh(new T.ConeGeometry(1.55,2.9,4),materials.main),'face');mesh.rotation.y=Math.PI/4;model.add(mesh);edge(mesh);}
           else if(shape==='prism'||shape==='triangular-prism'){
             const geometry=new T.BufferGeometry(),vertices=new Float32Array([-1.5,-1,-1,1.5,-1,-1,-1.5,1,-1,-1.5,-1,1,1.5,-1,1,-1.5,1,1]);geometry.setAttribute('position',new T.BufferAttribute(vertices,3));geometry.setIndex([0,1,2,3,5,4,0,3,4,0,4,1,2,1,4,2,4,5,0,2,5,0,5,3]);geometry.computeVertexNormals();const mesh=register(new T.Mesh(geometry,materials.main),'face');model.add(mesh);edge(mesh);
@@ -4490,6 +4760,12 @@
           }
         }
         function buildLabels(){
+          // A model carries only the labels its own objective assesses. These part names belong to the
+          // "name the parts of a solid" objective, and they arrived on the net model through a catch-all
+          // branch with positions hardcoded for a compact solid — so on a flat net they floated in mid-air,
+          // attached to nothing, naming a task nobody had been asked to do. Labels are declared by the
+          // generator, never inherited by default.
+          if(host.dataset.threeLabels==='off')return;
           const hidden=part=>isUnknown(part),shown=(part,value)=>hidden(part)?'?':value;
           if(hasDimensions&&['cuboid','cube','tank','unit-cubes','prism','similar-cuboids'].includes(shape)){
             let sx,sy,sz;
@@ -4531,13 +4807,64 @@
         function rotate(dx,dy){model.rotation.y+=dx;model.rotation.x=clamp(model.rotation.x+dy,-1.15,1.15);render();}
         function reset(){model.rotation.set(initial.x,initial.y,initial.z);camera.position.set(0,1.1,8.3);coach.textContent='View reset. Rotate again and explain which dimensions stay perpendicular.';render();}
         function replay(){if(animation)cancelAnimationFrame(animation);const start=performance.now(),duration=reduced?1:1800,base=model.rotation.y;function frame(now){const t=Math.min(1,(now-start)/duration);model.rotation.y=base+t*Math.PI*2;render();if(t<1)animation=requestAnimationFrame(frame);else{coach.textContent='Full turn complete. The object did not change; only your viewpoint changed.';record('three-d-turn-replayed','view','Replayed a full 3D turn');}}animation=requestAnimationFrame(frame);}
+        // ---------- net folding ----------
+        // Each hinge eases toward its own target, so a face folded while another is still moving stays
+        // smooth instead of snapping. Folding a face carries its descendants because they are its children
+        // in the scene graph — the same reason folding a paper net lifts everything attached beyond it.
+        const netNodes=model.userData.netNodes||null;
+        let foldAnimation=null;
+        function foldTick(){
+          let moving=false;
+          netNodes.forEach(({pivot})=>{
+            const fold=pivot.userData.fold;
+            if(Math.abs(fold.current-fold.target)>0.3){ fold.current+=(fold.target-fold.current)*0.16; moving=true; }
+            else fold.current=fold.target;
+            pivot.rotation.x=-fold.current*Math.PI/180;
+          });
+          render();
+          foldAnimation=moving?requestAnimationFrame(foldTick):null;
+        }
+        function foldedCount(){ let n=0; netNodes.forEach(({pivot,face})=>{ if(face.parent&&pivot.userData.fold.target>0)n++; }); return n; }
+        function setFold(id,folded,how){
+          if(!netNodes||!netNodes.has(id))return;
+          const node=netNodes.get(id),fold=node.pivot.userData.fold;
+          if(!node.face.parent){ coach.textContent='The base stays flat. Fold the faces joined to it.'; return; }
+          fold.target=folded?fold.angle:0;
+          if(reduced){ fold.current=fold.target; node.pivot.rotation.x=-fold.current*Math.PI/180; render(); }
+          else if(!foldAnimation)foldAnimation=requestAnimationFrame(foldTick);
+          const total=netNodes.size-1,done=foldedCount();
+          coach.textContent=folded
+            ?`${node.face.name} folded up. ${done} of ${total} faces are up${done===total?' — the '+model.userData.netLayout.label+' is closed.':'. Which face will meet it?'}`
+            :`${node.face.name} laid flat again. ${done} of ${total} faces are up.`;
+          host.querySelectorAll('[data-three-fold]').forEach(button=>{ if(button.dataset.threeFold===id)button.setAttribute('aria-pressed',String(folded)); });
+          record(folded?'net-face-folded':'net-face-unfolded',id,`${folded?'Folded':'Unfolded'} the ${node.face.name}`);
+        }
+        function foldNext(){
+          if(!netNodes)return;
+          const pending=[...netNodes.values()].find(node=>node.face.parent&&node.pivot.userData.fold.target===0);
+          if(pending)setFold(pending.face.id,true,'button');
+          else coach.textContent='Every face is folded. Rotate the solid, or unfold to watch it open again.';
+        }
+        function unfoldAll(){ if(!netNodes)return; netNodes.forEach(({face})=>{ if(face.parent)setFold(face.id,false,'button'); }); coach.textContent='Flat again. Fold the faces in any order you like.'; }
         canvas.addEventListener('pointerdown',event=>{if(event.button!==undefined&&event.button!==0)return;dragging=true;moved=false;pointerId=event.pointerId;lastX=event.clientX;lastY=event.clientY;canvas.setPointerCapture?.(pointerId);});
         canvas.addEventListener('pointermove',event=>{if(!dragging||event.pointerId!==pointerId)return;const dx=event.clientX-lastX,dy=event.clientY-lastY;if(Math.hypot(dx,dy)>2)moved=true;lastX=event.clientX;lastY=event.clientY;rotate(dx*.012,dy*.012);event.preventDefault();});
         const endDrag=event=>{if(!dragging||(event.pointerId!==undefined&&event.pointerId!==pointerId))return;dragging=false;if(moved)record('three-d-model-rotated','view','Rotated the 3D model');pointerId=null;};canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
-        canvas.addEventListener('click',event=>{if(moved){moved=false;return;}const rect=canvas.getBoundingClientRect();pointer.set((event.clientX-rect.left)/rect.width*2-1,-((event.clientY-rect.top)/rect.height)*2+1);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(pickables,false)[0];if(hit)inspect(hit.object.userData.part||'solid',null);});
+        canvas.addEventListener('click',event=>{if(moved){moved=false;return;}const rect=canvas.getBoundingClientRect();pointer.set((event.clientX-rect.left)/rect.width*2-1,-((event.clientY-rect.top)/rect.height)*2+1);raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(pickables,false)[0];if(!hit)return;
+          // A tap on a net face folds it; `moved` above already separates a tap from a drag to orbit.
+          const foldId=hit.object.userData.foldFace;
+          if(foldId&&netNodes){const node=netNodes.get(foldId);setFold(foldId,node.pivot.userData.fold.target===0,'tap');return;}
+          inspect(hit.object.userData.part||'solid',null);});
         canvas.addEventListener('keydown',event=>{const map={ArrowLeft:[-.16,0],ArrowRight:[.16,0],ArrowUp:[0,-.12],ArrowDown:[0,.12]};if(map[event.key]){event.preventDefault();rotate(...map[event.key]);record('three-d-model-rotated','keyboard',`Rotated with ${event.key}`);}});
         host.querySelectorAll('[data-three-action]').forEach(button=>button.addEventListener('click',()=>{const action=button.dataset.threeAction;if(action==='left')rotate(-.2,0);else if(action==='right')rotate(.2,0);else if(action==='up')rotate(0,-.16);else if(action==='down')rotate(0,.16);else if(action==='in'){camera.position.multiplyScalar(.88);render();}else if(action==='out'){camera.position.multiplyScalar(1.12);render();}else if(action==='reset')reset();else if(action==='replay')replay();if(!['reset','replay'].includes(action))record('three-d-model-rotated','control',`Used ${action} view control`);}));
         host.querySelectorAll('[data-three-part]').forEach(button=>button.addEventListener('click',()=>inspect(button.dataset.threePart,button)));
+        // Every fold reachable without a pointer: one button per face, plus fold-next and unfold.
+        host.querySelectorAll('[data-three-fold]').forEach(button=>button.addEventListener('click',()=>{
+          const id=button.dataset.threeFold,node=netNodes&&netNodes.get(id);
+          if(node)setFold(id,node.pivot.userData.fold.target===0,'button');
+        }));
+        host.querySelectorAll('[data-three-fold-action]').forEach(button=>button.addEventListener('click',()=>{
+          if(button.dataset.threeFoldAction==='next')foldNext(); else unfoldAll();
+        }));
         canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();host.dataset.threeReady='false';coach.textContent='The 3D view paused. The 2D fallback remains available.';const details=host.querySelector('.famath-three-fallback');if(details)details.open=true;});canvas.addEventListener('webglcontextrestored',()=>{host.dataset.threeReady='true';resize();});
         const observer='ResizeObserver'in window?new ResizeObserver(resize):null;if(observer)observer.observe(stage);else window.addEventListener('resize',resize);resize();host.classList.add('ready');host.dataset.threeReady='true';
         const instance={host,dispose(){if(animation)cancelAnimationFrame(animation);observer?.disconnect();renderer.dispose();scene.traverse(object=>{object.geometry?.dispose?.();if(Array.isArray(object.material))object.material.forEach(material=>material.dispose?.());});}};threeModelInstances.push(instance);window.__famathThreeAudit={...(window.__famathThreeAudit||{}),version:'r150-local',lastShape:shape,ready:true};
@@ -4647,6 +4974,13 @@
         prompt:thinkPrompt(name,chosen.phrase),
         instruction:'Follow the described method, mistake and all. The correct answer is one of the choices, but it is not what is being asked for.',
         options:base.options.slice(),answer:chosen.value,optionFeedback,
+        // The base item's worked line and solved equation describe the CORRECT answer, but a Think item is
+        // asking for the result of a faulty method. Inheriting them unchanged makes the panel assert a
+        // number that is not the one being marked correct — the same contradiction that made a composite
+        // angle question unanswerable. The unsolved equation is kept: it states the correct relationship
+        // without asserting a result, which is useful context and reveals nothing before checking.
+        bridge:`${name}'s method gives ${chosen.value}`,
+        p4:base.p4?{...base.p4,solutionTex:base.p4.equationTex}:base.p4,
         thinkBase:base,challengeLevel:3,
         difficultyProfile:{level:3,reasoningSteps:2,extensionType:'judge-the-reasoning',contrast:'apply the method -> model a faulty method and predict its result',source:'generic'},
         worked:['Work out the correct answer first, so you know what to compare with','Read the described method one step at a time','Apply that method exactly, including the mistake','Match the result to one of the choices'],
@@ -6438,7 +6772,7 @@
       syncReprToggleVisibility();
       ensureAnimationFallback(els.tutorialVisual);
       activateWordSpeech(els.tutorialVisual);
-      activateSecondaryInteractions(els.tutorialVisual);
+      activateSecondaryInteractions(els.tutorialVisual); activatePrimeWalks(els.tutorialVisual);
       activateThreeModels(els.tutorialVisual);
       function recordRatioAnimation(event,detail={}){
         const evidence={t:Date.now(),question:state.q+1,step:state.tutorialStep+1,event,mode:'ratio-animation',...detail};

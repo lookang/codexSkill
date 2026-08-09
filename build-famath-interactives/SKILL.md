@@ -73,6 +73,8 @@ Every activity must provide:
 
 Use the family decisions in [references/objective-family-map.md](references/objective-family-map.md). Apply time-evolving animation when the concept itself changes over time: regrouping, ordering, counting, taking away, folding, measuring, or transforming.
 
+When the objective is a procedure with a decision at every step — prime factorisation, HCF and LCM, roots by factorisation — animate the *search* on the learner's own number and keep the failed attempts on screen. The rejected primes are the lesson: a learner shown only the successful divisions never learns why the next prime was tried. Stage the reveal so the answer assembles at the end of the reasoning rather than arriving before it. A generic flow of verbs is not a substitute; it describes the method without ever performing it.
+
 ## Adapt difficulty to the learner
 
 Every generator receives its question index as a difficulty dial. Keep the question SLOT (1/6 … 6/6) separate from the difficulty STEP fed to the generator, and move the step with the learner's evidence: up one on a clean first-try correct, hold when a hint or the walkthrough was used or the answer came on the second try, down one after three or more tries, clamped to the six available steps. A learner who is right every time then walks the original fixed ladder, so nothing regresses for a confident pupil; only a struggling one is held or stepped down.

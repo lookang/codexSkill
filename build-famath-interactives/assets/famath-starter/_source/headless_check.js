@@ -44,7 +44,7 @@ function buildScript() {
   code = code.replace(/\n(\s*)init\(\);/, `\n$1globalThis.__FAMATH_EXPORTS__ = {
       makeProblem, makeProblemAtStep, genericThinkProblem, genericThinkAuditFor, choiceAuditFor,
       p6ChallengeAuditFor, problemHasValidChoices, problemSignature, problemDifficultyScore,
-      availableLevels, thinkSupported, tutorialSteps, visualHTML, state, CONFIG
+      availableLevels, thinkSupported, tutorialSteps, visualHTML, netFoldLayout, state, CONFIG
     };`);
   return new vm.Script(code, { filename: 'famath-activity.js' });
 }
@@ -134,6 +134,37 @@ function problemLongDecimals(problem) {
   (Array.isArray(problem.options) ? problem.options : []).forEach(o => inspect('option', o));
   inspect('prompt', problem.prompt);
   return offenders;
+}
+
+// ---------- displayed-algebra agreement ----------
+// An item publishes a worked line: p4.solutionTex, and a plain-text `bridge`. Whatever number those end on
+// is what a learner reads as the result, so it has to be the accepted answer. A Level 3 composite angle
+// question shipped with solutionTex ending "x = 50" while the answer was 175, which is exactly how a
+// learner who reasoned correctly got marked wrong — the panel confirmed the wrong number.
+// "Ends on the answer" is too strict: a fact-family bridge legitimately closes on a factor
+// ("3 × 3 = 9; 9 ÷ 3 = 3"), and a thousands separator splits 9,075 into 9 and 075. The dependable rule is
+// weaker and far more reliable — whatever working the learner is shown must at least CONTAIN the value
+// being marked correct. If the answer appears nowhere in it, the two disagree.
+function numbersIn(text) {
+  const cleaned = String(text)
+    .replace(/(\d),(?=\d{3}\b)/g, '$1')   // thousands separators
+    .replace(/\\[a-zA-Z]+/g, ' ')         // TeX commands
+    .replace(/[{}^]/g, ' ');
+  return (cleaned.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+}
+function algebraDisagreements(problem) {
+  const answer = Number(problem.answer);
+  if (!Number.isFinite(answer)) return [];        // only checkable for numeric answers
+  const out = [];
+  const check = (label, text) => {
+    if (typeof text !== 'string' || !text.trim()) return;
+    const shown = numbersIn(text);
+    if (!shown.length || shown.includes(answer)) return;
+    out.push(`${label} never shows the answer ${answer}  [${String(text).slice(0, 70)}]`);
+  };
+  check('solutionTex', problem.p4 && problem.p4.solutionTex);
+  check('bridge', problem.bridge);
+  return out;
 }
 
 // ---------- SVG label placement scan ----------
@@ -285,6 +316,7 @@ function checkActivity(script, config, draws) {
   if (!api) return ['script loaded but exported nothing'];
 
   const decimals = new Set();
+  const algebra = new Set();
   const validAt = (level, step) => {
     api.state.level = level;
     api.state.problems = [];
@@ -297,6 +329,7 @@ function checkActivity(script, config, draws) {
       return null;
     }
     problemLongDecimals(problem).forEach(d => decimals.add(`L${level} ${d}`));
+    algebraDisagreements(problem).forEach(d => algebra.add(`L${level} ${d}`));
     return problem;
   };
 
@@ -378,7 +411,7 @@ function checkActivity(script, config, draws) {
     if (Array.isArray(steps)) usesRepr = steps.some(s => s && typeof s.html === 'string' && s.html.includes('repr-holder'));
   }
 
-  return { issues, levels, ramps, usesRepr, rowMax, buriedLabels: [...buriedLabels], decimals: [...decimals], scores: scores.map(s => Number(s.toFixed(2))) };
+  return { issues, levels, ramps, usesRepr, rowMax, buriedLabels: [...buriedLabels], decimals: [...decimals], algebra: [...algebra], scores: scores.map(s => Number(s.toFixed(2))) };
 }
 
 // ---------- run ----------
@@ -402,6 +435,7 @@ function main() {
   const withRepr = [];
   const rowStats = {};   // class -> { max, worstFolder, activities }
   const longDecimals = [];
+  const algebraBad = [];
   const buried = [];
   let checked = 0;
 
@@ -418,6 +452,7 @@ function main() {
     if (!result.ramps) flat.push(`${folder} (${config.kind}) scores ${result.scores.join(' → ')}`);
     if (result.usesRepr) withRepr.push(`${folder} (${config.kind})`);
     if (result.buriedLabels.length) buried.push(`${folder} (${config.kind})\n      ${result.buriedLabels.slice(0, 4).join('\n      ')}`);
+    if (result.algebra.length) algebraBad.push(`${folder} (${config.kind})\n      ${result.algebra.slice(0, 4).join('\n      ')}`);
     if (result.decimals.length) longDecimals.push(`${folder} (${config.kind})\n      ${result.decimals.slice(0, 6).join('  ')}`);
     for (const [cls, n] of Object.entries(result.rowMax)) {
       const stat = rowStats[cls] || (rowStats[cls] = { max: 0, worstFolder: '', activities: 0, crowded: 0 });
@@ -436,6 +471,9 @@ function main() {
   Object.entries(levelCounts).sort().forEach(([k, v]) => console.log(`  [${k}] : ${v}`));
   console.log(`\nValues shown to a learner with more than ${MAX_DECIMALS} decimal places (${longDecimals.length} activities):`);
   longDecimals.forEach(line => console.log('  ' + line));
+
+  console.log(`\nDisplayed working that ends on a different number from the answer (${algebraBad.length}):`);
+  algebraBad.forEach(line => console.log('  ' + line));
 
   console.log(`\nFigure labels: edge collisions, plus in-figure labels to review (${buried.length}):`);
   buried.forEach(line => console.log('  ' + line));

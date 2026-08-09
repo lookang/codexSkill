@@ -545,6 +545,34 @@ def main() -> int:
                         "levelRuns:allRuns()",
                         # Response evidence must span every attempt, not just the current run.
                         "function allResponses()",
+                        # Prime factorisation shows the search, rejected primes included.
+                        "function primeFactorTrial(n)",
+                        "function primeFactorWalkHTML(n,{stage='search',caption=''}={})",
+                        "function primeFactorPairHTML(a,b,{stage='search'}={})",
+                        "function activatePrimeWalks(root=document)",
+                        "does not divide",
+                        "primeWalk:item[0]",
+                        "primeWalkPair:[item[0],item[1]]",
+                        "data-prime-walk-replay",
+                        # A net the learner folds face by face, not a finished solid beside it.
+                        "function netFoldLayout(solid)",
+                        "function pyramidFoldAngle(base,apexHeight)",
+                        "shape==='net-fold'",
+                        "data-three-fold",
+                        "function foldNext()",
+                        "function unfoldAll()",
+                        "userData.foldHinge",
+                        # The spin and the fold must live on separate nested groups: Three.js Euler
+                        # order is XYZ, so setting both on one object folds about the parent axis.
+                        "const hinge=new T.Group(),pivot=new T.Group();",
+                        "parent.pivot.add(hinge);",
+                        "pivot.rotation.x=-fold.current*Math.PI/180;",
+                        # Centring content in a container that can clip or scroll it pushes the overflow
+                        # above the top edge, where scrollTop cannot reach. Safe centring falls back to
+                        # start exactly when the content overflows.
+                        "align-items:safe center",
+                        "justify-content:safe center",
+                        "place-items:safe center",
                         "const responses=allResponses()",
                         "responses:allResponses().slice(-160)",
                         "misconceptionEvidence:sessionWrong",

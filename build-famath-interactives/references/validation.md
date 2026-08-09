@@ -22,6 +22,18 @@ Run it three times when levels or availability are involved. Identical counts pr
 
 Layout, fonts, animation, and real input still need a browser. Generation logic does not.
 
+## A check must run the shipped code, not a copy of it
+
+The 3D net folding was verified by a script that re-implemented the hinge maths by hand. It reported every net correct while the rendered nets were visibly broken, because the script and the renderer were written from the same wrong assumption about the order Three.js composes Euler rotations. A check that agrees with the code's *intent* proves nothing.
+
+- Load the artefact that actually ships and call into it. For geometry, build the tree from real `THREE.Group` objects and read world positions back from `updateMatrixWorld` — that is where a matrix-order mistake shows up.
+- Better still, expose a test-only handle on the live component (gated behind the harness flag) and measure the **rendered objects** in the browser. Measuring in the model's local space rather than world space strips the view rotation out.
+- Assert the property that means the thing works, not a proxy for it. "Face centres are where I expected" passed while the solid was open; "all four slant faces meet at one apex" and "each face is square to one axis" did not.
+- When a first attempt at a rule produces a wall of failures, suspect the rule before the code: an inward-pointing normal is not a fold in the wrong direction.
+- **Measure the artefact, not a quantity derived from the same assumptions.** A second fold defect survived a passing check because the check computed each face's centroid *from the layout* instead of reading the mesh: the assumed centroid agreed with itself while the real geometry sat half a face away. Read real vertices and assert extents.
+- Where the code and the check both need a rule, hoist it into one shared function they both call. Two copies of a rule are two chances to write it wrong in the same way.
+- Prove the check fails on the bug. Revert the fix, confirm it reports the defect, then restore. A check never seen to fail is not yet a check.
+
 ## Automated checks
 
 Run the canonical build and validator. Require:

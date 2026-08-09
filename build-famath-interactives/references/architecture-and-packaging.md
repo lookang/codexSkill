@@ -10,6 +10,7 @@ Keep these canonical surfaces under `_source/`:
 - `build.ps1`: ordered-folder generation, proven-library extraction, vendor copying, catalogue creation, and ZIP packaging.
 - `validate.py`: completeness, syntax, package, library, interaction, and pedagogy contracts.
 - `headless_check.js`: fast generator verification for every activity, step, and level.
+- `net_fold_check.js`: fold-geometry verification for the 3D nets, run against the shipped Three.js build.
 - `vendor/`: local Three.js and KaTeX with its fonts and licence. `build.ps1` refuses to run without them, because activities must work inside an SLS iframe with no network.
 
 Generated activity folders and `_packages/*.zip` are products of those files. Regenerate them after canonical changes.
