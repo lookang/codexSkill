@@ -8,6 +8,7 @@ This repository contains Codex skills for Singapore MOE SLS workflows.
 - [`sim-to-youtube`](sim-to-youtube/) turns science simulations into classroom-ready tutorial video packages, including pedagogy checks, screen-recorded walkthroughs, cursor choreography, readable overlays, narration, captions, thumbnails, and YouTube metadata.
 - [`sls-community-reviewer`](sls-community-reviewer/) reviews SLS Community Gallery modules awaiting approval.
 - [`sls-dev-module-transfer`](sls-dev-module-transfer/) transfers MOE SLS production modules into DEV draft modules while preserving rich formatting, response scaffolds, quiz settings, tags, and saved state.
+- [`sls-finalize-community-module`](sls-finalize-community-module/) safely infers curriculum tags, replaces activities with tagged copies, tags questions, generates a featured image, verifies gamification persistence, and finalizes SLS module settings.
 - [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
 - [`websitesim-to-youtube`](websitesim-to-youtube/) turns live websites, browser apps, and simulations into narrated tutorial MP4s with human-looking cursor actions, numbered teaching captions, narration-first synchronization, correction takes, and final QA.
 
@@ -107,6 +108,11 @@ https://vle.dev.sls.moe.edu.sg/...
 ```text
 Use $sls-community-reviewer to review this SLS Community Gallery module:
 https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/...
+```
+
+```text
+Use $sls-finalize-community-module to infer curriculum tags and safely complete this SLS Community Gallery module:
+https://vle.learning.moe.edu.sg/community-gallery/module/view/...
 ```
 
 ```text

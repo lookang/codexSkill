@@ -1,0 +1,4 @@
+interface:
+  display_name: "SLS Finalize Community Module"
+  short_description: "Safely tag and complete SLS modules"
+  default_prompt: "Use $sls-finalize-community-module to infer curriculum tags and safely complete this SLS community module."
