@@ -65,8 +65,10 @@ For each original in the current learning-outcome batch:
    - Its title does not end in `- Copy`.
    - Its questions have blank Question Tags.
    - Its paired `- Copy` exists and carries the intended tags.
-7. Open the original activity's own overflow menu and choose its **Delete** action. Confirm the dialog only after rechecking the exact original title.
-8. Verify the original is absent and the copy remains before continuing.
+7. When the target activity is near the bottom of the navigation pane, scroll until the activity has moved upward and the entire overflow menu can open above the fixed **Help us improve** control. Do not select a clipped or covered menu option. Close the feedback popup if it is already open.
+8. Open the original activity's own overflow menu and verify every option, including **Delete**, is fully visible. Choose that menu's **Delete** action only after rechecking the exact original title.
+9. Confirm only a dialog headed **Delete Activity?**. Cancel if SLS instead shows **Delete Component?**, opens the feedback-rating popup, or presents any other target.
+10. Verify the original is absent and the copy remains before continuing.
 
 If the activity limit is reached, delete only an already-authorized original with a verified copy, then continue. If no verified pair exists, stop. If deletion was not authorized, stop after the first verified pair and obtain permission.
 
@@ -116,10 +118,12 @@ Do not report gamification as fully complete from a toast or loading state alone
 
 1. Open **Module Settings**.
 2. Add two to four concise Keyword Tags from the dominant title concepts.
-3. Preserve existing credited teachers. Add another only when the user provides an exact name or requests the captured default.
-4. Search the teacher directory, require one unambiguous match, select it, and verify the name appears in **Module Credited to**.
-5. Preserve permission settings unless the user requests changes or an exact replay. For the captured replay, enable copying, print-friendly worksheet viewing, print-friendly completed-assignment viewing, and self-study reattempts.
-6. Save and verify the stable module state.
+3. Preserve existing credited teachers and edit or add credits so `WEE LOO KANG` is included when completing the full workflow. Do not remove another credited teacher to add this name.
+4. Search the teacher directory for the exact name `WEE LOO KANG`, require one unambiguous match, select it, and verify the exact name appears in **Module Credited to**. If the exact match is unavailable or ambiguous, stop and report the visible candidates instead of guessing.
+5. Preserve permission settings unless the user requests changes or an exact replay. When completing the full workflow for this user or replaying the captured workflow, enable all four student permissions: copying, print-friendly worksheet viewing, print-friendly completed-assignment viewing, and self-study reattempts. Treat worksheet viewing and completed-assignment viewing as separate checkboxes; never infer that enabling one enables the other.
+6. Treat keyword chips and the credited-teacher table as staged changes only. Return to **Module Settings** after editing credits, then click the blue disk **Save** button in the dialog header. Do not close the dialog, switch tabs, open another browser, or begin verification before clicking this Save button.
+7. If leaving the credited-teacher view raises a confirmation dialog, handle that dialog deliberately and return to Module Settings with the intended teacher still visible before saving. Never interpret an unsaved teacher row as persisted.
+8. Close and reopen Module Settings, then verify the keyword chips, `WEE LOO KANG`, and every required permission checkbox are still present or enabled. For the full or captured workflow, explicitly verify all four permissions, including **Allow viewing as print-friendly completed assignment**. If any required item is missing or disabled, reapply the changes, click the blue disk Save button, and verify again before continuing.
 
 ## Safety Rules
 
@@ -129,8 +133,12 @@ Do not report gamification as fully complete from a toast or loading state alone
 - Do not retain a copy created before correct Section Tags merely because its title ends in `- Copy`.
 - Never distinguish original and copy by position; use exact title and suffix.
 - Never delete a copy while attempting to remove an original.
+- Before deleting a bottom activity, move it upward in the viewport so the complete overflow menu is visible and unobstructed by **Help us improve**.
+- Confirm **Delete Activity?** before accepting; never accept **Delete Component?** or interact with the feedback-rating popup as a substitute.
 - Stop if SLS creates no copy, creates multiple ambiguous copies, changes a title unexpectedly, or loses a copy.
 - Do not add an ambiguous teacher or remove an existing credit.
+- Never treat a visible staged keyword or credited-teacher row as saved. Click the blue disk Save button and verify persistence after reopening Module Settings before navigating away or testing in another tab or browser.
+- Never treat permission checkboxes as saved from their visible state alone. Click the blue disk Save button, reopen Module Settings, and verify each required checkbox, especially the separate print-friendly completed-assignment permission.
 - Do not broaden permissions without explicit authorization.
 - Review all three generated images before selection.
 - Prefer visible labels and roles over recorded screen coordinates.
@@ -145,7 +153,7 @@ Before reporting completion:
 3. Verify every retained question has learning progress, curriculum tags, and its keyword.
 4. Verify the featured-image filename.
 5. Reopen Gamification and report the persisted title and generated elements; explicitly note any `Untitled Game` reversion.
-6. Verify module keywords, credited teachers, and permissions.
+6. Verify module keywords, credited teachers including `WEE LOO KANG`, and each required permission individually. For the full or captured workflow, confirm copying, print-friendly worksheet viewing, print-friendly completed-assignment viewing, and self-study reattempts are all enabled after reopening Module Settings.
 7. Confirm Module View has no pending save indicator or error.
 
 Report the inferred tags and rationale, original-to-copy mapping, skipped activities, featured-image result, gamification persistence result, credited teachers, permissions, and any unresolved SLS behavior.
