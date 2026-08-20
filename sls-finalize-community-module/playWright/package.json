@@ -1,0 +1,29 @@
+{
+  "name": "sls-playwright-automation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Guarded, resumable Playwright automation for SLS Community Gallery module migration.",
+  "scripts": {
+    "sls:auth": "node scripts/auth.mjs",
+    "sls:one-shot": "node scripts/one-shot.mjs",
+    "sls:gamify": "node scripts/module-action.mjs gamify",
+    "sls:add-teacher": "node scripts/module-action.mjs add-teacher",
+    "sls:inspect": "node scripts/run.mjs inspect",
+    "sls:apply": "node scripts/run.mjs apply",
+    "sls:resume": "node scripts/run.mjs resume",
+    "trace:show": "playwright show-trace",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check scripts/auth.mjs && node --check scripts/harvest-dictionaries.mjs && node --check scripts/selftest.mjs && node --check scripts/probe.mjs && node --check scripts/probe-delete-overlay.mjs && node --check scripts/probe-widget.mjs && node --check scripts/propose-outcomes.mjs && node --check scripts/scaffold-config.mjs && node --check scripts/one-shot.mjs && node --check scripts/module-action.mjs && node --check scripts/run.mjs && node --check src/cli.mjs && node --check src/io.mjs && node --check src/sheet.mjs && node --check src/module-picker.mjs && node --check scripts/sheet.mjs && node --check src/outcome-chooser.mjs && node --check src/math-features.mjs && node --check src/question-tagger.mjs && node --check src/module-actions.mjs && node --check src/sls-runner.mjs && node --check scripts/probe-thumbnail.mjs && node --check scripts/probe-module-settings.mjs && node --check scripts/probe-image-component.mjs",
+    "sls:scaffold": "node scripts/scaffold-config.mjs",
+    "sls:scan": "node scripts/run.mjs scan",
+    "sls:selftest": "node scripts/selftest.mjs",
+    "sls:sheet": "node scripts/sheet.mjs",
+    "sls:harvest": "node scripts/harvest-dictionaries.mjs",
+    "sls:tag": "node scripts/run.mjs tag",
+    "sls:thumbnail": "node scripts/module-action.mjs thumbnail"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.62.1"
+  }
+}

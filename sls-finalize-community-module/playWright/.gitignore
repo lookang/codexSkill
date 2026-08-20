@@ -1,0 +1,7 @@
+node_modules/
+# Session state and the dedicated Chrome profile: credentials, never committed.
+.auth/
+# Run artefacts: reports, traces, screenshots.
+output/
+.state/
+.npm-cache/

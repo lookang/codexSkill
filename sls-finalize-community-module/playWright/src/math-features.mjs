@@ -1,0 +1,178 @@
+// SLS renders mathematics as a WIRIS <img>: the src is a data-URI SVG whose only
+// machine-readable form of the equation is an HTML comment, "<!--MathML: ...-->".
+// The image contributes no text nodes, which is why a question that plainly reads
+// "Solve 7x = 3x + 8" arrived as "Solve .". The page walker pulls that comment out
+// and drops the raw MathML into the text; this flattens it back to the equation.
+export function flattenMathml(text) {
+  return String(text)
+    .replace(/<math\b[^>]*>([\s\S]*?)<\/math>/gi, (_, inner) => {
+      const symbols = [...inner.matchAll(/<(mn|mi|mo|mtext)\b[^>]*>([\s\S]*?)<\/\1>/gi)].map((m) =>
+        m[2].replace(/<[^>]+>/g, "").trim()
+      );
+      // <msup> is the only structural tag worth keeping: "x squared" must not read
+      // as "x2", which looks like a two-digit number rather than an index.
+      const powered = /<msup\b/i.test(inner) ? `${symbols.join("")} ^` : symbols.join("");
+      return ` ${powered} `;
+    })
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+// Turns a question (or a syllabus outcome) into the mathematics it is about:
+// which operations appear, on what kinds of number, and which named topic. Matching
+// on these beats keyword overlap for this domain, because a question can be almost
+// wordless - "2/5 + 3/7" shares no vocabulary with "adding and subtracting
+// fractions", yet they are plainly the same skill.
+
+// FA-Math wraps every question in the same scaffolding. It must be removed before
+// features are read: "Feedback Assistant - Mathematics" alone would otherwise
+// register as a subtraction on every single question.
+const BOILERPLATE = [
+  /Feedback Assistant\s*-\s*Mathematics[^.]*\./gi,
+  /FEEDBACK ASSISTANT/gi,
+  /Hints and feedback will be shown[^.]*\.?/gi,
+  /Feedback will be given[^.]*\.?/gi,
+  /INSTRUCTIONS?/gi,
+  /Move Up|Move Down|Read Less|Read More/gi,
+  /MARKS?\s*\[?\s*\d+\s*\]?/gi,
+  /Suggested Answer|Feedback|Optional|Delete/gi,
+  /Upload a file with your answer[^.]*\.?/gi,
+  /Draw (?:and label )?a model[^.]*\.?/gi,
+  /No solution needed\.?/gi,
+  /Keyword Tags|Question Tags|Authoring Copilot/gi,
+  /^Q\d+/i
+];
+
+export function stripBoilerplate(text) {
+  let clean = flattenMathml(text);
+  for (const pattern of BOILERPLATE) clean = clean.replace(pattern, " ");
+  return clean.replace(/\s+/g, " ").trim();
+}
+
+// Word forms are listed before symbols so that prose questions score the same as
+// symbolic ones. Note "-" is deliberately not treated as subtraction: it appears
+// in ordinary hyphenation far more often than as an operator.
+const OPERATIONS = [
+  ["add", /\+|\badd(?:ing|ition|ed)?\b|\bsum\b|\baltogether\b|\bin total\b|\bmore than\b/i],
+  ["subtract", /[−–]|\bsubtract(?:ing|ion|ed)?\b|\bdifference\b|\bminus\b|\bhow many more\b|\bleft over\b|\bremaining\b/i],
+  // "of <number>" was far too loose: "a total mass of 14 kg" is not a
+  // multiplication. Only explicit grouping language counts.
+  ["multiply", /[×✕]|\\times|\\cdot|\bmultipl(?:y|ying|ication|ied)\b|\bproduct\b|\btimes\b|\b\d+\s*(?:sets?|groups?|rows?)\s+of\b/i],
+  ["divide", /[÷]|\\div|\bdivid(?:e|ing|ision|ed)\b|\bquotient\b|\bshared?\s+equally\b|\beach\b|\bper\b/i]
+];
+
+// Primary mathematics is mostly "which operation on which kind of number".
+// Secondary is not: "Solve 7x = 3x + 8" and "Addition and subtraction of linear
+// expressions" share the "+", yet the question is plainly about solving an
+// equation. Topics carry the most weight because they are what actually separates
+// one Secondary outcome from another.
+const TOPICS = [
+  ["solve", /\bsolv(?:e|es|ing|ed)\b/i],
+  ["equation", /\bequations?\b|[A-Za-z0-9)\s]=\s*[A-Za-z0-9(]/],
+  ["linear", /\blinear\b/i],
+  ["expression", /\bexpressions?\b|\bsimplif(?:y|ies|ying|ication)\b|\bexpand(?:ing|sion)?\b/i],
+  ["variable", /\bvariables?\b|\bunknowns?\b|\balgebraic\b|\balgebra\b|\b\d+[a-z]\b|\b[a-z]\s*=/],
+  ["index", /\bindices\b|\bindex\b|\bsquared?\b|\bcubed?\b|\bpowers?\b|\^|\broots?\b/i],
+  ["factor", /\bfactoris\w*\b|\bfactors?\b|\bHCF\b|\bLCM\b|\bmultiples?\b|\bprimes?\b/i],
+  ["inequality", /\binequalit(?:y|ies)\b|[<>]\s*=?\s*[A-Za-z0-9]/],
+  ["word problem", /\breal-world\b|\bformulating\b|\bto solve problems\b|\bword problems?\b/i],
+  // "Find the percentage increase" names no operation this extractor trusts and no
+  // algebra, so without these it produced only the "percentage" operand and was
+  // dropped as having no mathematics - even though the syllabus has an outcome
+  // called exactly "Finding percentage increase/decrease".
+  // The 2021 syllabus names the outcome "Finding percentage increase/decrease";
+  // the 2028 one calls the same idea "percentage change". Both must match, or a
+  // percentage question scores no better against its own outcome than against
+  // any other outcome that merely mentions percentages.
+  ["percentage change", /\bpercentage\s+(?:increase|decrease|change)\b|\b(?:increase|decrease)\s+in\s+percentage\b|\breverse percentage\b/i],
+  ["increase", /\bincreas(?:e|es|ed|ing)\b/i],
+  ["decrease", /\bdecreas(?:e|es|ed|ing)\b|\breduc(?:e|es|ed|ing|tion)\b/i],
+  // "Fraction of a Set of Objects" is its own syllabus branch, and neither the
+  // word "set" nor "fractional" was recognised, so a whole module about it matched
+  // outcomes about adding fractions instead.
+  ["fraction of a set", /\b(?:fraction|part)\s+of\s+a\s+set\b|\bset\s+of\s+objects\b|\bfractional\s+part\b/i],
+  ["ratio topic", /\bratios?\b|\bproportion(?:al|ality)?\b|\brate\b|\bspeed\b/i]
+];
+
+const OPERANDS = [
+  ["mixed number", /\bmixed numbers?\b|\b\d+\s+\d+\s*\/\s*\d+/i],
+  ["improper fraction", /\bimproper fractions?\b/i],
+  ["proper fraction", /\bproper fractions?\b/i],
+  ["fraction", /\\frac|\bfractions?\b|\bfractional\b|\b\d+\s*\/\s*\d+\b|\b\d+\s+\d+\b(?=\s*[+\-×÷])/i],
+  ["decimal", /\bdecimals?\b|\b\d+\.\d+\b/i],
+  ["percentage", /\bpercent(?:age)?s?\b|%/i],
+  ["ratio", /\bratios?\b|\b\d+\s*:\s*\d+\b/i],
+  ["whole number", /\bwhole numbers?\b/i],
+  ["integer", /\bintegers?\b|\bnegative numbers?\b/i]
+];
+
+export function mathFeatures(text) {
+  const clean = stripBoilerplate(text);
+  const operations = new Set();
+  const operands = new Set();
+  const topics = new Set();
+  for (const [name, pattern] of TOPICS) if (pattern.test(clean)) topics.add(name);
+  for (const [name, pattern] of OPERATIONS) if (pattern.test(clean)) operations.add(name);
+  for (const [name, pattern] of OPERANDS) if (pattern.test(clean)) operands.add(name);
+  // A specific fraction kind implies the general one, so a question about mixed
+  // numbers still matches an outcome phrased about fractions.
+  if (operands.has("mixed number") || operands.has("improper fraction") || operands.has("proper fraction")) {
+    operands.add("fraction");
+  }
+  return { operations, operands, topics, clean };
+}
+
+function overlap(a, b) {
+  let shared = 0;
+  for (const value of a) if (b.has(value)) shared += 1;
+  return shared;
+}
+
+// Topics outrank operations, which outrank operand types. "Solving linear equations
+// in one variable" and "Addition and subtraction of linear expressions" both involve
+// a "+", so only the topic tells them apart.
+export function featureScore(questionFeatures, outcomeFeatures) {
+  const operationHits = overlap(questionFeatures.operations, outcomeFeatures.operations);
+  const operandHits = overlap(questionFeatures.operands, outcomeFeatures.operands);
+  const topicHits = overlap(questionFeatures.topics || new Set(), outcomeFeatures.topics || new Set());
+
+  // A shared topic stands on its own: an outcome about solving equations matches a
+  // solve-the-equation question even though the outcome names no operation. Without
+  // this, the operation gate below would throw the right answer away.
+  if (topicHits === 0 && outcomeFeatures.operations.size > 0 && operationHits === 0) return 0;
+
+  // And the kind of number must not contradict. A fractions question should not be
+  // tagged to "multiplication algorithm ... Whole Numbers" merely because both
+  // involve multiplying: when each side names operands and they share none, the
+  // outcome is about different mathematics. Leaving it untagged beats tagging it
+  // wrongly.
+  if (
+    questionFeatures.operands.size > 0 &&
+    outcomeFeatures.operands.size > 0 &&
+    operandHits === 0
+  ) {
+    return 0;
+  }
+
+  // Tie-break on specificity. "Solving linear equations in one variable" and
+  // "Formulating a linear equation in one variable to solve problems" share every
+  // topic a bare "Solve 8z = 11 - 2z" has, but the second also demands a word
+  // problem, which this question is not. An outcome that names concepts absent from
+  // the question is the looser fit. The penalty is 1, so it only settles ties and
+  // never overturns a real topic (5) or operation (3) match.
+  let unmatched = 0;
+  for (const topic of outcomeFeatures.topics || new Set()) {
+    if (!(questionFeatures.topics || new Set()).has(topic)) unmatched += 1;
+  }
+
+  return topicHits * 5 + operationHits * 3 + operandHits * 2 - unmatched;
+}
+
+// Whether a question is asking mathematics at all. Deliberately the same rule the
+// tagger uses to decide it can propose an outcome, so the two never disagree: if a
+// question is worth a learning outcome it belongs in Learning Progress, and a
+// reflective prompt ("How did the hints/feedback help me?") belongs in neither.
+export function looksMathematical(text) {
+  const features = mathFeatures(text || "");
+  return features.operations.size > 0 || features.topics.size > 0;
+}
