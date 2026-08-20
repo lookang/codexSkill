@@ -21,6 +21,14 @@ Use the captured defaults only when the user explicitly asks to replay the recor
 
 Never store credentials, email addresses, or restricted learner data in the skill or artifacts. If authentication is required, use the user's existing signed-in browser session or ask the user to sign in.
 
+## Choose the Execution Path
+
+When the maintained `playWright` automation is available and the request matches one of its supported actions, prefer its visible-browser launcher for repeated module migration, gamification, credited-teacher, thumbnail, or smoke-check work. It provides guarded URL normalization, checkpoints, traces, and persistence checks. Do not bypass its configuration review or deletion guard.
+
+Use direct browser control when the user asks for an interactive run, the deterministic launcher does not cover the requested operation, or the local scripts are unavailable. Before direct browser work, read [references/playwright-ui-playbook.md](references/playwright-ui-playbook.md) and follow its current SLS interaction patterns. Apply the same inspect, mutate, reopen, and verify cycle used by the scripts.
+
+Accept public or admin module and lesson URLs, including nested section or activity routes, but preserve the supplied module UUID. Navigate through the corresponding admin Module View and click **Edit**. Never silently switch to a configured fallback or a different remembered module.
+
 ## Execute the Workflow
 
 1. Open the supplied module URL and verify the expected module title before editing.
@@ -95,10 +103,11 @@ Use SLS's built-in image generator by default:
 1. Open **Introduction** and click the module title in the main content area.
 2. Open **Add Image** beside **Featured Image** and select **Generate Image (Beta)**.
 3. Choose the best recipe for the module level and topic. Derive concise instructions from the title and learning outcomes. Avoid text, equations, logos, iconic characters, and details that may introduce curricular inaccuracies unless explicitly requested.
-4. Select **Create** and wait until all three choices are visible.
+4. Select **Create** and wait for the generated-image selection screen, not merely for a fixed delay. Generation may take more than two minutes.
 5. Inspect all three, including any below the initial viewport. Compare topic fit, age appropriateness, thumbnail clarity, and factual accuracy.
-6. Select the strongest choice and choose **Add**.
-7. Verify the success notification and a featured-image filename in the Introduction editor.
+6. Select the strongest choice. If SLS preselects one option, confirm that selected state deliberately. Choose the visible floating **Add** action carrying the `Plus24` icon.
+7. Wait until the selection screen closes and the Featured Image field displays an image preview. Only then choose **Done**.
+8. Reopen the module settings and verify the saved featured image is still present. A toast or closed generator alone is insufficient evidence.
 
 Use upload or an external generator only when explicitly requested or when the built-in generator is unavailable.
 
@@ -142,6 +151,9 @@ Do not report gamification as fully complete from a toast or loading state alone
 - Do not broaden permissions without explicit authorization.
 - Review all three generated images before selection.
 - Prefer visible labels and roles over recorded screen coordinates.
+- Scope controls to the active card or visible modal. When SLS rerenders after a click, locate the control again instead of reusing a stale element.
+- Prefer stable accessible names and SLS icon names such as `Settings24`, `Save24`, and `Plus24`; never target an SVG path string or use an unscoped generic **Add**, **Save**, or **Delete** control.
+- Wait for the resulting state, network save, or persisted preview rather than relying on a fixed sleep. Retry a failed ordinary click once only after re-inspecting the active view; never force a disabled or covered control.
 - Keep navigation within the supplied SLS origin.
 
 ## Final Audit and Report
