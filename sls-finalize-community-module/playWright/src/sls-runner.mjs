@@ -9,6 +9,8 @@ import {
   saveCheckpoint,
   saveJson,
   activityRowCount,
+  normalizeActivityRowTitle,
+  normalizeSectionDisplayTitle,
   buildOutcomePaths,
   unreviewedPlaceholders,
   PLACEHOLDER_MARKER,
@@ -264,7 +266,7 @@ async function processActivity({
     const originalUrl = await openSidebarActivity(page, originalTitle, section);
     activityState.originalId = activityIdFromUrl(originalUrl);
     activityState.originalUrl = originalUrl;
-    await duplicateCurrentActivity(page, originalTitle, copyTitle, section.title);
+    await duplicateCurrentActivity(page, originalTitle, copyTitle, section);
     activityState.copyCreated = true;
     await saveCheckpoint(checkpointPath, checkpoint);
   } else if (copyCount === 1 && originalCount === 0) {
@@ -1376,9 +1378,12 @@ async function clickTaxonomyOption(page, section, text, label) {
   await option.click();
 }
 
-async function duplicateCurrentActivity(page, originalTitle, copyTitle, sectionTitle = null) {
+async function duplicateCurrentActivity(page, originalTitle, copyTitle, section = null) {
+  const sectionTitle = typeof section === "string" ? section : (section?.title ?? null);
   await clickOverflowMenuItem(page, originalTitle, "Duplicate Activity", sectionTitle);
-  await expect(page.locator(".bx--side-nav__link-text").getByText(copyTitle, { exact: true })).toHaveCount(1);
+  await expect
+    .poll(async () => (await sidebarActivityMatch(page, copyTitle, section)).count)
+    .toBe(1);
 }
 
 async function deleteVerifiedOriginal({
@@ -1506,15 +1511,30 @@ async function openSection(page, config, section) {
   await assertModule(page, config.module);
   const id = sectionIdFromUrl(page.url());
   if (!id) throw new GuardError(`Could not resolve section ID for ${section.title}.`);
-  // A lettered section shows "B. Finding Percentage ..."; a module with only one
-  // section shows the bare title, because SLS drops the letter there. Accept either
-  // rather than asserting on a prefix that may not exist.
-  const prefixed = page.getByText(`${section.label}. ${section.title}`, { exact: true });
-  const bare = page.locator("main").getByText(section.title, { exact: true });
-  if ((await prefixed.count()) > 0) {
-    await expect(prefixed.last()).toBeVisible();
-  } else {
-    await expect(bare.last()).toBeVisible();
+  // SLS prefixes the section label and sometimes preserves an author-entered
+  // numeric prefix too (for example "E. 5. Expressing..."). Compare the visible
+  // heading after removing only those display prefixes; the remaining title must
+  // still match exactly.
+  const headings = page.locator(
+    "main dl.field-set.title .output-text, main h1, main h2, main h3, " +
+      "main h4, main h5, main h6, main span.title"
+  );
+  const wanted = normalizeSectionDisplayTitle(section.title);
+  const visibleHeadings = [];
+  let matched = false;
+  for (let index = 0; index < await headings.count(); index += 1) {
+    const heading = headings.nth(index);
+    if (!(await heading.isVisible().catch(() => false))) continue;
+    const text = (await heading.innerText().catch(() => "")).replace(/\s+/g, " ").trim();
+    if (!text) continue;
+    visibleHeadings.push(text);
+    if (normalizeSectionDisplayTitle(text) === wanted) matched = true;
+  }
+  if (!matched) {
+    throw new GuardError(
+      `Opened section ${section.label}, but its visible heading did not match "${section.title}". ` +
+        `Visible headings: ${visibleHeadings.join(" | ") || "(none)"}.`
+    );
   }
   return { id, url: page.url() };
 }
@@ -1579,17 +1599,30 @@ async function sidebarActivityMatch(page, title, section = null) {
   const scope = await sectionActivityScope(page, section);
   const root = scope ?? page;
 
-  const matches = root.locator(".bx--side-nav__link-text").getByText(title, { exact: true });
-  const rawCount = await matches.count();
+  const rows = root.locator(".bx--side-nav__link-text");
+  const matches = [];
+  const wanted = normalizeActivityRowTitle(title);
+  for (let index = 0; index < await rows.count(); index += 1) {
+    const row = rows.nth(index);
+    const label = normalizeActivityRowTitle(await row.innerText().catch(() => ""));
+    if (label === wanted) matches.push(row);
+  }
+  const rawCount = matches.length;
+  const fallback = rows.first();
 
   // Scoped to one section's content, the section heading is not among the matches,
   // so there is no heading/activity collision to correct for.
-  if (scope) return { count: rawCount, locator: matches.first() };
+  if (scope) return { count: rawCount, locator: matches[0] ?? fallback };
 
   const count = activityRowCount(rawCount, title, sectionTitle);
   // On a collision the section heading is listed before its activities, so the
   // activity itself is the later match.
-  return { count, locator: count === rawCount ? matches.first() : matches.last() };
+  const locator = count === 0
+    ? fallback
+    : count === rawCount
+      ? matches[0]
+      : matches[matches.length - 1];
+  return { count, locator };
 }
 
 // The sidebar re-renders after each activity is processed. A locator captured by

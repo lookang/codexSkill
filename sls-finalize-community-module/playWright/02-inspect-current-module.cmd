@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 
-set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/00000000-0000-0000-0000-000000000000"
+set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/428156f1-90f1-4b64-865f-66b354b5501f"
 echo Paste the exact SLS admin module edit URL.
 echo Press Enter to inspect the configured P3 multiplication module:
 echo %default_url%

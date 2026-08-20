@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "428156f1-90f1-4b64-865f-66b354b5501f",
+    "title": "AST_FA-Math_P3_Multiplication algorithms (up to 3 digits by 1 digit)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/428156f1-90f1-4b64-865f-66b354b5501f"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 3",
+    "contentMap": "Pri 3 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Whole Numbers",
+      "Multiplication and division"
+    ],
+    "outcome": "3.4 multiplication and division algorithms (up to 3 digits by 1 digit)",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 3 learners practising multiplication algorithms for 2-digit and 3-digit numbers multiplied by 1-digit numbers. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Multiplication Algorithm Quest",
+    "shortTitle": "Multiplication Quest",
+    "description": "Build confidence and accuracy while mastering multiplication algorithms for 2-digit and 3-digit numbers multiplied by 1-digit numbers."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "id": "76768027",
+      "title": "Multiply a 2-digit number by a 1-digit number without regrouping",
+      "activities": [
+        {
+          "title": "Multiply a 2-digit number by a 1-digit number without regrouping using algorithm",
+          "existingCopyId": "109243895",
+          "expectedQuestionCount": 9
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "id": "76768028",
+      "title": "Multiply a 3-digit number by a 1-digit number without regrouping using algorithm",
+      "activities": [
+        {
+          "title": "Multiply a 3-digit number by a 1-digit number without regrouping using algorithm.",
+          "existingCopyId": "109243975",
+          "expectedQuestionCount": 10
+        }
+      ]
+    },
+    {
+      "label": "D",
+      "id": "76768029",
+      "title": "Multiply a 2-digit number by a 1-digit number with regrouping using algorithm",
+      "activities": [
+        {
+          "title": "Multiply a 2-digit number by a 1-digit number with regrouping using algorithm"
+        }
+      ]
+    },
+    {
+      "label": "E",
+      "title": "Multiply a 3-digit number by a 1-digit number with regrouping using algorithm",
+      "activities": [
+        {
+          "title": "Multiply a 3-digit number by a 1-digit number with regrouping using algorithm"
+        }
+      ]
+    },
+    {
+      "label": "F",
+      "title": "Reflection",
+      "activities": [
+        {
+          "title": "Reflection"
+        }
+      ]
+    }
+  ]
+}

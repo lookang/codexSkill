@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "303b9ff7-75b3-44bb-a82f-9b4f3ef433ef",
+    "title": "AST FA-Math P5 Word Problems Involving Whole Numbers and Decimals",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/303b9ff7-75b3-44bb-a82f-9b4f3ef433ef/module-plan"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [],
+    "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 5 learners practising word problems involving whole numbers and decimals. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Word Problems Quest",
+    "shortTitle": "Word Quest",
+    "description": "Build confidence and accuracy while mastering word problems involving whole numbers and decimals."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Familiarisation with FA-Math (Part 1)",
+      "activities": [
+        {
+          "title": "Familiarisation with FA-Math"
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Familiarisation with FA-Math (Part 2)",
+      "activities": [
+        {
+          "title": "Familiarisation with FA-Math (Part 2)"
+        }
+      ]
+    },
+    {
+      "label": "D",
+      "title": "Practice A",
+      "activities": [
+        {
+          "title": "Question 1A"
+        },
+        {
+          "title": "Question 2A"
+        }
+      ]
+    },
+    {
+      "label": "E",
+      "title": "Practice B",
+      "activities": [
+        {
+          "title": "Question 1B"
+        },
+        {
+          "title": "Question 2B"
+        }
+      ]
+    },
+    {
+      "label": "F",
+      "title": "Reflection",
+      "activities": [
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        }
+      ]
+    }
+  ]
+}

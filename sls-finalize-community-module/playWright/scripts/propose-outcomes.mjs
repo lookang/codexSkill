@@ -4,7 +4,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { chooseOutcome } from "../src/outcome-chooser.mjs";
+import { chooseOutcome, outcomeProposalIsWritable } from "../src/outcome-chooser.mjs";
 
 const moduleId = process.argv[2];
 const writeFlag = process.argv.indexOf("--write");
@@ -54,7 +54,7 @@ for (const section of report.scan.sections) {
     console.log("");
     continue;
   }
-  proposals.set(section.title, picked);
+  if (outcomeProposalIsWritable(picked)) proposals.set(section.title, picked);
   console.log(`      propose : ${picked.outcome}`);
   console.log(`      path    : ${picked.outcomePath.join(" > ") || "(top level)"}`);
   console.log(`      why     : ${picked.reason}`);
@@ -63,7 +63,7 @@ for (const section of report.scan.sections) {
   }
   console.log("");
 }
-console.log("Review these before putting them into a config; nothing has been written.");
+console.log("Review these before putting them into a config; uncertain fallbacks will not overwrite configured outcomes.");
 
 if (configPath) {
   const resolved = path.resolve(process.cwd(), configPath);
@@ -79,5 +79,9 @@ if (configPath) {
   await fs.writeFile(resolved, `${JSON.stringify(config, null, 2)}
 `, "utf8");
   console.log(`Wrote per-section outcomes for ${written} section(s) into ${path.relative(process.cwd(), resolved)}.`);
-  console.log("Every section now carries its own outcome; review them before the edit pass.");
+  console.log(
+    written > 0
+      ? "Confident section-specific outcomes were recorded; review them before the edit pass."
+      : "Uncertain section proposals were skipped; the configured default outcome remains in effect."
+  );
 }

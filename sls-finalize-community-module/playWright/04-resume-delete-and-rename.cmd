@@ -6,7 +6,7 @@ echo This pass resumes from checkpoints.
 echo It can DELETE an exact original only after its retained copy and every question pass verification.
 echo It then removes the - Copy suffix.
 echo.
-set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/00000000-0000-0000-0000-000000000000"
+set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/428156f1-90f1-4b64-865f-66b354b5501f"
 echo Paste the exact module URL inspected and applied in the earlier steps.
 echo Press Enter for the configured P3 multiplication module.
 set "sls_url="

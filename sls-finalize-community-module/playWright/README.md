@@ -5,7 +5,7 @@ This project runs the guarded SLS Community Gallery section and activity-migrati
 The first supplied configuration targets:
 
 - Module: `AST_FA-Math_P3_Multiplication algorithms (up to 3 digits by 1 digit)`
-- Module ID: `00000000-0000-0000-0000-000000000000`
+- Module ID: `428156f1-90f1-4b64-865f-66b354b5501f`
 - Sections: B to F
 - Outcome: `3.4 multiplication and division algorithms (up to 3 digits by 1 digit)`
 - Question keyword: `FA Math`
@@ -37,7 +37,7 @@ For normal use, run only:
 RUN-SLS-AUTOMATION.cmd
 ```
 
-It accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. When the module has a reviewed matching config, the guarded non-deleting edit pass starts automatically after inspection. It requires typing `DELETE` before verified originals can be removed. If the saved SLS session has expired, it automatically opens the manual authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors.
+It remembers the last valid module URL in the private `.state` folder. On the next launch, press **Enter** to use the displayed last module or paste a new SLS URL to replace it. It accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. A new or placeholder config is completed in the same run: the launcher first reads existing section metadata, then falls back to a strong unique match from locally harvested SLS taxonomies, reruns the question scan, and records confident section outcomes. It stops without writing to SLS when no unique curriculum match exists. A module with no question-level tags automatically enters the guarded duplicate-and-replace preparation pass; originals remain until you type `DELETE`. If the saved SLS session has expired, the launcher opens the authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors, and the CMD window remains open for copying debug output.
 
 The numbered CMD files expose individual stages for troubleshooting. You do not need to run them one by one during normal use.
 
@@ -47,14 +47,17 @@ After the activity migration is complete, these independent launchers make only 
 
 ```text
 RUN-SLS-GAMIFICATION.cmd
+RUN-SLS-THUMBNAIL.cmd
 RUN-SLS-ADD-WEE-LOO-KANG.cmd
 ```
 
-Both commands ask for a Community Gallery module or lesson URL, convert it to the exact admin Module View route, click **Edit**, and keep visible Chrome open at the verified final state until you press Enter in the terminal.
+All three commands ask for a Community Gallery module or lesson URL, convert it to the exact admin Module View route, click **Edit**, and keep visible Chrome open at the verified final state until you press Enter in the terminal.
 
-`RUN-SLS-GAMIFICATION.cmd` requires a reviewed matching JSON config with a `gamification` block. It enables Gamification, uses Authoring Copilot with the configured recipe and instructions, selects the first completed preview, sets a meaningful title and description, saves, closes, reopens, and verifies the persisted game. If SLS reverts the title to `Untitled Game`, it retries once with the configured shorter title.
+`RUN-SLS-GAMIFICATION.cmd` requires a reviewed matching JSON config with a `gamification` block. It enables Gamification, uses Authoring Copilot with the configured recipe and instructions, selects the first completed preview, sets a meaningful title and description, saves, closes, reopens, and verifies the persisted game. It preserves existing leaderboard choices. If SLS reverts the title to `Untitled Game`, it retries once with the configured shorter title.
 
-`RUN-SLS-ADD-WEE-LOO-KANG.cmd` works with any valid SLS Community Gallery module URL. It searches the teacher directory for the exact name `WEE LOO KANG`, requires exactly one match, preserves existing credited teachers, saves through Module Settings, closes, reopens, and verifies that the teacher persisted. It does not change printing, copying, or reattempt settings.
+`RUN-SLS-THUMBNAIL.cmd` adds a generated Featured Image only when the module has no image, unless `--replace-existing` is explicitly supplied. It accepts an optional `--prompt "..."`, verifies the image after reopening the module, and leaves activities and tags untouched.
+
+`RUN-SLS-ADD-WEE-LOO-KANG.cmd` works with any valid SLS Community Gallery module URL, including a URL copied while viewing a section or activity. It searches the teacher directory for the exact directory name `Wee Loo Kang`, requires exactly one match, preserves existing credited teachers, saves through Module Settings, closes, reopens, and verifies that the teacher persisted. It does not change printing, copying, reattempt, leaderboard, or other module settings.
 
 ### PowerShell workflow
 
@@ -62,7 +65,7 @@ Open PowerShell in this folder:
 
 ```powershell
 cd "C:\Users\weelo\OneDrive\Documents\0iwant2study.org\slsProd\sls-playwright-automation"
-npm.cmd install
+npm.cmd ci --cache .npm-cache
 ```
 
 Create the dedicated authenticated Chrome profile and reusable Playwright state:
@@ -75,7 +78,7 @@ Chrome opens using `.auth\chrome-profile`. Sign into SLS manually, wait until an
 
 Run authentication again whenever SLS expires the saved session or the runner reaches the login boundary.
 
-Do not commit or share `.auth`; it contains authenticated browser state.
+Do not commit or share `.auth`; it contains authenticated browser state. Treat `output` reports, screenshots, and traces as private too because they can contain SLS lesson and account-interface content. All of these folders are excluded by `.gitignore`.
 
 ## Inspect Without Changing SLS
 
@@ -147,6 +150,14 @@ npx.cmd playwright show-trace "output\<module-id>\<timestamp>\trace.zip"
 npm.cmd run check
 npm.cmd test
 ```
+
+To verify the live SLS entry points in visible Chrome without changing or saving anything, run:
+
+```powershell
+RUN-SLS-SMOKE-CHECK.cmd "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/<module-id>/section/<section-id>"
+```
+
+This read-only smoke test checks URL conversion, Edit mode, Gamification, Module Settings/teacher credits, and Featured Image generation controls. It closes every modal without saving. Add `--headless` only when a visible window is not wanted.
 
 ## Adding Another Module
 

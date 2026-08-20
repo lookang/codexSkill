@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "d57038ae-0350-49bc-a964-ec2c34c4716e",
+    "title": "CTLE@YISS FA-Math Sec 1G2 Solving Linear Equations in One Variable (Engagement)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/d57038ae-0350-49bc-a964-ec2c34c4716e/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising ctle@yiss fa-math sec 1g2 solving linear equations in one variable (engagement). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "CTLE@YISS FA-Math Quest",
+    "shortTitle": "CTLE@YISS Quest",
+    "description": "Build confidence and accuracy while mastering ctle@yiss fa-math sec 1g2 solving linear equations in one variable (engagement)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Secondary 1",
+    "contentMap": "Sec 1 Mathematics (G2) (2020) - 2020",
+    "outcomePath": [
+      "NUMBERS AND ALGEBRA",
+      "Equations and inequalities"
+    ],
+    "outcome": "Solving linear equations with integral coefficients in one variable",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Chapter 5.1b Solving Linear Equations in One Variable [Demo Class]",
+      "activities": [
+        {
+          "title": "Linear Equations Involving Unknown Variable on Both Sides (Recap)"
+        },
+        {
+          "title": "More Practice I [Randomized]"
+        },
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        },
+        {
+          "title": "Quiz Time!"
+        }
+      ],
+      "contentMap": "Sec 1 Mathematics (G2) (2020) - 2020",
+      "subject": "Mathematics - G2MATHS",
+      "level": "Secondary 1",
+      "outcome": "Solving linear equations with integral coefficients in one variable"
+    }
+  ]
+}

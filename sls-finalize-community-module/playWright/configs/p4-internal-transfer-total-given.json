@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "475c8d69-c910-4c2c-9e57-fb9ddce1bf5b",
+    "title": "AST FA-Math P4 Operations of whole numbers - Word Problem (internal transfer, total given)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/475c8d69-c910-4c2c-9e57-fb9ddce1bf5b/module-plan"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 4",
+    "contentMap": "Pri 4 Mathematics (2021)",
+    "outcomePath": [],
+    "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 4 learners practising operations of whole numbers - word problem (internal transfer, total given). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Operations whole Quest",
+    "shortTitle": "Operations Quest",
+    "description": "Build confidence and accuracy while mastering operations of whole numbers - word problem (internal transfer, total given)."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "id": "96449076",
+      "title": "Pre-Lesson and Digital Literacy",
+      "activities": [
+        {
+          "title": "Lesson Outcome, pre-requisites and success criteria",
+          "allowNoQuestions": true
+        },
+        {
+          "title": "Solving Word Problems with FA-Maths",
+          "allowNoQuestions": true
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "id": "96449075",
+      "title": "Let's practise",
+      "activities": [
+        {
+          "title": "FA-Math"
+        }
+      ]
+    },
+    {
+      "label": "D",
+      "id": "96449077",
+      "title": "Section 3 - For students who have completed Section B",
+      "activities": [
+        {
+          "title": "A Short Quiz For You",
+          "allowNoQuestions": true
+        }
+      ]
+    }
+  ]
+}

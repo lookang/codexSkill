@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "b9d790d6-8775-4fd7-bc11-7d86d2077fbe",
+    "title": "Rate (FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/b9d790d6-8775-4fd7-bc11-7d86d2077fbe/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising rate (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Rate FA-Math Quest",
+    "shortTitle": "Rate Quest",
+    "description": "Build confidence and accuracy while mastering rate (fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Rate and speed",
+      "Rate"
+    ],
+    "outcome": "1.2 finding rate, total amount, or number of units given the other two quantities",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Find the Rate",
+      "activities": [
+        {
+          "title": "Find the rate"
+        }
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Find the total amount",
+      "activities": [
+        {
+          "title": "Find the total amount"
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Find the number of units",
+      "activities": [
+        {
+          "title": "Find the number of units"
+        }
+      ]
+    }
+  ]
+}

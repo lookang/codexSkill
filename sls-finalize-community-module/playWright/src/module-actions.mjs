@@ -44,7 +44,8 @@ export async function runModuleAction({ action, config, target, options }) {
     moduleTitle: config?.module?.title ?? null,
     status: "running",
     result: null,
-    error: null
+    error: null,
+    externalServiceFailures: []
   };
 
   let browser;
@@ -75,14 +76,31 @@ export async function runModuleAction({ action, config, target, options }) {
     await suppressOverlayWidgets(context);
     await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
     page = context.pages()[0] ?? (await context.newPage());
+    page.on("response", (response) => {
+      let endpoint;
+      try {
+        endpoint = new URL(response.url());
+      } catch {
+        return;
+      }
+      if (endpoint.hostname !== "api.openai.com" || response.status() < 400) return;
+      report.externalServiceFailures.push({
+        service: "SLS Authoring Copilot",
+        status: response.status(),
+        endpoint: `${endpoint.origin}${endpoint.pathname}`
+      });
+    });
     page.setDefaultTimeout(options.timeoutMs ?? 20_000);
     page.setDefaultNavigationTimeout(Math.max(options.timeoutMs ?? 20_000, 30_000));
 
     await enterEditMode(page, target, config?.module?.title ?? null);
     if (action === "gamify") {
-      report.result = await gamifyModule(page, config.gamification);
+      report.result = await gamifyModule(page, config.gamification, report.externalServiceFailures);
     } else if (action === "thumbnail") {
-      report.result = await generateModuleThumbnail(page, config, options);
+      report.result = await generateModuleThumbnail(page, config, {
+        ...options,
+        externalServiceFailures: report.externalServiceFailures
+      });
     } else {
       report.result = await addCreditedTeacher(page, EXACT_TEACHER);
     }
@@ -125,7 +143,7 @@ export async function runModuleAction({ action, config, target, options }) {
   return paths;
 }
 
-async function gamifyModule(page, gamification) {
+async function gamifyModule(page, gamification, externalServiceFailures = []) {
   console.log("Opening Gamification settings...");
   let modal = await openGamification(page);
 
@@ -188,7 +206,12 @@ async function gamifyModule(page, gamification) {
 
     console.log("Waiting for Authoring Copilot to finish generating (usually ~30s)...");
     const addButtons = generator.getByRole("button", { name: /^Add$/i });
-    await expect(addButtons.first()).toBeVisible({ timeout: GENERATION_TIMEOUT_MS });
+    try {
+      await expect(addButtons.first()).toBeVisible({ timeout: GENERATION_TIMEOUT_MS });
+    } catch (error) {
+      await throwIfAuthoringCopilotFailed(page, externalServiceFailures);
+      throw error;
+    }
     const generatedChoiceCount = await addButtons.count();
     if (generatedChoiceCount < 1 || generatedChoiceCount > 6) {
       throw new GuardError(`Expected 1 to 6 generated Add choices; found ${generatedChoiceCount}.`);
@@ -205,7 +228,7 @@ async function gamifyModule(page, gamification) {
   }
 
   await setGamificationDetails(modal, gamification.title, gamification.description);
-  const leaderboard = await enableLeaderboards(page, modal);
+  const leaderboardBefore = await readLeaderboardState(page, modal);
   // Details live on the Details tab; return to it before saving so the save
   // button acts on the same modal state the title was typed into.
   await modal.getByRole("tab", { name: "Details", exact: true }).click().catch(() => {});
@@ -230,9 +253,9 @@ async function gamifyModule(page, gamification) {
   }
 
   const leaderboardAfter = await readLeaderboardState(page, modal);
-  if (leaderboardAfter.individual === false || leaderboardAfter.team === false) {
-    console.log(
-      `Leaderboard settings did not persist (individual=${leaderboardAfter.individual}, team=${leaderboardAfter.team}).`
+  if (leaderboardChanged(leaderboardBefore, leaderboardAfter)) {
+    throw new GuardError(
+      "The gamification save unexpectedly changed an existing leaderboard setting. Inspect the trace before retrying."
     );
   }
   const evidence = await readGeneratedGameEvidence(modal);
@@ -248,7 +271,7 @@ async function gamifyModule(page, gamification) {
     generated,
     retriedShortTitle,
     leaderboard: leaderboardAfter,
-    leaderboardRequested: leaderboard,
+    leaderboardBefore,
     ...verified,
     ...evidence
   };
@@ -261,22 +284,8 @@ async function addCreditedTeacher(page, teacherName) {
     await closeModal(modal);
     modal = await openModuleSettings(page);
     await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
-    const permission = await enablePrintFriendlyCompletedAssignment(page, modal);
-    // Only a real change is worth saving; re-saving an unchanged module is a write
-    // for nothing.
-    if (permission === "enabled") {
-      await saveAndCloseModal(page, modal);
-      modal = await openModuleSettings(page);
-      const persisted = await printFriendlyState(page, modal);
-      if (persisted !== "on") {
-        throw new GuardError(
-          `"${PRINT_FRIENDLY_LABEL}" did not persist: it reads "${persisted ?? "not offered"}" after saving and reopening.`
-        );
-      }
-      console.log(`Verified after reopening: ${PRINT_FRIENDLY_LABEL}`);
-    }
     console.log(`${teacherName} is already a credited teacher; no change was needed.`);
-    return { changed: false, teacherName, verified: true, printFriendlyCompleted: permission !== null };
+    return { changed: false, teacherName, verified: true };
   }
 
   await modal.getByRole("button", { name: /^edit or add teachers$/i }).first().click();
@@ -328,34 +337,13 @@ async function addCreditedTeacher(page, teacherName) {
   await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
   await modal.getByText("Back to Module Details", { exact: true }).click();
   await expect(modal.getByText("Module Settings", { exact: true }).first()).toBeVisible();
-  // SLS only offers this permission once the module actually has a credited
-  // teacher saved, so on a module gaining its first one the control does not exist
-  // yet. Try anyway - some modules do offer it here - but stay quiet about it
-  // missing, because the real attempt comes after the save.
-  let permission = await enablePrintFriendlyCompletedAssignment(page, modal, { quiet: true });
   await saveAndCloseModal(page, modal);
 
   modal = await openModuleSettings(page);
   await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
   console.log(`Credited teacher verified after reopening: ${teacherName}`);
 
-  // Now the teacher is committed, so the permission exists and can be set.
-  if (permission === null) {
-    permission = await enablePrintFriendlyCompletedAssignment(page, modal);
-    if (permission === "enabled") {
-      await saveAndCloseModal(page, modal);
-      modal = await openModuleSettings(page);
-      const persisted = await printFriendlyState(page, modal);
-      if (persisted !== "on") {
-        throw new GuardError(
-          `"${PRINT_FRIENDLY_LABEL}" did not persist: it reads "${persisted ?? "not offered"}" after saving and reopening.`
-        );
-      }
-      console.log(`Verified after reopening: ${PRINT_FRIENDLY_LABEL}`);
-    }
-  }
-
-  return { changed: true, teacherName, verified: true, printFriendlyCompleted: permission !== null };
+  return { changed: true, teacherName, verified: true };
 }
 
 // The Gamification header renders three controls whose accessible names all
@@ -410,13 +398,6 @@ async function generateModuleThumbnail(page, config, options = {}) {
   await openModuleDetailsForm(page);
 
   const addImage = page.getByRole("button", { name: /^ADD IMAGE$/i }).first();
-  if ((await addImage.count()) === 0) {
-    const offered = await visibleControlNames(page);
-    throw new GuardError(
-      `No ADD IMAGE control on ${settingsUrl}. Controls there: ${offered.slice(0, 25).join(" | ")}`
-    );
-  }
-
   // Already has one? Replacing somebody's chosen picture is not this tool's job.
   //
   // "Click to upload" is the empty state and is the only trustworthy signal: looking
@@ -431,6 +412,15 @@ async function generateModuleThumbnail(page, config, options = {}) {
   if (existing && !options.replaceExisting) {
     console.log("This module already has a Featured Image; leaving it as it is.");
     return { generated: false, reason: "featured image already set" };
+  }
+  if ((await addImage.count()) === 0) {
+    const offered = await visibleControlNames(page);
+    throw new GuardError(
+      options.replaceExisting
+        ? "A Featured Image already exists, but SLS offered no ADD IMAGE control. " +
+            "Remove the existing image manually before using --replace-existing."
+        : `No ADD IMAGE control on ${settingsUrl}. Controls there: ${offered.slice(0, 25).join(" | ")}`
+    );
   }
 
   console.log("Opening ADD IMAGE...");
@@ -489,29 +479,65 @@ async function generateModuleThumbnail(page, config, options = {}) {
     page.locator('[aria-label="ADD"], [title="ADD"]')
   ];
   let accepted = false;
-  const deadline = Date.now() + GENERATION_TIMEOUT_MS;
+  let appliedAutomatically = false;
+  const startedWaiting = Date.now();
+  const deadline = startedWaiting + GENERATION_TIMEOUT_MS;
+  let nextProgressAt = 15_000;
   while (!accepted && Date.now() < deadline) {
-    for (const candidate of candidates) {
-      if ((await candidate.count().catch(() => 0)) === 0) continue;
-      const target = candidate.last();
-      if (!(await target.isVisible().catch(() => false))) continue;
-      console.log("Generated image ready; applying it with ADD.");
-      await target.click({ timeout: 10_000 }).catch(async () => {
-        await target.dispatchEvent("click").catch(() => {});
-      });
+    if (await featuredImageApplied(page)) {
+      console.log("Generated image was automatically applied by SLS; no ADD click was needed.");
+      accepted = true;
+      appliedAutomatically = true;
+      break;
+    }
+    if (await applyGeneratedImageSelection(page)) {
       accepted = true;
       break;
     }
-    if (!accepted) await page.waitForTimeout(3000);
+    for (const candidate of candidates) {
+      const count = await candidate.count().catch(() => 0);
+      for (let index = 0; index < count; index += 1) {
+        const target = candidate.nth(index);
+        if (!(await target.isVisible().catch(() => false))) continue;
+        console.log("Generated image ready; applying it with ADD.");
+        let clicked = false;
+        try {
+          await target.click({ timeout: 10_000 });
+          clicked = true;
+        } catch {
+          clicked = await target.dispatchEvent("click").then(() => true).catch(() => false);
+        }
+        if (!clicked) continue;
+        accepted = true;
+        break;
+      }
+      if (accepted) break;
+    }
+    if (!accepted) {
+      const elapsed = Date.now() - startedWaiting;
+      if (elapsed >= nextProgressAt) {
+        console.log(`Still waiting for Authoring Copilot... ${Math.round(elapsed / 1000)}s elapsed.`);
+        nextProgressAt += 15_000;
+      }
+      await page.waitForTimeout(3000);
+    }
   }
   if (!accepted) {
+    await throwIfAuthoringCopilotFailed(page, options.externalServiceFailures ?? []);
     const offered = await visibleControlNames(page);
     throw new GuardError(
       "The generated images appeared but no ADD control could be clicked. " +
         `Controls on screen: ${offered.slice(0, 25).join(" | ")}`
     );
   }
-  await page.waitForTimeout(3000);
+  console.log("Waiting for the selected image to finish uploading into the Featured Image field...");
+  if (!(await waitForFeaturedImageApplied(page, 90_000))) {
+    throw new GuardError(
+      "The generated option was accepted, but no image preview appeared in the Featured Image field. " +
+        "Done was not clicked, so an incomplete upload was not committed."
+    );
+  }
+  console.log("Generated image preview is ready in the Featured Image field.");
 
   // The module details form has no Save button of its own - the probe found none.
   // "Done" (the checkmark in the header) is what commits it, which is what a person
@@ -525,7 +551,7 @@ async function generateModuleThumbnail(page, config, options = {}) {
     console.log("Saved.");
   } else if (await done.isVisible().catch(() => false)) {
     await done.click();
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(8000);
     console.log("Committed with Done.");
   } else {
     console.log("No save or Done control was offered; the image may not persist.");
@@ -546,7 +572,72 @@ async function generateModuleThumbnail(page, config, options = {}) {
     throw new GuardError("The generated image did not persist: no Featured Image after reopening settings.");
   }
   console.log("Featured Image verified after reopening the module settings.");
-  return { generated: true, prompt };
+  return { generated: true, prompt, appliedAutomatically };
+}
+
+async function applyGeneratedImageSelection(page) {
+  // Current SLS renders this as a nested content subpage rather than a conventional
+  // dialog. The first image is selected by default, and the floating action is a
+  // .btn-add button containing Plus24 and a mixed-case "Add" label.
+  const selection = page.locator(".acp-image-selection-subpage.is-visible").last();
+  if (!(await selection.isVisible().catch(() => false))) return false;
+
+  const radios = selection.locator('input[type="radio"]');
+  if ((await radios.count()) > 0 && (await selection.locator('input[type="radio"]:checked').count()) === 0) {
+    const first = radios.first();
+    await first.check({ force: true });
+    await expect(first).toBeChecked();
+    console.log("Generated images are ready; selected the first option.");
+  }
+
+  const add = selection.locator('.btn-add button:has(svg[name="Plus24"])').first();
+  if (!(await add.isVisible().catch(() => false))) return false;
+
+  console.log("Generated images are ready; applying the selected option with ADD.");
+  await add.click({ timeout: 10_000 }).catch(async () => add.click({ force: true }));
+  await selection.waitFor({ state: "hidden", timeout: 12_000 }).catch(() => {});
+  if (!(await selection.isVisible().catch(() => false))) return true;
+
+  const visibleError = await selection
+    .locator(".message-component:visible")
+    .innerText()
+    .catch(() => "");
+  if (visibleError.trim()) {
+    throw new GuardError(`SLS did not add the generated image: ${visibleError.replace(/\s+/g, " ").trim()}`);
+  }
+  return false;
+}
+
+async function featuredImageApplied(page) {
+  const form = page.locator("form.cv-form").filter({ hasText: "Featured Image" }).first();
+  if ((await form.count().catch(() => 0)) === 0) return false;
+  const empty = await form.getByText(/Click to upload/i).first().isVisible().catch(() => false);
+  if (empty) return false;
+  // Before Done, SLS may show the generated /success URL or a local blob while it
+  // copies the file through its scan bucket. After saving it becomes /thumbnail/.
+  // Any visible image is safe here because the locator is scoped to the Featured
+  // Image form rather than the page header, where the user avatar also lives.
+  const thumbnail = form.locator('img[src]:not([src=""])').first();
+  const fileName = form.getByText(/\.(?:jpe?g|png|webp)$/i).first();
+  return (
+    (await thumbnail.isVisible().catch(() => false)) ||
+    (await fileName.isVisible().catch(() => false))
+  );
+}
+
+async function waitForFeaturedImageApplied(page, timeoutMs) {
+  const started = Date.now();
+  let nextProgressAt = 15_000;
+  while (Date.now() - started < timeoutMs) {
+    if (await featuredImageApplied(page)) return true;
+    const elapsed = Date.now() - started;
+    if (elapsed >= nextProgressAt) {
+      console.log(`Still waiting for the image upload... ${Math.round(elapsed / 1000)}s elapsed.`);
+      nextProgressAt += 15_000;
+    }
+    await page.waitForTimeout(2000);
+  }
+  return false;
 }
 
 async function stepIntoFirstSection(page) {
@@ -813,131 +904,25 @@ async function readLeaderboardState(page, modal) {
   };
 }
 
-// Both leaderboards are switched on, and neither is ever switched off.
-async function enableLeaderboards(page, modal) {
-  const tab = modal.getByRole("tab", { name: /leaderboard/i }).first();
-  if ((await tab.count()) > 0) {
-    await tab.click().catch(() => {});
-    await page.waitForTimeout(1200);
+function leaderboardChanged(before, after) {
+  for (const key of ["individual", "team"]) {
+    if (before[key] !== null && after[key] !== null && before[key] !== after[key]) return true;
   }
-  const boxes = leaderboardCheckboxes(modal);
-  const count = await boxes.count().catch(() => 0);
-  if (count === 0) {
-    console.log("No leaderboard checkboxes were offered on this module.");
-    return { individual: null, team: null };
-  }
-  for (let index = 0; index < Math.min(count, 2); index += 1) {
-    const box = boxes.nth(index);
-    if (await box.isChecked().catch(() => false)) continue;
-    const id = await box.getAttribute("id");
-    const label = id ? page.locator(`label[for="${id}"]`).first() : null;
-    if (label && (await label.count()) > 0) {
-      await label.click().catch(() => {});
-    } else {
-      await box.check({ force: true }).catch(() => {});
-    }
-    await page.waitForTimeout(600);
-  }
-  return {
-    individual: await boxes.nth(0).isChecked().catch(() => null),
-    team: count > 1 ? await boxes.nth(1).isChecked().catch(() => null) : null
-  };
+  return false;
 }
 
-const PRINT_FRIENDLY_LABEL = "Allow viewing as print-friendly completed assignment";
-
-// Finds the permission checkbox, or null when SLS is not offering it. Permissions
-// sit below the fold in a scrolling modal, so the control has to be brought into
-// view before it can be found or clicked.
-async function printFriendlyCheckbox(page, passedModal) {
-  // Resolve the modal fresh rather than trusting the handle passed in: this flow
-  // closes and reopens Module Settings, and a handle captured before that points at
-  // the old container.
-  const live = page.locator(".bx--modal-container:visible").last();
-  const modal = (await live.count()) > 0 ? live : passedModal;
-
-  // The permissions sit at the foot of a scrolling modal and render lazily, so the
-  // control is genuinely absent until the body has been scrolled down. Scroll and
-  // re-check until it appears rather than looking once and concluding the module
-  // does not offer it.
-  // Find it through its <label>, then follow the label's "for" to the input.
-  //
-  // Carbon hides the real checkbox, so it is outside the accessibility tree until
-  // scrolled into view - getByRole("checkbox") therefore reports nothing while the
-  // row is plainly in the modal. The label is always present, and its "for"
-  // attribute names the input regardless of visibility.
-  const label = modal.locator("label").filter({ hasText: PRINT_FRIENDLY_LABEL }).first();
-  for (let pass = 0; pass < 8; pass += 1) {
-    if ((await label.count().catch(() => 0)) > 0) break;
-    await modal
-      .evaluate((element) => {
-        const scroller = element.querySelector(".bx--modal-content") || element;
-        scroller.scrollTop = scroller.scrollHeight;
-      })
-      .catch(() => {});
-    await page.waitForTimeout(700);
-  }
-  if ((await label.count().catch(() => 0)) === 0) return null;
-
-  await label.scrollIntoViewIfNeeded().catch(() => {});
-  await page.waitForTimeout(300);
-
-  const inputId = await label.getAttribute("for").catch(() => null);
-  if (inputId) {
-    const byId = modal.locator(`input[id="${inputId}"]`).first();
-    if ((await byId.count().catch(() => 0)) > 0) return byId;
-  }
-  const byRole = modal.getByRole("checkbox", { name: PRINT_FRIENDLY_LABEL }).first();
-  if ((await byRole.count().catch(() => 0)) > 0) return byRole;
-
-  const paired = modal
-    .locator(".bx--checkbox-wrapper")
-    .filter({ hasText: PRINT_FRIENDLY_LABEL })
-    .locator('input[type="checkbox"]')
-    .first();
-  return (await paired.count().catch(() => 0)) === 0 ? null : paired;
-}
-
-// Reads the permission without touching it, for verifying that a save stuck.
-async function printFriendlyState(page, modal) {
-  const checkbox = await printFriendlyCheckbox(page, modal);
-  if (!checkbox) return null;
-  return (await checkbox.isChecked()) ? "on" : "off";
-}
-
-// Returns "already" when it was on, "enabled" when this call turned it on, and
-// null when the module does not offer it. Callers need those apart: only a real
-// change is worth a save.
-async function enablePrintFriendlyCompletedAssignment(page, modal, { quiet = false } = {}) {
-  const checkbox = await printFriendlyCheckbox(page, modal);
-  if (!checkbox) {
-    if (!quiet) {
-      // Say what was actually on screen: "not offered" on its own hid the fact that
-      // the row was present but the wrong container was being searched.
-      const live = page.locator(".bx--modal-container:visible");
-      const modals = await live.count().catch(() => -1);
-      const text = ((await live.last().innerText().catch(() => "")) || "").replace(/\s+/g, " ");
-      console.log(
-        `Permission not offered on this module: ${PRINT_FRIENDLY_LABEL} ` +
-          `(visible modals: ${modals}; the modal mentions it: ${/completed assignment/i.test(text)}; ` +
-          `heading: "${text.slice(0, 60)}")`
-      );
-    }
-    return null;
-  }
-  if (await checkbox.isChecked()) {
-    console.log(`Already on: ${PRINT_FRIENDLY_LABEL}`);
-    return "already";
-  }
-  const clickable = modal.locator("label").filter({ hasText: PRINT_FRIENDLY_LABEL }).first();
-  if ((await clickable.count()) > 0) {
-    await clickable.click().catch(() => {});
-  } else {
-    await checkbox.check({ force: true }).catch(() => {});
-  }
-  await expect(checkbox).toBeChecked();
-  console.log(`Turned on: ${PRINT_FRIENDLY_LABEL}`);
-  return "enabled";
+async function throwIfAuthoringCopilotFailed(page, failures = []) {
+  const body = ((await page.locator("body").innerText().catch(() => "")) || "").replace(/\s+/g, " ");
+  const failure = failures.find((item) => item.status === 401) ??
+    (/401\s+Unauthorized.*api\.openai\.com\/v1\/responses/i.test(body)
+      ? { status: 401, endpoint: "https://api.openai.com/v1/responses" }
+      : null);
+  if (!failure) return;
+  throw new GuardError(
+    `SLS Authoring Copilot returned HTTP ${failure.status} from ${failure.endpoint}. ` +
+      "This is an upstream Authoring Copilot authentication failure, not an expired SLS login. " +
+      "No generated result was accepted or saved."
+  );
 }
 
 // The module's details form - Module Title, Featured Image, Module Description -

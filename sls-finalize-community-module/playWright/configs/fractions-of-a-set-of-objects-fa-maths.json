@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "3cdf23c6-0a73-4b12-88dd-9c2dbe776d69",
+    "title": "Fractions of a Set of Objects (FA-Maths)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/3cdf23c6-0a73-4b12-88dd-9c2dbe776d69/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising fractions of a set of objects (fa-maths). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Fractions Objects Quest",
+    "shortTitle": "Fractions Quest",
+    "description": "Build confidence and accuracy while mastering fractions of a set of objects (fa-maths)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 4",
+    "contentMap": "Pri 4 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Fractions",
+      "Fraction of a set"
+    ],
+    "outcome": "2.1 fraction as part of a set",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Fractions",
+      "activities": [
+        {
+          "title": "Fraction of a Set of Objects"
+        },
+        {
+          "title": "Find number of objects of a fractional part given whole"
+        },
+        {
+          "title": "Find whole given the fractional part and its quantity"
+        },
+        {
+          "title": "Find quantity of fractional part given the other fractional part and its quantity"
+        },
+        {
+          "title": "Identify the other fractional part and find its quantity, given the whole and fractional part"
+        },
+        {
+          "title": "Find whole using the other fractional part and its quantity"
+        },
+        {
+          "title": "Identify the other fractional part and equate to its given quantity"
+        }
+      ]
+    }
+  ]
+}

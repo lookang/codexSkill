@@ -15,6 +15,7 @@ echo no activity is copied, renamed or deleted, and no tags are touched.
 echo.
 echo Optional: describe the picture yourself by passing --prompt "your description".
 echo Without it, a prompt is built from the module title.
+echo Existing images are protected unless you explicitly pass --replace-existing.
 echo.
 
 call npm.cmd run sls:thumbnail -- %*
@@ -25,6 +26,6 @@ if "%result%"=="0" (
 ) else (
   echo Thumbnail generation stopped at a guard. Nothing was saved; read the message above,
   echo which lists the controls SLS actually offered.
+  pause
 )
-pause
 exit /b %result%

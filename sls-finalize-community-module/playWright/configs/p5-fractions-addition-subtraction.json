@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "aa9e13e8-9a47-4c1c-ae1c-40268ce42935",
+    "title": "AST_FA-Math_P5 Fractions_Addition and subtraction of fractions",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/aa9e13e8-9a47-4c1c-ae1c-40268ce42935/module-plan"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Fractions",
+      "Four operations"
+    ],
+    "outcome": "2.1 adding and subtracting mixed numbers",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 5 learners practising addition and subtraction of fractions and mixed numbers with unlike denominators. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Mixed Number Fraction Quest",
+    "shortTitle": "Fraction Quest",
+    "description": "Build confidence and accuracy while mastering addition and subtraction of fractions and mixed numbers."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Addition and Subtraction of Fractions",
+      "activities": [
+        {
+          "title": "Addition and Subtraction of Fractions (Revise, Practice and Reflect)"
+        },
+        {
+          "title": "My Reflection",
+          "allowNoQuestions": true
+        }
+      ]
+    }
+  ]
+}

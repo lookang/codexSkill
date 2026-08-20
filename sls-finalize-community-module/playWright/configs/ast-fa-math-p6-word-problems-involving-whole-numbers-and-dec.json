@@ -1,0 +1,93 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "030f74c2-daec-4f0c-8ec8-bd22c09204bf",
+    "title": "AST FA-Math P6 Word Problems Involving Whole Numbers and Decimals",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/030f74c2-daec-4f0c-8ec8-bd22c09204bf/module-plan"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 6",
+    "contentMap": "Pri 6 Mathematics (2021)",
+    "outcomePath": [],
+    "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 6 learners practising word problems involving whole numbers and decimals. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Word Problems Quest",
+    "shortTitle": "Word Quest",
+    "description": "Build confidence and accuracy while mastering word problems involving whole numbers and decimals."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Learn about FA-Math / Learn to use FA-Math",
+      "activities": [
+        {
+          "title": "Build digital and feedback literacy"
+        },
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "label": "C",
+      "title": "Practice A",
+      "activities": [
+        {
+          "title": "Teaching Video",
+          "allowNoQuestions": true
+        },
+        {
+          "title": "Word Problems Involving Whole Numbers"
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "label": "D",
+      "title": "Practice B",
+      "activities": [
+        {
+          "title": "Word Problems Involving Decimals & Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "label": "E",
+      "title": "Reflection and consolidation",
+      "activities": [
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        },
+        {
+          "title": "Consolidation of Learning"
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "label": "F",
+      "title": "Problem Posing Activity - Extension Activity",
+      "activities": [
+        {
+          "title": "Problem Posing"
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    }
+  ]
+}

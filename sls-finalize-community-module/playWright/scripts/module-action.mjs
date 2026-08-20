@@ -10,7 +10,7 @@ import { askForModule } from "../src/module-picker.mjs";
 
 const root = process.cwd();
 const configDir = path.join(root, "configs");
-const defaultUrl = "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/00000000-0000-0000-0000-000000000000";
+const defaultUrl = "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/428156f1-90f1-4b64-865f-66b354b5501f";
 const action = process.argv[2];
 const labels = {
   gamify: "Gamify SLS Module",
@@ -90,6 +90,7 @@ const options = {
   timeoutMs: 20_000,
   headless,
   imagePrompt: readPrompt(),
+  replaceExisting: process.argv.includes("--replace-existing"),
   holdOpen: async () => {
     await ask("Press Enter after reviewing the verified browser state to close Chrome... ");
   }

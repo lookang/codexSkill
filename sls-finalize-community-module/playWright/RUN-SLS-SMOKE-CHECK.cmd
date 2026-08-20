@@ -8,13 +8,17 @@ if not exist "node_modules\@playwright\test" (
   if errorlevel 1 exit /b 1
 )
 
-call npm.cmd run sls:add-teacher -- %*
+echo.
+echo Read-only SLS launcher check: no fields are changed and nothing is saved.
+echo.
+
+call npm.cmd run sls:smoke-actions -- %*
 set result=%errorlevel%
 echo.
 if "%result%"=="0" (
-  echo Teacher credit finished. Review the verified browser state and report under output.
+  echo All four SLS launcher entry points were found in the live interface.
 ) else (
-  echo Teacher addition stopped at a guard. Review the newest report and trace under output.
+  echo Smoke check stopped. Review the message and screenshot under output.
   pause
 )
 exit /b %result%

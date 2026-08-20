@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "afcf0503-f602-4935-b5c1-e110962fb6f4",
+    "title": "AST_FA-Math_Sec 1G1_Finding Percentage Increase/Decrease (Engagement)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/afcf0503-f602-4935-b5c1-e110962fb6f4/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising sec 1g1 finding percentage increase/decrease (engagement). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Finding Percentage Quest",
+    "shortTitle": "Finding Quest",
+    "description": "Build confidence and accuracy while mastering sec 1g1 finding percentage increase/decrease (engagement)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Secondary 1",
+    "contentMap": "Sec 1 Mathematics (G1) (2028)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Percentage"
+    ],
+    "outcome": "Finding percentage increase/decrease",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Finding Percentage Increase and Percentage Decrease",
+      "activities": [
+        {
+          "title": "Activity 1"
+        },
+        {
+          "title": "Activity 2"
+        },
+        {
+          "title": "Activity 3: Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "contentMap": "Sec 1 Mathematics (G1) (2028)",
+      "subject": "Mathematics - G1MATHS",
+      "level": "Secondary 1",
+      "outcome": "Finding percentage increase/decrease"
+    },
+    {
+      "label": "C",
+      "title": "Finding Percentage Increase and Percentage Decrease",
+      "activities": [
+        {
+          "title": "Activity 1"
+        },
+        {
+          "title": "Activity 2"
+        },
+        {
+          "title": "Activity 3: Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "contentMap": "Sec 1 Mathematics (G1) (2028)",
+      "subject": "Mathematics - G1MATHS",
+      "level": "Secondary 1",
+      "outcome": "Finding percentage increase/decrease"
+    }
+  ]
+}

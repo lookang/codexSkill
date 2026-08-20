@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "27c8a0a8-f07b-4958-ad3c-b0ec3a135ac7",
+    "title": "P1 Addition and Subtraction within 100 Practice (FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/27c8a0a8-f07b-4958-ad3c-b0ec3a135ac7/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 1 learners practising addition and subtraction within 100 practice (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Addition Subtraction Quest",
+    "shortTitle": "Addition Quest",
+    "description": "Build confidence and accuracy while mastering addition and subtraction within 100 practice (fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 1",
+    "contentMap": "Pri 1 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Whole Numbers",
+      "Addition and subtraction"
+    ],
+    "outcome": "2.5 adding and Subtracting within 100",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Addition & Subtraction Practice",
+      "activities": [
+        {
+          "title": "Addition within 100 (2-digits with 1 digit)"
+        },
+        {
+          "title": "Addition within 100 (2-digits with 2 digits)"
+        },
+        {
+          "title": "Addition of 3 Numbers"
+        },
+        {
+          "title": "Subtraction within 100 (2-digits with 1-digit)"
+        },
+        {
+          "title": "Subtraction within 100 (2-digits with 2-digits)"
+        },
+        {
+          "title": "Subtraction within 100 (3-digits with 1-digits)"
+        },
+        {
+          "title": "Subtraction within 100 (3-digits with 2-digits)"
+        }
+      ],
+      "contentMap": "Pri 1 Mathematics (2021)",
+      "subject": "Mathematics - MATHS",
+      "level": "Primary 1",
+      "outcome": "2.5 adding and Subtracting within 100"
+    }
+  ]
+}
