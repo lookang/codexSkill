@@ -1,0 +1,235 @@
+{
+  "rowCount": 49,
+  "outcomes": [
+    {
+      "outcome": "Acquire mathematical concepts and skills for everyday use and continuous learning in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Build confidence and foster interest in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "1.1 dividing a proper fraction by a whole number without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "1.2 dividing a whole number/proper fraction by a proper fraction without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "1.1 finding the whole given a part and the percentage",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.2 finding percentage increase/decrease",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.1 notation, representations and interpretation of a:b and a:b:c, where a, b and c are whole numbers, excluding ratios involving fractions and decimals",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.2 equivalent ratios",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.3 dividing a quantity in a given ratio",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.4 expressing a ratio in its simplest form",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.5 finding the ratio of two or three given quantities",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.6 finding the missing term in a pair of equivalent ratios",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.7 relationship between fraction and ratio",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "1.1 using a letter to represent an unknown number",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebra",
+        "Algebra"
+      ]
+    },
+    {
+      "outcome": "1.2 notation, representations and interpretation of simple algebraic expressions such as a 3 a 3 or 3a a 3 or",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebra",
+        "Algebra"
+      ]
+    },
+    {
+      "outcome": "1.3 simplifying simple linear expressions excluding brackets",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebra",
+        "Algebra"
+      ]
+    },
+    {
+      "outcome": "1.4 evaluating simple linear expressions by substitution",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebra",
+        "Algebra"
+      ]
+    },
+    {
+      "outcome": "1.5 solving simple linear equations involving whole number coefficient only",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebra",
+        "Algebra"
+      ]
+    },
+    {
+      "outcome": "1.1 area and circumference of circle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and Circumference of Circle"
+      ]
+    },
+    {
+      "outcome": "1.2 finding the area and perimeter of semicircle quarter circle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and Circumference of Circle"
+      ]
+    },
+    {
+      "outcome": "1.3 finding the area and perimeter of composite figures made up of square, rectangle, triangle, semicircle and quarter circle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and Circumference of Circle"
+      ]
+    },
+    {
+      "outcome": "2.1 finding one dimension of a cuboid given its volume and the other dimensions",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.2 finding the length of one edge of a cube given its volume",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.3 finding the height of a cuboid given its volume and base area",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.4 finding the area of a face of a cuboid given its volume and one dimension",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.5 use of ,",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "1.1 finding unknown angles, without additional construction of lines, in composite geometrical figures involving square rectangle triangle parallelogram rhombus trapezium",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Special quadrilaterals"
+      ]
+    },
+    {
+      "outcome": "1.1 average as 'total value number of data'",
+      "outcomePath": [
+        "Statistics",
+        "Data Analysis",
+        "Average of a Set of Data"
+      ]
+    },
+    {
+      "outcome": "1.2 relationship between average, total value and number of data",
+      "outcomePath": [
+        "Statistics",
+        "Data Analysis",
+        "Average of a Set of Data"
+      ]
+    }
+  ],
+  "contentMap": "Pri 6 Mathematics (2021)",
+  "harvestedAt": "2026-08-18T08:59:12.352Z"
+}

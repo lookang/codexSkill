@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { chooseOutcome, tokenize } from "../src/outcome-chooser.mjs";
+import { chooseOutcome, outcomeProposalIsWritable, tokenize } from "../src/outcome-chooser.mjs";
 
 // Shape as harvested from SLS: dispositional entries have an empty path,
 // content outcomes carry the branch path that reaches them.
@@ -48,6 +48,16 @@ test("a section whose questions add no signal is handed back, not guessed", () =
   assert.match(picked.outcome, /problem-solving/);
   assert.match(picked.reason, /tied/);
   assert.ok(picked.alternatives.length >= 2, "the tied candidates are surfaced for review");
+  assert.equal(outcomeProposalIsWritable(picked), false);
+});
+
+test("an intentional reflective outcome may be written", () => {
+  const picked = chooseOutcome(P4, {
+    moduleTitle: "P4 Mathematics",
+    sectionTitle: "Pre-Lesson reflection",
+    questionText: "I am confident."
+  });
+  assert.equal(outcomeProposalIsWritable(picked), true);
 });
 
 test("alternatives are returned so a human can review the runners-up", () => {

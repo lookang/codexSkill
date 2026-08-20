@@ -5,7 +5,7 @@ cd /d "%~dp0"
 echo This pass applies section outcomes, creates or reuses copies, and verifies every question.
 echo It will NOT delete original activities.
 echo.
-set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/00000000-0000-0000-0000-000000000000"
+set "default_url=https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/428156f1-90f1-4b64-865f-66b354b5501f"
 echo Paste the exact module URL inspected in step 2.
 echo Press Enter for the configured P3 multiplication module.
 set "sls_url="

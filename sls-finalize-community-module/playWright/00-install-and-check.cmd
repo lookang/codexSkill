@@ -2,8 +2,8 @@
 setlocal
 cd /d "%~dp0"
 
-echo Installing the locked Playwright dependency...
-call npm.cmd install --cache .npm-cache
+echo Installing the exact dependency versions from package-lock.json...
+call npm.cmd ci --cache .npm-cache
 if errorlevel 1 goto :failed
 
 echo.

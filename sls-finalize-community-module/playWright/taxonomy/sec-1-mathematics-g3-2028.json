@@ -1,0 +1,336 @@
+{
+  "contentMap": "Sec 1 Mathematics (G3) (2028)",
+  "rowCount": 61,
+  "outcomes": [
+    {
+      "outcome": "Prime and prime factorisation",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Finding highest common factor (HCF) and lowest common multiple (LCM), squares, cubes, square roots and cube roots by prime factorisation",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Negative numbers, integers, rational numbers, real numbers and their four operations",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Calculations with calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Representation and ordering of numbers on the number line",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Use of",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Approximation and estimation (including rounding off numbers to a required number of decimal places or significant figures, and estimating the results of computation)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Number and their Operations"
+      ]
+    },
+    {
+      "outcome": "Ratios involving rational numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Writing a ratio in its simplest form",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Problems involving ratio",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "(*) Concepts of percentage (including percentage greater than 100%, percentage change, percentage point, and reverse percentage)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Problems involving percentages (including calculating the angles of sectors in a pie chart)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Concepts of rate and speed (including constant speed and average speed)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Conversion of units (e.g. km/h to m/s)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Problems involving rate and speed",
+      "outcomePath": [
+        "Number and Algebra",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Using letters to represent numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Interpreting notations ...",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Evaluation of algebraic expressions and formulae",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Translation of simple real-world situations into algebraic expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Recognising and representing patterns/relationships by finding an algebraic expression for the term",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Addition and Subtraction of Linear Expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Simplification of linear expressions such as ;",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Use brackets and extract common factors",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Cartesian coordinates in two dimensions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graph of a set of ordered pairs as a representation of a relationship between two variables",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Linear functions , as the gradient and as the -intercept",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of linear functions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "The gradient of a linear graph as the ratio of the vertical change to the horizontal change (positive and negative gradients)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Concept of equation",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving linear equations in one variable",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving simple fractional equations that can be reduced to linear equations such as ;",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Formulating a linear equation in one variable to solve problems",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "(*) Concepts of points, lines and angles (including angles on a straight line, angles at a point, and properties of vertically opposite angles)",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, Triangles and Polygons"
+      ]
+    },
+    {
+      "outcome": "Angles formed by two parallel lines and a transversal: corresponding angles, alternate angles, interior angles",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, Triangles and Polygons"
+      ]
+    },
+    {
+      "outcome": "Properties of triangles, special quadrilaterals and regular polygons (pentagon, hexagon, octagon and decagon), including symmetry properties",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, Triangles and Polygons"
+      ]
+    },
+    {
+      "outcome": "Classifying special quadrilaterals on the basis of their properties",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, Triangles and Polygons"
+      ]
+    },
+    {
+      "outcome": "Angle sum of interior and exterior angles of any convex polygon",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, Triangles and Polygons"
+      ]
+    },
+    {
+      "outcome": "Area of parallelogram and trapezium",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving perimeter and area of plane figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Volume and surface area of prism and cylinder",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Conversion between and , and between and",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving volume and surface area of composite solids",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Simple concepts in collecting, classifying and tabulating data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "(*) Analysis and interpretation of statistical diagrams (including tables, pictograms, bar graphs, pie charts and line graphs)",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Simple concepts of population and sample, including bias, representativeness and variation",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of the different forms of statistical representations",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Explaining why a given statistical diagram leads to misinterpretation of data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    }
+  ],
+  "harvestedAt": "2026-08-20T02:08:12.157Z"
+}

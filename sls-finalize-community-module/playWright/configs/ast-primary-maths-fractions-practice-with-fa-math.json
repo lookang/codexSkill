@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "3cbe52d8-729e-42e3-b188-9c0113c79103",
+    "title": "AST - Primary Maths Fractions Practice with FA-Math",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/3cbe52d8-729e-42e3-b188-9c0113c79103/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising ast - primary maths fractions practice with fa-math. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Primary Maths Quest",
+    "shortTitle": "Primary Quest",
+    "description": "Build confidence and accuracy while mastering ast - primary maths fractions practice with fa-math."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "REVIEW-BEFORE-RUNNING: set the level exactly as SLS lists it",
+    "contentMap": "REVIEW-BEFORE-RUNNING: set the content map exactly as SLS lists it",
+    "outcomePath": [],
+    "outcome": "REVIEW-BEFORE-RUNNING: paste the exact learning outcome text from the SLS dropdown",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Fractions",
+      "activities": [
+        {
+          "title": "Operations on Proper Fractions_Practice 1"
+        },
+        {
+          "title": "Operations on Proper Fractions_Practice 2"
+        }
+      ]
+    }
+  ]
+}

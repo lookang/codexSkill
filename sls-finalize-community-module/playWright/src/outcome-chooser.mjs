@@ -103,3 +103,12 @@ export function chooseOutcome(taxonomy, evidence, options = {}) {
     alternatives: ranked.slice(1, 4)
   };
 }
+
+// A top-level fallback caused by weak evidence is a review signal, not a proposal
+// that should overwrite a confidently configured content outcome. Reflective and
+// orientation sections are the exception: their top-level outcome is intentional.
+export function outcomeProposalIsWritable(picked) {
+  if (!picked) return false;
+  if (Array.isArray(picked.outcomePath) && picked.outcomePath.length > 0) return true;
+  return /section is reflective or orientation content/i.test(picked.reason ?? "");
+}

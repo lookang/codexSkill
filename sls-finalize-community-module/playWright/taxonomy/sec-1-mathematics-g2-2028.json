@@ -1,0 +1,301 @@
+{
+  "contentMap": "Sec 1 Mathematics (G2) (2028)",
+  "rowCount": 55,
+  "outcomes": [
+    {
+      "outcome": "Primes and prime factorisation",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Finding highest common factor (HCF) and lowest common multiple (LCM), squares, cubes, square roots and cube roots by prime factorisation",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Negative numbers, integers, rational numbers, real numbers and their four operations",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Calculations with calculator",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Representation and ordering of numbers on the number line",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Use of",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Approximation and estimation (including rounding off numbers to a required number of decimal places or significant figures, and estimating the results of computation)",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Comparison between two or more quantities by ratio",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Relationship between ratio and fraction",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Dividing a quantity in a given ratio",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Ratios involving rational numbers",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Equivalent ratios",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Writing a ratio in its simplest form",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Problems involving ratio",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "(*) Concepts of percentage (including percentage greater than 100%, percentage change, percentage point, and reverse percentage)",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Problems involving percentages (including calculating the angles of sectors in a pie chart)",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Concepts of rate and speed (including constant speed and average speed)",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Conversion of units (e.g. km/h to m/s)",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Problems involving rate and speed",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Rate and Speed"
+      ]
+    },
+    {
+      "outcome": "Using letters to represent numbers",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Interpreting notations:",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Evaluation of algebraic expressions and formulae",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Translation of simple real-world situations into algebraic expressions",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Recognising and representing patterns/relationships by finding an algebraic expression for the term",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Addition and subtraction of linear expressions",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Simplification of linear expressions with integral coefficients such as :",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Concept of equation",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving linear equations with integral coefficients in one variable",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Formulating a linear equation in one variable to solve problems",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "(*) Concepts of points, lines and angles (icnluding angles on a straight line, angles at a point, and propoerties of vertically opposite angles)",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Angles, triangles and polygons"
+      ]
+    },
+    {
+      "outcome": "Angles formed by two parallel lines and a transversal: corresponding angles, alternate angles, interior angles",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Angles, triangles and polygons"
+      ]
+    },
+    {
+      "outcome": "Properties of triangles",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Angles, triangles and polygons"
+      ]
+    },
+    {
+      "outcome": "Area of parallelogram and trapezium",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving perimeter and area of composite plane figures",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Volume and surface area of prism and cylinder",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Conversion between and , and between and",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving volume and surface area of composite solids",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Simple concepts in collecting. classifying and tabulating data",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "(*) analysis and interpretation of statistical diagrams (including tables, pictograms, bar graphs, pie charts and line graphs)",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Simple concepts of population and sample, including bias, representativeness and variation",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of the different forms of statistical representations",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Explaining why a given statistical diagram leads to misinterpretation of data",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    }
+  ],
+  "harvestedAt": "2026-08-20T00:59:52.877Z"
+}

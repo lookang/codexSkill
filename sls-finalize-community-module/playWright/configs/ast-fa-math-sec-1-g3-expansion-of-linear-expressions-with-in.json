@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "84e641a5-6f9c-4b68-ac4d-b1afe299b673",
+    "title": "AST_FA-Math_Sec 1_G3_Expansion of Linear Expressions with Integer and Fractional Coefficients",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/84e641a5-6f9c-4b68-ac4d-b1afe299b673/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising sec 1 g3 expansion of linear expressions with integer and fractional coefficients. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Expansion Linear Quest",
+    "shortTitle": "Expansion Quest",
+    "description": "Build confidence and accuracy while mastering sec 1 g3 expansion of linear expressions with integer and fractional coefficients."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Secondary 1",
+    "contentMap": "Sec 1 Mathematics (G3) (2028)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Algebraic Expressions and Formulae"
+    ],
+    "outcome": "Simplification of linear expressions such as ;",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Expansion of linear expressions with integer and fractional coefficient",
+      "activities": [
+        {
+          "title": "Expand linear expressions with integer coefficient"
+        },
+        {
+          "title": "More Practice: Expand linear expressions with integer coefficient - Optional"
+        },
+        {
+          "title": "Expand linear expressions with fractional coefficient"
+        },
+        {
+          "title": "More Practice: Expand linear expressions with fractional coefficient - Optional"
+        },
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "contentMap": "Sec 1 Mathematics (G3) (2028)",
+      "subject": "Mathematics - G3MATHS",
+      "level": "Secondary 1",
+      "outcome": "Simplification of linear expressions such as ;"
+    }
+  ]
+}

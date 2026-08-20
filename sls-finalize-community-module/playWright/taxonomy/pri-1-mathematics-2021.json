@@ -1,0 +1,275 @@
+{
+  "contentMap": "Pri 1 Mathematics (2021)",
+  "rowCount": 51,
+  "outcomes": [
+    {
+      "outcome": "Acquire mathematical concepts and skills for everyday use and continuous learning in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Build confidence and foster interest in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "1.1 counting to tell the number of objects in a given set",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.2 number notation, representations and place values (tens, ones)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.3 reading and writing numbers in numerals and in words",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.4 comparing the number of objects in two or more sets",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.5 comparing and ordering numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.6 patterns in number sequences",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "1.7 ordinal numbers (first, second, up to tenth) and symbols (1st, 2nd, 3rd, etc)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 100"
+      ]
+    },
+    {
+      "outcome": "2.1 concepts of addition and subtraction",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.2 use of +, and =",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.3 relationship between addition and subtraction",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.4 adding more than two 1-digit numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.5 adding and Subtracting within 100",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.6 adding and Subtracting using algorithms",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "2.7 mental calculation involving addition and subtraction within 20 of a 2-digit number and ones without renaming of a 2-digit number and tens",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    },
+    {
+      "outcome": "3.1 concepts of multiplication and division",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "3.2 use of x",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "3.3 multiplying within 40",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "3.4 dividing within 20",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "1.1 counting amount of money in cents up to $1 in dollars up to $100",
+      "outcomePath": [
+        "Number and Algebra",
+        "Money",
+        "Money"
+      ]
+    },
+    {
+      "outcome": "1.1 measuring length in centimetres",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length"
+      ]
+    },
+    {
+      "outcome": "1.2 use of abbreviation cm",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length"
+      ]
+    },
+    {
+      "outcome": "1.3 measuring and drawing a line segment to the nearest cm",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length"
+      ]
+    },
+    {
+      "outcome": "1.4 comparing and ordering lengths in cm",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length"
+      ]
+    },
+    {
+      "outcome": "2.1 telling time to 5 minutes",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "2.2 use of 'a.m.' and 'p.m.'",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "2.3 use of abbreviations h and min",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "2.4 duration of one hour/half hour",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "1.1 identifying, naming, describing and classifying 2D shapes( rectangle square circle triangle half circle quarter circle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "2D Shapes"
+      ]
+    },
+    {
+      "outcome": "1.2 identifying 2D shapes that make up a given figure",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "2D Shapes"
+      ]
+    },
+    {
+      "outcome": "1.3 forming different 2D figures with rectangle square triangle half circle quarter circle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "2D Shapes"
+      ]
+    },
+    {
+      "outcome": "1.4 copying figures on dot grid or square grid",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "2D Shapes"
+      ]
+    },
+    {
+      "outcome": "1.1 reading and interpreting data from picture graphs",
+      "outcomePath": [
+        "Statistics",
+        "Data representation and interpretation",
+        "Picture graphs"
+      ]
+    }
+  ],
+  "harvestedAt": "2026-08-19T13:29:00.137Z"
+}

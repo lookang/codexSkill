@@ -9,6 +9,8 @@ import {
   detectScope,
   loadConfig,
   mergeDefaults,
+  normalizeActivityRowTitle,
+  normalizeSectionDisplayTitle,
   parseAdminModuleEditUrl,
   validateConfig, unreviewedPlaceholders} from "../src/io.mjs";
 import { parseArgs } from "../src/cli.mjs";
@@ -52,7 +54,7 @@ test("inspect accepts an exact admin URL for another module", async () => {
   const config = mergeDefaults(await loadConfig(
     path.join(projectRoot, "configs", "p3-multiplication-algorithms.json")
   ));
-  const targetId = "00000000-0000-0000-0000-000000000000";
+  const targetId = "599900ec-8b2f-44ab-a8e5-573c6a00ff4a";
   const selected = applyTargetUrl(config, {
     mode: "inspect",
     targetUrl: `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${targetId}`
@@ -67,12 +69,12 @@ test("apply refuses a URL that does not match the configuration", async () => {
   ));
   assert.throws(() => applyTargetUrl(config, {
     mode: "apply",
-    targetUrl: "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/00000000-0000-0000-0000-000000000000"
+    targetUrl: "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/599900ec-8b2f-44ab-a8e5-573c6a00ff4a"
   }), /Refusing to apply/);
 });
 
 test("public module and lesson URLs are converted to the admin edit route", () => {
-  const moduleId = "00000000-0000-0000-0000-000000000000";
+  const moduleId = "475c8d69-c910-4c2c-9e57-fb9ddce1bf5b";
   const module = parseAdminModuleEditUrl(
     `https://vle.learning.moe.edu.sg/community-gallery/module/view/${moduleId}`
   );
@@ -86,7 +88,7 @@ test("public module and lesson URLs are converted to the admin edit route", () =
 });
 
 test("activity and lesson URLs can be parsed for both scopes", () => {
-  const moduleId = "00000000-0000-0000-0000-000000000000";
+  const moduleId = "475c8d69-c910-4c2c-9e57-fb9ddce1bf5b";
   const activity = parseAdminModuleEditUrl(
     `https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/${moduleId}/section/96449075/activity/109256511`,
     { scope: "activity" }
@@ -98,6 +100,19 @@ test("activity and lesson URLs can be parsed for both scopes", () => {
   assert.equal(activity.adminEditUrl, `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/module-plan`);
   assert.equal(lesson.url, activity.url);
 
+});
+
+test("section edit URLs with browser query parameters are accepted by every launcher", () => {
+  const moduleId = "428156f1-90f1-4b64-865f-66b354b5501f";
+  const target = parseAdminModuleEditUrl(
+    `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/section/76768032?pageNo=1`
+  );
+  assert.equal(target.id, moduleId);
+  assert.equal(target.scope, "activity");
+  assert.equal(
+    target.url,
+    `https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/${moduleId}/module-plan`
+  );
 });
 
 test("non-SLS URLs are rejected", () => {
@@ -126,7 +141,7 @@ test("config rejects a non-admin or non-SLS URL", () => {
 });
 
 test("detectScope classifies module, lesson, and activity URLs without throwing", () => {
-  const moduleId = "00000000-0000-0000-0000-000000000000";
+  const moduleId = "aa9e13e8-9a47-4c1c-ae1c-40268ce42935";
   assert.equal(
     detectScope(`https://vle.learning.moe.edu.sg/community-gallery/module/view/${moduleId}`),
     "module"
@@ -153,15 +168,15 @@ test("detectScope returns module for unparseable input instead of throwing", () 
 });
 
 test("the one-shot launcher path accepts a public module view URL end to end", () => {
-  const supplied = "https://vle.learning.moe.edu.sg/community-gallery/module/view/00000000-0000-0000-0000-000000000000";
+  const supplied = "https://vle.learning.moe.edu.sg/community-gallery/module/view/aa9e13e8-9a47-4c1c-ae1c-40268ce42935";
   const scope = detectScope(supplied);
   const target = parseAdminModuleEditUrl(supplied, { scope });
   assert.equal(scope, "module");
-  assert.equal(target.id, "00000000-0000-0000-0000-000000000000");
+  assert.equal(target.id, "aa9e13e8-9a47-4c1c-ae1c-40268ce42935");
   assert.equal(target.converted, true);
   assert.equal(
     target.url,
-    "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/00000000-0000-0000-0000-000000000000/module-plan"
+    "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/aa9e13e8-9a47-4c1c-ae1c-40268ce42935/module-plan"
   );
 });
 
@@ -179,6 +194,25 @@ test("row counts are untouched when the activity and section titles differ", () 
   assert.equal(activityRowCount(1, "Question 2A", "Practice A"), 1);
   assert.equal(activityRowCount(0, "Question 2A", "Practice A"), 0);
   assert.equal(activityRowCount(2, "Question 2A", null), 2);
+});
+
+test("numbered SLS sidebar activity labels match clean configured titles", () => {
+  assert.equal(
+    normalizeActivityRowTitle("1. Express a part of a whole as a percentage"),
+    "Express a part of a whole as a percentage"
+  );
+  assert.equal(
+    normalizeActivityRowTitle("5.\tExpressing a percentage as a decimal."),
+    "Expressing a percentage as a decimal."
+  );
+});
+
+test("SLS section headings may carry both letter and author numbering", () => {
+  assert.equal(
+    normalizeSectionDisplayTitle("E. 5. Expressing a percentage as a decimal."),
+    "Expressing a percentage as a decimal."
+  );
+  assert.equal(normalizeSectionDisplayTitle("A. Percentages"), "Percentages");
 });
 
 test("outcome paths are rebuilt from the flat, padding-indented tagging tree", () => {

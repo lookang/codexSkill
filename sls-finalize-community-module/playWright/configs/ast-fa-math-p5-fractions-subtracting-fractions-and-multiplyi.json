@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "6fb9a678-02d8-4c24-b035-f4dc7087beb7",
+    "title": "AST FA-Math P5 Fractions - Subtracting fractions and multiplying two proper fractions",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/6fb9a678-02d8-4c24-b035-f4dc7087beb7/module-plan"
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [],
+    "outcome": "REVIEW-BEFORE-RUNNING: paste the exact learning outcome text from the SLS dropdown",
+    "questionKeyword": "FA Math"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 5 learners practising fractions - subtracting fractions and multiplying two proper fractions. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Fractions Subtracting Quest",
+    "shortTitle": "Fractions Quest",
+    "description": "Build confidence and accuracy while mastering fractions - subtracting fractions and multiplying two proper fractions."
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Readiness Activity",
+      "activities": [
+        {
+          "title": "Let's recall and practise!"
+        },
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        }
+      ],
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    }
+  ]
+}

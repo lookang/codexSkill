@@ -5,3 +5,4 @@ node_modules/
 output/
 .state/
 .npm-cache/
+.sheet-cache/

@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "1f5ee566-3d0c-49ad-994e-1a35289a46bd",
+    "title": "AST_FA-Math Sec 1 G2/G3 Percentage Increase and Decrease (Engagement)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/1f5ee566-3d0c-49ad-994e-1a35289a46bd/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising sec 1 g2/g3 percentage increase and decrease (engagement). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "G2/G3 Percentage Quest",
+    "shortTitle": "G2/G3 Quest",
+    "description": "Build confidence and accuracy while mastering sec 1 g2/g3 percentage increase and decrease (engagement)."
+  },
+  "defaults": {
+    "subject": "Mathematics - G3MATHS",
+    "level": "Secondary 1",
+    "contentMap": "Sec 1 Mathematics (G3) (2028)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Percentage"
+    ],
+    "outcome": "Finding percentage increase/decrease",
+    "questionKeyword": "FA Math",
+    "contentMaps": [
+      "Sec 1 Mathematics (G3) (2028)",
+      "Sec 1 Mathematics (G2) (2028)"
+    ]
+  },
+  "sections": [
+    {
+      "label": "B",
+      "title": "Percentage Increase and Decrease",
+      "activities": [
+        {
+          "title": "Percentage Increase and Decrease"
+        },
+        {
+          "title": "More Practice (Optional)"
+        },
+        {
+          "title": "Reflection",
+          "allowNoQuestions": true
+        }
+      ]
+    }
+  ]
+}

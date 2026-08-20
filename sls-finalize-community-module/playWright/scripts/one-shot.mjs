@@ -6,7 +6,7 @@ import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { applyTargetUrl, detectScope, loadConfig, mergeDefaults, parseAdminModuleEditUrl, questionTagState, unreviewedPlaceholders } from "../src/io.mjs";
 import { parseArgs } from "../src/cli.mjs";
-import { askForModule } from "../src/module-picker.mjs";
+import { askForModule, rememberModuleUrl } from "../src/module-picker.mjs";
 import { createSlsContext, launchSlsBrowser, runSlsWorkflow } from "../src/sls-runner.mjs";
 
 // Browser speed can come from an argument (npm run sls:one-shot -- --slow-mo 800)
@@ -38,7 +38,7 @@ const root = process.cwd();
 const authStatePath = path.join(root, ".auth", "sls-state.json");
 const configDir = path.join(root, "configs");
 const defaultUrl =
-  "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/00000000-0000-0000-0000-000000000000";
+  "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/428156f1-90f1-4b64-865f-66b354b5501f";
 
 console.log("\nSLS Community Gallery Automation");
 console.log("This launcher handles authentication, inspection, guarded editing, and optional replacement.\n");
@@ -53,13 +53,18 @@ try {
 } catch (error) {
   await stop(error.message);
 }
+try {
+  await rememberModuleUrl(root, target.sourceUrl);
+} catch (error) {
+  console.log(`Could not remember this module URL: ${error.message}`);
+}
 if (scope === "activity") {
   console.log(`\nActivity URL detected. Playwright will first open the module view, then navigate into the activity.`);
 } else if (target.converted) {
   console.log(`\nOpening admin Module View, then Playwright will click Edit:\n${target.adminViewUrl}`);
 }
 
-const matchingConfig = await findConfigForModule(target.id);
+let matchingConfig = await findConfigForModule(target.id);
 const inspectionConfig = matchingConfig ?? (await firstConfig());
 if (!inspectionConfig) await stop("No JSON configuration was found under configs.");
 
@@ -98,20 +103,15 @@ if (!matchingConfig) {
   const draftConfig = await findConfigForModule(target.id);
   if (!draftConfig) await stop("The scaffolded config could not be found under configs.");
 
-  console.log("Step B: scanning the content map and every question (read-only)...");
-  if ((await runWorkflow("scan", draftConfig, target.url)).status !== 0) {
-    await stop("The content scan did not complete; the draft config keeps its placeholder outcome.", 0);
+  if (!(await completeConfigForTagging(draftConfig, target))) {
+    await stop(
+      `A draft config for module ${target.id} is ready at ${path.relative(root, draftConfig)}, ` +
+        "but its curriculum could not be resolved confidently. Review the placeholders and run again.",
+      0
+    );
   }
-
-  console.log("Step C: proposing a learning outcome per section...");
-  await runNode("scripts/propose-outcomes.mjs", [target.id, "--write", draftConfig]);
-
-  await stop(
-    `A draft config for module ${target.id} is ready at ${path.relative(root, draftConfig)}.
-` +
-    "Review the per-section outcomes, then run this launcher again to tag and duplicate.",
-    0
-  );
+  matchingConfig = draftConfig;
+  console.log("The new config is complete; continuing in this same run.");
 }
 
 console.log(`\nMatching configuration: ${path.relative(root, matchingConfig)}`);
@@ -131,23 +131,19 @@ console.log(`\nMatching configuration: ${path.relative(root, matchingConfig)}`);
 const loaded = mergeDefaults(await loadConfig(matchingConfig));
 if (unreviewedPlaceholders(loaded).length > 0) {
   console.log("\nThis config has not been scanned yet; discovering its tagging first (read-only)...");
-  await runWorkflow("scan", matchingConfig, target.url);
-
-  const rescanned = mergeDefaults(await loadConfig(matchingConfig));
-  const stillMissing = unreviewedPlaceholders(rescanned);
-  if (stillMissing.length > 0) {
+  if (!(await completeConfigForTagging(matchingConfig, target))) {
+    const stillMissing = unreviewedPlaceholders(mergeDefaults(await loadConfig(matchingConfig)));
     await stop(
-      "This module carries no tagging of its own: its section has no Subject, Level or " +
-        "Content Map, so there is nothing to discover and no way to know which syllabus " +
-        "it belongs to.\n\n" +
-        `Set these in ${path.relative(root, matchingConfig)} and run again:\n` +
+      "The module carries no usable curriculum metadata, and the cached SLS taxonomies " +
+        "did not produce one strong, unique match.\n\n" +
+        `Review these fields in ${path.relative(root, matchingConfig)}:\n` +
         stillMissing.map((field) => `  ${field}`).join("\n") +
-        "\n\nA harvested syllabus can be copied from taxonomy/ - for example " +
-        "\"Pri 4 Mathematics (2021)\" with level \"Primary 4\".\n" +
+        "\n\nThe best candidates were printed above for review.\n" +
         "Nothing was written to SLS.",
       0
     );
   }
+  console.log("The config is complete; continuing directly to tagging.");
 }
 
 const census = await taggedQuestionCensus(target.id);
@@ -157,12 +153,24 @@ if (census) {
       "already carry a question-level tag."
   );
 }
-const methodAnswer = await ask(
-  "\nHow should this module be tagged?\n" +
-    "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
-    "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
-    "\nChoose 1 or 2 (Enter for 1): "
-);
+let methodAnswer;
+if (census?.total > 0 && census.tagged === 0) {
+  methodAnswer = "2";
+  console.log(
+    "No question-level tags exist yet. Selecting duplicate-and-replace preparation automatically " +
+      "so section outcomes flow into the copied activities. Originals will still be retained until the DELETE checkpoint."
+  );
+} else if (census?.total > 0 && census.tagged === census.total) {
+  methodAnswer = "1";
+  console.log("Every question is already tagged. Selecting the non-copying surgical verification pass automatically.");
+} else {
+  methodAnswer = await ask(
+    "\nHow should this module be tagged?\n" +
+      "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
+      "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
+      "\nChoose 1 or 2 (Enter for 1): "
+  );
+}
 
 if (methodAnswer.trim() !== "2") {
   console.log("\nSurgical tagging: appending question tags in place. No activity is copied or deleted.");
@@ -203,11 +211,37 @@ await closeSharedBrowser();
 console.log("\nSLS workflow completed successfully.");
 console.log("Review the newest report.json and trace.zip under output for the final evidence.");
 
+// Completes a scaffolded config without requiring a second launcher run. Existing
+// section metadata is authoritative and is scanned first. When the module has none,
+// the resolver uses only exact wording from locally harvested SLS taxonomies and
+// proceeds only when one syllabus is a strong, unique match.
+async function completeConfigForTagging(configPath, selectedTarget) {
+  console.log("Scanning the content map and every question (read-only)...");
+  let scan = await runWorkflow("scan", configPath, selectedTarget.url);
+  if (scan.status !== 0) {
+    console.log("\nNo existing section taxonomy could be read. Trying cached SLS taxonomies...");
+    const inferred = await runNode("scripts/resolve-config.mjs", [configPath]);
+    if (inferred.status !== 0) return false;
 
+    console.log("Re-running the read-only question scan with the resolved curriculum...");
+    scan = await runWorkflow("scan", configPath, selectedTarget.url);
+    if (scan.status !== 0) return false;
+  }
 
+  let current = mergeDefaults(await loadConfig(configPath));
+  if (unreviewedPlaceholders(current).length > 0) {
+    console.log("Completing the remaining placeholders from cached SLS taxonomy wording...");
+    if ((await runNode("scripts/resolve-config.mjs", [configPath])).status !== 0) return false;
+  }
 
+  console.log("Proposing a learning outcome for each section from the scanned questions...");
+  if ((await runNode("scripts/propose-outcomes.mjs", [selectedTarget.id, "--write", configPath])).status !== 0) {
+    return false;
+  }
 
-
+  current = mergeDefaults(await loadConfig(configPath));
+  return unreviewedPlaceholders(current).length === 0;
+}
 
 // How many questions already carry a question-level tag, read from the newest scan
 // report rather than by revisiting every question. The settings card prints

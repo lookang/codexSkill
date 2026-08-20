@@ -4,7 +4,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export const DEFAULT_SHEET_ID = "PUT-YOUR-GOOGLE-SHEET-ID-HERE";
+export const DEFAULT_SHEET_ID = "1Gbg2psA-vRxAcnlR-q6czh9EFUTDYlixk72YRKVOF-U";
 
 // The active spreadsheet and tab. Both can be redirected at run time by pasting a
 // Google Sheets URL, so a launcher is not tied to one tab.

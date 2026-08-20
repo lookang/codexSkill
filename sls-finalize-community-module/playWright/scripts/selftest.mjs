@@ -5,11 +5,11 @@ import { spawn } from "node:child_process";
 import process from "node:process";
 
 const MODULES = [
-  ["P3 multiplication",     "00000000-0000-0000-0000-000000000000", "configs/p3-multiplication-algorithms.json"],
-  ["P4 word problems",      "00000000-0000-0000-0000-000000000000", "configs/p4-internal-transfer-total-given.json"],
-  ["P5 fractions add/sub",  "00000000-0000-0000-0000-000000000000", "configs/p5-fractions-addition-subtraction.json"],
-  ["P5 word problems",      "00000000-0000-0000-0000-000000000000", "configs/ast-fa-math-p5-word-problems-involving-whole-numbers-and-dec.json"],
-  ["P5 fractions sub/mult", "00000000-0000-0000-0000-000000000000", "configs/ast-fa-math-p5-fractions-subtracting-fractions-and-multiplyi.json"]
+  ["P3 multiplication",     "428156f1-90f1-4b64-865f-66b354b5501f", "configs/p3-multiplication-algorithms.json"],
+  ["P4 word problems",      "475c8d69-c910-4c2c-9e57-fb9ddce1bf5b", "configs/p4-internal-transfer-total-given.json"],
+  ["P5 fractions add/sub",  "aa9e13e8-9a47-4c1c-ae1c-40268ce42935", "configs/p5-fractions-addition-subtraction.json"],
+  ["P5 word problems",      "303b9ff7-75b3-44bb-a82f-9b4f3ef433ef", "configs/ast-fa-math-p5-word-problems-involving-whole-numbers-and-dec.json"],
+  ["P5 fractions sub/mult", "6fb9a678-02d8-4c24-b035-f4dc7087beb7", "configs/ast-fa-math-p5-fractions-subtracting-fractions-and-multiplyi.json"]
 ];
 const only = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 const modes = process.argv.includes("--scan-only") ? ["scan"] : ["scan", "apply"];

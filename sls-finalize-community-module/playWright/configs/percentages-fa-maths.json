@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "8bdffbb2-9d83-47b3-9e4a-7d42356721ea",
+    "title": "Percentages (FA-Maths)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/8bdffbb2-9d83-47b3-9e4a-7d42356721ea/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising percentages (fa-maths). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Percentages FA-Maths Quest",
+    "shortTitle": "Percentages Quest",
+    "description": "Build confidence and accuracy while mastering percentages (fa-maths)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Percentage",
+      "Percentage"
+    ],
+    "outcome": "1.1 expressing a part of a whole as a percentage",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Percentages",
+      "activities": [
+        {
+          "title": "Express a part of a whole as a percentage"
+        }
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Express a fraction as a percentage",
+      "activities": [
+        {
+          "title": "Express a fraction as a percentage"
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Express a percentage as a fraction in its simplest form.",
+      "activities": [
+        {
+          "title": "Express a percentage as a fraction in its simplest form."
+        }
+      ]
+    },
+    {
+      "label": "D",
+      "title": "Express decimal as a percentage",
+      "activities": [
+        {
+          "title": "Express a decimal as a percentage."
+        }
+      ]
+    },
+    {
+      "label": "E",
+      "title": "Expressing a percentage as a decimal.",
+      "activities": [
+        {
+          "title": "Expressing a percentage as a decimal."
+        }
+      ]
+    },
+    {
+      "label": "F",
+      "title": "Express a part of a whole as percentage",
+      "activities": [
+        {
+          "title": "Express a part of a whole as percentage"
+        }
+      ]
+    }
+  ]
+}

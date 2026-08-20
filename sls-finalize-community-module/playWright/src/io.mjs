@@ -173,6 +173,14 @@ export function activityRowCount(rawCount, title, sectionTitle) {
   return rawCount;
 }
 
+export function normalizeActivityRowTitle(value) {
+  return String(value).replace(/^\d+\.\s*/, "").replace(/\s+/g, " ").trim();
+}
+
+export function normalizeSectionDisplayTitle(value) {
+  return normalizeActivityRowTitle(String(value).replace(/^[A-Z]\.\s*/i, ""));
+}
+
 export function detectScope(value) {
   let url;
   try {
@@ -195,28 +203,29 @@ export function parseAdminModuleEditUrl(value, { scope = "module" } = {}) {
     throw new Error("The supplied module URL is not valid.");
   }
   const supportedPaths = [
-    /^\/admin\/community-gallery\/module\/edit\/([0-9a-f-]+)(?:\/module-plan)?\/?$/i,
-    /^\/admin\/community-gallery\/module\/view\/([0-9a-f-]+)(?:\/module-plan)?\/?$/i,
-    /^\/community-gallery\/module\/view\/([0-9a-f-]+)(?:\/module-plan)?\/?$/i,
-    /^\/community-gallery\/lesson\/view\/([0-9a-f-]+)(?:\/cover)?\/?$/i,
-    /^\/(admin\/)?community-gallery\/(module|lesson)\/(view|edit)\/([0-9a-f-]+)\/(section|activity)\/[0-9a-f-]+.*$/i
+    /^\/admin\/community-gallery\/module\/(?:edit|view)\/(?<id>[0-9a-f-]+)(?:\/module-plan)?\/?$/i,
+    /^\/community-gallery\/module\/view\/(?<id>[0-9a-f-]+)(?:\/module-plan)?\/?$/i,
+    /^\/community-gallery\/lesson\/view\/(?<id>[0-9a-f-]+)(?:\/cover)?\/?$/i,
+    /^\/(?:admin\/)?community-gallery\/(?:module|lesson)\/(?:view|edit)\/(?<id>[0-9a-f-]+)\/(?<nested>section|activity)\/[0-9a-f-]+(?:\/activity\/[0-9a-f-]+)?\/?$/i
   ];
   const match = supportedPaths.map((pattern) => url.pathname.match(pattern)).find(Boolean);
+  const nested = Boolean(match?.groups?.nested);
   if (
     url.protocol !== "https:" ||
     url.hostname !== "vle.learning.moe.edu.sg" ||
     !match ||
-    url.search || url.hash || (scope === "activity" && !/(section|activity)\//.test(url.pathname))
+    (scope === "activity" && !nested)
   ) {
     throw new Error(
       "Paste an SLS Community Gallery module or lesson URL from vle.learning.moe.edu.sg."
     );
   }
-  const moduleId = scope === "activity" ? match[4] : match[1];
+  const moduleId = match.groups.id;
   const adminViewUrl = `https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/${moduleId}/module-plan`;
   const adminEditUrl = `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/module-plan`;
   return {
     id: moduleId,
+    scope: nested ? "activity" : "module",
     sourceUrl: url.href,
     converted: url.href.replace(/\/$/, "") !== adminViewUrl,
     adminViewUrl,
