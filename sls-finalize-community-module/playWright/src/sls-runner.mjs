@@ -391,6 +391,11 @@ async function tagEveryQuestion({
   }
 
   const cardDetails = await listQuestionCards(page);
+  // FA-Math hydrates the custom <akit-interaction> only when its question scrolls
+  // into view. Read and cache every stem before opening any settings modal: once a
+  // modal is open, the overlay prevents later off-screen questions from hydrating,
+  // which previously made Q2 onward look blank after each reload.
+  const questionStems = await readQuestionStems(page, questionIds);
   const questionMetadata = await readQuestionMetadata(page);
   // Re-read per question rather than once per activity: a map harvested while
   // tagging one question must be available to the next, otherwise each question in
@@ -432,7 +437,7 @@ async function tagEveryQuestion({
         keyword: activity.questionKeyword,
         applyKeyword,
         includeInProgress,
-        questionText: facts ? facts.text : "",
+        questionText: questionStems.get(questionId) || "",
         questionTags: facts ? facts.questionTags : "",
         sectionSubject: section.subject,
         sectionLevel: section.level,
@@ -512,6 +517,12 @@ async function readOpenQuestionText(page, questionId) {
 
       const component = document.querySelector(`#component-${id}`);
       if (!component) return "";
+      // FA-Math question stems live in the first <akit-interaction> shadow root;
+      // the second instance is the suggested solution. The old .question-body-only
+      // selector returned an empty string for these questions.
+      const interaction = Array.from(component.querySelectorAll("akit-interaction"))
+        .find((element) => element.getClientRects().length > 0 && deepText(element));
+      if (interaction) return deepText(interaction);
       const bodies = Array.from(component.querySelectorAll(".question-body")).filter(
         (element) => element.getClientRects().length > 0
       );
@@ -521,6 +532,25 @@ async function readOpenQuestionText(page, questionId) {
       return [...new Set(bodies.map(deepText).filter(Boolean))].join(" ");
     }, questionId)
     .catch(() => "");
+}
+
+async function readQuestionStems(page, questionIds) {
+  const stems = new Map();
+  for (const questionId of questionIds) {
+    let text = await readOpenQuestionText(page, questionId);
+    if (!text) {
+      const component = page.locator(`#component-${questionId}`);
+      if ((await component.count()) > 0) {
+        await component.scrollIntoViewIfNeeded().catch(() => {});
+        for (let attempt = 0; attempt < 3 && !text; attempt += 1) {
+          await page.waitForTimeout(400 + attempt * 250);
+          text = await readOpenQuestionText(page, questionId);
+        }
+      }
+    }
+    if (text) stems.set(questionId, text);
+  }
+  return stems;
 }
 
 // A question offers no content maps until it has a Subject and Level: the three
@@ -792,9 +822,9 @@ async function applyContentMapToQuestion(page, {
   // more than a bare question can. It is used only to choose between outcomes,
   // never to decide whether a question is mathematical: a reflection prompt sitting
   // in a mathematics activity must still count as a reflection.
-  const proposal = proposeQuestionTag([activityTitle ?? "", questionText].filter(Boolean).join(" "), dictionaries, {
+  const proposal = proposeQuestionTag(questionText, dictionaries, {
     allowedContentMaps: [contentMap],
-    previousChoices
+    contextText: activityTitle ?? ""
   });
   if (proposal.decision === "skip") {
     console.log(`      Question ${questionId}: no tag proposed (${proposal.reason}).`);
@@ -818,6 +848,11 @@ async function applyContentMapToQuestion(page, {
     `      Question ${questionId}: ${proposal.contentMap} -> ${proposal.outcome.slice(0, 56)}`
   );
   console.log(`         basis: ${proposal.basis}`);
+  console.log(
+    `         evidence: topics [${proposal.evidence.topics.join(", ") || "none"}], ` +
+      `operations [${proposal.evidence.operations.join(", ") || "none"}], ` +
+      `question "${proposal.evidence.question.slice(0, 120)}"`
+  );
 
   if (onlyQuestion && String(onlyQuestion) !== String(questionId)) {
     console.log("         (not the nominated question; nothing written)");
@@ -956,10 +991,17 @@ async function ensureQuestionTags(page, {
     .catch(() => {});
   await page.waitForTimeout(600);
 
-  const openText = await readOpenQuestionText(page, questionId);
-  const fullText = [questionText ?? "", openText].filter(Boolean).join(" ");
+  // Prefer the stem cached while its component was deliberately scrolled into
+  // view. A fresh read is still useful for ordinary non-lazy question types.
+  const openText = questionText || (await readOpenQuestionText(page, questionId));
+  // Only the live question stem is evidence for outcome tagging. The metadata text
+  // contains drawer labels and suggested answers, and previously allowed an empty
+  // stem to be replaced silently by an activity title.
+  const fullText = openText.trim();
   if (openText) {
     console.log(`      Question ${questionId} reads: "${flattenMathml(openText).slice(0, 80)}"`);
+  } else {
+    console.log(`      Question ${questionId}: question body could not be read; no outcome will be added.`);
   }
   const mathematical = looksMathematical(fullText);
 
@@ -1047,6 +1089,12 @@ async function ensureQuestionTags(page, {
 
   await openQuestionSettings(card, page);
   if (applyKeyword) await expect(page.locator(".keywords").first()).toContainText(keyword);
+  if (includeInProgress && mathematical) {
+    await expect(
+      page.locator("#question-include-in-content-mastery-checkbox"),
+      `Question ${questionId} must retain Include in Learning Progress after save and reopen`
+    ).toBeChecked();
+  }
   await page.locator("svg.btn-close").click();
 }
 

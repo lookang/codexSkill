@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { featureScore, mathFeatures, stripBoilerplate } from "../src/math-features.mjs";
+import { featureScore, looksMathematical, mathFeatures, stripBoilerplate } from "../src/math-features.mjs";
 
 const FA_WRAPPER =
   "Q1 Move Up Move Down Find FEEDBACK ASSISTANT Feedback Assistant - Mathematics will " +
@@ -14,6 +14,47 @@ test("FA-Math scaffolding does not register as mathematics", () => {
 
 test("the hyphen in 'Feedback Assistant - Mathematics' is not read as subtraction", () => {
   assert.ok(!mathFeatures(FA_WRAPPER).operations.has("subtract"));
+});
+
+test("an en dash in an activity title is punctuation, not subtraction", () => {
+  const features = mathFeatures("Length – Convert from smaller unit to larger unit");
+  assert.ok(!features.operations.has("subtract"));
+});
+
+test("mass conversion is understood as measurement, not fractions", () => {
+  const features = mathFeatures("Convert 3 kg 250 g to grams.");
+  assert.ok(features.topics.has("measurement"));
+  assert.ok(features.topics.has("mass"));
+  assert.ok(features.topics.has("compound units"));
+  assert.ok(features.topics.has("unit conversion"));
+  assert.ok(!features.operands.has("fraction"));
+});
+
+test("length conversion written as an equality is understood", () => {
+  const features = mathFeatures("4 m 25 cm = ____ cm");
+  assert.ok(features.topics.has("length"));
+  assert.ok(features.topics.has("unit conversion"));
+});
+
+test("the litre symbol used by live SLS questions is understood", () => {
+  const features = mathFeatures("Write 79 ℓ 888 ml in ml.");
+  assert.ok(features.topics.has("liquid volume"));
+  assert.ok(features.topics.has("compound units"));
+  assert.ok(features.topics.has("unit conversion"));
+});
+
+test("fraction-decimal representation questions are mathematical", () => {
+  const liveFractionStem = "Express 19 100 \\frac{19}{100} 100 19 as a decimal.";
+  const liveDecimalStem = "Express 0 . 1 0\\text{.}1 0 . 1 as a fraction.";
+  const liveMixedNumberStem = "Express 3 . 9 3\\text{.}9 3 . 9 as a mixed number in its simplest form.";
+
+  assert.equal(looksMathematical(liveFractionStem), true);
+  assert.ok(mathFeatures(liveFractionStem).topics.has("fraction to decimal"));
+  assert.equal(looksMathematical(liveDecimalStem), true);
+  assert.ok(mathFeatures(liveDecimalStem).topics.has("decimal to fraction"));
+  assert.equal(looksMathematical(liveMixedNumberStem), true);
+  assert.ok(mathFeatures(liveMixedNumberStem).topics.has("decimal to fraction"));
+  assert.equal(looksMathematical("How did the feedback help me express my thinking?"), false);
 });
 
 test("a wordless fraction sum is recognised as addition of fractions", () => {

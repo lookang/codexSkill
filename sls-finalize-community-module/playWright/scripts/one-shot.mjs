@@ -4,9 +4,9 @@ import process from "node:process";
 import readline from "node:readline/promises";
 import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
-import { applyTargetUrl, detectScope, loadConfig, mergeDefaults, parseAdminModuleEditUrl, questionTagState, unreviewedPlaceholders } from "../src/io.mjs";
+import { applyTargetUrl, loadConfig, mergeDefaults, questionTagState, unreviewedPlaceholders } from "../src/io.mjs";
 import { parseArgs } from "../src/cli.mjs";
-import { askForModule, rememberModuleUrl } from "../src/module-picker.mjs";
+import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { createSlsContext, launchSlsBrowser, runSlsWorkflow } from "../src/sls-runner.mjs";
 
 // Browser speed can come from an argument (npm run sls:one-shot -- --slow-mo 800)
@@ -43,21 +43,8 @@ const defaultUrl =
 console.log("\nSLS Community Gallery Automation");
 console.log("This launcher handles authentication, inspection, guarded editing, and optional replacement.\n");
 
-const suppliedUrl = await askForModule({ root, defaultUrl, ask, stop });
-
-let scope = "module";
-let target;
-try {
-  scope = detectScope(suppliedUrl.trim() || defaultUrl);
-  target = parseAdminModuleEditUrl(suppliedUrl.trim() || defaultUrl, { scope });
-} catch (error) {
-  await stop(error.message);
-}
-try {
-  await rememberModuleUrl(root, target.sourceUrl);
-} catch (error) {
-  console.log(`Could not remember this module URL: ${error.message}`);
-}
+const target = await pickAndRememberModule({ root, defaultUrl, ask, stop });
+const scope = target.scope;
 if (scope === "activity") {
   console.log(`\nActivity URL detected. Playwright will first open the module view, then navigate into the activity.`);
 } else if (target.converted) {
@@ -220,7 +207,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   let scan = await runWorkflow("scan", configPath, selectedTarget.url);
   if (scan.status !== 0) {
     console.log("\nNo existing section taxonomy could be read. Trying cached SLS taxonomies...");
-    const inferred = await runNode("scripts/resolve-config.mjs", [configPath]);
+    const inferred = await runNode("scripts/resolve-config.mjs", [configPath, "--interactive"]);
     if (inferred.status !== 0) return false;
 
     console.log("Re-running the read-only question scan with the resolved curriculum...");
@@ -231,7 +218,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   let current = mergeDefaults(await loadConfig(configPath));
   if (unreviewedPlaceholders(current).length > 0) {
     console.log("Completing the remaining placeholders from cached SLS taxonomy wording...");
-    if ((await runNode("scripts/resolve-config.mjs", [configPath])).status !== 0) return false;
+    if ((await runNode("scripts/resolve-config.mjs", [configPath, "--interactive"])).status !== 0) return false;
   }
 
   console.log("Proposing a learning outcome for each section from the scanned questions...");

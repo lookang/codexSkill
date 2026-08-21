@@ -116,3 +116,24 @@ export function applyCurriculumResolution(config, resolution) {
   }
   return copy;
 }
+
+// Turns one reviewed, numbered candidate into a resolution the normal config
+// writer can apply. Automatic resolution remains conservative; this function is
+// used only after a person explicitly chooses one of the exact harvested SLS
+// candidates printed by the launcher.
+export function acceptCurriculumCandidate(resolution, oneBasedChoice) {
+  const choice = Number(oneBasedChoice);
+  if (!Number.isInteger(choice) || choice < 1 || choice > (resolution?.candidates?.length ?? 0)) {
+    return null;
+  }
+  const selected = resolution.candidates[choice - 1];
+  const next = resolution.candidates[choice] ?? null;
+  return {
+    resolved: true,
+    ...selected,
+    margin: next ? selected.score - next.score : selected.score,
+    selectedByReview: true,
+    selectedCandidateNumber: choice,
+    candidates: resolution.candidates
+  };
+}

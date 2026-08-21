@@ -8,6 +8,7 @@ Read this reference before controlling the SLS authoring interface directly. The
 2. Open the matching admin Module View route ending in `/module-plan`, then click **Edit**. Verify edit mode from both the resource UUID in the URL and the visible module title.
 3. If SLS redirects to `/login`, stop at the authentication boundary. Continue only after the user has authenticated in the browser session.
 4. Never use a remembered URL or configured fallback when the user supplied another valid resource.
+5. Maintained launchers share `.state/last-module.json`. A validated SLS module selected by one launcher becomes the Enter-key default for every other launcher. A recorder session starting on a non-SLS website must preserve the last SLS module.
 
 ## Locate Controls Reliably
 
@@ -32,8 +33,26 @@ Read this reference before controlling the SLS authoring interface directly. The
 3. Add the Content Map and exact leaf outcome, then wait for the tagging save response and visible **Saved** state.
 4. Reopen Learning Outcomes and read the tagging tree itself. Do not infer success from the section cover.
 5. For a question, scope settings to its `#settings-card-<question-id>` and open that card's `Settings24` control. Wait for the tagging panel to mount before deciding that controls are missing.
-6. Read question text from its question body, including MathML or image alternative text when present. The settings-card heading may omit the mathematical expression.
-7. Append intended tags and preserve existing human tags. Save with the active question modal's `Save24` control, reload, and verify the exact question card.
+6. Before opening settings, scroll every `#component-<question-id>` into view and cache its stem. FA Math lazily hydrates `<akit-interaction>` and places its readable mathematics in a shadow root; without this pass Q2 onward may appear blank after reload.
+7. Read the first visible `<akit-interaction>` as the question stem and treat later instances as suggested solutions. Recover WIRIS MathML from data-URI SVG comments when the equation otherwise contributes no text.
+8. Treat `Express/Write/Convert ... as/to a decimal`, `... as/to a fraction`, and `... as a mixed number` as mathematical representation questions. Do not infer mathematics from FA Math boilerplate or an activity title when the stem is unreadable.
+9. Append intended tags and preserve existing human tags. Save with the active question modal's `Save24` control, reload, reopen, and verify both the exact question card and **Include in Learning Progress**.
+
+## Meaningful Page Breaks
+
+1. Inventory all sections and activities from fresh locators after every navigation; SLS rerenders and invalidates sidebar assumptions.
+2. A multiple-question page should break immediately before Q2. Apply one break, save, reopen, and rescan so later questions are handled from the new page structure.
+3. A single-question page uses the length-based chunk rule only when a safe semantic divider exists. Short or ambiguous pages remain unchanged.
+4. Verify the divider belongs to the intended question and is not already a page break. Stop rather than force an unavailable or hidden action.
+5. After the last insertion, select **Done**, reopen Module View, and recount the pages.
+
+## ACP Interactive Generation
+
+1. Require one FA Math question and no existing interactive ZIP on the page. Multiple questions are a page-break prerequisite, not a reason to guess which prompt to use.
+2. Read and compact the live question stem before sending it to the iwant2study Prompt Library. Preserve the reviewed grade and subject settings.
+3. Transfer the generated prompt back to SLS through a newly added Text component and the visible **Authoring Copilot > Interactive (Beta)** flow.
+4. Wait for the actual generated preview for up to the configured bound; a fixed three-minute delay is not evidence of failure or success.
+5. Add once, save, reopen the activity, and verify the interactive ZIP. Existing interactives are idempotent completion evidence.
 
 ## Activity Duplication and Deletion
 

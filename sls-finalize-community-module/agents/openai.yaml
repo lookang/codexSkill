@@ -1,4 +1,4 @@
 interface:
   display_name: "SLS Finalize Community Module"
-  short_description: "Safely tag and complete SLS modules"
-  default_prompt: "Use $sls-finalize-community-module to infer curriculum tags and safely complete this SLS community module."
+  short_description: "Safely automate and verify SLS modules"
+  default_prompt: "Use $sls-finalize-community-module to improve and safely finalize this SLS Community Gallery module with the bundled Playwright workflows."

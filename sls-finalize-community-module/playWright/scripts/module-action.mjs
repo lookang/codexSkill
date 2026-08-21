@@ -4,9 +4,9 @@ import process from "node:process";
 import readline from "node:readline/promises";
 import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
-import { loadConfig, mergeDefaults, parseAdminModuleEditUrl } from "../src/io.mjs";
+import { loadConfig, mergeDefaults } from "../src/io.mjs";
 import { runModuleAction, validateModuleAction } from "../src/module-actions.mjs";
-import { askForModule } from "../src/module-picker.mjs";
+import { pickAndRememberModule } from "../src/module-picker.mjs";
 
 const root = process.cwd();
 const configDir = path.join(root, "configs");
@@ -29,7 +29,7 @@ console.log(
     : "The browser stays visible, and the command verifies the saved state after reopening it.\n"
 );
 
-const suppliedUrl = await askForModule({
+const target = await pickAndRememberModule({
   root: process.cwd(),
   defaultUrl,
   ask,
@@ -38,12 +38,6 @@ const suppliedUrl = await askForModule({
     process.exit(1);
   }
 });
-let target;
-try {
-  target = parseAdminModuleEditUrl(suppliedUrl.trim() || defaultUrl);
-} catch (error) {
-  stop(error.message);
-}
 
 let configPath = await findConfigForModule(target.id);
 if (!configPath && action === "gamify") {

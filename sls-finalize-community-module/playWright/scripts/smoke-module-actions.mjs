@@ -6,18 +6,20 @@ import process from "node:process";
 import readline from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { chromium, expect } from "@playwright/test";
-import { parseAdminModuleEditUrl } from "../src/io.mjs";
+import { pickAndRememberModule } from "../src/module-picker.mjs";
 
+const root = process.cwd();
 const defaultUrl =
   "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/428156f1-90f1-4b64-865f-66b354b5501f";
-const suppliedArg = process.argv.slice(2).find((value) => /^https:\/\//i.test(value));
-const supplied = suppliedArg ?? (await ask(
-  "Paste an SLS module, lesson, section, or activity URL\n" +
-    "(or press Enter for the configured P3 module):\nModule URL: "
-));
-
-const target = parseAdminModuleEditUrl(supplied.trim() || defaultUrl);
-const authStatePath = path.resolve(process.cwd(), ".auth", "sls-state.json");
+const target = await pickAndRememberModule({
+  root,
+  defaultUrl,
+  ask,
+  stop: async (message) => {
+    throw new Error(message);
+  }
+});
+const authStatePath = path.resolve(root, ".auth", "sls-state.json");
 if (!(await fileExists(authStatePath))) {
   console.error("No reusable SLS session was found. Run 01-authenticate-sls.cmd first.");
   process.exit(1);
@@ -38,7 +40,7 @@ page.setDefaultTimeout(30_000);
 const checks = [];
 let stage = "opening Module View";
 const runDir = path.resolve(
-  process.cwd(),
+  root,
   "output",
   target.id,
   `smoke-${new Date().toISOString().replaceAll(":", "-").replaceAll(".", "-")}`

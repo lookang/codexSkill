@@ -51,8 +51,25 @@ export async function loadDictionaries(root) {
 }
 
 export function proposeQuestionTag(questionText, dictionaries, options = {}) {
-  const { allowedContentMaps = null, previousChoices = [] } = options;
-  const features = mathFeatures(questionText || "");
+  const { allowedContentMaps = null, contextText = "" } = options;
+  const questionFeatures = mathFeatures(questionText || "");
+  // Context can disambiguate a real mathematical stem, but it must never invent
+  // mathematics when SLS failed to expose the stem. That exact failure turned the
+  // punctuation in "Length – Convert" into a fractions outcome.
+  if (questionFeatures.operations.size === 0 && questionFeatures.topics.size === 0) {
+    return {
+      decision: "skip",
+      reason: "question body contained no readable mathematical operation or topic",
+      features: questionFeatures
+    };
+  }
+  const contextFeatures = mathFeatures(contextText || "");
+  const features = {
+    clean: questionFeatures.clean,
+    operations: new Set([...questionFeatures.operations, ...contextFeatures.operations]),
+    operands: new Set([...questionFeatures.operands, ...contextFeatures.operands]),
+    topics: new Set([...questionFeatures.topics, ...contextFeatures.topics])
+  };
   // A named topic is evidence on its own. "Solve 8z = 11 - 2z" carries no operation
   // this extractor trusts - "-" is too often a hyphen to count as subtraction - but
   // it is unmistakably a linear equation to solve.
@@ -80,26 +97,19 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   const best = ranked[0];
   const tiedCount = ranked.filter((entry) => entry.score === best.score).length;
 
-  // On a tie, prefer an outcome already chosen for an earlier question in the same
-  // activity. Sibling questions in one practice set almost always assess the same
-  // skill, so that is better evidence than the ranking order, and it keeps a set
-  // of questions tagged consistently rather than scattered across near-identical
-  // outcomes.
   let chosen = best;
-  let basis = "best feature match";
+  let basis = contextText ? "question-body match, disambiguated by activity context" : "best question-body feature match";
   if (tiedCount > 1) {
     const tied = ranked.filter((entry) => entry.score === best.score);
-    const familiar = tied.find((entry) =>
-      previousChoices.some(
-        (prior) => prior.outcome === entry.outcome && prior.contentMap === entry.contentMap
-      )
-    );
-    if (familiar) {
-      chosen = familiar;
-      basis = "matches an earlier question in this activity";
-    } else {
-      basis = `best of ${tiedCount} equally good matches`;
-    }
+    return {
+      decision: "skip",
+      reason: `${tiedCount} outcomes tied on the readable question body`,
+      tiedCount,
+      candidates: tied.map(({ contentMap, outcome, outcomePath, score }) => ({
+        contentMap, outcome, outcomePath, score
+      })),
+      features
+    };
   }
 
   return {
@@ -110,6 +120,13 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     score: chosen.score,
     tiedCount,
     basis,
-    features
+    features,
+    evidence: {
+      question: questionFeatures.clean,
+      operations: [...questionFeatures.operations],
+      operands: [...questionFeatures.operands],
+      topics: [...questionFeatures.topics],
+      contextTopics: [...contextFeatures.topics]
+    }
   };
 }

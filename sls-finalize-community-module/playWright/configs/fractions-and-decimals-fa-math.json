@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "c0b3b7a0-3a55-41c7-ab7e-b297016843c0",
+    "title": "Fractions and Decimals (FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/c0b3b7a0-3a55-41c7-ab7e-b297016843c0/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising fractions and decimals (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Fractions Decimals Quest",
+    "shortTitle": "Fractions Quest",
+    "description": "Build confidence and accuracy while mastering fractions and decimals (fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 5",
+    "contentMap": "Pri 5 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Fractions",
+      "Fraction and division"
+    ],
+    "outcome": "1.2 expressing fractions as decimals",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Fractions and Decimals",
+      "activities": [
+        {
+          "title": "Converting a fraction to a decimal"
+        },
+        {
+          "title": "Converting a decimal to a fraction"
+        }
+      ]
+    }
+  ]
+}

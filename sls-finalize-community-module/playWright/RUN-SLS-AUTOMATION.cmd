@@ -11,6 +11,14 @@ if not exist "node_modules\@playwright\test" (
   )
 )
 
+echo.
+echo SLS Community Gallery Automation
+echo --------------------------------
+echo If the curriculum cannot be selected confidently, the run shows numbered
+echo candidates. Choose 1, 2, 3, and so on to record the reviewed exact SLS
+echo wording and continue in the same run. Press Enter to stop without guessing.
+echo.
+
 call npm.cmd run sls:one-shot -- %*
 set "result=%errorlevel%"
 

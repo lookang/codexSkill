@@ -54,7 +54,9 @@ export function stripBoilerplate(text) {
 // in ordinary hyphenation far more often than as an operator.
 const OPERATIONS = [
   ["add", /\+|\badd(?:ing|ition|ed)?\b|\bsum\b|\baltogether\b|\bin total\b|\bmore than\b/i],
-  ["subtract", /[−–]|\bsubtract(?:ing|ion|ed)?\b|\bdifference\b|\bminus\b|\bhow many more\b|\bleft over\b|\bremaining\b/i],
+  // U+2013 EN DASH is punctuation in SLS activity titles ("Length – Convert"),
+  // not a mathematical minus. Only U+2212 MINUS SIGN is trusted as a symbol.
+  ["subtract", /[−]|\bsubtract(?:ing|ion|ed)?\b|\bdifference\b|\bminus\b|\bhow many more\b|\bleft over\b|\bremaining\b/i],
   // "of <number>" was far too loose: "a total mass of 14 kg" is not a
   // multiplication. Only explicit grouping language counts.
   ["multiply", /[×✕]|\\times|\\cdot|\bmultipl(?:y|ying|ication|ied)\b|\bproduct\b|\btimes\b|\b\d+\s*(?:sets?|groups?|rows?)\s+of\b/i],
@@ -67,6 +69,13 @@ const OPERATIONS = [
 // equation. Topics carry the most weight because they are what actually separates
 // one Secondary outcome from another.
 const TOPICS = [
+  // Conversion questions often name neither an arithmetic operation nor a broad
+  // topic: "Express 19/100 as a decimal" is nevertheless an assessed piece of
+  // mathematics. Treat the direction of the representation change as the topic,
+  // which also distinguishes it from reflective prose that happens to mention a
+  // number.
+  ["fraction to decimal", /\b(?:express|write|convert)\b[\s\S]{0,120}\b(?:as|to|in)\s+(?:a\s+)?decimal\b/i],
+  ["decimal to fraction", /\b(?:express|write|convert)\b[\s\S]{0,120}\b(?:as|to|in)\s+(?:a\s+)?(?:fraction|mixed number)\b/i],
   ["solve", /\bsolv(?:e|es|ing|ed)\b/i],
   ["equation", /\bequations?\b|[A-Za-z0-9)\s]=\s*[A-Za-z0-9(]/],
   ["linear", /\blinear\b/i],
@@ -91,7 +100,30 @@ const TOPICS = [
   // word "set" nor "fractional" was recognised, so a whole module about it matched
   // outcomes about adding fractions instead.
   ["fraction of a set", /\b(?:fraction|part)\s+of\s+a\s+set\b|\bset\s+of\s+objects\b|\bfractional\s+part\b/i],
-  ["ratio topic", /\bratios?\b|\bproportion(?:al|ality)?\b|\brate\b|\bspeed\b/i]
+  ["ratio topic", /\bratios?\b|\bproportion(?:al|ality)?\b|\brate\b|\bspeed\b/i],
+  ["measurement", /\bmeasur(?:e|es|ed|ing|ement)s?\b|\bunits?\s+of\s+measurement\b/i],
+  ["unit conversion", /\bconvert(?:s|ed|ing)?\b|\bconversion\b|\bfrom\s+(?:a\s+)?(?:smaller|larger)\s+unit\b/i],
+  ["compound units", /\bcompound\s+units?\b/i],
+  ["length", /\blength\b|\bdistance\b/i],
+  ["mass", /\bmass\b|\bweight\b/i],
+  ["liquid volume", /\bvolume(?:\s+of\s+liquid)?\b|\bcapacity\b/i]
+];
+
+const MEASUREMENT_FAMILIES = [
+  ["length", [
+    /\bkilomet(?:re|er)s?\b|\bkm\b/i,
+    /\bmet(?:re|er)s?\b|\b\d+(?:\.\d+)?\s*m\b/i,
+    /\bcentimet(?:re|er)s?\b|\bcm\b/i,
+    /\bmillimet(?:re|er)s?\b|\bmm\b/i
+  ]],
+  ["mass", [
+    /\bkilograms?\b|\bkg\b/i,
+    /\bgrams?\b|\b\d+(?:\.\d+)?\s*g\b/i
+  ]],
+  ["liquid volume", [
+    /\b(?:litres?|liters?)\b|ℓ|\b\d+(?:\.\d+)?\s*l\b/i,
+    /\bmillilit(?:re|er)s?\b|\bml\b/i
+  ]]
 ];
 
 const OPERANDS = [
@@ -114,6 +146,22 @@ export function mathFeatures(text) {
   for (const [name, pattern] of TOPICS) if (pattern.test(clean)) topics.add(name);
   for (const [name, pattern] of OPERATIONS) if (pattern.test(clean)) operations.add(name);
   for (const [name, pattern] of OPERANDS) if (pattern.test(clean)) operands.add(name);
+  let measurementPresent = false;
+  let compatibleUnitPair = false;
+  for (const [topic, patterns] of MEASUREMENT_FAMILIES) {
+    const unitCount = patterns.filter((pattern) => pattern.test(clean)).length;
+    if (unitCount === 0) continue;
+    measurementPresent = true;
+    topics.add(topic);
+    if (unitCount > 1) compatibleUnitPair = true;
+  }
+  if (measurementPresent) topics.add("measurement");
+  if (compatibleUnitPair) {
+    topics.add("compound units");
+    if (/=|→|\bconvert\w*\b|\bconversion\b|\bexpress\b|\bwrite\b[\s\S]{0,80}\bin\b|\bhow many\b/i.test(clean)) {
+      topics.add("unit conversion");
+    }
+  }
   // A specific fraction kind implies the general one, so a question about mixed
   // numbers still matches an outcome phrased about fractions.
   if (operands.has("mixed number") || operands.has("improper fraction") || operands.has("proper fraction")) {

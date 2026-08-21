@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "4ddc8a1e-eee1-4060-97c3-fcfce494e2ea",
+    "title": "Unit Conversion (Length, Mass & Volume) (Fa-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/4ddc8a1e-eee1-4060-97c3-fcfce494e2ea/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising unit conversion (length, mass & volume) (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Unit Conversion Quest",
+    "shortTitle": "Unit Quest",
+    "description": "Build confidence and accuracy while mastering unit conversion (length, mass & volume) (fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 3",
+    "contentMap": "Pri 3 Mathematics (2021)",
+    "outcomePath": [
+      "Measurement and Geometry",
+      "Measurement",
+      "Length, mass and volume"
+    ],
+    "outcome": "1.1 measuring length in kilometres (km) volume of liquid in millilitres (ml)",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Length – Convert from smaller unit of measurement to larger unit of measurement",
+      "activities": [
+        {
+          "title": "Length – Convert from smaller unit of measurement to larger unit of measurement"
+        },
+        {
+          "title": "Length – Convert from larger unit of measurement to smaller unit of measurement"
+        },
+        {
+          "title": "Length - Conversion involving compound units"
+        }
+      ],
+      "contentMap": "Pri 3 Mathematics (2021)",
+      "subject": "Mathematics - MATHS",
+      "level": "Primary 3",
+      "outcome": "1.2 measuring length/mass/volume (of liquid) in compound units",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length, mass and volume"
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Mass",
+      "activities": [
+        {
+          "title": "Mass – Convert from smaller unit of measurement to larger unit of measurement."
+        },
+        {
+          "title": "Mass – Convert from larger unit of measurement to smaller unit of measurement."
+        },
+        {
+          "title": "6. Mass – Conversion involving compound units"
+        }
+      ],
+      "contentMap": "Pri 3 Mathematics (2021)",
+      "subject": "Mathematics - MATHS",
+      "level": "Primary 3",
+      "outcome": "1.2 measuring length/mass/volume (of liquid) in compound units",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length, mass and volume"
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Volume",
+      "activities": [
+        {
+          "title": "Volume – Convert from smaller unit of measurement to larger unit of measurement."
+        },
+        {
+          "title": "Volume – Convert from larger unit of measurement to smaller unit of measurement."
+        },
+        {
+          "title": "9. Volume – Conversion involving compound units"
+        }
+      ],
+      "contentMap": "Pri 3 Mathematics (2021)",
+      "subject": "Mathematics - MATHS",
+      "level": "Primary 3",
+      "outcome": "1.2 measuring length/mass/volume (of liquid) in compound units",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Length, mass and volume"
+      ]
+    }
+  ]
+}

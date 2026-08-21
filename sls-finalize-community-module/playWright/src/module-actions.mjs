@@ -13,6 +13,9 @@ const SLS_ORIGIN = "https://vle.learning.moe.edu.sg";
 // Exactly as the SLS teacher directory lists it. The directory shows title case
 // ("Wee Loo Kang"); an uppercase spelling matched nothing.
 const EXACT_TEACHER = "Wee Loo Kang";
+const COMPLETED_ASSIGNMENT_PERMISSION_ID = "printableAnswers";
+const COMPLETED_ASSIGNMENT_PERMISSION_LABEL =
+  "Allow viewing as print-friendly completed assignment";
 const GENERATION_TIMEOUT_MS = 180_000;
 let expect = baseExpect.configure({ timeout: 20_000 });
 
@@ -281,12 +284,29 @@ async function addCreditedTeacher(page, teacherName) {
   console.log("Opening Module Settings...");
   let modal = await openModuleSettings(page);
   if ((await modal.getByText(teacherName, { exact: true }).count()) > 0) {
-    await closeModal(modal);
+    const permissionChanged = await ensureCompletedAssignmentPermission(modal);
+    if (permissionChanged) await saveAndCloseModal(page, modal);
+    else await closeModal(modal);
     modal = await openModuleSettings(page);
     await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
-    console.log(`${teacherName} is already a credited teacher; no change was needed.`);
-    return { changed: false, teacherName, verified: true };
+    await verifyCompletedAssignmentPermission(modal);
+    console.log(`${teacherName} and the completed-assignment print permission are verified.`);
+    return {
+      changed: permissionChanged,
+      teacherChanged: false,
+      permissionChanged,
+      teacherName,
+      completedAssignmentPrint: true,
+      verified: true
+    };
   }
+
+  // Do not change a permission before opening the credited-teacher subpage. SLS
+  // warns "Any changes made may not be saved" when navigating away from a dirty
+  // Module Settings form; Playwright dismisses that confirmation by default, so
+  // the Back link appears to click while the credited page actually remains open.
+  // Add the teacher first, return cleanly, then enable the permission and Save.
+  let permissionChanged = false;
 
   await modal.getByRole("button", { name: /^edit or add teachers$/i }).first().click();
   await expect(modal.getByText(/Module Credited to/i).first()).toBeVisible();
@@ -334,16 +354,67 @@ async function addCreditedTeacher(page, teacherName) {
   await expect(commitAdd).toBeEnabled();
   await commitAdd.click();
 
+  // ADD returns from the directory to the credited-teachers subpage. The modal
+  // body rerenders in place, so every locator captured on the directory is stale
+  // conceptually even though Playwright can still resolve it. Wait for the exact
+  // next-page control and reacquire the active modal before proceeding.
+  await expect(page.getByText("Back to Module Details", { exact: true }).last()).toBeVisible({
+    timeout: 20_000
+  });
+  modal = activeModal(page);
   await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
-  await modal.getByText("Back to Module Details", { exact: true }).click();
-  await expect(modal.getByText("Module Settings", { exact: true }).first()).toBeVisible();
+  // ADD selects the teacher but leaves the credited-teachers page dirty. Its own
+  // blue disk must be clicked before going back; otherwise SLS raises "Any changes
+  // made may not be saved" and refuses to leave this page.
+  await saveCreditedTeachers(page, modal);
+  modal = (await page.locator(`#${COMPLETED_ASSIGNMENT_PERMISSION_ID}:visible`).count()) === 1
+    ? await waitForModuleSettingsPanel(page)
+    : await openModuleSettings(page);
+  permissionChanged = (await ensureCompletedAssignmentPermission(modal)) || permissionChanged;
   await saveAndCloseModal(page, modal);
 
   modal = await openModuleSettings(page);
   await expect(modal.getByText(teacherName, { exact: true }).first()).toBeVisible();
-  console.log(`Credited teacher verified after reopening: ${teacherName}`);
+  await verifyCompletedAssignmentPermission(modal);
+  console.log(`Credited teacher and completed-assignment print permission verified: ${teacherName}`);
 
-  return { changed: true, teacherName, verified: true };
+  return {
+    changed: true,
+    teacherChanged: true,
+    permissionChanged,
+    teacherName,
+    completedAssignmentPrint: true,
+    verified: true
+  };
+}
+
+async function ensureCompletedAssignmentPermission(modal) {
+  const checkbox = modal.locator(`#${COMPLETED_ASSIGNMENT_PERMISSION_ID}`);
+  if ((await checkbox.count()) !== 1) {
+    throw new GuardError(
+      `Module Settings did not expose one ${COMPLETED_ASSIGNMENT_PERMISSION_LABEL} checkbox.`,
+    );
+  }
+  if (await checkbox.isChecked()) return false;
+  await expect(checkbox).toBeEnabled();
+  // Carbon/Vue rejects direct changes to its hidden input. Click the one visible
+  // label in the active Module Settings modal so the component updates its bound
+  // value, then verify the underlying input changed before Save.
+  const label = modal.locator("label").filter({
+    hasText: COMPLETED_ASSIGNMENT_PERMISSION_LABEL,
+  });
+  await expect(label).toHaveCount(1);
+  await label.click();
+  await expect(checkbox).toBeChecked();
+  console.log(`Enabled: ${COMPLETED_ASSIGNMENT_PERMISSION_LABEL}`);
+  return true;
+}
+
+async function verifyCompletedAssignmentPermission(modal) {
+  const checkbox = modal.locator(`#${COMPLETED_ASSIGNMENT_PERMISSION_ID}`);
+  await expect(checkbox).toHaveCount(1);
+  await expect(checkbox).toBeChecked();
+  return true;
 }
 
 // The Gamification header renders three controls whose accessible names all
@@ -775,9 +846,31 @@ async function openModuleSettings(page) {
     await opener.dispatchEvent("click").catch(() => {});
   });
 
-  const modal = page.locator(".bx--modal-container:visible").last();
+  const modal = activeModal(page);
   await expect(modal).toBeVisible();
-  await page.waitForTimeout(1200);
+  return waitForModuleSettingsPanel(page);
+}
+
+function activeModal(page) {
+  return page.locator(".bx--modal-container:visible").last();
+}
+
+// Returns only after the main Module Settings / Module Details page has mounted.
+// Breadcrumb text is deliberately not used: nested teacher pages keep that text
+// visible and caused the old run to query the wrong page after ADD.
+async function waitForModuleSettingsPanel(page) {
+  await expect
+    .poll(
+      () => page.locator(`#${COMPLETED_ASSIGNMENT_PERMISSION_ID}:visible`).count(),
+      {
+        message: `Wait for ${COMPLETED_ASSIGNMENT_PERMISSION_LABEL}`,
+        timeout: 20_000,
+        intervals: [250, 500, 750, 1000]
+      }
+    )
+    .toBe(1);
+  const modal = activeModal(page);
+  await expect(modal.locator(`#${COMPLETED_ASSIGNMENT_PERMISSION_ID}`)).toHaveCount(1);
   return modal;
 }
 
@@ -804,7 +897,9 @@ async function openGamification(page) {
 }
 
 async function closeModal(modal) {
-  const close = modal.locator("button.bx--modal-close, .close-wrapper button").first();
+  const close = modal
+    .locator("button.bx--modal-close, .close-wrapper button, .close-wrapper svg.btn-close, svg.btn-close")
+    .first();
   if ((await close.count()) > 0) {
     await close.click().catch(() => {});
   } else {
@@ -816,6 +911,7 @@ async function closeModal(modal) {
 // Saves the open modal and waits for it to close, so the next read sees committed
 // state rather than the form that was just submitted.
 async function saveAndCloseModal(page, modal) {
+  const visibleModalCount = await page.locator(".bx--modal-container:visible").count();
   const save = modal
     .locator('button:has(svg[name="Save24"])')
     .or(modal.getByRole("button", { name: /^(save|update|done)$/i }))
@@ -824,9 +920,49 @@ async function saveAndCloseModal(page, modal) {
     const offered = await visibleControlNames(modal);
     throw new GuardError(`The modal offered no Save control. Controls in it: ${offered.slice(0, 20).join(" | ")}`);
   }
+  await expect(save).toBeVisible();
+  await expect(save).toBeEnabled();
   await save.click();
   await assertNoSlsError(page);
-  await page.waitForTimeout(2500);
+  // Module Settings saves in place. Let the request and Vue state settle, then
+  // close the saved panel explicitly before reopening it for persistence checks.
+  await page.waitForTimeout(1500);
+  await closeModal(modal);
+  await expect
+    .poll(
+      () => page.locator(".bx--modal-container:visible").count(),
+      {
+        message: "Wait for the saved modal to close",
+        timeout: 20_000,
+        intervals: [250, 500, 750, 1000]
+      }
+    )
+    .toBeLessThan(visibleModalCount);
+  console.log("Module Settings saved with the blue disk.");
+  await page.waitForTimeout(500);
+}
+
+// The teacher picker has a separate transaction from Module Settings. Clicking
+// the floating ADD only stages the selected teacher; the Save24 disk on the
+// credited-teachers page commits it and returns to (or closes) Module Settings.
+async function saveCreditedTeachers(page, modal) {
+  const contributorPage = page.locator(".contributor-content-subpage.is-visible").last();
+  await expect(contributorPage).toBeVisible();
+  const save = modal.locator('button:has(svg[name="Save24"])').first();
+  await expect(save).toHaveCount(1);
+  await expect(save).toBeVisible();
+  await expect(save).toBeEnabled();
+  await save.click();
+  await assertNoSlsError(page);
+  await page.waitForTimeout(1500);
+  // This Save commits in place; unlike the Module Settings disk it does not close
+  // the credited-teachers subpage. Navigate back only after the save has settled.
+  const back = contributorPage.getByText("Back to Module Details", { exact: true });
+  await expect(back).toBeVisible();
+  await back.click();
+  await expect(contributorPage).toBeHidden({ timeout: 20_000 });
+  console.log("Credited teachers saved with the blue disk.");
+  await page.waitForTimeout(500);
 }
 
 // Carbon hides the real checkbox, so the label is what responds to a click. The

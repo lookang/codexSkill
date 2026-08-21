@@ -8,6 +8,14 @@ if not exist "node_modules\@playwright\test" (
   if errorlevel 1 exit /b 1
 )
 
+echo.
+echo Add WEE LOO KANG and Completed-Assignment Printing
+echo --------------------------------------------------
+echo This run preserves existing teachers and permissions, adds Wee Loo Kang when
+echo needed, and enables Allow viewing as print-friendly completed assignment.
+echo It saves Module Settings, reopens them, and verifies both results.
+echo.
+
 call npm.cmd run sls:add-teacher -- %*
 set result=%errorlevel%
 echo.

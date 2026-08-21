@@ -38,6 +38,67 @@ export async function rememberModuleUrl(root, url) {
   await fs.rename(temporaryPath, filePath);
 }
 
+// One shared entry point for every SLS launcher. It honours --url and a positional
+// SLS URL, otherwise presents the same remembered-module prompt, then immediately
+// records the validated target in .state/last-module.json. Keeping selection and
+// persistence together prevents a new launcher from accidentally acquiring its own
+// private default.
+export async function pickAndRememberModule({
+  root,
+  defaultUrl,
+  ask,
+  stop,
+  argv = process.argv.slice(2)
+}) {
+  const urlFlag = argv.indexOf("--url");
+  let suppliedUrl = null;
+  if (urlFlag >= 0) {
+    const value = argv[urlFlag + 1];
+    if (!value || value.startsWith("--")) {
+      await stop("--url requires an SLS Community Gallery URL.");
+      throw new Error("--url requires an SLS Community Gallery URL.");
+    }
+    suppliedUrl = value;
+  }
+
+  if (!suppliedUrl) {
+    suppliedUrl = argv.find((value) => {
+      if (!/^https:\/\//i.test(value)) return false;
+      try {
+        parseAdminModuleEditUrl(value);
+        return true;
+      } catch {
+        return false;
+      }
+    }) ?? null;
+  }
+
+  if (!suppliedUrl) suppliedUrl = await askForModule({ root, defaultUrl, ask, stop });
+
+  let target;
+  try {
+    target = parseAdminModuleEditUrl(suppliedUrl);
+  } catch (error) {
+    await stop(error.message);
+    throw error;
+  }
+  await rememberModuleUrl(root, target.sourceUrl);
+  return target;
+}
+
+// The workflow recorder may legitimately start on another website. Remember a
+// supplied start page only when it is an SLS Community Gallery module; otherwise
+// preserve the last SLS module selected by the other launchers.
+export async function rememberModuleUrlIfSls(root, url) {
+  try {
+    const target = parseAdminModuleEditUrl(url);
+    await rememberModuleUrl(root, target.sourceUrl);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function readRowArg(argv = process.argv.slice(2)) {
   const flag = argv.indexOf("--row");
   if (flag < 0) return null;

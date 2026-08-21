@@ -1,31 +1,39 @@
 # SLS Playwright Automation
 
-This project runs the guarded SLS Community Gallery section and activity-migration workflow without relying on improvised screen coordinates.
-
-The first supplied configuration targets:
-
-- Module: `AST_FA-Math_P3_Multiplication algorithms (up to 3 digits by 1 digit)`
-- Module ID: `428156f1-90f1-4b64-865f-66b354b5501f`
-- Sections: B to F
-- Outcome: `3.4 multiplication and division algorithms (up to 3 digits by 1 digit)`
-- Question keyword: `FA Math`
+This is the reproducible browser-automation package bundled with the
+[`sls-finalize-community-module`](../SKILL.md) Codex skill. It works through the
+real SLS Community Gallery authoring interface with guarded Playwright locators,
+visible review, traces, checkpoints, and save/reopen verification. It does not use
+screen coordinates or store credentials in source control.
 
 ## What It Does
 
-For each configured section, the runner:
+The package supports these complete workflows:
 
-1. Opens the exact SLS admin URL and verifies the module title.
-2. Applies and verifies the section Subject, Level, Content Map, and learning outcome.
-3. Reuses an existing valid `- Copy`, or duplicates exactly one original.
-4. Opens every question settings panel.
-5. Enables **Include in Learning Progress**.
-6. Verifies `Pri 3 Mathematics (2021)` is present.
-7. adds `FA Math`, saves, reloads, reopens, and verifies the setting.
-8. Optionally deletes the exact original only after every copied question passes.
-9. Optionally renames the retained copy to remove `- Copy`.
-10. Writes a checkpoint, screenshots, a JSON report, and a Playwright trace.
+| Launcher | Purpose | Mutation boundary |
+| --- | --- | --- |
+| `RUN-SLS-AUTOMATION.cmd` | Inspect, resolve curriculum, tag questions, and perform guarded duplicate-and-replace work | Originals require the explicit `DELETE` checkpoint |
+| `RUN-SLS-PAGE-BREAK.cmd` | Put each question on its own page using safe SLS dividers | Ambiguous layouts stop; `--dry-run` changes nothing |
+| `RUN-SLS-ACPINTERACTIVE.cmd` | Generate one matching ACP practice interactive per eligible FA Math question | Existing ZIPs are preserved; multi-question pages stop |
+| `RUN-SLS-GAMIFICATION.cmd` | Generate and verify gamification | Existing usable games are reused |
+| `RUN-SLS-THUMBNAIL.cmd` | Generate and verify a Featured Image | Existing images are protected unless replacement is explicit |
+| `RUN-SLS-ADD-WEE-LOO-KANG.cmd` | Add the exact credited teacher and completed-assignment printing | Existing teachers and other permissions are preserved |
+| `RUN-SLS-SMOKE-CHECK.cmd` | Check the live SLS entry points | Read-only; closes without saving |
+| `RUN-PLAYWRIGHT-RECORD-WORKFLOW.cmd` | Record a new cross-site browser demonstration for later hardening | Produces a local raw recording only |
 
-The script never enters credentials and stops when it sees an SLS or MIMS login boundary.
+All launchers accept public, admin, section, or activity URLs for the same module.
+They normalize navigation through admin Module View, verify the module UUID and
+title, and share `.state\last-module.json`, so the module chosen in one launcher is
+the Enter-key default in the others.
+
+Question tagging reads live FA Math stems from lazily hydrated
+`<akit-interaction>` shadow roots, including WIRIS mathematics. It distinguishes
+assessed representation questions—such as fraction/decimal/mixed-number
+conversions—from reflection prompts before enabling **Include in Learning
+Progress**.
+
+The scripts never ask for credentials in the terminal and stop when they reach an
+unverified SLS or MIMS login boundary.
 
 ## One-Time Setup
 
@@ -37,7 +45,7 @@ For normal use, run only:
 RUN-SLS-AUTOMATION.cmd
 ```
 
-It remembers the last valid module URL in the private `.state` folder. On the next launch, press **Enter** to use the displayed last module or paste a new SLS URL to replace it. It accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. A new or placeholder config is completed in the same run: the launcher first reads existing section metadata, then falls back to a strong unique match from locally harvested SLS taxonomies, reruns the question scan, and records confident section outcomes. It stops without writing to SLS when no unique curriculum match exists. A module with no question-level tags automatically enters the guarded duplicate-and-replace preparation pass; originals remain until you type `DELETE`. If the saved SLS session has expired, the launcher opens the authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors, and the CMD window remains open for copying debug output.
+Every public launcher shares the last valid module URL in the private `.state\last-module.json` file. A module selected in Automation, Gamification, Page Break, Smoke Check, Thumbnail, ACP Interactive, Add Teacher, or the recorder therefore becomes the displayed default in every other launcher. Press **Enter** to reuse it or paste a new SLS URL to replace it. Recording a non-SLS website preserves the previous SLS module. The automation accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. A new or placeholder config is completed in the same run: the launcher first reads existing section metadata, then falls back to a strong unique match from locally harvested SLS taxonomies, reruns the question scan, and records confident section outcomes. When several curricula remain plausible, it prints numbered exact SLS candidates and asks the user to choose `1`, `2`, `3`, and so on; the reviewed selection is recorded locally and the read-only scan resumes in the same run. Pressing **Enter** at that prompt stops safely without selecting or changing SLS. A module with no question-level tags automatically enters the guarded duplicate-and-replace preparation pass; originals remain until you type `DELETE`. If the saved SLS session has expired, the launcher opens the authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors, and the CMD window remains open for copying debug output.
 
 The numbered CMD files expose individual stages for troubleshooting. You do not need to run them one by one during normal use.
 
@@ -49,15 +57,48 @@ After the activity migration is complete, these independent launchers make only 
 RUN-SLS-GAMIFICATION.cmd
 RUN-SLS-THUMBNAIL.cmd
 RUN-SLS-ADD-WEE-LOO-KANG.cmd
+RUN-SLS-PAGE-BREAK.cmd
+RUN-SLS-ACPINTERACTIVE.cmd
+RUN-PLAYWRIGHT-RECORD-WORKFLOW.cmd
 ```
 
-All three commands ask for a Community Gallery module or lesson URL, convert it to the exact admin Module View route, click **Edit**, and keep visible Chrome open at the verified final state until you press Enter in the terminal.
+The finishing commands ask for a Community Gallery module or lesson URL, convert it to the exact admin Module View route, click **Edit**, and use the same authenticated visible-Chrome safeguards. The Playwright recorder is a separate demonstration tool and may traverse other websites.
+
+`RUN-PLAYWRIGHT-RECORD-WORKFLOW.cmd` opens Playwright Codegen with the reusable SLS authentication state and saves the raw generated test under the git-ignored `recordings` directory. It can follow navigation across websites and tabs within the opened browser context. Clipboard demonstrations may be recorded as literal example text; review the generated file afterward and replace those literals with explicit source locators, variables, and destination fills before treating it as reusable automation.
 
 `RUN-SLS-GAMIFICATION.cmd` requires a reviewed matching JSON config with a `gamification` block. It enables Gamification, uses Authoring Copilot with the configured recipe and instructions, selects the first completed preview, sets a meaningful title and description, saves, closes, reopens, and verifies the persisted game. It preserves existing leaderboard choices. If SLS reverts the title to `Untitled Game`, it retries once with the configured shorter title.
 
 `RUN-SLS-THUMBNAIL.cmd` adds a generated Featured Image only when the module has no image, unless `--replace-existing` is explicitly supplied. It accepts an optional `--prompt "..."`, verifies the image after reopening the module, and leaves activities and tags untouched.
 
-`RUN-SLS-ADD-WEE-LOO-KANG.cmd` works with any valid SLS Community Gallery module URL, including a URL copied while viewing a section or activity. It searches the teacher directory for the exact directory name `Wee Loo Kang`, requires exactly one match, preserves existing credited teachers, saves through Module Settings, closes, reopens, and verifies that the teacher persisted. It does not change printing, copying, reattempt, leaderboard, or other module settings.
+`RUN-SLS-ADD-WEE-LOO-KANG.cmd` works with any valid SLS Community Gallery module URL, including a URL copied while viewing a section or activity. It searches the teacher directory for the exact directory name `Wee Loo Kang`, requires exactly one match, preserves existing credited teachers, and enables **Allow viewing as print-friendly completed assignment**. It saves through Module Settings, closes, reopens, and verifies both the teacher and completed-assignment permission persisted. The copying, print-friendly worksheet, self-study reattempt, leaderboard, and other settings are preserved.
+
+`RUN-SLS-PAGE-BREAK.cmd` reviews every activity in every section. Its first pass is read-only: whenever a page contains two or more questions, it proposes the safe SLS divider immediately before Q2. When the review has candidates and no ambiguous pages, a normal run automatically reopens the same module, inserts one verified break at a time, and rescans every resulting page, so Q3 and later questions are separated in turn until each question starts on its own page. It then selects **Done**, reopens the module, and verifies persistence. A page containing one question remains one semantic chunk and uses the existing length-based rule (1.75 viewports). Use `--dry-run` when a report without SLS changes is required. Ambiguous layouts and missing save responses stop at a guard instead of clicking another divider.
+
+`RUN-SLS-ACPINTERACTIVE.cmd` reviews every page in every activity and section. For a page containing exactly one `FA Math` question without an existing interactive ZIP, it sends the question to the iwant2study Prompt Library, selects the configured grade and Mathematics, reads the generated prompt, inserts a Text component, and uses **Authoring Copilot > Interactive (Beta)** to generate and add the matching practice interactive. It waits up to ten minutes for each preview, reopens every changed activity, and verifies the generated ZIP persisted. Existing interactives are preserved. A page containing several FA Math questions stops at a guard so `RUN-SLS-PAGE-BREAK.cmd` can separate them first. The demonstrated default is `Primary 5-6`; override it with `--grade "Primary 3-4"` when required.
+
+For an ACP review without changes:
+
+```powershell
+RUN-SLS-ACPINTERACTIVE.cmd --dry-run
+```
+
+For a controlled first-interactive trial:
+
+```powershell
+RUN-SLS-ACPINTERACTIVE.cmd --apply --max-interactives 1
+```
+
+For an explicitly read-only run:
+
+```powershell
+RUN-SLS-PAGE-BREAK.cmd --dry-run
+```
+
+To skip the separate read-only pass and start the guarded apply pass immediately, use `--apply`; it still rescans before every insertion and verifies after reopening:
+
+```powershell
+RUN-SLS-PAGE-BREAK.cmd --apply
+```
 
 ### PowerShell workflow
 

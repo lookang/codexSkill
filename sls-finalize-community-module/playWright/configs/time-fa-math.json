@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "b8482fad-7fa0-4c4a-a7a1-eb0c8316d91c",
+    "title": "Time (FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/b8482fad-7fa0-4c4a-a7a1-eb0c8316d91c/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising time (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Time FA-Math Quest",
+    "shortTitle": "Time Quest",
+    "description": "Build confidence and accuracy while mastering time (fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 1",
+    "contentMap": "Pri 1 Mathematics (2021)",
+    "outcomePath": [
+      "Measurement and Geometry",
+      "Measurement",
+      "Time"
+    ],
+    "outcome": "2.2 use of 'a.m.' and 'p.m.'",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Unit Conversion (Time)",
+      "activities": [
+        {
+          "title": "Unit Conversion - Smaller unit of measurement to larger unit of measurement"
+        },
+        {
+          "title": "Unit Conversion - Larger unit of measurement to smaller unit of measurement"
+        }
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Compound Units",
+      "activities": [
+        {
+          "title": "Compound Units"
+        }
+      ]
+    }
+  ]
+}

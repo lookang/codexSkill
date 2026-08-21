@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { applyCurriculumResolution, resolveCurriculumFromTaxonomies } from "../src/config-resolver.mjs";
+import {
+  acceptCurriculumCandidate,
+  applyCurriculumResolution,
+  resolveCurriculumFromTaxonomies
+} from "../src/config-resolver.mjs";
 
 const placeholder = "REVIEW-BEFORE-RUNNING: choose";
 const config = {
@@ -62,4 +66,30 @@ test("an ambiguous module is handed back instead of guessed", () => {
   ambiguous.sections = [{ title: "Practice", activities: [{ title: "Practice" }] }];
   const resolution = resolveCurriculumFromTaxonomies(ambiguous, [primaryFive, secondary]);
   assert.equal(resolution.resolved, false);
+});
+
+test("a reviewed numbered candidate can be accepted without weakening automatic guards", () => {
+  const ambiguous = structuredClone(config);
+  ambiguous.module.title = "Practice";
+  ambiguous.sections = [{ title: "Practice", activities: [{ title: "Practice" }] }];
+  const resolution = resolveCurriculumFromTaxonomies(ambiguous, [primaryFive, secondary]);
+  assert.equal(resolution.resolved, false);
+
+  const reviewed = acceptCurriculumCandidate(resolution, 1);
+  assert.equal(reviewed.resolved, true);
+  assert.equal(reviewed.selectedByReview, true);
+  assert.equal(reviewed.selectedCandidateNumber, 1);
+  assert.equal(reviewed.contentMap, resolution.candidates[0].contentMap);
+
+  const filled = applyCurriculumResolution(ambiguous, reviewed);
+  assert.equal(filled.defaults.contentMap, reviewed.contentMap);
+  assert.equal(filled.defaults.outcome, reviewed.outcome);
+});
+
+test("invalid or cancelled candidate choices do not produce a resolution", () => {
+  const resolution = { candidates: [{ contentMap: "Pri 5 Mathematics (2021)" }] };
+  assert.equal(acceptCurriculumCandidate(resolution, ""), null);
+  assert.equal(acceptCurriculumCandidate(resolution, 0), null);
+  assert.equal(acceptCurriculumCandidate(resolution, 2), null);
+  assert.equal(acceptCurriculumCandidate(resolution, "one"), null);
 });

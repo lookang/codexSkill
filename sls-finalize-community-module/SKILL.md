@@ -1,6 +1,6 @@
 ---
 name: sls-finalize-community-module
-description: Safely complete Singapore Student Learning Space (SLS) Community Gallery modules by inferring curriculum tags, replacing activities with tagged copies, tagging every question, generating a featured image, configuring and verifying gamification, and updating module metadata, credits, and permissions. Use when a user supplies a vle.learning.moe.edu.sg module URL and asks to retag, duplicate and replace activities, add formative-assessment tags, create a thumbnail, add gamification, credit a teacher, or finish and audit a module.
+description: Safely complete Singapore Student Learning Space (SLS) Community Gallery modules with guarded Playwright automation for curriculum and question tagging, meaningful page breaks, ACP practice interactives, featured images, gamification, credits, permissions, recording, and final audits. Use when a user supplies a vle.learning.moe.edu.sg module URL and asks to improve, automate, finalize, or verify it.
 ---
 
 # SLS Finalize Community Module
@@ -23,7 +23,16 @@ Never store credentials, email addresses, or restricted learner data in the skil
 
 ## Choose the Execution Path
 
-When the maintained `playWright` automation is available and the request matches one of its supported actions, prefer its visible-browser launcher for repeated module migration, gamification, credited-teacher, thumbnail, or smoke-check work. It provides guarded URL normalization, checkpoints, traces, and persistence checks. Do not bypass its configuration review or deletion guard.
+When the bundled `playWright` automation is available, prefer its maintained launcher for repeated work. Read `playWright/README.md` for setup and flags. Route by intent:
+
+- `RUN-SLS-AUTOMATION.cmd`: inspect, resolve curriculum, tag questions, and perform guarded duplicate-and-replace work.
+- `RUN-SLS-PAGE-BREAK.cmd`: put each question on its own page when SLS exposes a safe divider.
+- `RUN-SLS-ACPINTERACTIVE.cmd`: create one matching ACP practice interactive for each eligible FA Math question.
+- `RUN-SLS-GAMIFICATION.cmd`, `RUN-SLS-THUMBNAIL.cmd`, and `RUN-SLS-ADD-WEE-LOO-KANG.cmd`: perform and reopen-verify the named finishing action.
+- `RUN-SLS-SMOKE-CHECK.cmd`: verify live entry points without saving.
+- `RUN-PLAYWRIGHT-RECORD-WORKFLOW.cmd`: record a new browser workflow, including cross-site text transfer, for later review and hardening.
+
+All launchers share `.state/last-module.json`; a module chosen in one becomes the default in the others. Never publish `.state`, `.auth`, `output`, `recordings`, caches, or dependencies. The maintained scripts provide guarded URL normalization, checkpoints, traces, and persistence checks. Do not bypass configuration review, ambiguity stops, or the deletion guard.
 
 Use direct browser control when the user asks for an interactive run, the deterministic launcher does not cover the requested operation, or the local scripts are unavailable. Before direct browser work, read [references/playwright-ui-playbook.md](references/playwright-ui-playbook.md) and follow its current SLS interaction patterns. Apply the same inspect, mutate, reopen, and verify cycle used by the scripts.
 
@@ -87,14 +96,39 @@ Treat `Something went wrong while performing this action` as an uncertain deleti
 For every question card in every retained copy:
 
 1. Inventory all cards. Scroll the question-settings sidebar independently to expose cards outside the initial viewport.
-2. Open the card's settings and select the matching details panel, such as **Free-Response Details**.
-3. Enable **Include in Learning Progress**.
-4. Verify Subject, Level, and Content Map match the saved section tags. Do not silently replace contradictory question tags.
-5. Add the requested keyword. When unspecified, derive one concise formative-assessment tag such as `FA math`.
-6. Save and verify the exact card displays the expected Keyword Tags and Question Tags.
-7. Reload the activity before editing the next question, then restore sidebar position. This prevents SLS from silently dropping later keywords.
+2. Scroll each question component into view before reading it. FA Math hydrates `<akit-interaction>` lazily, and the mathematical stem may exist only inside its shadow root.
+3. Open the card's settings and select the matching details panel, such as **Free-Response Details**.
+4. Enable **Include in Learning Progress** only for an assessed mathematical question. Fraction-to-decimal, decimal-to-fraction, and decimal-to-mixed-number conversion prompts are mathematical; reflection prompts are not, even if they carry marks.
+5. Verify Subject, Level, and Content Map match the saved section tags. Do not silently replace contradictory question tags.
+6. Add the requested keyword. When unspecified, derive one concise formative-assessment tag such as `FA math`.
+7. Save, reload, reopen the same question, and verify Learning Progress plus the expected Keyword Tags and Question Tags persisted.
+8. Reload the activity before editing the next question, then restore sidebar position. This prevents SLS from silently dropping later keywords.
 
 Track completed questions so a resumed run does not retag them unnecessarily.
+
+## Add Meaningful Page Breaks
+
+Use `RUN-SLS-PAGE-BREAK.cmd` when an activity contains several questions on one page or an unusually long single-question chunk.
+
+1. Run the read-only review and inventory every section, activity, page, question heading, and available SLS divider.
+2. For multiple questions, break immediately before Q2, save, reopen, and rescan. Repeat so Q3 and later questions become separate pages in turn.
+3. For a single long question, add a break only at a semantically safe divider; leave short pages and ambiguous layouts unchanged.
+4. Stop if a section/activity disappears after rerender, a divider cannot be tied to the intended question, or SLS does not confirm persistence.
+5. Select **Done**, reopen Module View, and verify the resulting pages before reporting completion.
+
+Use `--dry-run` when the user asks only for a proposal. A normal clear review may continue automatically; ambiguous pages must not.
+
+## Generate ACP Practice Interactives
+
+Use `RUN-SLS-ACPINTERACTIVE.cmd` for FA Math questions that should receive a matching practice interactive.
+
+1. Require exactly one eligible FA Math question on the page. Run the page-break workflow first when several questions share a page.
+2. Read the live question stem, send it to the iwant2study Prompt Library with the reviewed grade and Mathematics settings, and capture the generated prompt.
+3. Return to SLS, add a Text component, choose **Authoring Copilot > Interactive (Beta)**, paste the prompt, and wait for the complete preview. Generation may take several minutes.
+4. Add only the reviewed result. Preserve an existing interactive ZIP and never create a duplicate merely because generation is slow.
+5. Reopen the changed activity and verify the interactive ZIP persisted before advancing.
+
+Use `--dry-run` for inventory only and `--max-interactives 1` for a controlled first trial.
 
 ## Generate the Featured Image
 
@@ -149,6 +183,8 @@ Do not report gamification as fully complete from a toast or loading state alone
 - Never treat a visible staged keyword or credited-teacher row as saved. Click the blue disk Save button and verify persistence after reopening Module Settings before navigating away or testing in another tab or browser.
 - Never treat permission checkboxes as saved from their visible state alone. Click the blue disk Save button, reopen Module Settings, and verify each required checkbox, especially the separate print-friendly completed-assignment permission.
 - Do not broaden permissions without explicit authorization.
+- Never add a page break or ACP interactive when the review reports an ambiguous page.
+- Preserve existing interactive ZIPs and do not generate a second interactive for an already-served question.
 - Review all three generated images before selection.
 - Prefer visible labels and roles over recorded screen coordinates.
 - Scope controls to the active card or visible modal. When SLS rerenders after a click, locate the control again instead of reusing a stale element.
@@ -163,9 +199,10 @@ Before reporting completion:
 1. Verify Subject, Level, Content Map, and current learning outcome in Module View.
 2. Verify one intended tagged copy per original and no authorized target originals remain.
 3. Verify every retained question has learning progress, curriculum tags, and its keyword.
-4. Verify the featured-image filename.
-5. Reopen Gamification and report the persisted title and generated elements; explicitly note any `Untitled Game` reversion.
-6. Verify module keywords, credited teachers including `WEE LOO KANG`, and each required permission individually. For the full or captured workflow, confirm copying, print-friendly worksheet viewing, print-friendly completed-assignment viewing, and self-study reattempts are all enabled after reopening Module Settings.
-7. Confirm Module View has no pending save indicator or error.
+4. Verify every inserted page break and ACP interactive after reopening the affected activity.
+5. Verify the featured-image filename.
+6. Reopen Gamification and report the persisted title and generated elements; explicitly note any `Untitled Game` reversion.
+7. Verify module keywords, credited teachers including `WEE LOO KANG`, and each required permission individually. For the full or captured workflow, confirm copying, print-friendly worksheet viewing, print-friendly completed-assignment viewing, and self-study reattempts are all enabled after reopening Module Settings.
+8. Confirm Module View has no pending save indicator or error.
 
 Report the inferred tags and rationale, original-to-copy mapping, skipped activities, featured-image result, gamification persistence result, credited teachers, permissions, and any unresolved SLS behavior.

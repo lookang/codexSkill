@@ -41,6 +41,18 @@ const proposals = new Map();
 for (const section of report.scan.sections) {
   const questions = section.activities.flatMap((activity) => activity.questions);
   const questionText = questions.map((question) => question.text).join(" ");
+
+  // A failed question scan must never be replaced by a title-only guess. This
+  // was how a section with "0 questions read" still acquired a confident-looking
+  // outcome. Keep the section unchanged until SLS exposes at least one question.
+  if (questions.length === 0 || !questionText.trim()) {
+    console.log(`[${section.label}] ${section.title}`);
+    console.log("      evidence: 0 readable questions");
+    console.log("      -> no outcome proposed; the existing config is unchanged");
+    console.log("");
+    continue;
+  }
+
   const picked = chooseOutcome(taxonomy, {
     moduleTitle: report.module.title,
     sectionTitle: section.title,
