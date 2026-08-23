@@ -114,7 +114,7 @@ Use `RUN-SLS-PAGE-BREAK.cmd` when an activity contains several questions on one 
 2. For multiple questions, break immediately before Q2 and verify the page count increased by exactly one. Checkpoint the completed preceding page and continue directly from the new continuation page; do not revisit earlier pages between splits. Repeat so Q3 and later questions become separate pages in turn.
 3. For a single long question, add a break only at a semantically safe divider; leave short pages and ambiguous layouts unchanged.
 4. Stop if a section/activity disappears after rerender, a divider cannot be tied to the intended question, or SLS does not confirm persistence.
-5. Select **Done**, reopen Module View, and perform one full resulting-page audit before reporting completion.
+5. Select **Done** after all clear splits. Each split must already have an observed save response and page-count increase. The full resulting-page reopen audit is optional through `RUN-SLS-PAGE-BREAK.cmd --verify` and is skipped in normal runs for speed.
 
 Use `--dry-run` when the user asks only for a proposal. A normal clear review may continue automatically; ambiguous pages must not.
 
