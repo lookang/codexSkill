@@ -15,8 +15,8 @@ echo.
 echo SLS Meaningful Page Breaks
 echo --------------------------
 echo This launcher reviews every activity in every section before changing SLS.
-echo It proposes a safe break before Q2, then Q3, so every question starts on its
-echo own page. Single-question pages retain the length-based chunking rule.
+echo It keeps side-by-side questions together and breaks before the next visual
+echo question row. Single-question pages retain the length-based chunking rule.
 echo After each verified split, it continues from the new next page without
 echo revisiting earlier pages. The full reopen audit is skipped by default.
 echo A normal run applies automatically after a clear review. Use --dry-run to

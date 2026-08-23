@@ -111,7 +111,7 @@ Track completed questions so a resumed run does not retag them unnecessarily.
 Use `RUN-SLS-PAGE-BREAK.cmd` when an activity contains several questions on one page or an unusually long single-question chunk.
 
 1. Run the read-only review and inventory every section, activity, page, question heading, and available SLS divider.
-2. For multiple questions, break immediately before Q2 and verify the page count increased by exactly one. Checkpoint the completed preceding page and continue directly from the new continuation page; do not revisit earlier pages between splits. Repeat so Q3 and later questions become separate pages in turn.
+2. For multiple questions, identify visual question rows first. Keep side-by-side questions with substantial vertical overlap together, and break before the first question of the next row. Verify the page count increased by exactly one, checkpoint the completed preceding page, and continue directly from the new continuation page without revisiting earlier pages.
 3. For a single long question, add a break only at a semantically safe divider; leave short pages and ambiguous layouts unchanged.
 4. Stop if a section/activity disappears after rerender, a divider cannot be tied to the intended question, or SLS does not confirm persistence.
 5. Select **Done** after all clear splits. Each split must already have an observed save response and page-count increase. The full resulting-page reopen audit is optional through `RUN-SLS-PAGE-BREAK.cmd --verify` and is skipped in normal runs for speed.
