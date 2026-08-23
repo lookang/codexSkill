@@ -22,7 +22,8 @@ if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not 
 
 console.log("\nSLS Meaningful Page Breaks");
 console.log("Reviews every section and activity before changing anything.");
-console.log("Places each question on its own page when SLS exposes a safe divider.");
+console.log("Places each visual question row on its own page when SLS exposes a safe divider.");
+console.log("Questions displayed side by side stay together as one row.");
 console.log("Single-question pages retain the existing length-based chunking rule.");
 console.log(
   verifyAfterApply

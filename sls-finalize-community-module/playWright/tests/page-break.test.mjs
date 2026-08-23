@@ -23,7 +23,7 @@ test("a short question page is left unchanged", () => {
   assert.match(result.reason, /not long enough/);
 });
 
-test("a page breaks before its second question regardless of rendered length", () => {
+test("a page breaks before its second vertically stacked question regardless of rendered length", () => {
   const result = assessPageForBreak({
     viewportHeight,
     contentTop: 100,
@@ -42,7 +42,85 @@ test("a page breaks before its second question regardless of rendered length", (
   assert.equal(result.longPage, false);
   assert.equal(result.candidate.dividerIndex, 1);
   assert.equal(result.candidate.questionId, "q2");
-  assert.match(result.reason, /each question/);
+  assert.match(result.reason, /visual question row/);
+});
+
+test("two side-by-side questions remain one visual page unit", () => {
+  const result = assessPageForBreak({
+    viewportHeight,
+    contentTop: 100,
+    contentBottom: 1300,
+    questions: [
+      { id: "q3", top: 300, bottom: 1000, left: 100, right: 500, text: "Q3" },
+      { id: "q4", top: 310, bottom: 1020, left: 550, right: 950, text: "Q4" },
+    ],
+    dividers: [
+      { index: 0, top: 250, bottom: 270 },
+      { index: 1, top: 300, bottom: 320 },
+    ],
+  });
+
+  assert.equal(result.needsBreak, false);
+  assert.equal(result.blocked, false);
+  assert.equal(result.questionRowCount, 1);
+  assert.match(result.reason, /stay together/);
+});
+
+test("a two-column grid breaks before the first question of its next visual row", () => {
+  const firstPass = assessPageForBreak({
+    viewportHeight,
+    contentTop: 100,
+    contentBottom: 1650,
+    questions: [
+      { id: "q1", top: 200, bottom: 700, left: 100, right: 500, text: "Q1" },
+      { id: "q2", top: 210, bottom: 710, left: 550, right: 950, text: "Q2" },
+      { id: "q3", top: 900, bottom: 1400, left: 100, right: 500, text: "Q3" },
+      { id: "q4", top: 910, bottom: 1410, left: 550, right: 950, text: "Q4" },
+    ],
+    dividers: [
+      { index: 0, top: 205, bottom: 225 },
+      { index: 1, top: 840, bottom: 860 },
+      { index: 2, top: 905, bottom: 925 },
+    ],
+  });
+
+  assert.equal(firstPass.needsBreak, true);
+  assert.equal(firstPass.questionRowCount, 2);
+  assert.equal(firstPass.candidate.dividerIndex, 1);
+  assert.equal(firstPass.candidate.questionId, "q3");
+  assert.equal(firstPass.candidate.questionIndex, 2);
+
+  const continuation = assessPageForBreak({
+    viewportHeight,
+    contentTop: 900,
+    contentBottom: 1650,
+    questions: [
+      { id: "q3", top: 900, bottom: 1400, left: 100, right: 500, text: "Q3" },
+      { id: "q4", top: 910, bottom: 1410, left: 550, right: 950, text: "Q4" },
+    ],
+    dividers: [{ index: 0, top: 905, bottom: 925 }],
+  });
+
+  assert.equal(continuation.needsBreak, false);
+  assert.equal(continuation.questionRowCount, 1);
+  assert.match(continuation.reason, /stay together/);
+});
+
+test("vertically stacked questions with full geometry are still separate rows", () => {
+  const result = assessPageForBreak({
+    viewportHeight,
+    contentTop: 100,
+    contentBottom: 1300,
+    questions: [
+      { id: "q1", top: 200, bottom: 500, left: 100, right: 950, text: "Q1" },
+      { id: "q2", top: 700, bottom: 1050, left: 100, right: 950, text: "Q2" },
+    ],
+    dividers: [{ index: 0, top: 640, bottom: 660 }],
+  });
+
+  assert.equal(result.needsBreak, true);
+  assert.equal(result.questionRowCount, 2);
+  assert.equal(result.candidate.questionId, "q2");
 });
 
 test("three questions separate at Q2 first so iterative application can later separate Q3", () => {

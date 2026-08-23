@@ -285,6 +285,9 @@ async function readPageMetrics(page) {
         top: rect.top + window.scrollY,
         bottom: rect.bottom + window.scrollY,
         height: rect.height,
+        left: rect.left + window.scrollX,
+        right: rect.right + window.scrollX,
+        width: rect.width,
       };
     };
     const outermost = (elements) => elements.filter(
@@ -718,7 +721,8 @@ function printPageAssessments(pages) {
     const height = Math.round(assessment.pageHeight);
     const marker = assessment.needsBreak ? "CANDIDATE" : assessment.blocked ? "REVIEW" : "ok";
     console.log(
-      `    Page ${page.pageIndex + 1}: ${marker}; ${assessment.questionCount} question(s), ` +
+      `    Page ${page.pageIndex + 1}: ${marker}; ${assessment.questionCount} question(s) in ` +
+        `${assessment.questionRowCount} visual row(s), ` +
         `${height}px content - ${assessment.reason}.`,
     );
   }

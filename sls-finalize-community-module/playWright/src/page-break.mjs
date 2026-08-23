@@ -80,7 +80,8 @@ export function assessPageForBreak({
   );
   const visibleQuestions = questions
     .filter(validBox)
-    .sort((left, right) => left.top - right.top);
+    .sort((left, right) => left.top - right.top || safeLeft(left) - safeLeft(right));
+  const questionRows = groupQuestionRows(visibleQuestions);
   const safeDividers = dividers
     .filter((divider) => validBox(divider) && !divider.disabled && !divider.existingBreak)
     .sort((left, right) => left.top - right.top);
@@ -92,6 +93,7 @@ export function assessPageForBreak({
     longPage: pageHeight >= longPageThreshold,
     blocked: false,
     questionCount: visibleQuestions.length,
+    questionRowCount: questionRows.length,
     dividerCount: safeDividers.length,
     needsBreak: false,
     candidate: null,
@@ -101,28 +103,37 @@ export function assessPageForBreak({
     return { ...base, reason: "no visible question bodies" };
   }
 
-  // Question boundaries take priority over visual length. The runner applies
-  // one break, re-inspects every resulting page, and repeats; therefore always
-  // separating the second question on a page yields one question per page for
-  // Q1, Q2, Q3, and so on without relying on their rendered height.
+  // Question-row boundaries take priority over visual length. Two questions in
+  // separate columns with substantial vertical overlap are one semantic row and
+  // stay on the same page. For a multi-row grid, split before the first question
+  // of row two; the runner then re-inspects the continuation and repeats.
   if (visibleQuestions.length > 1) {
-    const question = visibleQuestions[1];
-    const previousQuestion = visibleQuestions[0];
+    if (questionRows.length === 1) {
+      return {
+        ...base,
+        reason: "side-by-side questions in one visual row stay together",
+      };
+    }
+
+    const previousRow = questionRows[0];
+    const nextRow = questionRows[1];
+    const question = nextRow.questions[0];
+    const questionIndex = visibleQuestions.indexOf(question);
     const candidates = safeDividers.filter(
       (divider) =>
-        divider.top >= Math.min(previousQuestion.bottom, question.top) - 24 &&
-        divider.top < question.top + 8,
+        divider.top >= Math.min(previousRow.bottom, question.top) - 24 &&
+        divider.top <= question.top,
     );
     const divider = candidates.at(-1) ?? null;
     if (divider) {
       return {
         ...base,
         needsBreak: true,
-        reason: "each question starts on its own page",
+        reason: "each visual question row starts on its own page",
         candidate: {
           dividerIndex: divider.index,
           dividerTop: divider.top,
-          questionIndex: 1,
+          questionIndex,
           questionId: question.id ?? null,
           questionText: compactText(question.text),
         },
@@ -131,7 +142,7 @@ export function assessPageForBreak({
     return {
       ...base,
       blocked: true,
-      reason: "multiple questions have no safe divider immediately before the second question",
+      reason: "multiple question rows have no safe divider before the next row",
     };
   }
 
@@ -194,6 +205,52 @@ export function assessPageForBreak({
 
 function validBox(box) {
   return box && Number.isFinite(box.top) && Number.isFinite(box.bottom) && box.bottom >= box.top;
+}
+
+function groupQuestionRows(questions) {
+  const rows = [];
+  for (const question of questions) {
+    const row = rows.find((entry) =>
+      entry.questions.some((existing) => questionsShareVisualRow(existing, question)),
+    );
+    if (!row) {
+      rows.push({
+        top: question.top,
+        bottom: question.bottom,
+        questions: [question],
+      });
+      continue;
+    }
+    row.questions.push(question);
+    row.questions.sort((left, right) => safeLeft(left) - safeLeft(right));
+    row.top = Math.min(row.top, question.top);
+    row.bottom = Math.max(row.bottom, question.bottom);
+  }
+  return rows.sort((left, right) => left.top - right.top);
+}
+
+function questionsShareVisualRow(left, right) {
+  if (![left.left, left.right, right.left, right.right].every(Number.isFinite)) return false;
+  const leftWidth = Math.max(0, left.right - left.left);
+  const rightWidth = Math.max(0, right.right - right.left);
+  const minimumWidth = Math.min(leftWidth, rightWidth);
+  if (minimumWidth <= 0) return false;
+
+  const horizontalOverlap = Math.max(
+    0,
+    Math.min(left.right, right.right) - Math.max(left.left, right.left),
+  );
+  const separatedColumns = horizontalOverlap <= minimumWidth * 0.2;
+  if (!separatedColumns) return false;
+
+  const overlap = Math.max(0, Math.min(left.bottom, right.bottom) - Math.max(left.top, right.top));
+  const minimumHeight = Math.min(left.bottom - left.top, right.bottom - right.top);
+  const topDifference = Math.abs(left.top - right.top);
+  return overlap >= minimumHeight * 0.5 || topDifference <= Math.max(48, minimumHeight * 0.2);
+}
+
+function safeLeft(box) {
+  return Number.isFinite(box?.left) ? box.left : 0;
 }
 
 function compactText(value) {
