@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { runRemoveCopyWorkflow } from "../src/remove-copy-runner.mjs";
+import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 const root = process.cwd();
 const defaultUrl =
@@ -14,6 +15,7 @@ const args = process.argv.slice(2);
 const headless = args.includes("--headless");
 const explicitApply = args.includes("--apply");
 const explicitDryRun = args.includes("--dry-run");
+const selectedWorkflow = isSelectedWorkflowChild(args);
 
 if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not both.");
 
@@ -60,6 +62,12 @@ async function runWithAuthRetry(apply) {
     return await runRemoveCopyWorkflow({ target, options: runOptions, apply });
   } catch (error) {
     if (!/authentication is required|authentication was not found/i.test(error.message)) throw error;
+    if (selectedWorkflow) {
+      stop(
+        "The reusable SLS session is missing or expired. Selected workflow requires a reusable " +
+          "SLS session so its coordinator can refresh authentication and retry this stage.",
+      );
+    }
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");
     if ((await runAuth()).status !== 0) stop("Authentication refresh was not completed.");
     return runRemoveCopyWorkflow({ target, options: runOptions, apply });

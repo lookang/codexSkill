@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { runPageBreakWorkflow } from "../src/page-break-runner.mjs";
+import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 const root = process.cwd();
 const defaultUrl =
@@ -15,6 +16,7 @@ const headless = args.includes("--headless");
 const explicitApply = args.includes("--apply");
 const explicitDryRun = args.includes("--dry-run");
 const verifyAfterApply = args.includes("--verify");
+const selectedWorkflow = isSelectedWorkflowChild(args);
 
 if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not both.");
 
@@ -44,9 +46,11 @@ const options = {
     targetChunkViewports: readNumber("--chunk-viewports", 1.1),
     maximumBreaksPerActivity: readInteger("--max-breaks-per-activity", 20),
   },
-  holdOpen: async () => {
-    await ask("Press Enter after reviewing the final Module View to close Chrome... ");
-  },
+  holdOpen: selectedWorkflow
+    ? null
+    : async () => {
+        await ask("Press Enter after reviewing the final Module View to close Chrome... ");
+      },
 };
 
 let finalResult;
@@ -86,6 +90,12 @@ async function runWithAuthRetry(apply, holdOpen = true) {
     return await runPageBreakWorkflow({ target, options: runOptions, apply });
   } catch (error) {
     if (!/authentication is required|authentication was not found/i.test(error.message)) throw error;
+    if (selectedWorkflow) {
+      stop(
+        "The reusable SLS session is missing or expired. Selected workflow will not pause for " +
+          "authentication so its coordinator can refresh and retry this stage.",
+      );
+    }
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");
     if ((await runAuth()).status !== 0) stop("Authentication refresh was not completed.");
     return runPageBreakWorkflow({ target, options: runOptions, apply });
