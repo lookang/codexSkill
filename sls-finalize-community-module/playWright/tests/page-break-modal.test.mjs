@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
-import { dismissModuleUrlUpdatedModal } from "../src/page-break-runner.mjs";
+import {
+  dismissModuleUrlUpdatedModal,
+  waitForScopedPageBreakSingle,
+} from "../src/page-break-runner.mjs";
 
 test("the Module URL Updated notice is dismissed before the next Edit click", async () => {
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -48,6 +51,58 @@ test("an unrelated message modal is never dismissed", async () => {
 
     assert.equal(await dismissModuleUrlUpdatedModal(page), false);
     assert.equal(await page.locator("#warning").isVisible(), true);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("a delayed nearby Page Break menu is preferred over a distant mounted menu", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage({ viewport: { width: 1200, height: 700 } });
+    await page.setContent(`
+      <style>
+        body { height: 2600px; margin: 0; }
+        .add-component-bar { position: absolute; width: 600px; }
+        #distant { top: 2100px; }
+        #nearby { top: 980px; }
+        .menu, .submenu { list-style: none; margin: 0; padding: 0; }
+        .submenu { display: none; position: absolute; left: 80px; top: 0; }
+        li { position: relative; width: 120px; min-height: 32px; }
+        li:hover > .submenu { display: block; }
+        .item-wrapper { display: block; height: 32px; }
+      </style>
+      <div id="distant" class="add-component-bar">
+        <div class="multi-layer-menu"><ul class="menu">
+          <li class="display"><span class="item-wrapper">Display</span>
+            <ul class="submenu"><li><span>Page Break</span>
+              <ul class="submenu"><li><span>Single</span></li></ul>
+            </li></ul>
+          </li>
+        </ul></div>
+      </div>
+      <script>
+        setTimeout(() => {
+          const nearby = document.createElement('div');
+          nearby.id = 'nearby';
+          nearby.className = 'add-component-bar';
+          nearby.innerHTML = '<div class="multi-layer-menu"><ul class="menu">' +
+            '<li class="display"><span class="item-wrapper">Display</span>' +
+            '<ul class="submenu"><li><span>Page Break</span>' +
+            '<ul class="submenu"><li><span>Single</span></li></ul>' +
+            '</li></ul></li></ul></div>';
+          document.body.appendChild(nearby);
+        }, 650);
+      </script>
+    `);
+
+    const single = await waitForScopedPageBreakSingle(page, 1000, {
+      timeoutMs: 3_000,
+      maximumDistance: 200,
+    });
+
+    assert.equal(await single.isVisible(), true);
+    assert.equal(await single.evaluate((node) => node.closest(".add-component-bar")?.id), "nearby");
   } finally {
     await browser.close();
   }
