@@ -16,6 +16,8 @@ import {
 } from "./page-break.mjs";
 
 const SLS_ORIGIN = "https://vle.learning.moe.edu.sg";
+const PAGE_BREAK_MENU_TIMEOUT_MS = 10_000;
+const PAGE_BREAK_PAGINATION_TIMEOUT_MS = 45_000;
 let expect = baseExpect.configure({ timeout: 20_000 });
 
 export async function runPageBreakWorkflow({ target, options, apply = false }) {
@@ -185,7 +187,7 @@ async function inspectActivity(page, policy, context) {
     await expect
       .poll(() => visiblePageCount(page), {
         message: "Wait for the saved page break to add exactly one page",
-        timeout: 20_000,
+        timeout: PAGE_BREAK_PAGINATION_TIMEOUT_MS,
       })
       .toBe(pageCountBefore + 1)
       .catch(() => {});
@@ -372,34 +374,9 @@ async function insertOnePageBreak(page, candidate) {
   // shell's own click and then follow the real Display > Page Break > Single
   // menu path.
   await divider.evaluate((button) => button.closest(".divider-button")?.click());
-  await page.waitForTimeout(250);
-
-  const pageBreakLabels = page.getByText("Page Break", { exact: true });
-  const menuPositions = await pageBreakLabels.evaluateAll((labels) => labels.map((label, index) => {
-    const root = label.closest("ul")?.parentElement;
-    const rect = root?.getBoundingClientRect();
-    return {
-      index,
-      y: rect ? rect.top + window.scrollY + rect.height / 2 : Number.POSITIVE_INFINITY,
-    };
-  }));
-  const closestMenu = menuPositions
-    .map((entry) => ({ ...entry, distance: Math.abs(entry.y - dividerY) }))
-    .sort((left, right) => left.distance - right.distance)[0];
-  if (!closestMenu || !Number.isFinite(closestMenu.distance) || closestMenu.distance > 400) {
-    throw new GuardError("SLS opened an add-component menu, but its Page Break option could not be scoped safely.");
-  }
-
-  let pageBreakItem = pageBreakLabels.nth(closestMenu.index).locator("xpath=ancestor::li[1]");
-  await pageBreakItem.evaluate((item) => item.click());
-  await page.waitForTimeout(150);
-  pageBreakItem = page.getByText("Page Break", { exact: true })
-    .nth(closestMenu.index)
-    .locator("xpath=ancestor::li[1]");
-  const single = pageBreakItem.getByText("Single", { exact: true });
-  if ((await single.count()) !== 1) {
-    throw new GuardError("SLS's Page Break menu did not expose one unambiguous Single option.");
-  }
+  const single = await waitForScopedPageBreakSingle(page, dividerY, {
+    timeoutMs: PAGE_BREAK_MENU_TIMEOUT_MS,
+  });
 
   const responsePromise = page.waitForResponse(
     (response) => response.url().includes("/apis/lesson/page/break/"),
@@ -421,6 +398,62 @@ async function insertOnePageBreak(page, candidate) {
   }
   await page.waitForTimeout(1200);
   return { status: response.status(), url: response.url() };
+}
+
+export async function waitForScopedPageBreakSingle(
+  page,
+  dividerY,
+  { timeoutMs = PAGE_BREAK_MENU_TIMEOUT_MS, maximumDistance = 600 } = {},
+) {
+  const displayTriggers = page.locator(
+    ".add-component-bar .multi-layer-menu li.display:visible > .item-wrapper:visible",
+  );
+  const deadline = Date.now() + timeoutMs;
+  let closest = null;
+
+  while (Date.now() < deadline) {
+    const positions = await displayTriggers.evaluateAll((triggers) => triggers.map((trigger, index) => {
+      const rect = trigger.getBoundingClientRect();
+      return {
+        index,
+        y: rect.top + window.scrollY + rect.height / 2,
+      };
+    }));
+    closest = positions
+      .map((entry) => ({ ...entry, distance: Math.abs(entry.y - dividerY) }))
+      .sort((left, right) => left.distance - right.distance)[0] ?? null;
+    if (closest && Number.isFinite(closest.distance) && closest.distance <= maximumDistance) break;
+    await page.waitForTimeout(200);
+  }
+
+  if (!closest || !Number.isFinite(closest.distance) || closest.distance > maximumDistance) {
+    throw new GuardError(
+      "SLS did not expose a visible Display menu near the selected divider within the allowed wait.",
+    );
+  }
+
+  const displayTrigger = displayTriggers.nth(closest.index);
+  await displayTrigger.hover();
+  const displayItem = displayTrigger.locator("xpath=parent::li");
+  const pageBreakLabel = displayItem.getByText("Page Break", { exact: true });
+  try {
+    await pageBreakLabel.waitFor({ state: "visible", timeout: timeoutMs });
+  } catch {
+    throw new GuardError("SLS's visible Display menu did not expose Page Break in time.");
+  }
+
+  await pageBreakLabel.hover();
+  const pageBreakItem = pageBreakLabel.locator("xpath=ancestor::li[1]");
+  const single = pageBreakItem.getByText("Single", { exact: true });
+  try {
+    await single.waitFor({ state: "visible", timeout: timeoutMs });
+  } catch {
+    throw new GuardError("SLS's Page Break menu did not expose one visible Single option in time.");
+  }
+  if ((await single.count()) !== 1) {
+    throw new GuardError("SLS's Page Break menu exposed an ambiguous Single option.");
+  }
+  return single;
 }
 
 export async function settleActivity(page) {
