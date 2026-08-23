@@ -23,6 +23,7 @@
     "sls:tag": "node scripts/run.mjs tag",
     "sls:thumbnail": "node scripts/module-action.mjs thumbnail",
     "sls:page-break": "node scripts/page-break.mjs",
+    "sls:remove-copy": "node scripts/remove-copy.mjs",
     "sls:acp-interactive": "node scripts/acp-interactive.mjs",
     "sls:record": "node scripts/record-workflow.mjs",
     "sls:smoke-actions": "node scripts/smoke-module-actions.mjs"
