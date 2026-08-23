@@ -1,8 +1,24 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { chromium, expect as baseExpect } from "@playwright/test";
-import { loadDictionaries, levelToContentMap, proposeQuestionTag, resetDictionaries } from "./question-tagger.mjs";
-import { flattenMathml, looksMathematical } from "./math-features.mjs";
+import { visiblePageContainsModuleTitle } from "./module-identity.mjs";
+import {
+  isSubstantiveCurriculumQuestion,
+  loadDictionaries,
+  levelToContentMap,
+  proposeQuestionTag,
+  questionStemFromSettingsCardText,
+  resetDictionaries
+} from "./question-tagger.mjs";
+import { flattenMathml } from "./math-features.mjs";
+import { createQuestionImageOcr, shouldUseImageOcr } from "./question-evidence.mjs";
+import {
+  inferCurriculumClues,
+  contentMapSupportsStreams,
+  rankContentMapOptions,
+  rankLevelOptions,
+  rankSubjectOptions
+} from "./curriculum-discovery.mjs";
 import {
   createRunPaths,
   loadCheckpoint,
@@ -77,6 +93,9 @@ export async function runSlsWorkflow(config, options, shared = {}) {
 
     if (options.mode === "inspect") {
       report.status = "inspected";
+    } else if (options.mode === "discover") {
+      report.discovery = await discoverCurriculumTaxonomies(page, config, options);
+      report.status = "discovered";
     } else if (options.mode === "scan") {
       await scanModule(page, config, report, options);
       report.status = "scanned";
@@ -85,7 +104,14 @@ export async function runSlsWorkflow(config, options, shared = {}) {
       // subject, level and content map to decide what to put on each question. A
       // placeholder there is not harmless: it produced questions tagged from
       // whatever dictionary happened to share the placeholder's name.
-      const unreviewed = unreviewedPlaceholders(config);
+      // Surgical tagging chooses an official outcome per question from the
+      // harvested dictionary. A broad 30-question quiz legitimately has no one
+      // section outcome, so only Subject, Level and Content Map placeholders block
+      // this mode; section/default outcome placeholders remain a replacement-pass
+      // guard.
+      const unreviewed = unreviewedPlaceholders(config).filter(
+        (field) => !/\.outcome$/i.test(field)
+      );
       if (unreviewed.length > 0) {
         throw new GuardError(
           `This config still holds scaffolded placeholders: ${unreviewed.join(", ")}. ` +
@@ -406,6 +432,9 @@ async function tagEveryQuestion({
     const questionId = questionIds[index];
     const details = cardDetails.find((card) => card.id === questionId);
     const facts = details ? questionMetadata.get(details.number) : null;
+    const reviewedOutcomePrefix = details
+      ? activity.reviewedOutcomePrefixes?.[String(details.number)] ?? null
+      : null;
     const applyKeyword = Boolean(facts && facts.feedbackAssistant);
     // A question that awards marks is a real assessed question, so it belongs in
     // Learning Progress.
@@ -447,6 +476,7 @@ async function tagEveryQuestion({
         tagQuestions: options.tagQuestions && worthTagging,
         dictionaries: await dictionariesFor(),
         previousChoices,
+        reviewedOutcomePrefix,
         onlyQuestion: options.tagOnlyQuestion
       });
     } catch (error) {
@@ -476,11 +506,11 @@ async function tagEveryQuestion({
 // The activity page shows a settings card per question, and that card's title has
 // the mathematics stripped out of it - "Q1 Solve ." for a question that plainly
 // reads "Solve 7x = 3x + 8". The full text lives in ".question-body", which carries
-// no question number of its own. Every question on an activity renders at once, so
-// reading the visible bodies wholesale mixes all of them together and hands each
-// question the whole page's mathematics. The bodies do sit inside
+// no question number of its own. A paginated activity mounts only its current page,
+// so the reader visits every page before matching bodies to settings cards. Bodies
+// sit inside
 // "#component-<questionId>", which is what ties one back to its question.
-async function readOpenQuestionText(page, questionId) {
+export async function readOpenQuestionText(page, questionId) {
   return page
     .evaluate((id) => {
       const deepText = (root) => {
@@ -492,6 +522,10 @@ async function readOpenQuestionText(page, questionId) {
           // The equation is a WIRIS <img>: a data-URI SVG carrying the original
           // MathML in an HTML comment, and no text nodes at all.
           if (tag === "img") {
+            const alternative = node.getAttribute
+              ? node.getAttribute("alt") || node.getAttribute("title") || ""
+              : "";
+            if (alternative) out += ` ${alternative} `;
             const src = node.getAttribute ? node.getAttribute("src") || "" : "";
             if (src.slice(0, 18) === "data:image/svg+xml") {
               try {
@@ -523,7 +557,13 @@ async function readOpenQuestionText(page, questionId) {
       const interaction = Array.from(component.querySelectorAll("akit-interaction"))
         .find((element) => element.getClientRects().length > 0 && deepText(element));
       if (interaction) return deepText(interaction);
-      const bodies = Array.from(component.querySelectorAll(".question-body")).filter(
+      // Multiple-choice answer options are part of the question evidence. They
+      // often contain the discriminating physics concept (for example efficiency
+      // or the direction of a magnetic force), while feedback and suggested
+      // solutions are deliberately excluded.
+      const bodies = Array.from(
+        component.querySelectorAll(".question-body, .answer-options")
+      ).filter(
         (element) => element.getClientRects().length > 0
       );
       // A component repeats its question in the suggested-answer block, so the same
@@ -534,21 +574,158 @@ async function readOpenQuestionText(page, questionId) {
     .catch(() => "");
 }
 
-async function readQuestionStems(page, questionIds) {
+function standardActivityPageButtons(page) {
+  return page.locator(
+    ".activity-navigator .activity-navigator-button.page-button > button:visible",
+  );
+}
+
+function quizQuestionPageButtons(page) {
+  return page.locator(".quiz-navigator-button.page-button:visible");
+}
+
+async function isQuestionPageSelected(button) {
+  const parentClass = (await button.locator("..").getAttribute("class").catch(() => "")) || "";
+  const ownClass = (await button.getAttribute("class").catch(() => "")) || "";
+  return (
+    (await button.getAttribute("aria-current").catch(() => null)) === "page" ||
+    /(^|\s)(active|selected)(\s|$)/i.test(`${ownClass} ${parentClass}`)
+  );
+}
+
+async function selectQuestionPage(page, kind, index) {
+  const buttons = kind === "activity" ? standardActivityPageButtons(page) : quizQuestionPageButtons(page);
+  const count = await buttons.count();
+  if (index < 0 || index >= count) return false;
+  const button = buttons.nth(index);
+  if (!(await isQuestionPageSelected(button))) await button.click();
+  const parameter = kind === "activity" ? "pageNo" : "quizPage";
+  const expectedValue = kind === "activity" ? String(index + 1) : String(index);
+  await expect
+    .poll(async () => {
+      const currentButtons = kind === "activity" ? standardActivityPageButtons(page) : quizQuestionPageButtons(page);
+      const current = currentButtons.nth(index);
+      if ((await current.count()) === 0) return false;
+      const selected = await isQuestionPageSelected(current);
+      const value = new URL(page.url()).searchParams.get(parameter);
+      return selected || value === expectedValue;
+    })
+    .toBe(true);
+  await page.waitForTimeout(450);
+  return true;
+}
+
+async function readHydratedQuestionText(page, questionId) {
+  const component = page.locator(`#component-${questionId}`);
+  if ((await component.count()) === 0 || !(await component.isVisible().catch(() => false))) return "";
+  await component.scrollIntoViewIfNeeded().catch(() => {});
+  let text = await readOpenQuestionText(page, questionId);
+  for (let attempt = 0; attempt < 3 && !text; attempt += 1) {
+    await page.waitForTimeout(400 + attempt * 250);
+    text = await readOpenQuestionText(page, questionId);
+  }
+  return text;
+}
+
+async function ocrQuestionImages(page, questionId, ocr) {
+  const component = page.locator(`#component-${questionId}`);
+  const images = component.locator("img:visible");
+  const eligible = [];
+  for (let index = 0; index < (await images.count()); index += 1) {
+    const image = images.nth(index);
+    const facts = await image
+      .evaluate((element) => ({
+        height: element.getBoundingClientRect().height,
+        src: element.getAttribute("src") || "",
+        width: element.getBoundingClientRect().width,
+      }))
+      .catch(() => null);
+    if (
+      facts &&
+      facts.width >= 100 &&
+      facts.height >= 50 &&
+      !facts.src.startsWith("data:image/svg+xml")
+    ) {
+      eligible.push(image);
+    }
+  }
+  if (eligible.length === 0) return "";
+
+  const recovered = [];
+  for (const image of eligible.slice(0, 3)) {
+    const buffer = await image.screenshot({ animations: "disabled", type: "png" }).catch(() => null);
+    if (!buffer) continue;
+    const result = await ocr.recognize(buffer).catch(() => null);
+    if (result?.text && result.confidence >= 35) {
+      recovered.push(result.text);
+      console.log(`      Local OCR read diagram text (${Math.round(result.confidence)}% confidence).`);
+    }
+  }
+  return [...new Set(recovered)].join(" ");
+}
+
+export async function readQuestionStems(page, questionIds, { enableOcr = true } = {}) {
   const stems = new Map();
-  for (const questionId of questionIds) {
-    let text = await readOpenQuestionText(page, questionId);
-    if (!text) {
-      const component = page.locator(`#component-${questionId}`);
-      if ((await component.count()) > 0) {
-        await component.scrollIntoViewIfNeeded().catch(() => {});
-        for (let attempt = 0; attempt < 3 && !text; attempt += 1) {
-          await page.waitForTimeout(400 + attempt * 250);
-          text = await readOpenQuestionText(page, questionId);
+  const pending = new Set(questionIds);
+  const originalUrl = new URL(page.url());
+  const activityPageCount = await standardActivityPageButtons(page).count();
+  const quizPageCount = await quizQuestionPageButtons(page).count();
+  const ocr = createQuestionImageOcr();
+
+  const collectMountedQuestions = async () => {
+    for (const questionId of [...pending]) {
+      const text = await readHydratedQuestionText(page, questionId);
+      if (!text) continue;
+      let completeText = text;
+      if (enableOcr && shouldUseImageOcr(text)) {
+        const imageText = await ocrQuestionImages(page, questionId, ocr);
+        if (imageText) completeText = `${text} [Diagram OCR: ${imageText}]`;
+      }
+      stems.set(questionId, completeText);
+      pending.delete(questionId);
+    }
+  };
+
+  try {
+    if (activityPageCount > 0) {
+      for (let index = 0; index < activityPageCount; index += 1) {
+        await selectQuestionPage(page, "activity", index);
+        await collectMountedQuestions();
+      }
+    } else if (quizPageCount > 0) {
+      for (const questionId of questionIds) {
+        const cardText = await page
+          .locator(`#settings-card-${questionId}`)
+          .innerText()
+          .catch(() => "");
+        const number = /^\s*Q(\d+)\b/i.exec(cardText)?.[1];
+        const pageIndex = number ? Number(number) - 1 : -1;
+        if (pageIndex >= 0 && pageIndex < quizPageCount) {
+          await selectQuestionPage(page, "quiz", pageIndex);
+          await collectMountedQuestions();
         }
       }
+    } else {
+      await collectMountedQuestions();
     }
-    if (text) stems.set(questionId, text);
+
+    for (const questionId of pending) {
+      // A Quiz renders one question body at a time, while its settings sidebar
+      // exposes all Q1..Q30 headings at once. Those headings contain the complete
+      // stem and are the authoritative fallback for off-page quiz questions.
+      const cardText = await page
+        .locator(`#settings-card-${questionId}`)
+        .innerText()
+        .catch(() => "");
+      const text = questionStemFromSettingsCardText(cardText);
+      if (text) stems.set(questionId, text);
+    }
+  } finally {
+    const originalActivityPage = Number(originalUrl.searchParams.get("pageNo") || "1") - 1;
+    const originalQuizPage = Number(originalUrl.searchParams.get("quizPage") || "0");
+    if (activityPageCount > 0) await selectQuestionPage(page, "activity", originalActivityPage).catch(() => {});
+    else if (quizPageCount > 0) await selectQuestionPage(page, "quiz", originalQuizPage).catch(() => {});
+    await ocr.terminate();
   }
   return stems;
 }
@@ -611,6 +788,7 @@ async function appendProposedOutcome(page, {
   dictionaries: initialDictionaries,
   previousChoices,
   onlyQuestion,
+  reviewedOutcomePrefix,
   sectionContentMap,
   sectionContentMaps,
   sectionSubject,
@@ -672,10 +850,11 @@ async function appendProposedOutcome(page, {
       !options?.refreshTaxonomy &&
       dictionaries.some((entry) => entry.contentMap.toLowerCase() === String(target).toLowerCase());
     if (!harvested) {
-      // Nothing in taxonomy/ describes this map. If the question is mathematical it
-      // is going to be tagged with the map anyway, so read the syllabus straight off
-      // the tree the map renders and cache it for every question after this one.
-      if (!looksMathematical(questionText)) continue;
+      // Nothing in taxonomy/ describes this map. If this is a substantive assessed
+      // question, read the syllabus straight off the tree the map renders and cache
+      // it for every question after this one. This is deliberately subject-neutral:
+      // conceptual Physics questions need not contain a mathematical operator.
+      if (!isSubstantiveCurriculumQuestion(questionText, sectionSubject)) continue;
       console.log(`      Question ${questionId}: harvesting "${target}" from this question...`);
       const harvestedMap = await harvestMapFromQuestion(page, {
         contentMap: target,
@@ -705,6 +884,7 @@ async function appendProposedOutcome(page, {
       onlyQuestion,
       contentMap: target,
       activityTitle,
+      reviewedOutcomePrefix,
       sectionSubject,
       sectionLevel
     });
@@ -792,14 +972,28 @@ async function readMapTree(page, { contentMap }) {
     try {
       await chevron.scrollIntoViewIfNeeded({ timeout: 5_000 });
       await chevron.click({ timeout: 5_000 });
-    } catch {
-      break;
+    } catch (error) {
+      // A long tree can place a chevron under a transient SLS overlay after the
+      // scroll. Dispatch the same click once against the re-located wrapper; never
+      // silently return a zero-outcome taxonomy from a half-expanded syllabus.
+      const retry = treeRows.nth(next).locator(".tree-row-item-icon-wrapper").first();
+      try {
+        await retry.dispatchEvent("click");
+      } catch {
+        throw new GuardError(
+          `Could not expand learning-objective branch "${rows[next].text.slice(0, 80)}": ${firstLine(error.message)}`
+        );
+      }
     }
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(250);
   }
 
   const rows = await readTaxonomyRows(page);
-  return { contentMap, rowCount: rows.length, outcomes: buildOutcomePaths(rows) };
+  const outcomes = buildOutcomePaths(rows);
+  if (outcomes.length === 0) {
+    throw new GuardError(`${contentMap} exposed a tree but no readable learning outcomes.`);
+  }
+  return { contentMap, rowCount: rows.length, outcomes };
 }
 
 // Applies one content map to the open question: proposes an outcome from that
@@ -814,6 +1008,7 @@ async function applyContentMapToQuestion(page, {
   onlyQuestion,
   contentMap,
   activityTitle,
+  reviewedOutcomePrefix,
   sectionSubject,
   sectionLevel
 }) {
@@ -824,7 +1019,8 @@ async function applyContentMapToQuestion(page, {
   // in a mathematics activity must still count as a reflection.
   const proposal = proposeQuestionTag(questionText, dictionaries, {
     allowedContentMaps: [contentMap],
-    contextText: activityTitle ?? ""
+    contextText: activityTitle ?? "",
+    reviewedOutcomePrefix
   });
   if (proposal.decision === "skip") {
     console.log(`      Question ${questionId}: no tag proposed (${proposal.reason}).`);
@@ -970,6 +1166,7 @@ async function ensureQuestionTags(page, {
   tagQuestions,
   dictionaries,
   previousChoices,
+  reviewedOutcomePrefix,
   onlyQuestion
 }) {
   let card = page.locator(`#settings-card-${questionId}`);
@@ -1003,7 +1200,7 @@ async function ensureQuestionTags(page, {
   } else {
     console.log(`      Question ${questionId}: question body could not be read; no outcome will be added.`);
   }
-  const mathematical = looksMathematical(fullText);
+  const curriculumQuestion = isSubstantiveCurriculumQuestion(fullText, sectionSubject);
 
   // A question that awards marks is a real assessed question, so it is included in
   // Learning Progress. Anything else is left exactly as the author set it, and the
@@ -1014,9 +1211,9 @@ async function ensureQuestionTags(page, {
   // and is still not a mathematics question, and putting it into Learning Progress
   // would count it towards a pupil's mastery of the syllabus. It has to be both.
   // The box is still never unticked - only ever ticked when it should be on.
-  if (includeInProgress && !mathematical) {
+  if (includeInProgress && !curriculumQuestion) {
     console.log(
-      `      Question ${questionId} awards marks but asks no mathematics; left out of Learning Progress.`
+      `      Question ${questionId} awards marks but is reflective or unreadable; left out of Learning Progress.`
     );
   } else if (includeInProgress && !(await progress.isChecked())) {
     await page
@@ -1053,6 +1250,7 @@ async function ensureQuestionTags(page, {
       questionTags,
       dictionaries,
       previousChoices,
+      reviewedOutcomePrefix,
       onlyQuestion,
       sectionContentMap: contentMap,
       sectionContentMaps,
@@ -1089,7 +1287,7 @@ async function ensureQuestionTags(page, {
 
   await openQuestionSettings(card, page);
   if (applyKeyword) await expect(page.locator(".keywords").first()).toContainText(keyword);
-  if (includeInProgress && mathematical) {
+  if (includeInProgress && curriculumQuestion) {
     await expect(
       page.locator("#question-include-in-content-mastery-checkbox"),
       `Question ${questionId} must retain Include in Learning Progress after save and reopen`
@@ -1214,6 +1412,7 @@ async function ensureSectionOutcome(page, config, section) {
 
   const component = page.locator(`#component-${section.id}`);
   await expect(component).toBeVisible();
+  await dismissVisibleShellOverlay(page);
   await component.click();
   await openSectionTagsEditor(page, section);
 
@@ -1296,6 +1495,7 @@ async function sectionOutcomeIsPersisted(page, section) {
 
   const component = page.locator(`#component-${section.id}`);
   if ((await component.count()) !== 1 || !(await component.isVisible())) return false;
+  await dismissVisibleShellOverlay(page);
   await component.click();
 
   // Read the tagging tree itself rather than inferring from the section cover.
@@ -1314,6 +1514,30 @@ async function sectionOutcomeIsPersisted(page, section) {
   await page.reload({ waitUntil: "domcontentloaded" });
   await assertAuthenticated(page);
   return persisted;
+}
+
+// In the narrow/windowed SLS editor the activity sidebar behaves as a temporary
+// drawer. Navigating directly to another section can preserve that drawer in its
+// open state, leaving header .ui-shell-overlay over the whole main canvas. The
+// section component is visible underneath, but every ordinary click is intercepted
+// until the drawer closes. Click the overlay itself (the same action as a person
+// clicking outside the drawer), then verify it is genuinely gone before touching
+// section metadata. This is not a force-click and never hides a modal or mutates
+// lesson content.
+export async function dismissVisibleShellOverlay(page) {
+  const overlay = page.locator("header .ui-shell-overlay.is-visible:visible").first();
+  if ((await overlay.count()) === 0 || !(await overlay.isVisible().catch(() => false))) return false;
+
+  console.log("  Closing the open SLS navigation drawer before editing section metadata...");
+  await overlay.click({ position: { x: 8, y: 8 }, timeout: 5_000 }).catch(async () => {
+    // Some SLS builds attach the close handler to the drawer's visible pin
+    // control instead of the overlay. Re-locate it after the failed click because
+    // the header may have rerendered.
+    const close = page.locator(".left-menu-pin .pin-control:visible").first();
+    if ((await close.count()) > 0) await close.click({ timeout: 5_000 });
+  });
+  await expect(overlay).toBeHidden({ timeout: 5_000 });
+  return true;
 }
 
 async function visibleOutcomeExists(page, outcome) {
@@ -1642,7 +1866,7 @@ async function sectionActivityScope(page, section) {
   }
 }
 
-async function sidebarActivityMatch(page, title, section = null) {
+export async function sidebarActivityMatch(page, title, section = null) {
   const sectionTitle = typeof section === "string" ? section : (section?.title ?? null);
   const scope = await sectionActivityScope(page, section);
   const root = scope ?? page;
@@ -1790,8 +2014,35 @@ async function clickOverflowMenuItem(page, title, itemName, sectionTitle = null)
   );
 }
 
-async function overflowMenuForTitle(page, title, sectionTitle = null) {
-  const menus = page.locator(".bx--overflow-menu.side-nav-toolbar");
+export async function overflowMenuForTitle(page, title, sectionTitle = null) {
+  let menuScope = page;
+  if (sectionTitle) {
+    const headings = page.locator("button.bx--accordion__heading");
+    const sectionItems = [];
+    for (let index = 0; index < (await headings.count()); index += 1) {
+      const heading = headings.nth(index);
+      const label = normalize(
+        (await heading.locator("span.title").first().textContent().catch(() => "")) ||
+          (await heading.innerText().catch(() => "")),
+      );
+      if (label !== normalize(sectionTitle)) continue;
+      const item = heading.locator(
+        "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' bx--accordion__item ')][1]",
+      );
+      if ((await item.count()) === 1) sectionItems.push(item);
+    }
+    if (sectionItems.length !== 1) {
+      throw new GuardError(
+        `Expected one sidebar section named "${sectionTitle}"; found ${sectionItems.length}.`,
+      );
+    }
+    menuScope = sectionItems[0];
+  }
+
+  // Activity titles are not unique across sections ("Success Criteria" and
+  // "Assess your Learning" commonly repeat). Restrict the search to the current
+  // section before matching the row title, so the correct menu is deterministic.
+  const menus = menuScope.locator(".bx--overflow-menu.side-nav-toolbar");
   const count = await menus.count();
   const matches = [];
   for (let index = 0; index < count; index += 1) {
@@ -1913,11 +2164,11 @@ async function listQuestionCardIds(page) {
 }
 
 // Reads per-question facts from the question body, not the settings card: the
-// card never shows the Feedback Assistant banner or the marks. In a quiz the
-// questions live one per page, so every page is opened in turn; other activities
-// render all their questions on a single page.
-async function readQuestionMetadata(page) {
+// card never shows the Feedback Assistant banner or the marks. Both quizzes and
+// ordinary activities can mount one page at a time, so every page is opened.
+export async function readQuestionMetadata(page) {
   const metadata = new Map();
+  const originalUrl = new URL(page.url());
 
   const recordVisible = async () => {
     // SLS renders the mathematics as MathML/KaTeX inside a shadow root on
@@ -1940,6 +2191,10 @@ async function readQuestionMetadata(page) {
             // was read as "Solve .". The SVG carries the original MathML in an HTML
             // comment; lift it out so the equation survives into the text.
             if (tag === "img") {
+              const alternative = node.getAttribute
+                ? node.getAttribute("alt") || node.getAttribute("title") || ""
+                : "";
+              if (alternative) out += ` ${alternative} `;
               const src = node.getAttribute ? node.getAttribute("src") || "" : "";
               if (src.slice(0, 18) === "data:image/svg+xml") {
                 try {
@@ -1977,7 +2232,7 @@ async function readQuestionMetadata(page) {
         // in the right-hand drawer was read, and that card shows a title with the
         // mathematics stripped out ("Q1 Solve .") plus its own tag controls.
         const containers = document.querySelectorAll(
-          ".lesson-activity-container, .lesson-activity-component, .quiz-question-container, .question-body"
+          ".lesson-activity-container, .lesson-activity-component, .quiz-question-container, .question-body, [id^='settings-card-']"
         );
         return Array.from(containers).map((element) => ({
           number: questionNumber(element),
@@ -2018,22 +2273,29 @@ async function readQuestionMetadata(page) {
     }
   };
 
-  const pageButtons = page.locator(".quiz-navigator-button.page-button");
-  const pageCount = await pageButtons.count();
+  const activityButtons = standardActivityPageButtons(page);
+  const quizButtons = quizQuestionPageButtons(page);
+  const activityPageCount = await activityButtons.count();
+  const quizPageCount = await quizButtons.count();
+  const pageCount = activityPageCount || quizPageCount;
   if (pageCount === 0) {
     await recordVisible();
     return metadata;
   }
 
   for (let index = 0; index < pageCount; index += 1) {
-    await pageButtons.nth(index).click().catch(() => {});
-    await page.waitForTimeout(1200);
+    await selectQuestionPage(page, activityPageCount ? "activity" : "quiz", index);
     await recordVisible();
   }
+  const originalIndex = activityPageCount
+    ? Number(originalUrl.searchParams.get("pageNo") || "1") - 1
+    : Number(originalUrl.searchParams.get("quizPage") || "0");
+  await selectQuestionPage(page, activityPageCount ? "activity" : "quiz", originalIndex).catch(() => {});
   return metadata;
 }
 
 async function inventoryModule(page) {
+  const originalUrl = page.url();
   const sectionHeadings = page.locator("button.bx--accordion__heading");
   const sections = [];
   const count = await sectionHeadings.count();
@@ -2054,12 +2316,167 @@ async function inventoryModule(page) {
       activities: activities.map(normalize)
     });
   }
+  const moduleEvidence = await readModuleEvidence(page, originalUrl);
+  if (moduleEvidence.subjectLevels?.length || moduleEvidence.contentMaps?.length) {
+    const pairs = (moduleEvidence.subjectLevels ?? [])
+      .map((entry) => `${entry.subject} / ${entry.level}`)
+      .join(" | ");
+    console.log(
+      `Existing saved Module Tags: ${pairs || "(no Subject/Level)"}; ` +
+        `${(moduleEvidence.contentMaps ?? []).join(" | ") || "(no selected Content Map)"}.`,
+    );
+  } else if (moduleEvidence.error) {
+    console.log(`Module-level curriculum evidence could not be read: ${moduleEvidence.error}`);
+  }
   return {
     url: page.url(),
     title: await page.title(),
     sectionCount: count,
-    sections
+    sections,
+    moduleEvidence,
   };
+}
+
+// Module Tags are saved on Introduction, independently of the Section Tags that
+// the older scanner reads. They are authoritative evidence for Subject, Level,
+// and Content Map when a module title omits P/S markers. This reader never types,
+// selects, or saves: it only opens the existing module-details form and navigates
+// back to the original URL afterwards.
+async function readModuleEvidence(page, restoreUrl) {
+  const moduleId = /\/module\/(?:edit|view)\/([0-9a-f-]{36})/i.exec(restoreUrl)?.[1];
+  if (!moduleId) return { subjectLevels: [], contentMaps: [], error: "module ID was not present in the URL" };
+  try {
+    await page.goto(`${SLS_ORIGIN}/admin/community-gallery/module/edit/${moduleId}`, {
+      waitUntil: "domcontentloaded",
+    });
+    await assertAuthenticated(page);
+    await page.waitForTimeout(1_200);
+
+    const { subjects, levels } = await openModuleTagsEditor(page);
+
+    const subjectLevels = [];
+    const rowCount = Math.min(await subjects.count(), await levels.count());
+    for (let index = 0; index < rowCount; index += 1) {
+      const subject = normalize(await subjects.nth(index).inputValue().catch(() => ""));
+      const level = normalize(await levels.nth(index).inputValue().catch(() => ""));
+      if (subject && level) subjectLevels.push({ subject, level });
+    }
+
+    // The Module Tags accordion is a sibling of the Learning Outcomes heading,
+    // not a descendant of its component wrapper. Search visible accordion
+    // headings on this dedicated module-details route.
+    const contentMaps = (await page
+      .locator("button.bx--accordion__heading:visible")
+      .allTextContents()
+      .catch(() => []))
+      .filter((text) => /-\s*[1-9]\d* selected\s*$/i.test(normalize(text)))
+      .map((text) => normalize(text).replace(/\s*-\s*[1-9]\d* selected$/, "").trim())
+      .filter(Boolean);
+    const moduleText = normalize(await page.locator("body").innerText().catch(() => "")).slice(0, 8_000);
+    const descriptionLabel = page.getByText("Module Description", { exact: true }).first();
+    const descriptionEditor = descriptionLabel.locator(
+      "xpath=following::*[@contenteditable='true' or self::textarea][1]",
+    );
+    let description = "";
+    if ((await descriptionEditor.count()) > 0) {
+      description = normalize(
+        (await descriptionEditor.innerText().catch(() => "")) ||
+          (await descriptionEditor.inputValue().catch(() => "")),
+      ).slice(0, 4_000);
+    }
+
+    return {
+      subjectLevels,
+      contentMaps: [...new Set(contentMaps)],
+      moduleText,
+      description,
+      sourceUrl: page.url(),
+      readOnly: true,
+    };
+  } catch (error) {
+    return { subjectLevels: [], contentMaps: [], error: firstLine(error.message), readOnly: true };
+  } finally {
+    if (page.url() !== restoreUrl) {
+      await page.goto(restoreUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
+      await assertAuthenticated(page).catch(() => {});
+    }
+  }
+}
+
+// Opens the module's Learning Outcomes editor and its blue Module Tags accordion.
+// Both the evidence reader and the taxonomy harvester must enter through this
+// component first; the module edit route initially renders only the cover card.
+// This helper opens existing UI only and never changes or saves a field.
+async function openModuleTagsEditor(page) {
+  const learningOutcomes = page.getByText("Learning Outcomes", { exact: true }).first();
+  let scope = learningOutcomes.locator("xpath=ancestor::*[starts-with(@id,'component-')][1]");
+  if ((await scope.count()) === 0) {
+    scope = learningOutcomes.locator("xpath=ancestor::*[contains(@class,'card-component')][1]");
+  }
+  if ((await scope.count()) === 0) scope = page.locator("body");
+
+  let subjects = page.getByPlaceholder("Select Subject", { exact: true });
+  let levels = page.getByPlaceholder("Select Level", { exact: true });
+  if ((await subjects.count()) === 0 || (await levels.count()) === 0) {
+    // The edit indicator can be mounted while the Learning Outcomes card is
+    // collapsed, but SLS ignores its click until the card is open. Expand the
+    // saved read-only summary first so a fresh browser state is deterministic.
+    const summary = page.getByRole("button", { name: "Learning Outcomes", exact: true }).first();
+    if (
+      (await summary.count()) > 0 &&
+      (await summary.getAttribute("aria-expanded").catch(() => null)) !== "true"
+    ) {
+      await summary.click().catch(() => {});
+      await page.waitForTimeout(500);
+    }
+    const pencil = scope
+      .locator('.edit-indicator, button:has(svg[name="Pencil24"]), svg[name="Pencil24"]')
+      .first();
+    if ((await pencil.count()) > 0) {
+      await scope.hover().catch(() => {});
+      await pencil.click({ timeout: 5_000 }).catch(async () => pencil.dispatchEvent("click"));
+      await page.waitForTimeout(1_200);
+      subjects = page.getByPlaceholder("Select Subject", { exact: true });
+      levels = page.getByPlaceholder("Select Level", { exact: true });
+    }
+  }
+
+  // The form keeps Subject/Level inputs mounted while the blue Module Tags
+  // accordion is collapsed, but hides the selected Content Map row.
+  const expanded = await expandModuleTagsAccordion(page);
+  return {
+    subjects: page.getByPlaceholder("Select Subject", { exact: true }),
+    levels: page.getByPlaceholder("Select Level", { exact: true }),
+    expanded
+  };
+}
+
+async function expandModuleTagsAccordion(page) {
+  const title = page
+    .locator("p.bx--accordion__title")
+    .filter({ hasText: /^\s*Module Tags\s*$/i })
+    .first();
+  if ((await title.count().catch(() => 0)) === 0) return false;
+
+  let heading = title.locator("xpath=ancestor::button[contains(@class,'bx--accordion__heading')][1]");
+  if ((await heading.count().catch(() => 0)) === 0) {
+    const item = title.locator(
+      "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' bx--accordion__item ')][1]"
+    );
+    heading = item.locator("button.bx--accordion__heading").first();
+  }
+  if ((await heading.count().catch(() => 0)) !== 1) return false;
+
+  const expanded = await heading.getAttribute("aria-expanded").catch(() => null);
+  const item = heading.locator(
+    "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' bx--accordion__item ')][1]"
+  );
+  const content = item.locator(".bx--accordion__content").first();
+  if (expanded !== "true" && !(await content.isVisible().catch(() => false))) {
+    await heading.click();
+    await page.waitForTimeout(700);
+  }
+  return true;
 }
 
 async function enterEditMode(page, module) {
@@ -2078,16 +2495,35 @@ async function enterEditMode(page, module) {
 }
 
 async function assertModule(page, module) {
-  if (module.title) {
-    try {
-      await expect(page.getByText(module.title, { exact: true }).first()).toBeVisible();
-    } catch (error) {
-      await assertAuthenticated(page);
-      throw error;
-    }
-  }
   if (!page.url().includes(module.id)) {
     throw new GuardError(`The page URL does not contain expected module ID ${module.id}.`);
+  }
+  if (!module.title) return;
+
+  // SLS may prepend the saved Subject and Level to the module title in its
+  // header (for example, "Mathematics - G3MATHS Secondary 2 ..."). An exact
+  // text-node locator therefore rejects the correct module even though its UUID
+  // and complete configured core title are both present. Check normalized,
+  // visible page text instead: prefixes and harmless punctuation are accepted,
+  // while a different title still stops before Edit is clicked.
+  let visibleText = "";
+  try {
+    await expect
+      .poll(
+        async () => {
+          visibleText = await page.locator("body").innerText().catch(() => "");
+          return visiblePageContainsModuleTitle(module.title, visibleText);
+        },
+        { timeout: 15_000 },
+      )
+      .toBe(true);
+  } catch {
+    await assertAuthenticated(page);
+    const preview = normalize(visibleText).slice(0, 500);
+    throw new GuardError(
+      `The page URL has the expected module ID, but its visible title does not contain ` +
+        `"${module.title}". Visible page text starts: ${preview || "(empty)"}`,
+    );
   }
 }
 
@@ -2106,7 +2542,7 @@ async function assertAuthenticated(page) {
     /mims|sign in|log in/i.test(`${url}\n${bodyText.slice(0, 2_000)}`)
   ) {
     throw new GuardError(
-      `SLS authentication is required. Run npm.cmd run sls:auth and sign in manually. Current URL: ${url}`
+      `SLS authentication is required. Run npm run sls:auth (npm.cmd on Windows) and sign in manually. Current URL: ${url}`
     );
   }
 }
@@ -2116,7 +2552,7 @@ export async function assertAuthStateAvailable(authStatePath) {
     await fs.access(authStatePath);
   } catch {
     throw new GuardError(
-      `Reusable SLS authentication was not found at ${authStatePath}. Run npm.cmd run sls:auth and sign in manually.`
+      `Reusable SLS authentication was not found at ${authStatePath}. Run npm run sls:auth (npm.cmd on Windows) and sign in manually.`
     );
   }
 }
@@ -2218,14 +2654,51 @@ async function readTaxonomyRows(page) {
   // into the parent's label (making an expanded branch look like a new one and
   // getting it clicked shut again), and an unscoped querySelector would report a
   // branch as an outcome merely because a descendant is one.
-  return page.$$eval("ul.tree-list li.tree-row", (nodes) =>
-    nodes
+  return page.$$eval("ul.tree-list li.tree-row", (nodes) => {
+    const deepText = (root) => {
+      let out = "";
+      const walk = (node) => {
+        if (!node) return;
+        const tag = node.nodeName ? node.nodeName.toLowerCase() : "";
+        if (tag === "style" || tag === "script") return;
+        if (tag === "img") {
+          // WIRIS equation images expose a human-readable alt value (for example
+          // "F equals m r omega squared"). Keep it so otherwise-identical H2
+          // Physics outcomes remain distinguishable during question matching.
+          const alt = node.getAttribute ? node.getAttribute("alt") || "" : "";
+          if (alt) out += ` ${alt} `;
+          else {
+            const src = node.getAttribute ? node.getAttribute("src") || "" : "";
+            if (src.startsWith("data:image/svg+xml")) {
+              try {
+                const svg = decodeURIComponent(src.replace(/^data:image\/svg\+xml[^,]*,/, ""));
+                const found = /<!--\s*MathML:\s*([\s\S]*?)-->/.exec(svg);
+                if (found) out += ` ${found[1]} `;
+              } catch {
+                // Preserve the surrounding official wording when one equation
+                // image is malformed.
+              }
+            }
+          }
+          return;
+        }
+        if (node.nodeType === Node.TEXT_NODE) {
+          out += ` ${node.nodeValue}`;
+          return;
+        }
+        for (const child of node.childNodes || []) walk(child);
+      };
+      walk(root);
+      return out.replace(/\s+/g, " ").trim();
+    };
+
+    return nodes
       .filter((li) => li.getClientRects().length > 0)
       .map((li) => {
         const item = li.querySelector(":scope > .tree-row-item");
         const label = item ? item.querySelector(".node-container .rich-text") : null;
         return {
-          text: ((label ? label.innerText : "") || "").replace(/\s+/g, " ").trim(),
+          text: deepText(label),
           // Depth comes from nesting, not padding: every row carries the same
           // padding-left, and the visual indent comes from being inside its parent.
           depth: (() => {
@@ -2247,8 +2720,8 @@ async function readTaxonomyRows(page) {
           ),
           expandable: Boolean(item && item.querySelector(":scope > .tree-row-item-icon-wrapper svg"))
         };
-      })
-  );
+      });
+  });
 }
 
 // A harvested content map is reusable across every module at that level, so it is
@@ -2379,9 +2852,28 @@ async function harvestTaxonomy(page, section) {
   };
 }
 
+function activitiesInTargetScope(config, section) {
+  const targetActivityId = config.target?.activityId;
+  if (!targetActivityId) return section.activities;
+  return section.activities.filter((activity) => String(activity.id ?? "") === String(targetActivityId));
+}
+
+function assertTargetActivityConfigured(config) {
+  const targetActivityId = config.target?.activityId;
+  if (!targetActivityId) return;
+  const matches = config.sections.flatMap((section) =>
+    section.activities.filter((activity) => String(activity.id ?? "") === String(targetActivityId))
+  );
+  if (matches.length !== 1) {
+    throw new GuardError(
+      `The supplied activity URL targets ${targetActivityId}, but the matching config contains ${matches.length} activity entries with that ID.`
+    );
+  }
+}
+
 async function scanSectionContent(page, config, section) {
   const activities = [];
-  for (const activity of section.activities) {
+  for (const activity of activitiesInTargetScope(config, section)) {
     const entry = { title: activity.title, questions: [] };
     try {
       await openSection(page, config, section);
@@ -2545,7 +3037,10 @@ function isPlaceholderPath(value) {
 // pass creates nothing and deletes nothing - it only ever appends a tag to a
 // question that should have one.
 async function tagModuleInPlace(page, config, report, options = {}, checkpoint = null, checkpointPath = null, runDir = null) {
+  assertTargetActivityConfigured(config);
   for (const section of config.sections) {
+    const targetActivities = activitiesInTargetScope(config, section);
+    if (targetActivities.length === 0) continue;
     console.log(`[Section ${section.label}] ${section.title}`);
     const resolved = await openSection(page, config, section);
     section.id = resolved.id;
@@ -2553,7 +3048,7 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
     // questions.
 
     const sectionReport = { label: section.label, title: section.title, activities: [] };
-    for (const activity of section.activities) {
+    for (const activity of targetActivities) {
       const entry = { title: activity.title, tagged: false };
       try {
         await openSection(page, config, section);
@@ -2582,6 +3077,7 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
 }
 
 async function scanModule(page, config, report, options = {}) {
+  assertTargetActivityConfigured(config);
   const sections = [];
   let taxonomy = null;
   for (const section of config.sections) {
@@ -2636,6 +3132,364 @@ async function scanModule(page, config, report, options = {}) {
     sections.push({ label: section.label, title: section.title, id: section.id, activities });
   }
   report.scan = { contentMap: config.defaults.contentMap, taxonomy, sections };
+}
+
+// Discovers official SLS learning outcomes without saving anything. An existing
+// saved Module Tag is authoritative and already exposes the exact syllabus tree,
+// so read that first. Only modules without a readable saved map fall back to the
+// Subject -> Level -> Content Map cascade in an unsaved question details modal.
+async function discoverCurriculumTaxonomies(page, config, options = {}) {
+  const clues = inferCurriculumClues(config);
+  if (!clues.level) {
+    throw new GuardError(
+      `Neither the saved Module Tags nor the module title exposed a usable level. ` +
+      `Add a level or review the module metadata before crawling SLS.`
+    );
+  }
+
+  const savedModuleTaxonomies = await harvestSavedModuleTaxonomies(page, config, clues);
+  if (savedModuleTaxonomies.length > 0) {
+    console.log(
+      "  Saved Module Tags discovery complete. No unsaved Subject -> Level -> Content Map search was needed."
+    );
+    return {
+      readOnly: true,
+      subjects: [...new Set(savedModuleTaxonomies.map((entry) => entry.subject).filter(Boolean))],
+      level: clues.level,
+      contentMaps: savedModuleTaxonomies,
+      source: {
+        type: "existing saved SLS Module Tags",
+        url: `${SLS_ORIGIN}/admin/community-gallery/module/edit/${config.module.id}`
+      }
+    };
+  }
+
+  if ((clues.existingContentMaps ?? []).length > 0) {
+    console.log(
+      "  Existing Module Tag summaries were found, but their learning-objective trees could not be read; " +
+        "falling back to the unsaved question cascade."
+    );
+  }
+
+  const target = await openFirstQuestionForDiscovery(page, config);
+  console.log(
+    `  Crawling SLS from question ${target.questionId} in ` +
+      `${target.section.label}. ${target.activity.title} (nothing will be saved).`
+  );
+  if (target.questionText) {
+    console.log(`    Question evidence: ${target.questionText.slice(0, 180)}`);
+  }
+
+  const subjectCombos = page.getByPlaceholder("Select Subject", { exact: true });
+  const levelCombos = page.getByPlaceholder("Select Level", { exact: true });
+  const initialRow = await ensureEmptyDiscoveryRow(page, subjectCombos, levelCombos);
+  const subjectLabels = await collectFilteredOptions(page, subjectCombos.nth(initialRow), clues.subjectQueries);
+  const rankedSubjects = rankSubjectOptions(subjectLabels, clues);
+  const subjects = selectDiscoverySubjects(rankedSubjects, clues);
+  console.log(`    Subject cascade${subjects.length === 1 ? "" : "s"}: ${subjects.map((entry) => entry.label).join(" | ")}`);
+
+  const harvested = [];
+  for (const subject of subjects) {
+    await openDiscoveryQuestionModal(page, target.questionId);
+    const { level, maps } = await discoverMapsForSubject(page, subject, clues);
+    console.log(`    ${subject.label} / ${level.label}:`);
+    maps.forEach((candidate, index) => console.log(`      ${index + 1}. ${candidate.label}`));
+
+    for (const candidate of maps) {
+      await openDiscoveryQuestionModal(page, target.questionId);
+      const taxonomy = await harvestMapFromQuestion(page, {
+        contentMap: candidate.label,
+        subject: subject.label,
+        level: level.label,
+        questionId: target.questionId
+      });
+      if (!taxonomy?.outcomes?.length) {
+        console.log(`      ${candidate.label}: no outcomes could be read; skipped.`);
+        continue;
+      }
+      const cachePath = taxonomyCachePath(process.cwd(), candidate.label);
+      await saveJson(cachePath, {
+        ...taxonomy,
+        subject: subject.label,
+        level: level.label,
+        harvestedAt: new Date().toISOString(),
+        discoveredFromModule: config.module.id
+      });
+      console.log(
+        `      ${candidate.label}: harvested ${taxonomy.outcomes.length} outcomes to ` +
+          `${path.relative(process.cwd(), cachePath)}.`
+      );
+      harvested.push({
+        subject: subject.label,
+        level: level.label,
+        contentMap: candidate.label,
+        outcomes: taxonomy.outcomes.length
+      });
+    }
+  }
+
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await assertAuthenticated(page);
+  if (harvested.length === 0) {
+    throw new GuardError("No matching SLS taxonomy could be harvested. No SLS changes were saved.");
+  }
+  console.log("  Discovery complete. The question modal was reloaded without saving.");
+  return {
+    readOnly: true,
+    subjects: subjects.map((entry) => entry.label),
+    level: clues.level,
+    contentMaps: harvested,
+    source: {
+      section: target.section.label,
+      activity: target.activity.title,
+      questionId: target.questionId,
+      questionText: target.questionText
+    }
+  };
+}
+
+// Reads the exact learning-objective trees already attached to the module. This
+// route is both safer and more accurate than re-selecting Subject, Level and
+// Content Map inside a question: it uses saved SLS metadata, expands only existing
+// accordions, never touches a checkbox, and never clicks Save.
+async function harvestSavedModuleTaxonomies(page, config, clues) {
+  const contentMaps = [...new Set((clues.existingContentMaps ?? []).map(normalize).filter(Boolean))];
+  if (contentMaps.length === 0) return [];
+
+  const restoreUrl = page.url();
+  const subject = normalize(config.module?.curriculumEvidence?.subject ?? config.defaults?.subject ?? "");
+  const level = normalize(config.module?.curriculumEvidence?.level ?? config.defaults?.level ?? clues.level ?? "");
+  const harvested = [];
+
+  console.log(
+    `  Existing saved Module Tag${contentMaps.length === 1 ? "" : "s"} found; ` +
+      "harvesting its official learning objectives first (nothing will be saved)."
+  );
+
+  try {
+    await page.goto(`${SLS_ORIGIN}/admin/community-gallery/module/edit/${config.module.id}`, {
+      waitUntil: "domcontentloaded"
+    });
+    await assertAuthenticated(page);
+    await page.waitForTimeout(1_200);
+    const moduleTags = await openModuleTagsEditor(page);
+    if (!moduleTags.expanded) {
+      console.log("    The saved Module Tags accordion could not be opened.");
+      return harvested;
+    }
+
+    for (const contentMap of contentMaps) {
+      const summary = page
+        .getByRole("button", {
+          name: new RegExp(`^${escapeRegExp(contentMap)} - \\d+ selected$`)
+        })
+        .first();
+      if ((await summary.count()) === 0) {
+        console.log(`    ${contentMap}: the saved summary row was not visible; skipped.`);
+        continue;
+      }
+
+      const taxonomy = await readMapTree(page, { contentMap });
+      if (!taxonomy?.outcomes?.length) {
+        console.log(`    ${contentMap}: its saved learning-objective tree exposed no readable outcomes; skipped.`);
+        continue;
+      }
+
+      const cachePath = taxonomyCachePath(process.cwd(), contentMap);
+      const saved = {
+        ...taxonomy,
+        subject: subject || null,
+        level: level || null,
+        harvestedAt: new Date().toISOString(),
+        discoveredFromModule: config.module.id,
+        discoverySource: "existing saved SLS Module Tags"
+      };
+      await saveJson(cachePath, saved);
+      console.log(
+        `    ${contentMap}: harvested ${taxonomy.outcomes.length} outcomes from saved Module Tags to ` +
+          `${path.relative(process.cwd(), cachePath)}.`
+      );
+      harvested.push({
+        subject: subject || null,
+        level: level || null,
+        contentMap,
+        outcomes: taxonomy.outcomes.length,
+        source: "existing saved SLS Module Tags"
+      });
+    }
+  } finally {
+    if (page.url() !== restoreUrl) {
+      await page.goto(restoreUrl, { waitUntil: "domcontentloaded" }).catch(() => {});
+      await assertAuthenticated(page).catch(() => {});
+    }
+  }
+
+  return harvested;
+}
+
+async function discoverMapsForSubject(page, subject, clues) {
+  const subjectCombos = page.getByPlaceholder("Select Subject", { exact: true });
+  const levelCombos = page.getByPlaceholder("Select Level", { exact: true });
+  const row = await ensureEmptyDiscoveryRow(page, subjectCombos, levelCombos);
+  await selectComboboxOption(page, subjectCombos.nth(row), subject.label);
+  await page.waitForTimeout(700);
+
+  const levelLabels = await collectFilteredOptions(page, levelCombos.nth(row), [clues.level]);
+  const levels = rankLevelOptions(levelLabels, clues);
+  const level = requireClearDiscoveryChoice("Level", levels, 10, 2);
+  await selectComboboxOption(page, levelCombos.nth(row), level.label);
+  await page.waitForTimeout(900);
+
+  let chooser = page.getByRole("button", { name: "Content Map", exact: true }).last();
+  if ((await chooser.count()) === 0) {
+    const addMap = page.getByRole("button", { name: /^ADD CONTENT MAP AND TOPIC$/i }).first();
+    if ((await addMap.count()) > 0) {
+      await addMap.click();
+      await page.waitForTimeout(900);
+      chooser = page.getByRole("button", { name: "Content Map", exact: true }).last();
+    }
+  }
+  if ((await chooser.count()) === 0) {
+    throw new GuardError(`SLS exposed no Content Map control after selecting ${subject.label} / ${level.label}.`);
+  }
+  await chooser.click();
+  const mapCombo = page.getByPlaceholder("Select Content Map", { exact: true }).last();
+  const levelNumber = /([1-6])/.exec(clues.level)?.[1];
+  const mapQueries = [
+    ...(clues.existingContentMaps ?? []),
+    clues.level.startsWith("Primary")
+      ? `Pri ${levelNumber}`
+      : clues.level.startsWith("Secondary")
+        ? `Sec ${levelNumber}`
+        : clues.level,
+    ...clues.subjectQueries
+  ];
+  const mapLabels = await collectFilteredOptions(page, mapCombo, mapQueries);
+  const maps = rankContentMapOptions(mapLabels, clues)
+    .filter((candidate) => candidate.score >= 12)
+    .filter((candidate) => contentMapSupportsStreams(candidate.label, clues.streams))
+    .slice(0, 8);
+  if (maps.length === 0) {
+    throw new GuardError(
+      `SLS offered no Content Map matching ${subject.label} / ${level.label}. ` +
+        `Options seen: ${mapLabels.slice(0, 20).join(" | ") || "(none rendered)"}`
+    );
+  }
+  return { level, maps };
+}
+
+async function ensureEmptyDiscoveryRow(page, subjectCombos, levelCombos) {
+  let row = await emptySubjectLevelRow(subjectCombos, levelCombos);
+  if (row === -1) {
+    const add = page.getByRole("button", { name: /^ADD SUBJECT AND LEVEL$/i }).first();
+    if ((await add.count()) > 0) {
+      await add.click();
+      await page.waitForTimeout(700);
+      row = await emptySubjectLevelRow(subjectCombos, levelCombos);
+    }
+  }
+  if (row === -1) {
+    throw new GuardError("The question details modal exposed no empty Subject and Level row for read-only discovery.");
+  }
+  return row;
+}
+
+async function openDiscoveryQuestionModal(page, questionId) {
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await assertAuthenticated(page);
+  const card = page.locator(`#settings-card-${questionId}`);
+  await card.scrollIntoViewIfNeeded();
+  await openQuestionSettings(card, page);
+}
+
+function selectDiscoverySubjects(ranked, clues) {
+  if ((clues.streams ?? []).length === 0) {
+    return [requireClearDiscoveryChoice("Subject", ranked, 8, 2)];
+  }
+  const selected = [];
+  for (const stream of clues.streams) {
+    const matching = ranked.filter((candidate) =>
+      new RegExp(stream, "i").test(candidate.label)
+    );
+    if (matching.length === 0) continue;
+    const choice = requireClearDiscoveryChoice(`${stream} Subject`, matching, 8, 2);
+    if (!selected.some((entry) => entry.label === choice.label)) selected.push(choice);
+  }
+  // Some SLS cascades encode G2/G3 only in the Content Map rather than in the
+  // Subject label. In that case, select the one clear academic subject here and
+  // enforce the explicit stream when the maps are listed below.
+  return selected.length > 0
+    ? selected
+    : [requireClearDiscoveryChoice("Subject", ranked, 8, 2)];
+}
+
+async function openFirstQuestionForDiscovery(page, config) {
+  assertTargetActivityConfigured(config);
+  for (const section of config.sections ?? []) {
+    await openSection(page, config, section);
+    for (const activity of activitiesInTargetScope(config, section)) {
+      try {
+        await openSidebarActivity(page, activity.title, section);
+        await page
+          .locator('[id^="settings-card-"] svg[name="Settings24"]')
+          .first()
+          .waitFor({ state: "attached", timeout: 10_000 });
+        const questionIds = await listQuestionCardIds(page);
+        if (questionIds.length === 0) continue;
+        const stems = await readQuestionStems(page, questionIds);
+        const questionId = questionIds.find((id) =>
+          isSubstantiveCurriculumQuestion(stems.get(id) ?? "", config.defaults?.subject)
+        );
+        if (!questionId) {
+          console.log(`    ${section.label}. ${activity.title}: no substantive question body was readable; skipped.`);
+          continue;
+        }
+        const card = page.locator(`#settings-card-${questionId}`);
+        await card.scrollIntoViewIfNeeded();
+        const questionText = String(stems.get(questionId) ?? "")
+          .replace(/\s+/g, " ")
+          .trim()
+          .slice(0, 2000);
+        await openQuestionSettings(card, page);
+        return { section, activity, questionId, questionText };
+      } catch (error) {
+        console.log(`    ${section.label}. ${activity.title}: ${firstLine(error.message)}`);
+      }
+    }
+  }
+  throw new GuardError("No readable question details modal was found for curriculum discovery.");
+}
+
+async function collectFilteredOptions(page, combo, queries) {
+  const found = new Set();
+  for (const query of [...new Set((queries ?? []).filter(Boolean))]) {
+    await combo.click();
+    await combo.fill("").catch(() => {});
+    await combo.type(String(query), { delay: 15 }).catch(async () => combo.fill(String(query)));
+    await page.waitForTimeout(900);
+    for (const text of await page.getByRole("option").allTextContents().catch(() => [])) {
+      const normalized = text.replace(/\s+/g, " ").trim();
+      if (normalized) found.add(normalized);
+    }
+    await page.keyboard.press("Escape").catch(() => {});
+  }
+  return [...found];
+}
+
+function requireClearDiscoveryChoice(label, ranked, minimumScore, minimumMargin) {
+  const best = ranked[0] ?? null;
+  const second = ranked[1] ?? null;
+  const margin = best ? best.score - (second?.score ?? 0) : 0;
+  if (!best || best.score < minimumScore || (second && margin < minimumMargin)) {
+    const choices = ranked.slice(0, 10).map((candidate, index) =>
+      `${index + 1}. ${candidate.label} (${candidate.score})`
+    );
+    throw new GuardError(
+      `${label} could not be selected confidently from SLS. ` +
+        `Candidates: ${choices.join(" | ") || "(none)"}. Nothing was saved.`
+    );
+  }
+  return best;
 }
 
 export async function launchSlsBrowser(options) {

@@ -1,0 +1,320 @@
+{
+  "contentMap": "Sec 3 & 4 Additional Mathematics (G2) (2020)",
+  "rowCount": 58,
+  "outcomes": [
+    {
+      "outcome": "Sketching of the graphs of quadratic functions given in the form",
+      "outcomePath": [
+        "ALGEBRA",
+        "Bridging Topics",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Solving linear inequalities in one variable, and representing the solution on the number line",
+      "outcomePath": [
+        "ALGEBRA",
+        "Bridging Topics",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Finding the maximum and minimum value of a quadratic function using the method of completing the square",
+      "outcomePath": [
+        "ALGEBRA",
+        "Quadratic functions"
+      ]
+    },
+    {
+      "outcome": "Conditions for to be always positive (or always negative)",
+      "outcomePath": [
+        "ALGEBRA",
+        "Quadratic functions"
+      ]
+    },
+    {
+      "outcome": "Using quadratic functions as models",
+      "outcomePath": [
+        "ALGEBRA",
+        "Quadratic functions"
+      ]
+    },
+    {
+      "outcome": "Conditions for a quadratic equation to have: - two real roots - two equal roots - no real roots and related conditions for a given line to: - intersect a given curve - be a tangent to a given curve - not intersect a given curve",
+      "outcomePath": [
+        "ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving simultaneous equations in two variables with at least one linear equation, by substitution",
+      "outcomePath": [
+        "ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving quadratic inequalities, and representing the solution on the number line",
+      "outcomePath": [
+        "ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "2.1 Four operations on surds, including rationalising the denominator",
+      "outcomePath": [
+        "ALGEBRA",
+        "Surds"
+      ]
+    },
+    {
+      "outcome": "2.2 Solving equations involving surds",
+      "outcomePath": [
+        "ALGEBRA",
+        "Surds"
+      ]
+    },
+    {
+      "outcome": "Multiplication and division of polynomials",
+      "outcomePath": [
+        "ALGEBRA",
+        "Polynomials and Partial Fractions"
+      ]
+    },
+    {
+      "outcome": "Use of remainder and factor theorems, including factorising polynomials and solving cubic equations",
+      "outcomePath": [
+        "ALGEBRA",
+        "Polynomials and Partial Fractions"
+      ]
+    },
+    {
+      "outcome": "Use of: - -",
+      "outcomePath": [
+        "ALGEBRA",
+        "Polynomials and Partial Fractions"
+      ]
+    },
+    {
+      "outcome": "Partial fractions with cases where denominator is no more complicated than:",
+      "outcomePath": [
+        "ALGEBRA",
+        "Polynomials and Partial Fractions"
+      ]
+    },
+    {
+      "outcome": "Six trigonometric functions for angles of any magnitude (in degrees or radians)",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Principal values of",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Exact values of the trigonometric functions for special angles (, , ) or ()",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Amplitude, periodicity and symmetries related to sine and cosine functions",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Graphs of where a is real, b is a positive integer and c is an integer.",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Use of - - expansions of - the formulae for - the expression of in the form or",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Simplification of trigonometric expressions",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Solution of simple trigonometric equations in a given interval (excluding general solution)",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Proofs of simple trigonometric Identities",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Use of trigonometric functions as models",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Condition for two lines to be parallel or perpendicular",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Coordinate geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Midpoint of line segment",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Coordinate geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Area of rectilinear figure",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Coordinate geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Coordinate geometry of circles in the form: (excluding problems involving two circles)",
+      "outcomePath": [
+        "GEOMETRY AND TRIGONOMETRY",
+        "Coordinate geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Derivative of f(x) as the gradient of the tangent to the graph of y = f(x) at a point",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivative as rate of change",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of standard notations f '(x), f''(x),",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivatives of , or any rational n, together with constant multiples, sums and differences",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivatives of products and quotients of functions",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of Chain Rule",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Increasing and decreasing functions",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Stationary points (maximum and minimum turning points and stationary points of inflexion)",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of second derivative test to discriminate between maxima and minima",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Apply differentiation to gradients, tangents and normals, connected rates of change and maxima and minima problems",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration as the reverse of differentiation",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration of of for any rational n, together with constant multiples, sums and differences",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration of for any rational n",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Definite integral as area under a curve",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Evaluation of definite integrals",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Finding the area of a region bounded by a curve and line(s) (excluding area of region between 2 curves)",
+      "outcomePath": [
+        "CALCULUS",
+        "Differentiation and integration"
+      ]
+    }
+  ],
+  "subject": "Additional Mathematics - G2AMATHS",
+  "level": "Secondary 4",
+  "harvestedAt": "2026-08-21T08:11:51.755Z",
+  "discoveredFromModule": "52bfb827-c796-454f-8d6e-5024111f515f"
+}

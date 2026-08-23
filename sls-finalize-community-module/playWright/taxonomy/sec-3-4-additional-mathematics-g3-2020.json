@@ -1,0 +1,395 @@
+{
+  "contentMap": "Sec 3 & 4 Additional Mathematics (G3) (2020)",
+  "rowCount": 69,
+  "outcomes": [
+    {
+      "outcome": "Finding the maximum and minimum value of a quadratic function using the method of completing the square",
+      "outcomePath": [
+        "Algebra",
+        "Quadratic Functions"
+      ]
+    },
+    {
+      "outcome": "Conditions for to be always positive (or always negative)",
+      "outcomePath": [
+        "Algebra",
+        "Quadratic Functions"
+      ]
+    },
+    {
+      "outcome": "Using the quadratic functions as models",
+      "outcomePath": [
+        "Algebra",
+        "Quadratic Functions"
+      ]
+    },
+    {
+      "outcome": "Conditions for quadratic equation to have: two real roots two equal roots no real roots and related conditions for given line to: intersect a given curve be tangent to a given curve not intersect a given curve",
+      "outcomePath": [
+        "Algebra",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving simultaneous equations in two variables with at least one linear equation, by substitution",
+      "outcomePath": [
+        "Algebra",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving quadratic inequalities, and representing the solution on the number line",
+      "outcomePath": [
+        "Algebra",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Four operations on surds, including rationalising the denominator",
+      "outcomePath": [
+        "Algebra",
+        "Surds"
+      ]
+    },
+    {
+      "outcome": "Solving equations involving surds",
+      "outcomePath": [
+        "Algebra",
+        "Surds"
+      ]
+    },
+    {
+      "outcome": "Multiplication and division of polynomials",
+      "outcomePath": [
+        "Algebra",
+        "Polynomials and partial fractions"
+      ]
+    },
+    {
+      "outcome": "Use of remainder and factor theorems, including factorising polynomials and solving cubic equations",
+      "outcomePath": [
+        "Algebra",
+        "Polynomials and partial fractions"
+      ]
+    },
+    {
+      "outcome": "Use of and",
+      "outcomePath": [
+        "Algebra",
+        "Polynomials and partial fractions"
+      ]
+    },
+    {
+      "outcome": "Partial fractions with cases where the denominator is no more complicated than:",
+      "outcomePath": [
+        "Algebra",
+        "Polynomials and partial fractions"
+      ]
+    },
+    {
+      "outcome": "Use of Binomial Theorem for positive integer n",
+      "outcomePath": [
+        "Algebra",
+        "Binomial expansions"
+      ]
+    },
+    {
+      "outcome": "Use of notations and",
+      "outcomePath": [
+        "Algebra",
+        "Binomial expansions"
+      ]
+    },
+    {
+      "outcome": "Use of the general term",
+      "outcomePath": [
+        "Algebra",
+        "Binomial expansions"
+      ]
+    },
+    {
+      "outcome": "Exponential and Logarithmic Functions and their graphs, including laws of logarithms; Equivalence of and ; Change of base of logarithms",
+      "outcomePath": [
+        "Algebra",
+        "Exponential and Logarithmic Functions"
+      ]
+    },
+    {
+      "outcome": "Simplifying expressions and solving simple equations involving exponential, logarithmic functions",
+      "outcomePath": [
+        "Algebra",
+        "Exponential and Logarithmic Functions"
+      ]
+    },
+    {
+      "outcome": "Using exponential and logarithmic functions as models",
+      "outcomePath": [
+        "Algebra",
+        "Exponential and Logarithmic Functions"
+      ]
+    },
+    {
+      "outcome": "Six trigonometric functions for angles of any magnitude (in degrees or radians)",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Principal values of",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Exact values of trigonometric functions for special angles () or ()",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Amplitude, periodicity and symmetries related to sine and cosine functions",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Graphs of , where a is real, b is a positive integer, and c is an integer",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Use of , , the expansions of and , the formulae for and , the expression of in the form or .",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Simplification of trigonomometric expressions",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Solution of simple trigonometric equations in a given interval (excluding general solution)",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Proofs of simple trigonometric identities",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Use of trigonometric functions as models",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Trigonometric functions, identities and equations"
+      ]
+    },
+    {
+      "outcome": "Condition for two lines to be parallel or perpendicular",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Coordinate Geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Midpoint of a line segment",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Coordinate Geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Area of rectilinear figure",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Coordinate Geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Coordinate geometry of circles in the form and (excluding problems involving two circles)",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Coordinate Geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Transformation of given relationships, including and , to linear form to determine the unknown constants from a straight line graph",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Coordinate Geometry in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Use of properties of parallel lines cut by transversal, perpendicular and angle bisectors, triangles, special quadrilaterals and circles",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Proofs in plane geometry"
+      ]
+    },
+    {
+      "outcome": "Use of congruent and similar triangles",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Proofs in plane geometry"
+      ]
+    },
+    {
+      "outcome": "Use of midpoint theorem",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Proofs in plane geometry"
+      ]
+    },
+    {
+      "outcome": "Use of tangent-chord theorem (alternate segment theorem)",
+      "outcomePath": [
+        "Geometry and Trigonometry",
+        "Proofs in plane geometry"
+      ]
+    },
+    {
+      "outcome": "Derivative of f(x) as the gradient of the tangent to the graph of y = f(x) at a point",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivative as rate of change",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of standard notation f'(x), f''(x), ,",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivatives of for any rational n, sin x, cos x, tan x, and , together with constant multiples, sums and differences",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Derivatives of products and quotients of functions",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of chain rule",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Increasing and decreasing functions",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Stationary points (maximum and minimum turning points and stationary points of inflexion)",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Use of second derivative test to discriminate between maxima and minima",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Apply differentiation to gradients, tangents and normals, connected rates of change and maxima and minima problems",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration as the reverse of differentiation",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration of for any rational n, sin x, cos x, and , together with constant multiples, sums and differences",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Integration of for any rational n, sin(ax+b), cos(ax+b) and",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Definite integral as area under a curve",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Evaluation of definite integrals",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Finding the area of a region bounded by a curve and line(s) (excluding area of region between 2 curves)",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Finding areas of regions below the x-axis",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    },
+    {
+      "outcome": "Application of differentiation and integration to problems involving displacement, velocity and acceleration of a particle moving in a straight line",
+      "outcomePath": [
+        "Calculus",
+        "Differentiation and integration"
+      ]
+    }
+  ],
+  "subject": "Additional Mathematics - G3AMATHS",
+  "level": "Secondary 4",
+  "harvestedAt": "2026-08-21T08:12:50.047Z",
+  "discoveredFromModule": "52bfb827-c796-454f-8d6e-5024111f515f"
+}

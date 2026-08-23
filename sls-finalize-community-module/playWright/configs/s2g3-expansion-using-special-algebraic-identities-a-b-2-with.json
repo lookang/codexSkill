@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "15bfeb3c-3c1e-4536-afe6-6d701e8588be",
+    "title": "S2G3 Expansion Using Special Algebraic Identities (a-b)^2 with FAMA",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/15bfeb3c-3c1e-4536-afe6-6d701e8588be/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Secondary 2 learners practising s2g3 expansion using special algebraic identities (a-b)^2 with fama. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "S2G3 Expansion Quest",
+    "shortTitle": "S2G3 Quest",
+    "description": "Build confidence and accuracy while mastering s2g3 expansion using special algebraic identities (a-b)^2 with fama."
+  },
+  "defaults": {
+    "subject": "Mathematics - G3MATHS",
+    "level": "Secondary 2",
+    "contentMap": "Sec 2 Mathematics (G3) (2020)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Algebraic Expressions and Formulae"
+    ],
+    "outcome": "Expansion of the product of algebraic expressions",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Untitled",
+      "activities": [
+        {
+          "title": "Expansion Using Special Algebraic Identities Part 1"
+        },
+        {
+          "title": "Quiz 1"
+        },
+        {
+          "title": "Expansion Using Special Algebraic Identities Part 2"
+        },
+        {
+          "title": "Quiz 2"
+        },
+        {
+          "title": "Expansion Using Special Algebraic Identities Part 3"
+        },
+        {
+          "title": "Quiz 3"
+        },
+        {
+          "title": "Expansion Using Special Algebraic Identities Part 4"
+        },
+        {
+          "title": "Quiz 4"
+        },
+        {
+          "title": "Expansion Using Special Algebraic Identities Part 5"
+        },
+        {
+          "title": "Quiz 5"
+        }
+      ],
+      "outcome": "Expansion of the product of algebraic expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    }
+  ]
+}

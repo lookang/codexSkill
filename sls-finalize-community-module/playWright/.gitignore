@@ -6,6 +6,8 @@ output/
 .state/
 .npm-cache/
 .sheet-cache/
+# Tesseract's unpacked local language cache. The source model comes from npm.
+eng.traineddata
 # Raw Playwright Codegen sessions may contain copied text or example form data.
 # Keep them local until they are reviewed and converted into maintained tests.
 recordings/

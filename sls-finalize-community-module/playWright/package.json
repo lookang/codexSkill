@@ -17,6 +17,7 @@
     "check": "node scripts/check-all.mjs",
     "sls:scaffold": "node scripts/scaffold-config.mjs",
     "sls:scan": "node scripts/run.mjs scan",
+    "sls:discover": "node scripts/run.mjs discover",
     "sls:selftest": "node scripts/selftest.mjs",
     "sls:sheet": "node scripts/sheet.mjs",
     "sls:harvest": "node scripts/harvest-dictionaries.mjs",
@@ -31,5 +32,9 @@
   },
   "devDependencies": {
     "@playwright/test": "1.62.1"
+  },
+  "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "tesseract.js": "^7.0.0"
   }
 }

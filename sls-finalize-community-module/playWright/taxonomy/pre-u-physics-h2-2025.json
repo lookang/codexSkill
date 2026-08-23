@@ -1,0 +1,1651 @@
+{
+  "contentMap": "Pre-U Physics (H2) - 2025",
+  "rowCount": 300,
+  "outcomes": [
+    {
+      "outcome": "1(a) recall the following base quantities and their SI units: mass (kg), length (m), time (s), current (A), temperature (K), amount of substance (mol).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Physical quantities and SI units"
+      ]
+    },
+    {
+      "outcome": "1(b) recall and use the following prefixes and their symbols to indicate decimal sub-multiples or multiples of both base and derived units: pico (p), nano (n), micro (μ), milli (m), centi (c), deci (d), kilo (k), mega (M), giga (G), tera (T).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Physical quantities and SI units"
+      ]
+    },
+    {
+      "outcome": "1(c) express derived units as products or quotients of the base units and use the named units listed in ‘Summary of Key Quantities, Symbols and Units’ as appropriate.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Physical quantities and SI units"
+      ]
+    },
+    {
+      "outcome": "1(d) use SI base units to check the homogeneity of physical equations.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Physical quantities and SI units"
+      ]
+    },
+    {
+      "outcome": "1(e) make reasonable estimates of physical quantities included within the syllabus.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Physical quantities and SI units"
+      ]
+    },
+    {
+      "outcome": "1(f) show an understanding of the distinction between random and systematic errors (including zero error), which limit precision and accuracy.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Errors and uncertainties"
+      ]
+    },
+    {
+      "outcome": "1(g) assess the uncertainty in derived quantities by adding absolute or relative (i.e. fractional or percentage) uncertainties or by numerical substitution (rigorous statistical treatment is not required).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Errors and uncertainties"
+      ]
+    },
+    {
+      "outcome": "1(h) distinguish between scalar and vector quantities, and give examples of each.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Scalars and vectors"
+      ]
+    },
+    {
+      "outcome": "1(i) add and subtract coplanar vectors.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Scalars and vectors"
+      ]
+    },
+    {
+      "outcome": "1(j) represent a vector as two perpendicular components.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Quantities & Measurement",
+        "Scalars and vectors"
+      ]
+    },
+    {
+      "outcome": "2(a) describe the forces on a mass, charge and current-carrying conductor in gravitational, electric and magnetic fields, as appropriate.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Types of forces"
+      ]
+    },
+    {
+      "outcome": "2(b) show a qualitative understanding of forces including normal force, frictional force and viscous force, e.g. air resistance (knowledge of the concepts of coefficients of friction and viscosity is not required).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Types of forces"
+      ]
+    },
+    {
+      "outcome": "2(c) recall and apply Hooke’s law ( F equals k x where k is the force constant) to new situations or to solve related problem where is the force constant) to new situations or to solve related problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Types of forces"
+      ]
+    },
+    {
+      "outcome": "2(d) define and apply the moment of a force and the torque of a couple.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Moment and torque"
+      ]
+    },
+    {
+      "outcome": "2(e) show an understanding that a couple is a pair of forces which tends to produce rotation only.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Moment and torque"
+      ]
+    },
+    {
+      "outcome": "2(f) show an understanding that the weight of a body [1] may be taken as acting at a single point known as its centre of gravity. [1] The term “body” (or “object”) is used to refer to a collection of matter that can be treated as having no internal structure, or an internal structure that can be ignored in typical contexts.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Moment and torque"
+      ]
+    },
+    {
+      "outcome": "2(g) apply the principle of moments to new situations or to solve related problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Translational and rotational equilibrium"
+      ]
+    },
+    {
+      "outcome": "2(h) show an understanding that, when there is no resultant force and no resultant torque, a system is in equilibrium.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Translational and rotational equilibrium"
+      ]
+    },
+    {
+      "outcome": "2(i) use free-body diagrams and vector triangles to represent forces on bodies that are in rotational and translational equilibrium.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Forces & Moments",
+        "Translational and rotational equilibrium"
+      ]
+    },
+    {
+      "outcome": "3(a) show an understanding of and use the terms position, distance, displacement, speed, velocity and acceleration.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Kinematics"
+      ]
+    },
+    {
+      "outcome": "3(b) use graphical methods to represent distance, displacement, speed, velocity and acceleration.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Kinematics"
+      ]
+    },
+    {
+      "outcome": "3(c) identify and use the physical quantities from the gradients of position-time or displacement-time graphs, and areas under and gradients of velocity-time graphs, including cases of non-uniform acceleration.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Kinematics"
+      ]
+    },
+    {
+      "outcome": "3(d) derive, from the definitions of velocity and acceleration, equations which represent uniformly accelerated motion in a straight line.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Uniformly accelerated linear motion"
+      ]
+    },
+    {
+      "outcome": "3(e) solve problems using equations which represent uniformly accelerated motion in a straight line, e.g. for bodies falling vertically without air resistance in a uniform gravitational field.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Uniformly accelerated linear motion"
+      ]
+    },
+    {
+      "outcome": "3(f) show an understanding that mass is the property of a body which resists change in motion (inertia).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Mass and linear momentum"
+      ]
+    },
+    {
+      "outcome": "3(g) define and use linear momentum as the product of mass and velocity.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Mass and linear momentum"
+      ]
+    },
+    {
+      "outcome": "3(h) state and apply each of Newton’s laws of motion: 1 st law: a body at rest will stay at rest, and a body in motion will continue to move at constant velocity, unless acted on by a resultant external force; 2 nd law: the rate of change of momentum of a body is (directly) proportional to the resultant force acting on the body and is in the same direction as the resultant force; and",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Laws of motion"
+      ]
+    },
+    {
+      "outcome": "3(h) (continued) state and apply each of Newton’s laws of motion: 3 rd law: the force exerted by one body on a second body is equal in magnitude and opposite in direction to the force simultaneously exerted by the second body on the first body.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Laws of motion"
+      ]
+    },
+    {
+      "outcome": "3(i) recall the relationship that resultant force F space equals m a for a body of constant mass, and use this to solve problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Motion & Forces",
+        "Laws of motion"
+      ]
+    },
+    {
+      "outcome": "4(a) show an understanding that physical systems can store energy, and that energy can be transferred from one store to another.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Energy stores and transfers"
+      ]
+    },
+    {
+      "outcome": "4(b) give examples of different energy stores and energy transfers, and apply the principle of conservation of energy to solve problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Energy stores and transfers"
+      ]
+    },
+    {
+      "outcome": "4(c) show an understanding that work is a mechanical transfer of energy, and define and use work done by a force as the product of the force and displacement in the direction of the force.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Work done by a force"
+      ]
+    },
+    {
+      "outcome": "4(d) derive, from the definition of work done by a force and the equations for uniformly accelerated motion in a straight line, the equation E subscript k equals 1 half m v squared .",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Kinetic energy"
+      ]
+    },
+    {
+      "outcome": "4(e) recall and use the equation E subscript k equals 1 half m v squared to solve problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Kinetic energy"
+      ]
+    },
+    {
+      "outcome": "4(f) show an understanding of the concept of a field as a region of space in which bodies may experience a force associated with the field.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Concept of a field"
+      ]
+    },
+    {
+      "outcome": "4(g) define gravitational field strength at a point as the gravitational force per unit mass on a mass placed at that point, and define electric field strength at a point as the electric force per unit charge on a positive charge placed at that point.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Concept of a field"
+      ]
+    },
+    {
+      "outcome": "4(h) represent gravitational fields and electric fields by means of field lines (e.g. for uniform and radial field patterns).",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Concept of a field"
+      ]
+    },
+    {
+      "outcome": "4(i) show an understanding that the force on a mass in a gravitational field (or the force on a charge in an electric field) acts along the field lines, and the work done by the field in moving the mass (or charge) is equal to the negative of the change in potential energy.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Potential energy"
+      ]
+    },
+    {
+      "outcome": "4(j) distinguish between gravitational potential energy, electric potential energy and elastic potential energy.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Potential energy"
+      ]
+    },
+    {
+      "outcome": "4(k) recall that the elastic potential energy stored in a deformed material is given by the area under its force-extension graph and use this to solve problems.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Potential energy"
+      ]
+    },
+    {
+      "outcome": "4(l) define power as the rate of energy transfer.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Power and efficiency"
+      ]
+    },
+    {
+      "outcome": "4(m) show an understanding that mechanical power is the product of a force and velocity in the direction of the force.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Power and efficiency"
+      ]
+    },
+    {
+      "outcome": "4(n) show an appreciation for the implications of energy losses in practical devices, and solve problems using the concept of efficiency of an energy transfer as the ratio of useful energy output to total energy input.",
+      "outcomePath": [
+        "Foundations of Physics",
+        "Energy & Fields",
+        "Power and efficiency"
+      ]
+    },
+    {
+      "outcome": "5(a) describe and use the concept of weight as the force experienced by a mass in a gravitational field.",
+      "outcomePath": [
+        "Mechanics",
+        "Projectile Motion",
+        "Free fall"
+      ]
+    },
+    {
+      "outcome": "5(b) describe and explain motion due to a uniform velocity in one direction and a uniform acceleration in a perpendicular direction.",
+      "outcomePath": [
+        "Mechanics",
+        "Projectile Motion",
+        "Free fall"
+      ]
+    },
+    {
+      "outcome": "5(c) derive, from the definition of work done by a force, the equation capital delta E subscript p equals m g capital delta h for gravitational potential energy changes in a uniform gravitational field (e.g. near the Earth’s surface).",
+      "outcomePath": [
+        "Mechanics",
+        "Projectile Motion",
+        "Gravitational potential energy in a uniform field"
+      ]
+    },
+    {
+      "outcome": "5(d) recall and use the equation capital delta E subscript p equals m g capital delta h to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Projectile Motion",
+        "Gravitational potential energy in a uniform field"
+      ]
+    },
+    {
+      "outcome": "5(e) describe qualitatively , with reference to forces and energy, the motion of bodies falling in a uniform gravitational field with air resistance, including the phenomenon of terminal velocity.",
+      "outcomePath": [
+        "Mechanics",
+        "Projectile Motion",
+        "Effects of air resistance"
+      ]
+    },
+    {
+      "outcome": "6(a) recall that impulse is given by the area under the force-time graph for a body and use this to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Collisions",
+        "Impulse"
+      ]
+    },
+    {
+      "outcome": "6(b) state the principle of conservation of momentum.",
+      "outcomePath": [
+        "Mechanics",
+        "Collisions",
+        "Conservation of momentum and energy"
+      ]
+    },
+    {
+      "outcome": "6(c) apply the principle of conservation of momentum to solve simple problems including inelastic and (perfectly) elastic interactions between two bodies in one dimension (knowledge of the concept of coefficient of restitution is not required).",
+      "outcomePath": [
+        "Mechanics",
+        "Collisions",
+        "Conservation of momentum and energy"
+      ]
+    },
+    {
+      "outcome": "6(d) show an understanding that, for a (perfectly) elastic collision between two bodies, the relative speed of approach is equal to the relative speed of separation.",
+      "outcomePath": [
+        "Mechanics",
+        "Collisions",
+        "Conservation of momentum and energy"
+      ]
+    },
+    {
+      "outcome": "6(e) show an understanding that, whilst the momentum of a closed system is always conserved in interactions between bodies, some change in kinetic energy usually takes place.",
+      "outcomePath": [
+        "Mechanics",
+        "Collisions",
+        "Conservation of momentum and energy"
+      ]
+    },
+    {
+      "outcome": "7(a) express angular displacement in radians.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Kinematics of uniform circular motion"
+      ]
+    },
+    {
+      "outcome": "7(b) show an understanding of and use the concept of angular velocity.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Kinematics of uniform circular motion"
+      ]
+    },
+    {
+      "outcome": "7(c) recall and use v equals r omega to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Kinematics of uniform circular motion"
+      ]
+    },
+    {
+      "outcome": "7(d) show an understanding of centripetal acceleration in the case of uniform motion in a circle, and qualitatively describe motion in a curved path (arc) as due to a resultant force that is both perpendicular to the motion and centripetal in direction.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Centripetal acceleration"
+      ]
+    },
+    {
+      "outcome": "7(e) recall and use centripetal acceleration a equals r omega squared and a equals v squared over r space to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Centripetal acceleration"
+      ]
+    },
+    {
+      "outcome": "7(f) recall and use F equals m r omega squared and F equals fraction numerator m v squared over denominator r end fraction to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Circular Motion",
+        "Centripetal acceleration"
+      ]
+    },
+    {
+      "outcome": "8(a recall and use Newton’s law of gravitation in the form F equals G fraction numerator m subscript 1 m subscript 2 over denominator r squared end fraction",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Newton’s law of gravitation"
+      ]
+    },
+    {
+      "outcome": "8(b) derive, from Newton’s law of gravitation and the definition of gravitational field strength, the field strength due to a point mass F equals G M over r squared",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational field strength"
+      ]
+    },
+    {
+      "outcome": "8(c) recall and use F equals G M over r squared for the gravitational field strength due to a point mass to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational field strength"
+      ]
+    },
+    {
+      "outcome": "8(d) show an understanding that near the surface of the Earth, gravitational field strength is approximately constant and is equal to the acceleration of free fall.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational field strength"
+      ]
+    },
+    {
+      "outcome": "8(e) define gravitational potential at a point as the work done per unit mass by an external force in bringing a small test mass from infinity to that point.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational potential and energy"
+      ]
+    },
+    {
+      "outcome": "8(f) solve problems using the equation ϕ equals negative G M over r for the gravitational potential in the field due to a point mass.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational potential and energy"
+      ]
+    },
+    {
+      "outcome": "8(g) show an understanding that the gravitational potential energy of a system of two point masses is U subscript G equals negative G fraction numerator M m over denominator r end fraction",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational potential and energy"
+      ]
+    },
+    {
+      "outcome": "8(h) recall that gravitational field strength at a point is equal to the negative potential gradient at that point and use this to solve problems.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Gravitational potential and energy"
+      ]
+    },
+    {
+      "outcome": "8(i) analyse problems related to escape velocity by considering energy stores and transfers.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Escape velocity and circular orbits"
+      ]
+    },
+    {
+      "outcome": "8(j) analyse circular orbits in inverse square law fields by relating the gravitational force to the centripetal acceleration it causes.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Escape velocity and circular orbits"
+      ]
+    },
+    {
+      "outcome": "8(k) show an understanding of satellites in geostationary orbit and their applications.",
+      "outcomePath": [
+        "Mechanics",
+        "Gravitational Fields",
+        "Escape velocity and circular orbits"
+      ]
+    },
+    {
+      "outcome": "9(a) describe simple examples of free oscillations, where particles periodically return to an equilibrium position without gaining energy from or losing energy to the environment.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(b) investigate the motion of an oscillator using experimental and graphical methods.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(c) show an understanding of and use the terms amplitude, period, frequency, angular frequency, phase and phase difference, and express the period in terms of both frequency and angular frequency.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(d) show an understanding that a equals negative omega squared x is the defining equation of simple harmonic motion, where acceleration is (directly) proportional to displacement from an equilibrium position and acceleration is always directed towards the equilibrium position.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(e) recognise and use x equals x subscript o s i n omega t as a solution to the equation a equals negative omega squared x",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(f) recognise and use the equations v equals v subscript o c o s omega t and v equals plus-or-minus omega square root of x subscript o superscript 2 minus x squared end root .",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(g) describe, with graphical illustrations, the relationships between displacement, velocity, and acceleration during simple harmonic motion.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Simple harmonic motion"
+      ]
+    },
+    {
+      "outcome": "9(h) describe the interchange between kinetic and potential energy during simple harmonic motion.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Energy in oscillations"
+      ]
+    },
+    {
+      "outcome": "9(i) describe practical examples of damped oscillations, with particular reference to the effects of the degree of damping (light/under, critical, heavy/over), and to the importance of critical damping in applications such as a car suspension system.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Energy in oscillations"
+      ]
+    },
+    {
+      "outcome": "9(j) describe graphically how the amplitude of a forced oscillation changes with driving frequency, resulting in maximum amplitude at resonance when the driving frequency is close to or at the natural frequency [1] of the system. [1] Natural frequency refers to the frequency when the system is in free oscillation.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Energy in oscillations"
+      ]
+    },
+    {
+      "outcome": "9(k) show a qualitative understanding of the effects of damping on the frequency response and sharpness of the resonance.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Energy in oscillations"
+      ]
+    },
+    {
+      "outcome": "9(l) describe practical examples of forced oscillations and resonance , and show an appreciation that there are some circumstances in which resonance is useful, and other circumstances in which resonance should be avoided.",
+      "outcomePath": [
+        "Mechanics",
+        "Oscillations",
+        "Energy in oscillations"
+      ]
+    },
+    {
+      "outcome": "10(a) show an understanding that mechanical waves involve the oscillations of particles within a material medium, such as a string or a fluid, and electromagnetic waves involve the oscillations of electromagnetic fields in space and time.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Properties of waves"
+      ]
+    },
+    {
+      "outcome": "10(b) show an understanding of and use the terms displacement, amplitude, period, frequency, phase, phase difference, wavelength, and speed.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Properties of waves"
+      ]
+    },
+    {
+      "outcome": "10(c) deduce, from the definitions of speed, frequency and wavelength, the equation v equals f lambda",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Properties of waves"
+      ]
+    },
+    {
+      "outcome": "10(d) recall and use the equation v equals f lambda",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Properties of waves"
+      ]
+    },
+    {
+      "outcome": "10(e) analyse and interpret graphical representations of transverse and longitudinal waves with respect to variations in time and position (space).",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Properties of waves"
+      ]
+    },
+    {
+      "outcome": "10(f) show an understanding that energy is transferred due to a progressive wave without matter being transferred.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Energy transfer by progressive waves"
+      ]
+    },
+    {
+      "outcome": "10(g) recall and use the term intensity as the power transferred (radiated) by a wave per unit area, and the relationship i n t e n s i t y proportional to left parenthesis a m p l i t u d e right parenthesis squared for a progressive wave.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Energy transfer by progressive waves"
+      ]
+    },
+    {
+      "outcome": "10(h) show an understanding of and apply the concept, that the intensity of a wave from a point source and travelling without loss of energy obeys an inverse square law, to solve problems.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Energy transfer by progressive waves"
+      ]
+    },
+    {
+      "outcome": "10(i) show an understanding that polarisation is a phenomenon associated with transverse waves.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Polarisation"
+      ]
+    },
+    {
+      "outcome": "10(j) recall and use Malus’ law i n t e n s i t y proportional to c o s squared theta to calculate the amplitude and intensity of a plane-polarised electromagnetic wave after transmission through a polarising filter.",
+      "outcomePath": [
+        "Waves",
+        "Wave Motion",
+        "Polarisation"
+      ]
+    },
+    {
+      "outcome": "11(a) explain and use the principle of superposition in simple applications.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Principle of superposition"
+      ]
+    },
+    {
+      "outcome": "11(b) show an understanding of experiments which demonstrate standing (stationary) waves using microwaves, stretched strings and air columns.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Standing waves"
+      ]
+    },
+    {
+      "outcome": "11(c) explain the formation of a standing (stationary) wave using a graphical method, and identify nodes and antinodes, differentiating between pressure and displacement nodes and antinodes for sound waves.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Standing waves"
+      ]
+    },
+    {
+      "outcome": "11(d) determine the wavelength of sound using standing (stationary) waves.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Standing waves"
+      ]
+    },
+    {
+      "outcome": "11(e) show an understanding of the terms diffraction, interference, coherence, phase difference and path difference.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(f) show an understanding of phenomena which demonstrate two-source interference using water waves, sound waves, light waves and microwaves.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(g) show an understanding of the conditions required for two-source interference fringes to be observed.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(h) recall and use the equation fraction numerator a x over denominator D end fraction equals lambda to solve problems for double-slit interference, where is the slit separation and is the fringe separation",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(i) recall and use the equation a s i n theta equals n lambda to solve problems involving the principal maxima of a diffraction grating, where is the slit separation.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(j) describe the use of a diffraction grating to determine the wavelength of light (knowledge of the structure and use of a spectrometer is not required).",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Interference of two or more point sources"
+      ]
+    },
+    {
+      "outcome": "11(k) show an understanding of phenomena which demonstrate diffraction through a single slit or aperture, or across an edge, such as the diffraction of water waves in a ripple tank with both a wide gap and a narrow gap, or the diffraction of sound waves from loudspeakers or around corners.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Diffraction through a finite-size gap"
+      ]
+    },
+    {
+      "outcome": "11(l) recall and use the equation b s i n theta equals lambda to solve problems involving the positions of the first minima for diffraction through a single slit of width b .",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Diffraction through a finite-size gap"
+      ]
+    },
+    {
+      "outcome": "11(m) recall and use the Rayleigh criterion theta almost equal to lambda over b for the resolving power of a single aperture, where b is the width of the aperture.",
+      "outcomePath": [
+        "Waves",
+        "Superposition",
+        "Diffraction through a finite-size gap"
+      ]
+    },
+    {
+      "outcome": "12(a) show an understanding that a thermodynamic scale of temperature has an absolute zero and is independent of the property of any particular substance.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Empirical gas laws"
+      ]
+    },
+    {
+      "outcome": "12(b) convert temperatures measured in degrees Celsius to kelvin: T divided by K equals theta divided by to the power of o C plus 273.15 .",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Empirical gas laws"
+      ]
+    },
+    {
+      "outcome": "12(c) recall and use the equation of state for an ideal gas expressed as p V equals N k T where N is the number of particles.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Empirical gas laws"
+      ]
+    },
+    {
+      "outcome": "12(d) state that one mole of any substance contains 6.02 cross times 10 to the power of 23 particles, and use the Avogadro constant N subscript A equals 6.02 cross times 10 to the power of 23 m o l to the power of negative 1 end exponent as well as the relationship N k equals n R between the Boltzmann constant and the molar gas constant ( is the amount of substance in moles).",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Empirical gas laws"
+      ]
+    },
+    {
+      "outcome": "12(e) state the basic assumptions of the kinetic theory of gases.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Kinetic theory of gases"
+      ]
+    },
+    {
+      "outcome": "12(f) explain how the random motion of gas particles exerts mechanical pressure and hence derive, using the definition of pressure as force per unit area, the relationship p V equals 1 third N m less than c squared greater than (a simple model considering one-dimensional collisions and then extending to three dimensions using less than c subscript x superscript 2 greater than equals 1 third less than c squared greater than is sufficient).",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Kinetic theory of gases"
+      ]
+    },
+    {
+      "outcome": "12(g) recall and use the relationship that the mean translational kinetic energy of a particle of an ideal gas is (directly) proportional to the thermodynamic temperature (i.e. 1 half m less than c squared greater than equals 3 over 2 k T )to solve problems.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Temperature & Ideal Gases",
+        "Kinetic theory of gases"
+      ]
+    },
+    {
+      "outcome": "13(a) show an understanding that the macroscopic state of a system determines the internal energy of the system, and that internal energy can be expressed as the sum of a random distribution of microscopic kinetic and potential energies associated with the particles of the system.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Internal energy"
+      ]
+    },
+    {
+      "outcome": "13(b) show an understanding that the thermodynamic temperature of a system is (directly) proportional to the mean microscopic kinetic energy of particles.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Internal energy"
+      ]
+    },
+    {
+      "outcome": "13(c) show an understanding that when two systems are placed in thermal contact, energy is transferred (by heating) from the system at higher temperature to the system at lower temperature, until they reach the same temperature and achieve thermal equilibrium (i.e. no net energy transfer).",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Heating and work done"
+      ]
+    },
+    {
+      "outcome": "13(d) show an understanding of the difference between the work done by a gas and the work done on a gas, and calculate the work done by a gas in expanding against a constant external pressure: W equals p capital delta V .",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Heating and work done"
+      ]
+    },
+    {
+      "outcome": "13(e) recall and apply the zeroth law of thermodynamics that if two systems are both in thermal equilibrium with a third system, then they are also in thermal equilibrium with each other.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Laws of thermodynamics"
+      ]
+    },
+    {
+      "outcome": "13(f) recall and apply the first law of thermodynamics, capital delta U equals Q plus W , that the increase in internal energy of a system is equal to the sum of the energy transferred to the system by heating and the work done on the system.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Laws of thermodynamics"
+      ]
+    },
+    {
+      "outcome": "13(g) define and use the concepts of specific heat capacity and specific latent heat.",
+      "outcomePath": [
+        "Thermal Physics",
+        "Thermodynamic Systems",
+        "Specific heat capacity and specific latent heat"
+      ]
+    },
+    {
+      "outcome": "14(a) recall and use Coulomb's law in the form F equals fraction numerator 1 over denominator 4 pi epsilon subscript 0 end fraction fraction numerator Q subscript 1 Q subscript 2 over denominator r squared end fraction for the electric force between two point charges in free space or air.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Coulomb’s law"
+      ]
+    },
+    {
+      "outcome": "14(b) recall and use E equals fraction numerator 1 over denominator 4 pi epsilon subscript 0 end fraction Q over r squared for the electric field strength due to a point charge, in free space or air, to solve problems.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Electric field strength"
+      ]
+    },
+    {
+      "outcome": "14(c) define electric potential at a point as the work done per unit charge by an external force in bringing a small positive test charge from infinity to that point.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Electric potential and energy"
+      ]
+    },
+    {
+      "outcome": "14(d) use the equation V equals fraction numerator 1 over denominator 4 pi epsilon subscript 0 end fraction Q over r for the electric potential in the field due to a point charge, in free space or air.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Electric potential and energy"
+      ]
+    },
+    {
+      "outcome": "14(e) show an understanding that the electric potential energy of a system of two point charges is U subscript E equals fraction numerator 1 over denominator 4 pi epsilon subscript 0 end fraction fraction numerator Q subscript 1 Q subscript 2 over denominator r end fraction .",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Electric potential and energy"
+      ]
+    },
+    {
+      "outcome": "14(f) recall that electric field strength at a point is equal to the negative potential gradient at that point and use this to solve problems.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Electric potential and energy"
+      ]
+    },
+    {
+      "outcome": "14(g) calculate the field strength of the uniform electric field between charged parallel plates in terms of the potential difference and plate separation.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Uniform electric fields"
+      ]
+    },
+    {
+      "outcome": "14(h) calculate the force on a charge in a uniform electric field.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Uniform electric fields"
+      ]
+    },
+    {
+      "outcome": "14(i) describe the effect of a uniform electric field on the motion of a charged particle.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Uniform electric fields"
+      ]
+    },
+    {
+      "outcome": "14(j) define capacitance as the ratio of the charge stored to the potential difference and use C equals Q over V to solve problems.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Capacitance"
+      ]
+    },
+    {
+      "outcome": "14(k) recall that the electric potential energy stored in a capacitor is given by the area under the graph of potential difference against charge stored, and use this and the equations U equals 1 half Q V , U equals 1 half Q squared over C and U equals 1 half C V squared to solve problems.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electric Fields",
+        "Capacitance"
+      ]
+    },
+    {
+      "outcome": "15(a) show an understanding that electric current is the rate of flow of charge and solve problems using I equals Q over t",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Current and drift velocity"
+      ]
+    },
+    {
+      "outcome": "15(b) derive and use the equation I equals n A v q for a current-carrying conductor, where n is the number density of charge carriers and v is the drift velocity.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Current and drift velocity"
+      ]
+    },
+    {
+      "outcome": "15(c) recall and solve problems using the equation for potential difference in terms of electrical work done per unit charge V equals W over Q",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Potential difference and power"
+      ]
+    },
+    {
+      "outcome": "15(d) recall and solve problems using the equations for electrical power P equals V I , P equals I squared R and P equals V squared over R",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Potential difference and power"
+      ]
+    },
+    {
+      "outcome": "15(e) distinguish between electromotive force (e.m.f.) and potential difference (p.d.) using energy considerations.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "15(f) show an understanding of and use the terms period, frequency, peak value and root-mean-square (r.m.s.) value as applied to an alternating current or voltage.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "15(g) represent a sinusoidal alternating current or voltage by an equation of the form x equals x subscript 0 sin omega t .",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "15(h) deduce that the mean power in a resistive load is half the maximum (peak) power for a sinusoidal alternating current.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "15(i) distinguish between r.m.s. and peak values, and recall and use I subscript straight r straight. straight m straight. straight s straight. end subscript equals fraction numerator I subscript 0 over denominator square root of 2 end fraction and V subscript straight r straight. straight m straight. straight s straight. end subscript equals fraction numerator V subscript 0 over denominator square root of 2 end fraction for the sinusoidal case.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "15(j) explain the use of a single diode for the half-wave rectification of an alternating current.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Currents",
+        "Power supplies: d.c. and a.c."
+      ]
+    },
+    {
+      "outcome": "16(a) recall and use appropriate circuit symbols.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Circuit symbols and diagrams"
+      ]
+    },
+    {
+      "outcome": "16(b) draw and interpret circuit diagrams containing sources, switches, resistors (fixed and variable), ammeters, voltmeters, lamps, thermistors, light-dependent resistors, diodes, capacitors and any other type of component referred to in the syllabus.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Circuit symbols and diagrams"
+      ]
+    },
+    {
+      "outcome": "16(c) define the resistance of a circuit component as the ratio of the potential difference across the component to the current in it, and solve problems using the equation V equals I R",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistance, resistivity, and internal resistance"
+      ]
+    },
+    {
+      "outcome": "16(d) recall and solve problems using the equation relating resistance to resistivity, length and cross-sectional area, R equals fraction numerator rho l over denominator A end fraction",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistance, resistivity, and internal resistance"
+      ]
+    },
+    {
+      "outcome": "16(e) sketch and interpret the I minus V characteristics of various electrical components in a d.c. circuit, such as an ohmic resistor, a semiconductor diode, a filament lamp and a negative temperature coefficient (NTC) thermistor.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistance, resistivity, and internal resistance"
+      ]
+    },
+    {
+      "outcome": "16(f) explain the temperature dependence of the resistivity of typical metals (e.g. in a filament lamp) and semiconductors (e.g. in an NTC thermistor) in terms of the drift velocity and number density of charge carriers respectively.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistance, resistivity, and internal resistance"
+      ]
+    },
+    {
+      "outcome": "16(g) show an understanding of the effects of the internal resistance of a source of e.m.f. on the terminal potential difference and output power.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistance, resistivity, and internal resistance"
+      ]
+    },
+    {
+      "outcome": "16(h) solve problems using the formula for the combined resistance of two or more resistors in series.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistors in series and in parallel"
+      ]
+    },
+    {
+      "outcome": "16(i) solve problems using the formula for the combined resistance of two or more resistors in parallel.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistors in series and in parallel"
+      ]
+    },
+    {
+      "outcome": "16(j) solve problems involving series and parallel arrangements of resistors for one source of e.m.f., including potential divider circuits which may involve NTC thermistors and light-dependent resistors.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "Resistors in series and in parallel"
+      ]
+    },
+    {
+      "outcome": "16(k) solve problems using the formulae for the combined capacitance of two or more capacitors in series and in parallel.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "RC circuits with d.c. source"
+      ]
+    },
+    {
+      "outcome": "16(l) describe and represent the variation with time, of quantities like current, charge and potential difference, for a capacitor that is charging or discharging through a resistor, using equations of the form x equals x subscript 0 exp open parentheses negative t divided by tau close parentheses or x equals x subscript 0 open parentheses 1 minus exp open parentheses negative t divided by tau close parentheses close parentheses , where tau equals R C is the time constant.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Circuits",
+        "RC circuits with d.c. source"
+      ]
+    },
+    {
+      "outcome": "17(a) show an understanding that a magnetic field is an example of a field of force produced either by current-carrying conductors or by permanent magnets.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Magnetic fields and magnetic flux density due to currents"
+      ]
+    },
+    {
+      "outcome": "17(b) sketch magnetic field lines due to currents in a long straight wire, a flat circular coil, and a long solenoid.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Magnetic fields and magnetic flux density due to currents"
+      ]
+    },
+    {
+      "outcome": "17(c) use B equals fraction numerator mu subscript 0 over denominator 2 pi end fraction I over d , B equals mu subscript 0 over 2 fraction numerator N I over denominator r end fraction and B equals mu subscript 0 n I for the magnetic flux densities of the fields due to currents in a long straight wire, a flat circular coil, and a long solenoid respectively.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Magnetic fields and magnetic flux density due to currents"
+      ]
+    },
+    {
+      "outcome": "17(d) show an understanding that the magnetic field due to a solenoid may be influenced by the presence of a ferrous core.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Magnetic fields and magnetic flux density due to currents"
+      ]
+    },
+    {
+      "outcome": "17(e) show an understanding that a current-carrying conductor placed in a magnetic field might experience a force.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a current-carrying conductor"
+      ]
+    },
+    {
+      "outcome": "17(f) recall and solve problems using the equation F equals B I L sin theta , with directions as interpreted by Fleming’s left-hand rule.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a current-carrying conductor"
+      ]
+    },
+    {
+      "outcome": "17(g) define magnetic flux density as the force acting per unit current per unit length on a conductor placed perpendicular to the magnetic field.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a current-carrying conductor"
+      ]
+    },
+    {
+      "outcome": "17(h) show an understanding of how the force on a current-carrying conductor can be used to measure the flux density of a magnetic field using a current balance.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a current-carrying conductor"
+      ]
+    },
+    {
+      "outcome": "17(i) explain the forces between current-carrying conductors and predict the direction of the forces.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a current-carrying conductor"
+      ]
+    },
+    {
+      "outcome": "17(j) predict the direction of the force on a charge moving in a uniform magnetic field",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a moving charge"
+      ]
+    },
+    {
+      "outcome": "17(k) recall and solve problems using the equation F equals B Q v s i n theta .",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a moving charge"
+      ]
+    },
+    {
+      "outcome": "17(l) describe and analyse deflections of beams of charged particles by uniform electric fields and uniform magnetic fields.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a moving charge"
+      ]
+    },
+    {
+      "outcome": "17(m) explain how perpendicular electric and magnetic fields can be used in velocity selection for charged particles.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Forces",
+        "Force on a moving charge"
+      ]
+    },
+    {
+      "outcome": "18(a) define magnetic flux as the product of the magnetic flux density and the cross-sectional area perpendicular to the direction of the magnetic flux density.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Magnetic flux"
+      ]
+    },
+    {
+      "outcome": "18(b) show an understanding of and use the concept of magnetic flux linkage.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Magnetic flux"
+      ]
+    },
+    {
+      "outcome": "18(c) recall and use ϕ equals B A and N ϕ equals N B A to solve problems, where N is the number of turns.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Magnetic flux"
+      ]
+    },
+    {
+      "outcome": "18(d) infer from appropriate experiments on electromagnetic induction: i. that a changing magnetic flux can induce an e.m.f.; ii. that the direction of the induced e.m.f. opposes the change producing it; and iii. the factors affecting the magnitude of the induced e.m.f.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Faraday’s and Lenz’s laws of electromagnetic induction"
+      ]
+    },
+    {
+      "outcome": "18(e) recall and solve problems using Faraday’s law of electromagnetic induction and Lenz’s law.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Faraday’s and Lenz’s laws of electromagnetic induction"
+      ]
+    },
+    {
+      "outcome": "18(f) explain simple applications of electromagnetic induction.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Faraday’s and Lenz’s laws of electromagnetic induction"
+      ]
+    },
+    {
+      "outcome": "18(c) recall and use 18(g) show an understanding of the principle of operation of a simple iron-core transformer and recall and solve problems using N subscript s over N subscript p equals V subscript s over V subscript p equals I subscript p over I subscript s for an ideal transformer. and N ϕ equals N B A to solve problems, where N is the number of turns.",
+      "outcomePath": [
+        "Electricity & Magnetism",
+        "Electromagnetic Induction",
+        "Power transformers"
+      ]
+    },
+    {
+      "outcome": "19(a) show an understanding that the existence of a threshold frequency in the photoelectric effect provides evidence that supports the particulate nature of electromagnetic radiation while phenomena such as interference and diffraction provide evidence that supports its wave nature.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The particulate nature of light"
+      ]
+    },
+    {
+      "outcome": "19(b) state that a photon is a quantum of electromagnetic radiation, and recall and use the equation E equals h f for the energy of a photon to solve problems, where h is the Planck constant.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The particulate nature of light"
+      ]
+    },
+    {
+      "outcome": "19(c) show an understanding that while a photon is massless, it has a momentum given by p equals E over c and p equals h over lambda , where c is the speed of light in free space.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The particulate nature of light"
+      ]
+    },
+    {
+      "outcome": "19(d) show an understanding that electron diffraction and double-slit interference of single particles provide evidence that supports the wave nature of particles.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(e) recall and use the equation lambda equals h over p for the de Broglie wavelength to solve problems.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(f) show an understanding that the state of a particle can be represented as a wavefunction psi , e.g. for an electron cloud in an atom, and that the square of the wavefunction amplitude open parentheses psi close parentheses squared is the probability density function (including calculation of normalisation factors for square and sinusoidal wavefunctions).",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(g) show an understanding that the principle of superposition applies to the wavefunctions describing a particle’s position, leading to standing wave solutions for a particle in a box and phenomena such as single-particle interference in double-slit experiments.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(h) show an understanding that the Heisenberg position-momentum uncertainty principle capital delta x capital delta p ≳ h relates to the necessity of a spread of momenta for localised particles, and apply this to solve problems.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(i) show an understanding of standing wave solutions psi subscript n for the wavefunction of a particle in a one-dimensional infinite square well potential.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(j) solve problems using E subscript n equals fraction numerator h squared over denominator 8 m L squared end fraction n squared for the allowed energy levels of a particle of mass m in a one-dimensional infinite square well of width L .",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "The wave nature of particles"
+      ]
+    },
+    {
+      "outcome": "19(k) show an understanding of the existence of discrete electronic energy levels for the electron’s wavefunction in isolated atoms (e.g. atomic hydrogen) and deduce how this leads to the observation of spectral lines .",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "Quantisation of energy in matter"
+      ]
+    },
+    {
+      "outcome": "19(l) distinguish between emission and absorption line spectra .",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "Quantisation of energy in matter"
+      ]
+    },
+    {
+      "outcome": "19(m) solve problems involving photon absorption or emission during atomic energy level transitions.",
+      "outcomePath": [
+        "Modern Physics",
+        "Quantum Physics",
+        "Quantisation of energy in matter"
+      ]
+    },
+    {
+      "outcome": "20 (a) infer from the results of the Rutherford alpha - particle scattering experiment the existence and small size of the atomic nucleus.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "The nuclear atom"
+      ]
+    },
+    {
+      "outcome": "20 (b) distinguish between nucleon number (mass number) and proton number (atomic number).",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "The nuclear atom"
+      ]
+    },
+    {
+      "outcome": "20 (c) show an understanding that an element can exist in various isotopic forms, each with a different number of neutrons in the nucleus, and use the notation blank subscript Z superscript A text X end text for the representation of nuclides.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "The nuclear atom"
+      ]
+    },
+    {
+      "outcome": "20(d) show an understanding of the spontaneous and random nature of nuclear decay.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(e) infer the random nature of radioactive decay from the fluctuations in count rate.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(f) show an understanding of the origin and significance of background radiation.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(g) show an understanding of the nature and properties of alpha , beta and gamma radiations (knowledge of positron emission is not required).",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(h) define the terms activity and decay constant, and recall and solve problems using the equation A equals lambda N .",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(i) infer and sketch the exponential nature of radioactive decay and solve problems using the relationship x equals x subscript 0 exp open parentheses negative lambda t close parentheses where x could represent activity, number of undecayed particles or received count rate.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(j) define and use half-life as the time taken for a quantity 𝑥 to reduce to half its initial value.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(k) solve problems using the equation lambda equals fraction numerator ln 2 over denominator t subscript 1 half end subscript end fraction .",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(l) discuss qualitatively the applications (e.g. medical and industrial uses) and hazards of radioactivity based on: i. half-life of radioactive materials, ii. penetrating abilities and ionising effects of radioactive emissions.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Radioactive decay"
+      ]
+    },
+    {
+      "outcome": "20(m) represent simple nuclear reactions by nuclear equations of the form blank subscript 7 superscript 14 text N end text plus blank subscript 2 superscript 4 text He end text rightwards arrow blank subscript 8 superscript 17 text O end text plus blank subscript 1 superscript 1 text H end text .",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Nuclear processes and conservation laws"
+      ]
+    },
+    {
+      "outcome": "20(n) state and apply to problem solving the concept that nucleon number, charge and mass-energy are all conserved in nuclear processes.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Nuclear processes and conservation laws"
+      ]
+    },
+    {
+      "outcome": "20(o) show an understanding of how the conservation laws for energy and momentum in beta decay were used to predict the existence of the (anti)neutrino (knowledge of the antineutrino and the zoo of particles is not required).",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Nuclear processes and conservation laws"
+      ]
+    },
+    {
+      "outcome": "20(p) show an understanding of the concept of mass defect.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Mass defect and nuclear binding energy"
+      ]
+    },
+    {
+      "outcome": "20(q) recall and apply the equivalence between energy and mass as represented by E equals m c squared to solve problems.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Mass defect and nuclear binding energy"
+      ]
+    },
+    {
+      "outcome": "20(r) show an understanding of the concept of nuclear binding energy and its relation to mass defect.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Mass defect and nuclear binding energy"
+      ]
+    },
+    {
+      "outcome": "20(s) sketch the variation of binding energy per nucleon with nucleon number.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Mass defect and nuclear binding energy"
+      ]
+    },
+    {
+      "outcome": "20(t) explain the relevance of binding energy per nucleon to nuclear fusion and to nuclear fission.",
+      "outcomePath": [
+        "Modern Physics",
+        "Nuclear Physics",
+        "Mass defect and nuclear binding energy"
+      ]
+    }
+  ],
+  "subject": "Physics - H2PHY",
+  "level": "Pre-U 1",
+  "harvestedAt": "2026-08-21T14:49:41.762Z",
+  "discoveredFromModule": "17b942e4-bcc3-4e09-9afd-9b40ce2dc16b",
+  "discoverySource": "existing saved SLS Module Tags"
+}

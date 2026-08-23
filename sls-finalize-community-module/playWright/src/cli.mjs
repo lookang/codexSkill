@@ -4,8 +4,8 @@ const DEFAULT_CONFIG = "configs/p3-multiplication-algorithms.json";
 
 export function parseArgs(argv, cwd = process.cwd()) {
   const [mode = "inspect", ...rest] = argv;
-  if (!new Set(["scan", "inspect", "apply", "resume", "harvest", "tag"]).has(mode)) {
-    throw new Error(`Unknown mode: ${mode}. Use scan, inspect, apply, resume, harvest, or tag.`);
+  if (!new Set(["scan", "discover", "inspect", "apply", "resume", "harvest", "tag"]).has(mode)) {
+    throw new Error(`Unknown mode: ${mode}. Use scan, discover, inspect, apply, resume, harvest, or tag.`);
   }
 
   const options = {

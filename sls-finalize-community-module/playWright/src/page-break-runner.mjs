@@ -36,6 +36,7 @@ export async function runPageBreakWorkflow({ target, options, apply = false }) {
     verificationRequested: options.verifyAfterApply === true,
     verification: null,
     insertedBreaks: [],
+    skippedAmbiguousPages: [],
     error: null,
   };
 
@@ -56,6 +57,7 @@ export async function runPageBreakWorkflow({ target, options, apply = false }) {
       apply,
       insertedBreaks: report.insertedBreaks,
     });
+    report.skippedAmbiguousPages = skippedPageSummaries(report.review);
     await leaveEditMode(page, target);
 
     if (apply && report.verificationRequested) {
@@ -286,10 +288,10 @@ async function readPageMetrics(page) {
       return {
         top: rect.top + window.scrollY,
         bottom: rect.bottom + window.scrollY,
-        height: rect.height,
         left: rect.left + window.scrollX,
         right: rect.right + window.scrollX,
         width: rect.width,
+        height: rect.height,
       };
     };
     const outermost = (elements) => elements.filter(
@@ -732,7 +734,7 @@ async function assertAuthenticated(page, moduleId) {
     .catch(() => false);
   if (loginVisible || /\/login/i.test(new URL(page.url()).pathname)) {
     throw new GuardError(
-      `SLS authentication is required. Run npm.cmd run sls:auth and sign in manually. Current URL: ${page.url()}`,
+      `SLS authentication is required. Run npm run sls:auth (npm.cmd on Windows) and sign in manually. Current URL: ${page.url()}`,
     );
   }
   if (!page.url().includes(moduleId)) {
@@ -752,11 +754,12 @@ function printPageAssessments(pages) {
   for (const page of pages) {
     const assessment = page.assessment;
     const height = Math.round(assessment.pageHeight);
-    const marker = assessment.needsBreak ? "CANDIDATE" : assessment.blocked ? "REVIEW" : "ok";
+    const marker = assessment.needsBreak ? "CANDIDATE" : assessment.blocked ? "SKIPPED" : "ok";
+    const suffix = assessment.blocked ? " Page left unchanged." : "";
     console.log(
       `    Page ${page.pageIndex + 1}: ${marker}; ${assessment.questionCount} question(s) in ` +
         `${assessment.questionRowCount} visual row(s), ` +
-        `${height}px content - ${assessment.reason}.`,
+        `${height}px content - ${assessment.reason}.${suffix}`,
     );
   }
 }
@@ -770,9 +773,16 @@ function blockedPages(moduleReport) {
 }
 
 function unresolvedPages(moduleReport) {
-  return allPages(moduleReport).filter(
-    (entry) => entry.page.assessment.needsBreak || entry.page.assessment.blocked,
-  );
+  return allPages(moduleReport).filter((entry) => entry.page.assessment.needsBreak);
+}
+
+function skippedPageSummaries(moduleReport) {
+  return blockedPages(moduleReport).map(({ section, activity, page }) => ({
+    section: { label: section.label, title: section.title, id: section.id },
+    activity: { index: activity.index, title: activity.title, id: activity.id },
+    pageIndex: page.pageIndex,
+    reason: page.assessment.reason,
+  }));
 }
 
 function allPages(moduleReport) {

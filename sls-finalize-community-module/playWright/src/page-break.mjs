@@ -28,6 +28,21 @@ export function normalizePageBreakPolicy(overrides = {}) {
   return policy;
 }
 
+export function decidePageBreakReview({ candidateCount, blockedCount }, { dryRun = false } = {}) {
+  for (const [name, value] of Object.entries({ candidateCount, blockedCount })) {
+    if (!Number.isInteger(value) || value < 0) {
+      throw new Error(`${name} must be a non-negative integer.`);
+    }
+  }
+
+  return {
+    apply: !dryRun && candidateCount > 0,
+    dryRun,
+    candidateCount,
+    skippedAmbiguousPages: blockedCount,
+  };
+}
+
 export function advancePageBreakScan(pages, splitPageIndex) {
   if (!Array.isArray(pages)) throw new Error("pages must be an array.");
   if (!Number.isInteger(splitPageIndex) || splitPageIndex < 0) {

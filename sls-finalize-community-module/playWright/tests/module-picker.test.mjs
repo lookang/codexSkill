@@ -96,6 +96,8 @@ test("every public launcher uses the shared module memory", async () => {
     "scripts/one-shot.mjs",
     "scripts/module-action.mjs",
     "scripts/page-break.mjs",
+    "scripts/remove-copy.mjs",
+    "scripts/selected-workflow.mjs",
     "scripts/smoke-module-actions.mjs",
     "scripts/acp-interactive.mjs"
   ];

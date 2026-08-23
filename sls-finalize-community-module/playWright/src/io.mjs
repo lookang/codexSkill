@@ -41,6 +41,23 @@ export function validateConfig(config) {
       if (!activity.title) {
         throw new Error(`Section ${section.label} contains an activity without a title.`);
       }
+      if (activity.reviewedOutcomePrefixes != null) {
+        if (
+          typeof activity.reviewedOutcomePrefixes !== "object" ||
+          Array.isArray(activity.reviewedOutcomePrefixes)
+        ) {
+          throw new Error(
+            `Section ${section.label} activity ${activity.title} reviewedOutcomePrefixes must be an object keyed by question number.`
+          );
+        }
+        for (const [questionNumber, prefix] of Object.entries(activity.reviewedOutcomePrefixes)) {
+          if (!/^\d+$/.test(questionNumber) || typeof prefix !== "string" || !prefix.trim()) {
+            throw new Error(
+              `Section ${section.label} activity ${activity.title} has an invalid reviewed outcome for question ${questionNumber}.`
+            );
+          }
+        }
+      }
     }
   }
   if (config.gamification) {
@@ -132,6 +149,12 @@ export function applyTargetUrl(config, options) {
 
   return {
     ...config,
+    target: {
+      scope: target.scope,
+      sectionId: target.sectionId,
+      activityId: target.activityId,
+      sourceUrl: target.sourceUrl
+    },
     module: {
       ...config.module,
       id: target.id,
@@ -221,11 +244,16 @@ export function parseAdminModuleEditUrl(value, { scope = "module" } = {}) {
     );
   }
   const moduleId = match.groups.id;
+  const nestedIds = url.pathname.match(
+    /\/section\/(?<sectionId>[0-9a-f-]+)(?:\/activity\/(?<activityId>[0-9a-f-]+))?/i
+  );
   const adminViewUrl = `https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/${moduleId}/module-plan`;
   const adminEditUrl = `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/module-plan`;
   return {
     id: moduleId,
     scope: nested ? "activity" : "module",
+    sectionId: nestedIds?.groups?.sectionId ?? null,
+    activityId: nestedIds?.groups?.activityId ?? null,
     sourceUrl: url.href,
     converted: url.href.replace(/\/$/, "") !== adminViewUrl,
     adminViewUrl,
@@ -280,6 +308,12 @@ export function questionCarriesMap(questionTags, contentMap) {
 // says which pair it belongs to - "Sec 1 Mathematics (G1) (2028)" is the G1 subject
 // at Secondary 1 - so the pair can be derived rather than guessed.
 export function subjectForContentMap(contentMap, fallback = null) {
+  if (/Additional Mathematics/i.test(String(contentMap ?? ""))) {
+    const stream = /\(G([23])\)/i.exec(String(contentMap ?? ""))?.[1];
+    return stream
+      ? `Additional Mathematics - G${stream}AMATHS`
+      : "ADDITIONAL MATHEMATICS - A MATHS";
+  }
   const band = /\(G([123])\)/.exec(String(contentMap ?? ""));
   return band ? `Mathematics - G${band[1]}MATHS` : fallback;
 }

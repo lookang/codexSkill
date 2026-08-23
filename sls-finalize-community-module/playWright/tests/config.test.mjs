@@ -50,6 +50,12 @@ test("a custom authentication state path can be supplied", () => {
   assert.equal(options.authStatePath, path.join(projectRoot, "private", "session.json"));
 });
 
+test("discover is a supported read-only curriculum crawl mode", () => {
+  const options = parseArgs(["discover"], projectRoot);
+  assert.equal(options.mode, "discover");
+  assert.equal(options.deleteOriginals, false);
+});
+
 test("inspect accepts an exact admin URL for another module", async () => {
   const config = mergeDefaults(await loadConfig(
     path.join(projectRoot, "configs", "p3-multiplication-algorithms.json")

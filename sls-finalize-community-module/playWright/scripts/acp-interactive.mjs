@@ -87,7 +87,7 @@ async function runWithAuthRetry(apply, holdOpen = !headless) {
     if (selectedWorkflow) {
       stop(
         "The reusable SLS session is missing or expired. Selected workflow will not pause for " +
-          "authentication so its coordinator can refresh and retry this stage.",
+          "authentication; run npm run sls:auth (npm.cmd on Windows) separately, then retry.",
       );
     }
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");

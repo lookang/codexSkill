@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "52bfb827-c796-454f-8d6e-5024111f515f",
+    "title": "Sec 4G2G3 AMath: Differentiation of Fractions (CAIT)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/52bfb827-c796-454f-8d6e-5024111f515f/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Secondary 4 learners practising differentiation of algebraic fractions in Additional Mathematics. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "4G2G3 AMath: Quest",
+    "shortTitle": "4G2G3 Quest",
+    "description": "Build confidence and accuracy while mastering sec 4g2g3 amath: differentiation of fractions (cait)."
+  },
+  "defaults": {
+    "subject": "Additional Mathematics - G2AMATHS",
+    "level": "Secondary 4",
+    "contentMap": "Sec 3 & 4 Additional Mathematics (G2) (2020)",
+    "outcomePath": [
+      "CALCULUS",
+      "Differentiation and integration"
+    ],
+    "outcome": "Derivatives of products and quotients of functions",
+    "questionKeyword": "FA Math",
+    "contentMaps": [
+      "Sec 3 & 4 Additional Mathematics (G2) (2020)",
+      "Sec 3 & 4 Additional Mathematics (G3) (2020)"
+    ]
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Practise Differentiating Fractions",
+      "activities": [
+        {
+          "title": "Differentiate the following."
+        }
+      ],
+      "contentMaps": [
+        "Sec 3 & 4 Additional Mathematics (G2) (2020)",
+        "Sec 3 & 4 Additional Mathematics (G3) (2020)"
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Sue's and Ken's Differentiating of Fractions",
+      "activities": [
+        {
+          "title": "Differentiating Fractions: Analyse and Compare"
+        },
+        {
+          "title": "Differentiating Fractions: Extend (I)"
+        },
+        {
+          "title": "Differentiating Fractions: Extend (II)"
+        }
+      ],
+      "contentMaps": [
+        "Sec 3 & 4 Additional Mathematics (G2) (2020)",
+        "Sec 3 & 4 Additional Mathematics (G3) (2020)"
+      ]
+    }
+  ]
+}

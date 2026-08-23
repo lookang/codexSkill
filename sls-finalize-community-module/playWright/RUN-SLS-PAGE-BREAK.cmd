@@ -19,8 +19,8 @@ echo It keeps side-by-side questions together and breaks before the next visual
 echo question row. Single-question pages retain the length-based chunking rule.
 echo After each verified split, it continues from the new next page without
 echo revisiting earlier pages. The full reopen audit is skipped by default.
-echo A normal run applies automatically after a clear review. Use --dry-run to
-echo review without changing SLS. Ambiguous layouts stop before any changes.
+echo A normal run applies all clear candidates automatically. Use --dry-run to
+echo review without changing SLS. Ambiguous pages are skipped and left unchanged.
 echo Add --verify only when you want the slower full-module reopen audit.
 echo.
 

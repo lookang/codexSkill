@@ -43,9 +43,20 @@ for (const file of cmdFiles) {
   }
 }
 
+const macLaunchers = (await filesUnder(root, { recursive: false })).filter((file) => file.endsWith(".command"));
+for (const file of macLaunchers) {
+  const source = await fs.readFile(file, "utf8");
+  const match = /run-macos\.sh"\s+([^\s"']+)/.exec(source);
+  if (!match) throw new Error(`${path.basename(file)} does not call scripts/run-macos.sh.`);
+  if (match[1] !== "setup" && !packageJson.scripts?.[match[1]]) {
+    throw new Error(`${path.basename(file)} calls missing package script "${match[1]}".`);
+  }
+}
+
 console.log(
   `Checked ${sourceFiles.length} JavaScript files, ${jsonFiles.length} JSON files, ` +
-    `${configFiles.length} SLS configs, and ${cmdFiles.length} CMD launchers.`
+    `${configFiles.length} SLS configs, ${cmdFiles.length} CMD launchers, and ` +
+    `${macLaunchers.length} macOS launchers.`
 );
 
 async function filesUnder(dir, { recursive = true } = {}) {

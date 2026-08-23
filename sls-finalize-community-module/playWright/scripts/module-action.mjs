@@ -97,8 +97,8 @@ const options = {
 if (!(await exists(options.authStatePath))) {
   if (selectedWorkflow) {
     stop(
-      "Selected workflow requires a reusable SLS session so its coordinator can refresh " +
-        "authentication and retry this stage.",
+      "Selected workflow requires a reusable SLS session. Run npm run sls:auth (npm.cmd on Windows) separately, " +
+        "then restart RUN-SLS-SELECTED.cmd.",
     );
   }
   console.log("No reusable SLS session was found. Chrome will open for manual authentication.");
@@ -112,8 +112,8 @@ try {
   if (!/authentication is required/i.test(error.message)) throw error;
   if (selectedWorkflow) {
     stop(
-      "The reusable SLS session expired. Selected workflow will not pause for authentication so " +
-        "its coordinator can refresh and retry this stage.",
+      "The reusable SLS session expired. Selected workflow will not pause for authentication; " +
+        "run npm run sls:auth (npm.cmd on Windows) separately, then retry.",
     );
   }
   console.log("\nThe saved SLS session has expired. Chrome will open for manual authentication.");

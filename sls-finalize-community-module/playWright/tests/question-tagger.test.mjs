@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { levelToContentMap, proposeQuestionTag } from "../src/question-tagger.mjs";
+import {
+  isSubstantiveCurriculumQuestion,
+  levelToContentMap,
+  proposeQuestionTag
+} from "../src/question-tagger.mjs";
 import { mathFeatures } from "../src/math-features.mjs";
 
 const entry = (contentMap, outcomePath, outcome) => ({
@@ -88,4 +92,43 @@ test("a question whose levels have no harvested map is skipped, not guessed", ()
   });
   assert.equal(result.decision, "skip");
   assert.match(result.reason, /no harvested content map/);
+});
+
+test("a conceptual Physics question is matched inside its saved content map", () => {
+  const physics = [
+    entry(
+      "Pre-U Physics (H2) - 2025",
+      ["Newtonian mechanics", "Dynamics"],
+      "show an understanding of Newton's laws of motion"
+    ),
+    entry(
+      "Pre-U Physics (H2) - 2025",
+      ["Gravitational field"],
+      "define gravitational field strength and gravitational potential"
+    )
+  ];
+  const result = proposeQuestionTag(
+    "A trolley obeys F = ma. Which statement correctly describes Newton's second law of motion?",
+    physics,
+    { allowedContentMaps: ["Pre-U Physics (H2) - 2025"] }
+  );
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.contentMap, "Pre-U Physics (H2) - 2025");
+  assert.match(result.outcome, /Newton's laws/);
+  assert.match(result.basis, /question-body lexical match/);
+});
+
+test("conceptual Physics is substantive while reflection is not", () => {
+  assert.equal(
+    isSubstantiveCurriculumQuestion(
+      "Which statement correctly describes Newton's second law of motion?",
+      "Physics - H2PHY"
+    ),
+    true
+  );
+  assert.equal(
+    isSubstantiveCurriculumQuestion("How did the feedback help your thinking?", "Physics - H2PHY"),
+    false
+  );
 });

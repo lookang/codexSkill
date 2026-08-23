@@ -51,7 +51,7 @@ try {
   await page.goto(target.adminViewUrl, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(3000);
   if (/\/login/i.test(new URL(page.url()).pathname)) {
-    throw new Error("SLS authentication is required. Run npm.cmd run sls:auth first.");
+    throw new Error("SLS authentication is required. Run npm run sls:auth (npm.cmd on Windows) first.");
   }
   checks.push(["URL parser", true, `${target.scope} URL -> module ${target.id}`]);
 

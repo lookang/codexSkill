@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { runPageBreakWorkflow } from "../src/page-break-runner.mjs";
+import { decidePageBreakReview } from "../src/page-break.mjs";
 import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 const root = process.cwd();
@@ -23,7 +24,7 @@ if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not 
 console.log("\nSLS Meaningful Page Breaks");
 console.log("Reviews every section and activity before changing anything.");
 console.log("Places each visual question row on its own page when SLS exposes a safe divider.");
-console.log("Questions displayed side by side stay together as one row.");
+console.log("Side-by-side questions in the same row remain together.");
 console.log("Single-question pages retain the existing length-based chunking rule.");
 console.log(
   verifyAfterApply
@@ -60,18 +61,23 @@ if (explicitApply) {
 } else {
   const review = await runWithAuthRetry(false, explicitDryRun);
   finalResult = review;
+  const decision = decidePageBreakReview(review, { dryRun: explicitDryRun });
   console.log(`\nReview report: ${review.reportPath}`);
-  console.log(`Candidates: ${review.candidateCount}; guarded pages: ${review.blockedCount}.`);
+  console.log(
+    `Candidates: ${decision.candidateCount}; ` +
+      `skipped ambiguous pages: ${decision.skippedAmbiguousPages}.`,
+  );
 
-  if (!explicitDryRun && review.blockedCount > 0) {
-    stop(
-      `Review found ${review.blockedCount} ambiguous page(s). Nothing was changed; ` +
-        "inspect the review report and trace.",
+  if (decision.skippedAmbiguousPages > 0) {
+    console.log(
+      `Leaving ${decision.skippedAmbiguousPages} non-standard or ambiguous page(s) unchanged.`,
     );
-  } else if (!explicitDryRun && review.candidateCount > 0) {
-    console.log("\nReview is clear. Continuing automatically with the guarded apply pass...");
+  }
+
+  if (decision.apply) {
+    console.log("\nContinuing automatically with the clear, guarded page-break candidates...");
     finalResult = await runWithAuthRetry(true);
-  } else if (review.candidateCount === 0) {
+  } else if (decision.candidateCount === 0) {
     console.log("No safe page-break candidates were found. Nothing was changed in SLS.");
   } else {
     console.log("Dry-run review complete. Nothing was changed in SLS.");
@@ -83,6 +89,9 @@ console.log(`Trace:  ${finalResult.tracePath}`);
 if (finalResult.report.mode === "apply") {
   console.log(`Inserted page breaks: ${finalResult.report.insertedBreaks.length}.`);
   console.log(`Full reopen audit: ${finalResult.report.verificationRequested ? "completed" : "skipped"}.`);
+  console.log(
+    `Ambiguous pages left unchanged: ${finalResult.report.skippedAmbiguousPages.length}.`,
+  );
 }
 
 async function runWithAuthRetry(apply, holdOpen = true) {
@@ -94,7 +103,7 @@ async function runWithAuthRetry(apply, holdOpen = true) {
     if (selectedWorkflow) {
       stop(
         "The reusable SLS session is missing or expired. Selected workflow will not pause for " +
-          "authentication so its coordinator can refresh and retry this stage.",
+          "authentication; run npm run sls:auth (npm.cmd on Windows) separately, then retry.",
       );
     }
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");

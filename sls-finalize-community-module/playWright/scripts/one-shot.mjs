@@ -4,10 +4,11 @@ import process from "node:process";
 import readline from "node:readline/promises";
 import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
-import { applyTargetUrl, loadConfig, mergeDefaults, questionTagState, unreviewedPlaceholders } from "../src/io.mjs";
+import { applyTargetUrl, loadConfig, mergeDefaults, questionTagState, saveJson, unreviewedPlaceholders } from "../src/io.mjs";
 import { parseArgs } from "../src/cli.mjs";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { createSlsContext, launchSlsBrowser, runSlsWorkflow } from "../src/sls-runner.mjs";
+import { applyModuleEvidenceToConfig } from "../src/module-evidence.mjs";
 import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 // Browser speed can come from an argument (npm run sls:one-shot -- --slow-mo 800)
@@ -45,7 +46,7 @@ const defaultUrl =
 console.log("\nSLS Community Gallery Automation");
 console.log("This launcher handles authentication, inspection, guarded editing, and optional replacement.\n");
 
-const target = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: argvFlags });
+const target = await pickAndRememberModule({ root, defaultUrl, ask, stop });
 const scope = target.scope;
 if (scope === "activity") {
   console.log(`\nActivity URL detected. Playwright will first open the module view, then navigate into the activity.`);
@@ -60,8 +61,8 @@ if (!inspectionConfig) await stop("No JSON configuration was found under configs
 if (!(await exists(authStatePath))) {
   if (selectedWorkflow) {
     await stop(
-      "Selected workflow requires a reusable SLS session so its coordinator can refresh " +
-        "authentication and retry this stage.",
+      "Selected workflow requires a reusable SLS session. Run npm run sls:auth (npm.cmd on Windows) separately, " +
+        "then restart RUN-SLS-SELECTED.cmd.",
     );
   }
   console.log("\nNo reusable SLS session was found. Chrome will open for manual authentication.");
@@ -77,7 +78,7 @@ if (inspectionResult.status !== 0) {
     if (selectedWorkflow) {
       await stop(
         "The reusable SLS session expired. Selected workflow stopped without opening an interactive " +
-          "authentication prompt so its coordinator can refresh and retry this stage.",
+          "authentication prompt. Run npm run sls:auth (npm.cmd on Windows) separately, then retry.",
       );
     }
     console.log("\nThe saved SLS session has expired or is missing. Chrome will open for manual authentication.");
@@ -88,6 +89,13 @@ if (inspectionResult.status !== 0) {
 }
 if (inspectionResult.status !== 0) {
   await stop("Inspection did not pass. No edits were started; review the newest report and trace.");
+}
+
+if (matchingConfig && inspectionResult.result?.report?.inventory?.moduleEvidence) {
+  await recordInspectionEvidence(
+    matchingConfig,
+    inspectionResult.result.report.inventory.moduleEvidence,
+  );
 }
 
 if (!matchingConfig) {
@@ -156,11 +164,21 @@ if (census) {
 }
 let methodAnswer;
 if (census?.total > 0 && census.tagged === 0) {
-  methodAnswer = "2";
-  console.log(
-    "No question-level tags exist yet. Selecting duplicate-and-replace preparation automatically " +
-      "so section outcomes flow into the copied activities. Originals will still be retained until the DELETE checkpoint."
-  );
+  if (selectedWorkflow) {
+    methodAnswer = "2";
+    console.log(
+      "No question-level tags exist yet. Selected workflow is using guarded duplicate-and-replace preparation " +
+        "so section outcomes flow into the copied activities. Originals remain until every replacement guard passes.",
+    );
+  } else {
+    console.log("No question-level tags exist yet.");
+    methodAnswer = await ask(
+      "\nHow should this standalone run continue?\n" +
+        "  1  Surgical - tag existing activities and skip duplication (recommended for a quick pass)\n" +
+        "  2  Duplicate and replace - create guarded copies; deletion still requires DELETE\n" +
+        "\nChoose 1 or 2 (Enter for 1): ",
+    );
+  }
 } else if (census?.total > 0 && census.tagged === census.total) {
   methodAnswer = "1";
   console.log("Every question is already tagged. Selecting the non-copying surgical verification pass automatically.");
@@ -176,7 +194,7 @@ if (census?.total > 0 && census.tagged === 0) {
       "\nHow should this module be tagged?\n" +
         "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
         "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
-        "\nChoose 1 or 2 (Enter for 1): ",
+        "\nChoose 1 or 2 (Enter for 1): "
     );
   }
 }
@@ -210,7 +228,7 @@ if (selectedWorkflow) {
 } else {
   const deletionAnswer = await ask(
     "Step 3 of 3 can delete only verified originals and rename their retained copies.\n" +
-      "Type DELETE to continue, or press Enter to stop with originals retained: ",
+    "Type DELETE to continue, or press Enter to stop with originals retained: "
   );
   if (deletionAnswer.trim() !== "DELETE") {
     await stop("Stopped after the non-deleting pass. Original activities were retained.", 0);
@@ -228,14 +246,26 @@ console.log("\nSLS workflow completed successfully.");
 console.log("Review the newest report.json and trace.zip under output for the final evidence.");
 
 // Completes a scaffolded config without requiring a second launcher run. Existing
-// section metadata is authoritative and is scanned first. When the module has none,
-// the resolver uses only exact wording from locally harvested SLS taxonomies and
-// proceeds only when one syllabus is a strong, unique match.
+// section metadata is scanned first. When a section has no curriculum, discovery
+// reads a saved module-level Content Map and its official learning objectives
+// before it considers an unsaved question cascade. The resolver uses only exact
+// wording from locally harvested SLS taxonomies and proceeds only when one syllabus
+// is a strong, unique match.
 async function completeConfigForTagging(configPath, selectedTarget) {
   console.log("Scanning the content map and every question (read-only)...");
   let scan = await runWorkflow("scan", configPath, selectedTarget.url);
   if (scan.status !== 0) {
-    console.log("\nNo existing section taxonomy could be read. Trying cached SLS taxonomies...");
+    console.log("\nNo existing section taxonomy could be read.");
+    console.log(
+      "Reading an existing saved Module Tag and its learning-objective tree first; " +
+        "only if unavailable will SLS's unsaved Subject -> Level -> Content Map cascade be used..."
+    );
+    const discovery = await runWorkflow("discover", configPath, selectedTarget.url);
+    if (discovery.status !== 0) {
+      console.log("Live SLS curriculum discovery did not produce a taxonomy; trying the local cache.");
+    } else {
+      console.log("Live SLS curriculum wording was cached locally; ranking those exact outcomes now.");
+    }
     const inferred = await runNode(
       "scripts/resolve-config.mjs",
       selectedWorkflow ? [configPath] : [configPath, "--interactive"],
@@ -248,6 +278,20 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   }
 
   let current = mergeDefaults(await loadConfig(configPath));
+  const unresolved = unreviewedPlaceholders(current);
+  const onlySectionOutcomesRemain =
+    unresolved.length > 0 && unresolved.every((field) => /\.outcome$/i.test(field));
+  if (onlySectionOutcomesRemain && current.module?.curriculumEvidence?.contentMap) {
+    // A paper-spanning quiz can cover dozens of syllabus outcomes. Requiring one
+    // section outcome before the surgical pass is both artificial and harmful:
+    // every question is matched independently against the authoritative saved
+    // Module Tag dictionary below. Replacement mode keeps its stricter guard.
+    console.log(
+      "The section spans multiple learning outcomes. The saved Module Tag and its " +
+        "official dictionary are ready, so surgical per-question tagging can continue."
+    );
+    return true;
+  }
   if (unreviewedPlaceholders(current).length > 0) {
     console.log("Completing the remaining placeholders from cached SLS taxonomy wording...");
     const resolverArgs = selectedWorkflow ? [configPath] : [configPath, "--interactive"];
@@ -295,6 +339,22 @@ async function taggedQuestionCensus(moduleId) {
   return null;
 }
 
+async function recordInspectionEvidence(configPath, evidence) {
+  const original = JSON.parse(await fs.readFile(configPath, "utf8"));
+  const result = applyModuleEvidenceToConfig(original, evidence);
+  if (JSON.stringify(result.config) === JSON.stringify(original)) return;
+  await saveJson(configPath, result.config);
+  if (result.evidence.usable) {
+    console.log(
+      `Using existing saved Module Tags as curriculum evidence: ` +
+        `${result.evidence.subject} / ${result.evidence.level} / ${result.evidence.contentMap}.`,
+    );
+  }
+  if (result.applied.length > 0) {
+    console.log(`Filled config ${result.applied.join(", ")} from those saved SLS values.`);
+  }
+}
+
 async function findConfigForModule(moduleId) {
   const entries = await fs.readdir(configDir, { withFileTypes: true }).catch(() => []);
   for (const entry of entries) {
@@ -336,7 +396,7 @@ Could not start the ${mode} phase: ${error.message}`);
 SLS ${mode} run completed.`);
     console.log(`Report: ${result.reportPath}`);
     console.log(`Trace:  ${result.tracePath}`);
-    return { status: 0, output: "" };
+    return { status: 0, output: "", result };
   } catch (error) {
     console.error(`
 SLS run stopped: ${error.message}`);

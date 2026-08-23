@@ -26,6 +26,19 @@ const authStatePath = path.resolve(
 // (or a leftover window) still holds it, Chrome hands off to that instance and
 // Playwright throws. Report that plainly instead of a stack trace.
 let context;
+let closing = false;
+for (const [signal, exitCode] of [["SIGINT", 130], ["SIGTERM", 143]]) {
+  process.once(signal, async () => {
+    if (closing) return;
+    closing = true;
+    // A cancelled authentication prompt must release Chrome's single-instance
+    // profile lock. Without this, the next launcher misleadingly reports that
+    // authentication is blocked even though only an abandoned helper window owns
+    // the profile.
+    await context?.close().catch(() => {});
+    process.exit(exitCode);
+  });
+}
 try {
   context = await chromium.launchPersistentContext(profileDir, {
   channel: "chrome",
@@ -37,7 +50,8 @@ try {
   if (/existing browser session|already in use|ProcessSingleton/i.test(error.message)) {
     console.error("");
     console.error("The automation's Chrome profile is already open somewhere else.");
-    console.error("Close any Chrome window this tool opened (or another run of it), then try again.");
+    console.error("This is a profile lock, not a failed SLS login.");
+    console.error("Finish or close the earlier automation sign-in window, then try again.");
     console.error(`Profile: ${profileDir}`);
     process.exit(1);
   }
@@ -60,8 +74,22 @@ const autoSignedIn = await attemptSlsLogin(page).catch((error) => {
 // Only stop for a keypress when a human actually has something to do.
 if (!autoSignedIn) {
   const prompt = readline.createInterface({ input, output });
-  await prompt.question("After SLS is fully open, press Enter here to verify the session... ");
-  prompt.close();
+  try {
+    await prompt.question("After SLS is fully open, press Enter here to verify the session... ");
+  } catch (error) {
+    // On Windows a Ctrl+C received while readline owns stdin rejects the pending
+    // question with ABORT_ERR instead of emitting SIGINT. Close the persistent
+    // browser here as well so either cancellation route releases the profile.
+    if (error?.code === "ABORT_ERR") {
+      prompt.close();
+      closing = true;
+      await context.close().catch(() => {});
+      process.exit(130);
+    }
+    throw error;
+  } finally {
+    prompt.close();
+  }
 }
 
 const currentUrl = page.url();

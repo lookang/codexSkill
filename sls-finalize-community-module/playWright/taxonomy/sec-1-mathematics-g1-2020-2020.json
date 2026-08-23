@@ -1,0 +1,297 @@
+{
+  "contentMap": "Sec 1 Mathematics (G1) (2020) - 2020",
+  "rowCount": 53,
+  "outcomes": [
+    {
+      "outcome": "Negative numbers and primes (exclude prime factorisation)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Integers and their four operations",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Four operations on fractions and decimals (including negative fractions and decimals)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Calculations with calculator, including squares, cubes, square roots and cube roots",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Representation and ordering of numbers on the number line",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Use of <, >, less or equal than comma greater or equal than",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Approximation and estimation (including rounding off numbers to a required number of decimal places or significant figures and estimating the results of computation)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their Operations"
+      ]
+    },
+    {
+      "outcome": "Comparison between two or more quantities by ratio",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "Dividing a quantity in a given ratio",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "Ratios involving fractions and decimals",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "Equivalent ratios",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "Writing a ratio in its simplest form",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio"
+      ]
+    },
+    {
+      "outcome": "Expressing percentage as a fraction or decimal",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Finding the whole given a percentage part",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Expressing one quantity as a percentage of another",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Comparing two quantities by percentage",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Percentages greater than 100%",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Finding one quantity given the percentage and the other quantity",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Increasing/decreasing a quantity by a given percentage",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Finding percentage increase/decrease",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "Using letters to represent numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Interpreting notations: a b as a cross times b a over b as a divided by b or a cross times 1 over b a to the power of 2 end exponent as a cross times a comma a cubed as a cross times a cross times a comma a squared b as a cross times a cross times b comma... 3 y as y plus y plus y comma or 3 cross times y 3 left parenthesis x plus y right parenthesis as 3 cross times left parenthesis x plus y right parenthesis fraction numerator 3 plus-or-minus y over denominator 5 end fraction as left parenthesis 3 plus-or-minus y right parenthesis divided by 5 or 1 fifth cross times left parenthesis 3 plus-or-minus y right parenthesis",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Evaluation of algebraic expressions and formulae",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Translation of simple real-world situations into algebraic expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Recognising number sequences (including evaluating simple n th term like n plus 3 and 2 n plus 1 )",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Right, acute, obtuse and reflex angles",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, triangles and quadrilaterals"
+      ]
+    },
+    {
+      "outcome": "Vertically opposite angles, angles on a straight line and angles at a point",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, triangles and quadrilaterals"
+      ]
+    },
+    {
+      "outcome": "Angles formed by two parallel lines and a transversal: corresponding angles, alternate angles, interior angles",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Angles, triangles and quadrilaterals"
+      ]
+    },
+    {
+      "outcome": "Line and rotational symmetry of plane figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Symmetry"
+      ]
+    },
+    {
+      "outcome": "Lines of symmetry",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Symmetry"
+      ]
+    },
+    {
+      "outcome": "Order of rotational symmetry",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Symmetry"
+      ]
+    },
+    {
+      "outcome": "Area of triangle as 1 half cross times base cross times height",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Area and circumference of circle",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Area of parallelogram and trapezium",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving perimeter and area of composite plane figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Volume and surface area of cube and cuboid",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Conversion between cm squared and straight m squared , and between cm cubed and straight m cubed",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving volume and surface area of composite solids",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Analysis and interpretation of: tables bar graphs pictograms line graphs pie charts",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of different forms of statistical representations",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Simple concepts in collecting, classifying and tabulating data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    }
+  ],
+  "subject": "Mathematics - G1MATHS",
+  "level": "Secondary 1",
+  "harvestedAt": "2026-08-23T10:49:26.309Z",
+  "discoveredFromModule": "1aa241e1-8c70-4f52-9b2c-8865226d2905"
+}

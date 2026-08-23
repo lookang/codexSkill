@@ -777,7 +777,7 @@ async function enterEditMode(page, target, title = null) {
 
   if (/\/login/i.test(new URL(page.url()).pathname)) {
     throw new GuardError(
-      `SLS authentication is required. Run npm.cmd run sls:auth and sign in manually. Current URL: ${page.url()}`
+      `SLS authentication is required. Run npm run sls:auth (npm.cmd on Windows) and sign in manually. Current URL: ${page.url()}`
     );
   }
 
@@ -1005,17 +1005,64 @@ async function setGamificationDetails(modal, title, description) {
 
 // Whether a game has actually been generated.
 //
-// This deliberately looks for positive signals rather than the gamification
-// toggle: the toggle only says the feature is on. SLS also renders headings whose
-// wording differs from the labels in the generator ("Game Story Background", not
-// "Game Story Image"), so matching on those alone produced false positives.
+// SLS mounts only the active Gamification tab. Reading the whole modal while the
+// Details or Leaderboard tab is active sees the *tab labels* "Game Stories" and
+// "Collectibles", but none of their saved cards. That made a successful run fail
+// its reopen check and made the next run try to generate a duplicate game. Open
+// both tabs explicitly and require a positive card signal in each one.
 async function readGeneratedGameEvidence(modal) {
-  const text = ((await modal.innerText().catch(() => "")) || "").replace(/\s+/g, " ");
-  const kebabs = await modal.locator('button:has(svg[name="Kebab24"])').count().catch(() => 0);
-  const conditions = /CONDITIONS\s*\(\s*[1-9]\d*\s*\)/i.test(text);
-  const gameStoriesPresent = /Game Stor(y|ies)/i.test(text) && (kebabs > 0 || conditions);
-  const collectiblesPresent = /Collectible/i.test(text) && (kebabs > 0 || conditions);
-  return { gameStoriesPresent, collectiblesPresent, kebabs, conditions };
+  const gameStories = await readGeneratedGameTab(modal, "Game Stories");
+  const collectibles = await readGeneratedGameTab(modal, "Collectibles");
+
+  // Leave Details active because the next operation normally reads or edits the
+  // title and description, whose controls are not mounted on the other tabs.
+  await activateGamificationTab(modal, "Details");
+
+  return classifyGeneratedGameTabEvidence({ gameStories, collectibles });
+}
+
+async function readGeneratedGameTab(modal, tabName) {
+  const activated = await activateGamificationTab(modal, tabName);
+  if (!activated) return { text: "", kebabs: 0 };
+
+  const visiblePanel = modal.locator('[role="tabpanel"]:visible').first();
+  const scope = (await visiblePanel.count().catch(() => 0)) > 0 ? visiblePanel : modal;
+  const text = ((await scope.innerText().catch(() => "")) || "").replace(/\s+/g, " ").trim();
+  const kebabs = await scope.locator('button:has(svg[name="Kebab24"])').count().catch(() => 0);
+  return { text, kebabs };
+}
+
+async function activateGamificationTab(modal, tabName) {
+  const tab = modal.getByRole("tab", { name: tabName, exact: true }).first();
+  if ((await tab.count().catch(() => 0)) !== 1) return false;
+  await tab.click();
+  await modal.page().waitForTimeout(800);
+  return true;
+}
+
+export function classifyGeneratedGameTabEvidence({ gameStories, collectibles }) {
+  const storyText = (gameStories?.text ?? "").replace(/\s+/g, " ");
+  const collectibleText = (collectibles?.text ?? "").replace(/\s+/g, " ");
+  const gameStoryKebabs = Number(gameStories?.kebabs ?? 0);
+  const collectibleKebabs = Number(collectibles?.kebabs ?? 0);
+  const gameStoryConditions = /CONDITIONS\s*\(\s*[1-9]\d*\s*\)/i.test(storyText);
+  const collectibleConditions = /CONDITIONS\s*\(\s*[1-9]\d*\s*\)/i.test(collectibleText);
+  const gameStoriesPresent =
+    /Game Story Settings/i.test(storyText) && (gameStoryKebabs > 0 || gameStoryConditions);
+  const collectiblesPresent =
+    /Collectibles Settings/i.test(collectibleText) &&
+    (collectibleKebabs > 0 || collectibleConditions);
+
+  return {
+    gameStoriesPresent,
+    collectiblesPresent,
+    gameStoryKebabs,
+    collectibleKebabs,
+    gameStoryConditions,
+    collectibleConditions,
+    kebabs: gameStoryKebabs + collectibleKebabs,
+    conditions: gameStoryConditions && collectibleConditions
+  };
 }
 
 function leaderboardCheckboxes(modal) {

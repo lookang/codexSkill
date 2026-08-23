@@ -74,6 +74,25 @@ test("tokenize drops stopwords, punctuation and plurals", () => {
   assert.deepEqual([...tokenize("The questions, and operations!")].sort(), ["operation"]);
 });
 
+test("differentiating fractions matches the official derivatives-of-quotients wording", () => {
+  const taxonomy = [
+    {
+      outcome: "Derivatives of products and quotients of functions",
+      outcomePath: ["Calculus", "Differentiation and integration"]
+    },
+    {
+      outcome: "Use of chain rule",
+      outcomePath: ["Calculus", "Differentiation and integration"]
+    }
+  ];
+  const picked = chooseOutcome(taxonomy, {
+    moduleTitle: "Sec 4 AMath: Differentiation of Fractions",
+    sectionTitle: "Practise Differentiating Fractions",
+    questionText: "Differentiate the following algebraic fraction."
+  });
+  assert.equal(picked.outcome, "Derivatives of products and quotients of functions");
+});
+
 test("a confidence prompt inside a practice section does not reclassify the section", () => {
   const picked = chooseOutcome(P4, {
     moduleTitle: "AST FA-Math P4 Operations of whole numbers - Word Problem",

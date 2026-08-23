@@ -1,0 +1,262 @@
+{
+  "contentMap": "Sec 2 Mathematics (G3) (2020)",
+  "rowCount": 49,
+  "outcomes": [
+    {
+      "outcome": "Map scales (distance and area)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Direct and inverse proportion",
+      "outcomePath": [
+        "Number and Algebra",
+        "Ratio and proportion"
+      ]
+    },
+    {
+      "outcome": "Expansion of the product of algebraic expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Changing the subject of a formula",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Finding the value of an unknown quantity in a given formula",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Use of:",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Multiplication and division of simple algebraic fractions such as",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Addition and subtraction of algebraic fractions with linear or quadratic denominator such as",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Factorisation of linear expressions of the form",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Factorisation of quadratic expressions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Algebraic Expressions and Formulae"
+      ]
+    },
+    {
+      "outcome": "Quadratic functions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of quadratic functions and their properties positive or negative coefficients of maximum and minium points symmetry",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of linear equations in two variables",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving simultaneous linear equations in two variables by substitution and elimination methods graphical method",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving quadratic equations in one variable by factorisation",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Formulating a pair of linear equations in two variables to solve problems",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Concept of equation and inequality",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving simple inequalities in the form and and representing the solutions on the number line.",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Congruent figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Similar figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Properties of similar triangles and polygons corresponding angles are equal corresponding sides are proportional",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Enlargement and reduction of a plane figure",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Scale drawings",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Solving simple problems involving congruence and similarity",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Use of Pythagoras' theorem",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Determining whether a triangle is right-angled given the lengths of three sides",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Use of trigonometric ratios (sine, cosine and tangent) of acute angles to calculate unknown sides and angles in right-angled triangles",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Volume and surface area of pyramid, cone and sphere",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Analysis and interpretation of dot diagrams, histograms, stem-and-leaf diagrams",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of the different forms of statistical representations",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Explaining why a given statistical diagram leads to misinterpretation of data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Mean, mode and median as measures of central tendency for a set of data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and use of mean, mode and median",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Calculation of the mean for grouped data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Probability as a measure of chance",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Probability"
+      ]
+    },
+    {
+      "outcome": "Probability of single events (including listing all the possible outcomes in a simple chance situation to calculate the probability)",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Probability"
+      ]
+    }
+  ],
+  "subject": "Mathematics - G3MATHS",
+  "level": "Secondary 2",
+  "harvestedAt": "2026-08-21T09:42:06.898Z",
+  "discoveredFromModule": "15bfeb3c-3c1e-4536-afe6-6d701e8588be"
+}

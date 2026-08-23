@@ -6,6 +6,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { parseAdminModuleEditUrl, detectScope } from "../src/io.mjs";
+import { inferCurriculumClues } from "../src/curriculum-discovery.mjs";
+import { applyModuleEvidenceToConfig } from "../src/module-evidence.mjs";
 
 const PROBLEM_SOLVING_OUTCOME =
   "Develop thinking, reasoning, communication, application and metacognitive " +
@@ -24,7 +26,6 @@ const moduleId = /^[0-9a-f-]{36}$/i.test(target.trim())
 const inventory = await newestInventory(moduleId);
 if (!inventory) stop(`No inspection report with an inventory was found for ${moduleId}. Run an inspect first.`);
 
-const level = /\bP([1-6])\b/i.exec(inventory.title)?.[1];
 const skipped = [];
 const sections = inventory.sections
   .filter((section) => {
@@ -54,19 +55,28 @@ const sections = inventory.sections
 if (sections.length === 0) stop("Every section was filtered out; nothing to scaffold.");
 
 const inferred = inferOutcome(inventory.title, sections.map((section) => section.title));
+const evidenceSeed = applyModuleEvidenceToConfig(
+  { module: { title: inventory.title }, defaults: {}, sections },
+  inventory.moduleEvidence,
+).config;
+const curriculumClues = inferCurriculumClues(evidenceSeed);
+const primaryNumber = /^Primary ([1-6])$/.exec(curriculumClues.level ?? "")?.[1] ?? null;
+const exactSubjectKnown = curriculumClues.subjectId === "mathematics" ? "Mathematics - MATHS" : null;
 
-const config = {
+let config = {
   schemaVersion: 1,
   module: {
     id: moduleId,
     title: inventory.title,
     adminEditUrl: `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/module-plan`
   },
-  gamification: gamificationFor(inventory.title, level ? `Primary ${level}` : null),
+  gamification: gamificationFor(inventory.title, curriculumClues.level),
   defaults: {
-    subject: "Mathematics - MATHS",
-    level: level ? `Primary ${level}` : "REVIEW-BEFORE-RUNNING: set the level exactly as SLS lists it",
-    contentMap: level ? `Pri ${level} Mathematics (2021)` : "REVIEW-BEFORE-RUNNING: set the content map exactly as SLS lists it",
+    subject: exactSubjectKnown ?? "REVIEW-BEFORE-RUNNING: select the exact SLS subject",
+    level: curriculumClues.level ?? "REVIEW-BEFORE-RUNNING: set the level exactly as SLS lists it",
+    contentMap: primaryNumber && exactSubjectKnown
+      ? `Pri ${primaryNumber} Mathematics (2021)`
+      : "REVIEW-BEFORE-RUNNING: set the content map exactly as SLS lists it",
     outcomePath: inferred ? inferred.outcomePath : [],
     outcome: inferred
       ? inferred.outcome
@@ -75,6 +85,8 @@ const config = {
   },
   sections
 };
+const evidenceResult = applyModuleEvidenceToConfig(config, inventory.moduleEvidence);
+config = evidenceResult.config;
 
 const outPath = path.resolve(
   root,
@@ -85,6 +97,12 @@ await fs.writeFile(outPath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 
 console.log(`\nDraft config written to ${path.relative(root, outPath)}`);
 console.log(`Module: ${inventory.title}`);
+if (evidenceResult.evidence.usable) {
+  console.log(
+    `Saved Module Tags: ${evidenceResult.evidence.subject} / ${evidenceResult.evidence.level} / ` +
+      evidenceResult.evidence.contentMap,
+  );
+}
 for (const line of skipped) console.log(`  skipped section (teacher notes): ${line}`);
 for (const section of sections) {
   console.log(`  ${section.label}. ${section.title}`);

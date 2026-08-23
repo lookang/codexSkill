@@ -25,6 +25,8 @@ Never store credentials, email addresses, or restricted learner data in the skil
 
 When the bundled `playWright` automation is available, prefer its maintained launcher for repeated work. Read `playWright/README.md` for setup and flags. Route by intent:
 
+- On Windows, use the `.cmd` launcher. On macOS, use the same base name with `.command`; run `chmod +x ./*.command ./scripts/run-macos.sh` once after a ZIP download or checkout that did not preserve executable bits.
+
 - `RUN-SLS-AUTOMATION.cmd`: inspect, resolve curriculum, tag questions, and perform guarded duplicate-and-replace work.
 - `RUN-SLS-PAGE-BREAK.cmd`: put each question on its own page when SLS exposes a safe divider.
 - `RUN-SLS-ACPINTERACTIVE.cmd`: create one matching ACP practice interactive for each eligible FA Math question.
@@ -43,6 +45,7 @@ Accept public or admin module and lesson URLs, including nested section or activ
 1. Open the supplied module URL and verify the expected module title before editing.
 2. Inventory the module title, sections, activity titles, existing copies, question tags, featured image, gamification, and module settings. Skip work that is already complete.
 3. Infer any missing academic and keyword tags using the rules below.
+   - When a module has no existing section curriculum, use the bundled `sls:discover` read-only pass. It opens an existing question-details modal, follows SLS's live Subject to Level to Content Map cascade, harvests exact official outcomes, and reloads without saving before resolving the config.
 4. Enter edit mode. Click the section title in the main content area, such as **A. Untitled**, to edit section metadata; do not use the header breadcrumb or Section settings cog for curriculum tags.
 5. Expand **Section Tags** under **Learning Outcomes**. Select Subject and Level, then choose **Add Subject and Level**. The Content Map selector becomes available only after this row is added.
 6. Expand **Content Map**, choose the matching official map, expand its curriculum branches, select the best-fit outcome, and choose **Add Content Map and Topic**.
@@ -62,6 +65,7 @@ Use the module title as the primary signal and activity titles as supporting evi
 1. Remove punctuation, copy suffixes, and generic words such as `practice`, `lesson`, and `activity` from titles.
 2. Infer Subject from the strongest curriculum concept match. Prefer the exact available SLS label.
 3. Infer Level from explicit markers such as `P3`, `Primary 3`, or `S2`. Do not override an explicit level with a content-based guess.
+   - Recognize compact combined markers such as `Sec 4G2G3 AMath`. Resolve the exact SLS Additional Mathematics G2 and G3 subjects independently and retain both content maps when both streams lead to the same outcome.
 4. Choose the available Content Map matching Subject and Level. Do not guess between equally plausible maps.
 5. Compare available official learning outcomes with the normalized module and activity titles.
 6. Select the single most specific leaf outcome covering the current activity batch.
@@ -96,13 +100,15 @@ Treat `Something went wrong while performing this action` as an uncertain deleti
 For every question card in every retained copy:
 
 1. Inventory all cards. Scroll the question-settings sidebar independently to expose cards outside the initial viewport.
-2. Scroll each question component into view before reading it. FA Math hydrates `<akit-interaction>` lazily, and the mathematical stem may exist only inside its shadow root.
-3. Open the card's settings and select the matching details panel, such as **Free-Response Details**.
-4. Enable **Include in Learning Progress** only for an assessed mathematical question. Fraction-to-decimal, decimal-to-fraction, and decimal-to-mixed-number conversion prompts are mathematical; reflection prompts are not, even if they carry marks.
-5. Verify Subject, Level, and Content Map match the saved section tags. Do not silently replace contradictory question tags.
-6. Add the requested keyword. When unspecified, derive one concise formative-assessment tag such as `FA math`.
-7. Save, reload, reopen the same question, and verify Learning Progress plus the expected Keyword Tags and Question Tags persisted.
-8. Reload the activity before editing the next question, then restore sidebar position. This prevents SLS from silently dropping later keywords.
+2. Visit every numbered activity page before caching question evidence. Ordinary SLS activities, not only quizzes, may mount just the current page; never conclude that Q2 onward are blank while still on page 1.
+3. Scroll each mounted question component into view before reading it. FA Math hydrates `<akit-interaction>` lazily, and the mathematical stem may exist only inside its shadow root.
+4. Build evidence in this order: visible DOM and shadow-DOM text, WIRIS MathML, image `alt`/`title`, then local OCR of substantial raster diagrams only when the earlier evidence remains weak. Treat OCR as supporting evidence, preserve its confidence, and do not send SLS question images to an external OCR service.
+5. Open the card's settings and select the matching details panel, such as **Free-Response Details**.
+6. Enable **Include in Learning Progress** only for an assessed mathematical question. Fraction-to-decimal, decimal-to-fraction, and decimal-to-mixed-number conversion prompts are mathematical; reflection prompts are not, even if they carry marks.
+7. Verify Subject, Level, and Content Map match the saved section tags. Do not silently replace contradictory question tags.
+8. Add the requested keyword. When unspecified, derive one concise formative-assessment tag such as `FA math`.
+9. Save, reload, reopen the same question, and verify Learning Progress plus the expected Keyword Tags and Question Tags persisted.
+10. Reload the activity before editing the next question, then restore sidebar position. This prevents SLS from silently dropping later keywords.
 
 Track completed questions so a resumed run does not retag them unnecessarily.
 

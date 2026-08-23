@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "fdc2969f-5349-4d7e-ac19-e8cc09a13803",
+    "title": "inspireX 20251028 10301100 AI-Generated Interactives wth SLS and in SLS Lawrence Wee",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/fdc2969f-5349-4d7e-ac19-e8cc09a13803/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising inspirex 20251028 10301100 ai-generated interactives wth sls and in sls lawrence wee. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "inspireX 20251028 Quest",
+    "shortTitle": "inspireX Quest",
+    "description": "Build confidence and accuracy while mastering inspirex 20251028 10301100 ai-generated interactives wth sls and in sls lawrence wee."
+  },
+  "defaults": {
+    "subject": "REVIEW-BEFORE-RUNNING: select the exact SLS subject",
+    "level": "REVIEW-BEFORE-RUNNING: set the level exactly as SLS lists it",
+    "contentMap": "REVIEW-BEFORE-RUNNING: set the content map exactly as SLS lists it",
+    "outcomePath": [],
+    "outcome": "REVIEW-BEFORE-RUNNING: paste the exact learning outcome text from the SLS dropdown",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Untitled",
+      "activities": [
+        {
+          "title": "20251028 10301100 AI-Generated Interactives wth SLS and in SLS"
+        }
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY inspireX 20251028 10301100 AI-Generated Interactives wth SLS and in SLS Lawrence Wee Unstar Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP Viewable Module Title ADD IMAGE Featured Image Please refer to the list of acceptable file types, sizes, and dimensions here. Click to upload Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Module Description ADD NEW Module Authoring Copilot"
+  }
+}

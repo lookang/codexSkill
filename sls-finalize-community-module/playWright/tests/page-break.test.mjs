@@ -4,6 +4,7 @@ import {
   DEFAULT_PAGE_BREAK_POLICY,
   advancePageBreakScan,
   assessPageForBreak,
+  decidePageBreakReview,
   normalizePageBreakPolicy,
 } from "../src/page-break.mjs";
 
@@ -233,6 +234,30 @@ test("an existing page-break control is never selected again", () => {
 
   assert.equal(result.needsBreak, false);
   assert.equal(result.blocked, true);
+});
+
+test("ambiguous pages are skipped without blocking clear candidates elsewhere", () => {
+  const decision = decidePageBreakReview({ candidateCount: 1, blockedCount: 1 });
+
+  assert.equal(decision.apply, true);
+  assert.equal(decision.skippedAmbiguousPages, 1);
+});
+
+test("an ambiguous-only review completes without applying or failing", () => {
+  const decision = decidePageBreakReview({ candidateCount: 0, blockedCount: 2 });
+
+  assert.equal(decision.apply, false);
+  assert.equal(decision.skippedAmbiguousPages, 2);
+});
+
+test("dry-run never applies otherwise clear candidates", () => {
+  const decision = decidePageBreakReview(
+    { candidateCount: 2, blockedCount: 1 },
+    { dryRun: true },
+  );
+
+  assert.equal(decision.apply, false);
+  assert.equal(decision.dryRun, true);
 });
 
 test("policy validation keeps the safety bounds", () => {

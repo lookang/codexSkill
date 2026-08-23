@@ -38,7 +38,7 @@
       ]
     },
     {
-      "outcome": "Use of <, >,",
+      "outcome": "Use of <, >, less or equal than comma greater or equal than",
       "outcomePath": [
         "Number and Algebra",
         "Numbers and their Operations"
@@ -150,7 +150,7 @@
       ]
     },
     {
-      "outcome": "Interpreting notations:",
+      "outcome": "Interpreting notations: a b space a s space a cross times b a over b space as space a divided by b space or space a cross times 1 over b a squared space as space a cross times a comma space a cubed space as space a cross times a cross times a comma space a squared b space as space a cross times a cross times b comma space... 3 y space as space y plus y plus y comma space or space 3 cross times y 3 left parenthesis x plus y right parenthesis space as space 3 cross times left parenthesis x plus y right parenthesis fraction numerator 3 plus y over denominator 5 end fraction space as space left parenthesis 3 plus y right parenthesis divided by 5 space or space 1 fifth cross times left parenthesis 3 plus y right parenthesis",
       "outcomePath": [
         "Number and Algebra",
         "Algebraic expressions and formulae"
@@ -164,7 +164,7 @@
       ]
     },
     {
-      "outcome": "Recognising number sequences (including evaluating simple term like and )",
+      "outcome": "Recognising number sequences (including evaluating simple n to the power of t h end exponent term like n plus 3 and 2 n plus 1 )",
       "outcomePath": [
         "Number and Algebra",
         "Algebraic expressions and formulae"
@@ -199,7 +199,7 @@
       ]
     },
     {
-      "outcome": "Area of triangle as base height",
+      "outcome": "Area of triangle as 1 half cross times base cross times height",
       "outcomePath": [
         "Geometry and Measurement",
         "Mensuration"
@@ -234,7 +234,7 @@
       ]
     },
     {
-      "outcome": "Conversion between and , and between and",
+      "outcome": "Conversion between cm squared and straight m squared , and between cm cubed and straight m cubed",
       "outcomePath": [
         "Geometry and Measurement",
         "Mensuration"
@@ -269,5 +269,8 @@
       ]
     }
   ],
-  "harvestedAt": "2026-08-19T09:33:10.433Z"
+  "subject": "Mathematics - G1MATHS",
+  "level": "Secondary 1",
+  "harvestedAt": "2026-08-23T10:49:53.875Z",
+  "discoveredFromModule": "1aa241e1-8c70-4f52-9b2c-8865226d2905"
 }

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "c4e607f0-40fa-48bd-a7bd-93fda1ebaa5a",
+    "title": "Addition and Subtraction within 100 (Algorithm - Recall, Practise and Quiz using FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/c4e607f0-40fa-48bd-a7bd-93fda1ebaa5a/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary learners practising addition and subtraction within 100 (algorithm - recall, practise and quiz using fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Addition Subtraction Quest",
+    "shortTitle": "Addition Quest",
+    "description": "Build confidence and accuracy while mastering addition and subtraction within 100 (algorithm - recall, practise and quiz using fa-math)."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 1",
+    "contentMap": "Pri 1 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Whole Numbers",
+      "Addition and subtraction"
+    ],
+    "outcome": "2.5 adding and Subtracting within 100",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Let's Recall",
+      "activities": [
+        {
+          "title": "Adding within 100"
+        },
+        {
+          "title": "Subtracting within 100"
+        }
+      ]
+    },
+    {
+      "label": "B",
+      "title": "Let's Practise",
+      "activities": [
+        {
+          "title": "Adding & Subtracting within 100"
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Quiz",
+      "activities": [
+        {
+          "title": "Addition within 100"
+        },
+        {
+          "title": "Subtraction within 100"
+        }
+      ],
+      "outcome": "2.5 adding and Subtracting within 100",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Addition and subtraction"
+      ]
+    }
+  ]
+}

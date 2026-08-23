@@ -5,7 +5,7 @@ automation used by the `sls-finalize-community-module` skill.
 
 ## Included
 
-- all Windows launchers and Node.js entry points;
+- matching Windows `.cmd` and macOS `.command` launchers plus Node.js entry points;
 - guarded Playwright runners for migration/tagging, page breaks, ACP interactives,
   gamification, thumbnails, teacher credit, permissions, recording, and smoke checks;
 - curriculum-resolution and mathematical-question classifiers;
@@ -27,6 +27,7 @@ write workflow to another module.
 | `recordings/` | Raw Codegen demonstrations, which may contain copied literals |
 | `.sheet-cache/` | Locally cached resource-sheet data |
 | `.npm-cache/`, `node_modules/` | Re-creatable dependencies and caches |
+| `eng.traineddata` | Re-creatable unpacked OCR cache; the npm package supplies the source model |
 | `test-results/`, `playwright-report/` | Local test artefacts |
 
 Do not add credentials, teacher-directory exports, restricted learner data, or
@@ -47,6 +48,21 @@ The authentication command opens a dedicated visible Chrome profile. Sign in at
 the SLS boundary; do not enter credentials in the terminal. After authentication,
 start with `RUN-SLS-SMOKE-CHECK.cmd` for a read-only live check or
 `RUN-SLS-AUTOMATION.cmd` for the guarded main workflow.
+
+## Reproduce on macOS
+
+```bash
+git clone https://github.com/lookang/codexSkill.git
+cd codexSkill/sls-finalize-community-module/playWright
+chmod +x ./*.command ./scripts/run-macos.sh
+./00-install-and-check.command
+./01-authenticate-sls.command
+./RUN-SLS-SMOKE-CHECK.command "SLS-MODULE-URL"
+```
+
+Install Node.js 20 or newer and Google Chrome first. The `.command` launchers
+call the same npm scripts and preserve the same authentication and mutation
+guards as the Windows launchers.
 
 ## Release Check
 

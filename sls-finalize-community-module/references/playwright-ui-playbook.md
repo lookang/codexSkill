@@ -17,6 +17,8 @@ Read this reference before controlling the SLS authoring interface directly. The
 - Some edit affordances are `div.edit-indicator` elements rather than buttons. Hover the owning card to reveal its pencil, then click the visible edit indicator.
 - Do not identify controls by SVG path data, DOM-generated IDs, screen coordinates, or a generic page-wide **Add**, **Save**, or **Delete** label.
 - After any action that rerenders a modal, card, sidebar, or generated preview, locate the element again. Do not reuse an earlier element handle.
+- Before clicking a section or main-canvas control, dismiss only a visible `header .ui-shell-overlay.is-visible` through its real close control and verify that it disappeared. Do not force-click through the shell overlay.
+- Close a visible informational **Module URL Updated** notice before the next **Edit** click. Do not generalize that dismissal to unrelated warning or confirmation modals.
 - If multiple matches remain, inspect their container headings and visible text. Stop rather than choosing by index alone when the target is still ambiguous.
 
 ## Wait for State, Not Time
@@ -33,18 +35,21 @@ Read this reference before controlling the SLS authoring interface directly. The
 3. Add the Content Map and exact leaf outcome, then wait for the tagging save response and visible **Saved** state.
 4. Reopen Learning Outcomes and read the tagging tree itself. Do not infer success from the section cover.
 5. For a question, scope settings to its `#settings-card-<question-id>` and open that card's `Settings24` control. Wait for the tagging panel to mount before deciding that controls are missing.
-6. Before opening settings, scroll every `#component-<question-id>` into view and cache its stem. FA Math lazily hydrates `<akit-interaction>` and places its readable mathematics in a shadow root; without this pass Q2 onward may appear blank after reload.
-7. Read the first visible `<akit-interaction>` as the question stem and treat later instances as suggested solutions. Recover WIRIS MathML from data-URI SVG comments when the equation otherwise contributes no text.
-8. Treat `Express/Write/Convert ... as/to a decimal`, `... as/to a fraction`, and `... as a mixed number` as mathematical representation questions. Do not infer mathematics from FA Math boilerplate or an activity title when the stem is unreadable.
-9. Append intended tags and preserve existing human tags. Save with the active question modal's `Save24` control, reload, reopen, and verify both the exact question card and **Include in Learning Progress**.
+6. Visit every numbered ordinary activity page as well as every quiz page before caching stems. SLS may mount only the current page, so Q2 onward are not blank merely because page 1 is open.
+7. On each page, scroll every mounted `#component-<question-id>` into view. FA Math lazily hydrates `<akit-interaction>` and places readable mathematics in a shadow root.
+8. Build evidence in order: visible DOM and shadow-DOM text, first visible `<akit-interaction>`, WIRIS MathML from data-URI SVG comments, and image `alt`/`title`. Treat later interaction instances as suggested solutions.
+9. When a substantial raster diagram remains essential and the earlier evidence is weak, use the bundled local OCR on that image only. Keep its confidence as supporting evidence, reject low-confidence output, and never send SLS question images to an external OCR service.
+10. Treat `Express/Write/Convert ... as/to a decimal`, `... as/to a fraction`, and `... as a mixed number` as mathematical representation questions. Do not infer mathematics from FA Math boilerplate or an activity title when the stem is unreadable.
+11. Append intended tags and preserve existing human tags. Save with the active question modal's `Save24` control, reload, reopen, and verify both the exact question card and **Include in Learning Progress**.
 
 ## Meaningful Page Breaks
 
 1. Inventory all sections and activities from fresh locators after every navigation; SLS rerenders and invalidates sidebar assumptions.
-2. A multiple-question page should break immediately before Q2. Apply one break, save, reopen, and rescan so later questions are handled from the new page structure.
-3. A single-question page uses the length-based chunk rule only when a safe semantic divider exists. Short or ambiguous pages remain unchanged.
-4. Verify the divider belongs to the intended question and is not already a page break. Stop rather than force an unavailable or hidden action.
-5. After the last insertion, select **Done**, reopen Module View, and recount the pages.
+2. Group questions into visual rows. Side-by-side questions with substantial vertical overlap remain together; break before the first question in the next row.
+3. After a verified split, checkpoint the completed preceding page and continue directly from the new continuation page. Do not revisit earlier pages merely to rescan them.
+4. A single-question page uses the length-based chunk rule only when a safe semantic divider exists. Short or ambiguous pages remain unchanged.
+5. Verify the divider belongs to the intended question and is not already a page break. Skip an ambiguous page and continue independently clear candidates; never force an unavailable or hidden action.
+6. Each split requires the observed save response and an exact page-count increase. A full reopen audit is optional through `--verify` and is skipped in normal runs for speed.
 
 ## ACP Interactive Generation
 
