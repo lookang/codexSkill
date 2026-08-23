@@ -8,6 +8,7 @@ import { applyTargetUrl, loadConfig, mergeDefaults, questionTagState, unreviewed
 import { parseArgs } from "../src/cli.mjs";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { createSlsContext, launchSlsBrowser, runSlsWorkflow } from "../src/sls-runner.mjs";
+import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 // Browser speed can come from an argument (npm run sls:one-shot -- --slow-mo 800)
 // or the SLS_SLOW_MO environment variable, so it works from cmd.exe, PowerShell
@@ -16,6 +17,7 @@ const slowMoArgs = readSlowMo();
 // Flags typed on the launcher must reach the workflow; it builds its own argument
 // list, so anything not forwarded here is silently dropped.
 const argvFlags = process.argv.slice(2);
+const selectedWorkflow = isSelectedWorkflowChild(argvFlags);
 const passThroughArgs = ["--tag-questions", "--refresh-taxonomy", "--headless"].filter((flag) =>
   argvFlags.includes(flag)
 );
@@ -43,7 +45,7 @@ const defaultUrl =
 console.log("\nSLS Community Gallery Automation");
 console.log("This launcher handles authentication, inspection, guarded editing, and optional replacement.\n");
 
-const target = await pickAndRememberModule({ root, defaultUrl, ask, stop });
+const target = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: argvFlags });
 const scope = target.scope;
 if (scope === "activity") {
   console.log(`\nActivity URL detected. Playwright will first open the module view, then navigate into the activity.`);
@@ -56,6 +58,12 @@ const inspectionConfig = matchingConfig ?? (await firstConfig());
 if (!inspectionConfig) await stop("No JSON configuration was found under configs.");
 
 if (!(await exists(authStatePath))) {
+  if (selectedWorkflow) {
+    await stop(
+      "Selected workflow requires a reusable SLS session so its coordinator can refresh " +
+        "authentication and retry this stage.",
+    );
+  }
   console.log("\nNo reusable SLS session was found. Chrome will open for manual authentication.");
   if ((await runNode("scripts/auth.mjs")).status !== 0) await stop("Authentication was not completed.");
 }
@@ -66,6 +74,12 @@ let inspectionResult = await runWorkflow("inspect", inspectionConfig, target.url
 if (inspectionResult.status !== 0) {
   const authExpired = /authentication is required/i.test(inspectionResult.output) || /SLS authentication/i.test(inspectionResult.output);
   if (authExpired) {
+    if (selectedWorkflow) {
+      await stop(
+        "The reusable SLS session expired. Selected workflow stopped without opening an interactive " +
+          "authentication prompt so its coordinator can refresh and retry this stage.",
+      );
+    }
     console.log("\nThe saved SLS session has expired or is missing. Chrome will open for manual authentication.");
     await resetSharedContext();
     if ((await runNode("scripts/auth.mjs")).status !== 0) await stop("Authentication refresh was not completed.");
@@ -151,12 +165,20 @@ if (census?.total > 0 && census.tagged === 0) {
   methodAnswer = "1";
   console.log("Every question is already tagged. Selecting the non-copying surgical verification pass automatically.");
 } else {
-  methodAnswer = await ask(
-    "\nHow should this module be tagged?\n" +
-      "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
-      "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
-      "\nChoose 1 or 2 (Enter for 1): "
-  );
+  if (selectedWorkflow) {
+    methodAnswer = "1";
+    console.log(
+      "The tagging state is mixed or unavailable. Selected workflow is using the safe surgical pass " +
+        "instead of pausing for a method choice.",
+    );
+  } else {
+    methodAnswer = await ask(
+      "\nHow should this module be tagged?\n" +
+        "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
+        "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
+        "\nChoose 1 or 2 (Enter for 1): ",
+    );
+  }
 }
 
 if (methodAnswer.trim() !== "2") {
@@ -180,12 +202,19 @@ if ((await runWorkflow("apply", matchingConfig, target.url, ["--keep-originals"]
 }
 
 console.log("\nStep 2 completed. The copied activities and question settings passed the scripted checks.");
-const deletionAnswer = await ask(
-  "Step 3 of 3 can delete only verified originals and rename their retained copies.\n" +
-  "Type DELETE to continue, or press Enter to stop with originals retained: "
-);
-if (deletionAnswer.trim() !== "DELETE") {
-  await stop("Stopped after the non-deleting pass. Original activities were retained.", 0);
+if (selectedWorkflow) {
+  console.log(
+    "Selected workflow: stage 1 authorizes deletion of only the exact originals whose retained copies " +
+      "have passed all copy, title, and question-tag verification guards.",
+  );
+} else {
+  const deletionAnswer = await ask(
+    "Step 3 of 3 can delete only verified originals and rename their retained copies.\n" +
+      "Type DELETE to continue, or press Enter to stop with originals retained: ",
+  );
+  if (deletionAnswer.trim() !== "DELETE") {
+    await stop("Stopped after the non-deleting pass. Original activities were retained.", 0);
+  }
 }
 
 if (
@@ -207,7 +236,10 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   let scan = await runWorkflow("scan", configPath, selectedTarget.url);
   if (scan.status !== 0) {
     console.log("\nNo existing section taxonomy could be read. Trying cached SLS taxonomies...");
-    const inferred = await runNode("scripts/resolve-config.mjs", [configPath, "--interactive"]);
+    const inferred = await runNode(
+      "scripts/resolve-config.mjs",
+      selectedWorkflow ? [configPath] : [configPath, "--interactive"],
+    );
     if (inferred.status !== 0) return false;
 
     console.log("Re-running the read-only question scan with the resolved curriculum...");
@@ -218,7 +250,8 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   let current = mergeDefaults(await loadConfig(configPath));
   if (unreviewedPlaceholders(current).length > 0) {
     console.log("Completing the remaining placeholders from cached SLS taxonomy wording...");
-    if ((await runNode("scripts/resolve-config.mjs", [configPath, "--interactive"])).status !== 0) return false;
+    const resolverArgs = selectedWorkflow ? [configPath] : [configPath, "--interactive"];
+    if ((await runNode("scripts/resolve-config.mjs", resolverArgs)).status !== 0) return false;
   }
 
   console.log("Proposing a learning outcome for each section from the scanned questions...");

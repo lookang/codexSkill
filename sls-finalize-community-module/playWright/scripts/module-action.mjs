@@ -7,11 +7,13 @@ import { stdin as input, stdout as output } from "node:process";
 import { loadConfig, mergeDefaults } from "../src/io.mjs";
 import { runModuleAction, validateModuleAction } from "../src/module-actions.mjs";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
+import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 const root = process.cwd();
 const configDir = path.join(root, "configs");
 const defaultUrl = "https://vle.learning.moe.edu.sg/admin/community-gallery/module/view/428156f1-90f1-4b64-865f-66b354b5501f";
 const action = process.argv[2];
+const selectedWorkflow = isSelectedWorkflowChild(process.argv.slice(2));
 const labels = {
   gamify: "Gamify SLS Module",
   "add-teacher": "Add WEE LOO KANG as Credited Teacher",
@@ -85,12 +87,20 @@ const options = {
   headless,
   imagePrompt: readPrompt(),
   replaceExisting: process.argv.includes("--replace-existing"),
-  holdOpen: async () => {
-    await ask("Press Enter after reviewing the verified browser state to close Chrome... ");
-  }
+  holdOpen: selectedWorkflow
+    ? null
+    : async () => {
+        await ask("Press Enter after reviewing the verified browser state to close Chrome... ");
+      }
 };
 
 if (!(await exists(options.authStatePath))) {
+  if (selectedWorkflow) {
+    stop(
+      "Selected workflow requires a reusable SLS session so its coordinator can refresh " +
+        "authentication and retry this stage.",
+    );
+  }
   console.log("No reusable SLS session was found. Chrome will open for manual authentication.");
   if ((await runAuth()).status !== 0) stop("Authentication was not completed.");
 }
@@ -100,6 +110,12 @@ try {
   result = await runModuleAction({ action, config, target, options });
 } catch (error) {
   if (!/authentication is required/i.test(error.message)) throw error;
+  if (selectedWorkflow) {
+    stop(
+      "The reusable SLS session expired. Selected workflow will not pause for authentication so " +
+        "its coordinator can refresh and retry this stage.",
+    );
+  }
   console.log("\nThe saved SLS session has expired. Chrome will open for manual authentication.");
   if ((await runAuth()).status !== 0) stop("Authentication refresh was not completed.");
   result = await runModuleAction({ action, config, target, options });
