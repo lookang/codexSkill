@@ -57,6 +57,13 @@ test("fraction-decimal representation questions are mathematical", () => {
   assert.equal(looksMathematical("How did the feedback help me express my thinking?"), false);
 });
 
+test("a straight-line diagram question is recognised as angle mathematics", () => {
+  const features = mathFeatures("AOB is a straight line. Find the value of a.");
+  assert.ok(features.topics.has("angle"));
+  assert.ok(features.topics.has("straight-line angles"));
+  assert.equal(looksMathematical("AOB is a straight line. Find the value of a."), true);
+});
+
 test("a wordless fraction sum is recognised as addition of fractions", () => {
   const features = mathFeatures(`${FA_WRAPPER} 2/5 + 3/7`);
   assert.ok(features.operations.has("add"));

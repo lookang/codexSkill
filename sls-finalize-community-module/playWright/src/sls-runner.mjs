@@ -619,12 +619,35 @@ async function readHydratedQuestionText(page, questionId) {
   const component = page.locator(`#component-${questionId}`);
   if ((await component.count()) === 0 || !(await component.isVisible().catch(() => false))) return "";
   await component.scrollIntoViewIfNeeded().catch(() => {});
-  let text = await readOpenQuestionText(page, questionId);
-  for (let attempt = 0; attempt < 3 && !text; attempt += 1) {
-    await page.waitForTimeout(400 + attempt * 250);
-    text = await readOpenQuestionText(page, questionId);
-  }
+  let text = "";
+  // The page button and URL update before FA-Math's <akit-interaction> has
+  // hydrated. Poll the actual question evidence instead of assuming a short
+  // fixed pause is enough on every network connection.
+  await expect
+    .poll(
+      async () => {
+        text = await readOpenQuestionText(page, questionId);
+        return Boolean(text);
+      },
+      { timeout: 12_000, intervals: [250, 400, 650, 1_000] },
+    )
+    .toBe(true)
+    .catch(() => {});
   return text;
+}
+
+async function visibleMountedQuestionIds(page, questionIds) {
+  return page
+    .evaluate((ids) =>
+      ids.filter((id) => {
+        const component = document.getElementById(`component-${id}`);
+        return Boolean(component && component.getClientRects().length > 0);
+      }), questionIds)
+    .catch(() => []);
+}
+
+async function visibleMountedQuestionCount(page, questionIds) {
+  return (await visibleMountedQuestionIds(page, questionIds)).length;
 }
 
 async function ocrQuestionImages(page, questionId, ocr) {
@@ -672,7 +695,19 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
   const quizPageCount = await quizQuestionPageButtons(page).count();
   const ocr = createQuestionImageOcr();
 
-  const collectMountedQuestions = async () => {
+  const collectMountedQuestions = async ({ waitForNewPage = false } = {}) => {
+    if (waitForNewPage && pending.size > 0) {
+      // SLS may leave the preceding page mounted while the next page request is
+      // in flight. Waiting for a still-pending component prevents us from reading
+      // the old page, advancing immediately, and later declaring Q2 onward blank.
+      await expect
+        .poll(
+          () => visibleMountedQuestionCount(page, [...pending]),
+          { timeout: 12_000, intervals: [250, 400, 650, 1_000] },
+        )
+        .toBeGreaterThan(0)
+        .catch(() => {});
+    }
     for (const questionId of [...pending]) {
       const text = await readHydratedQuestionText(page, questionId);
       if (!text) continue;
@@ -690,7 +725,7 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
     if (activityPageCount > 0) {
       for (let index = 0; index < activityPageCount; index += 1) {
         await selectQuestionPage(page, "activity", index);
-        await collectMountedQuestions();
+        await collectMountedQuestions({ waitForNewPage: true });
       }
     } else if (quizPageCount > 0) {
       for (const questionId of questionIds) {
@@ -702,7 +737,7 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
         const pageIndex = number ? Number(number) - 1 : -1;
         if (pageIndex >= 0 && pageIndex < quizPageCount) {
           await selectQuestionPage(page, "quiz", pageIndex);
-          await collectMountedQuestions();
+          await collectMountedQuestions({ waitForNewPage: true });
         }
       }
     } else {
@@ -2169,6 +2204,20 @@ async function listQuestionCardIds(page) {
 export async function readQuestionMetadata(page) {
   const metadata = new Map();
   const originalUrl = new URL(page.url());
+  const questionCards = await listQuestionCards(page);
+  const pendingQuestionIds = new Set(questionCards.map((card) => card.id));
+  const questionNumberById = Object.fromEntries(questionCards.map((card) => [card.id, card.number]));
+
+  const waitForPendingQuestionPage = async () => {
+    if (pendingQuestionIds.size === 0) return;
+    await expect
+      .poll(
+        () => visibleMountedQuestionCount(page, [...pendingQuestionIds]),
+        { timeout: 12_000, intervals: [250, 400, 650, 1_000] },
+      )
+      .toBeGreaterThan(0)
+      .catch(() => {});
+  };
 
   const recordVisible = async () => {
     // SLS renders the mathematics as MathML/KaTeX inside a shadow root on
@@ -2176,7 +2225,7 @@ export async function readQuestionMetadata(page) {
     // maths - every question then looks like it contains no operation at all.
     // Walk into shadow roots and pick up the LaTeX as well.
     const blocks = await page
-      .evaluate(() => {
+      .evaluate((numberById) => {
         const deepText = (root) => {
           let out = "";
           const walk = (node) => {
@@ -2222,6 +2271,8 @@ export async function readQuestionMetadata(page) {
         const questionNumber = (element) => {
           let node = element;
           for (let up = 0; up < 8 && node; up += 1) {
+            const id = String(node.id || "").replace(/^(?:component|settings-card)-/, "");
+            if (id && numberById[id]) return Number(numberById[id]);
             const found = /^\s*Q(\d+)\b/.exec(node.innerText || "");
             if (found) return Number(found[1]);
             node = node.parentElement;
@@ -2238,7 +2289,7 @@ export async function readQuestionMetadata(page) {
           number: questionNumber(element),
           text: deepText(element)
         }));
-      })
+      }, questionNumberById)
       .catch((error) => {
         return [];
       });
@@ -2279,13 +2330,18 @@ export async function readQuestionMetadata(page) {
   const quizPageCount = await quizButtons.count();
   const pageCount = activityPageCount || quizPageCount;
   if (pageCount === 0) {
+    await waitForPendingQuestionPage();
     await recordVisible();
     return metadata;
   }
 
   for (let index = 0; index < pageCount; index += 1) {
     await selectQuestionPage(page, activityPageCount ? "activity" : "quiz", index);
+    await waitForPendingQuestionPage();
     await recordVisible();
+    for (const questionId of await visibleMountedQuestionIds(page, [...pendingQuestionIds])) {
+      pendingQuestionIds.delete(questionId);
+    }
   }
   const originalIndex = activityPageCount
     ? Number(originalUrl.searchParams.get("pageNo") || "1") - 1

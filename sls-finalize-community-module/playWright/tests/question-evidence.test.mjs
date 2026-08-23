@@ -60,6 +60,44 @@ test("ordinary SLS activity pagination is visited before question stems are cach
   }
 });
 
+test("ordinary activity pages wait for delayed question hydration", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const page = await browser.newPage({ viewport: { width: 1000, height: 700 } });
+  try {
+    await page.setContent(`
+      <div class="activity-navigator">
+        <div class="activity-navigator-button page-button selected"><button onclick="showPage(1)">1</button></div>
+        <div class="activity-navigator-button page-button"><button onclick="showPage(2)">2</button></div>
+      </div>
+      <main id="question"></main>
+      <aside id="settings-card-q1">Q1 <svg name="Settings24"></svg></aside>
+      <aside id="settings-card-q2">Q2 <svg name="Settings24"></svg></aside>
+      <script>
+        function showPage(number) {
+          for (const wrapper of document.querySelectorAll('.page-button')) wrapper.classList.remove('selected');
+          document.querySelectorAll('.page-button')[number - 1].classList.add('selected');
+          document.querySelector('#question').innerHTML = '';
+          setTimeout(() => {
+            document.querySelector('#question').innerHTML =
+              '<section id="component-q' + number + '"><div class="question-body">' +
+              (number === 1 ? 'AOB is a straight line. Find the value of a.' :
+                'Angles at a point add to 360 degrees. Find x.') +
+              '</div></section>';
+          }, 1200);
+        }
+        showPage(1);
+      </script>
+    `);
+    const stems = await readQuestionStems(page, ["q1", "q2"], { enableOcr: false });
+    assert.match(stems.get("q1"), /straight line/i);
+    assert.match(stems.get("q2"), /360 degrees/i);
+    const metadata = await readQuestionMetadata(page);
+    assert.match(metadata.get(2).text, /360 degrees/i);
+  } finally {
+    await browser.close();
+  }
+});
+
 test("ordinary SLS activity pagination is also walked for marks and question metadata", async () => {
   const { browser, page } = await paginatedActivityPage();
   try {

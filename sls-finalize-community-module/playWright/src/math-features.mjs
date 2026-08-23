@@ -101,6 +101,18 @@ const TOPICS = [
   // outcomes about adding fractions instead.
   ["fraction of a set", /\b(?:fraction|part)\s+of\s+a\s+set\b|\bset\s+of\s+objects\b|\bfractional\s+part\b/i],
   ["ratio topic", /\bratios?\b|\bproportion(?:al|ality)?\b|\brate\b|\bspeed\b/i],
+  // Geometry prompts are often almost entirely diagrammatic. A stem such as
+  // "AOB is a straight line. Find a" contains neither an arithmetic operation
+  // nor the word "angle", but it still identifies the exact SLS outcome. Keep
+  // the broad angle signal alongside specific relationships so the matcher can
+  // distinguish straight-line, point, vertically-opposite and parallel-line
+  // outcomes without relying on OCR to rediscover the activity title.
+  ["angle", /\bangles?\b|\bdegrees?\b|(?:\d+(?:\.\d+)?|[a-z])\s*[°º]|\bstraight line\b|\btransversal\b/i],
+  ["straight-line angles", /\bangles?\s+on\s+(?:a\s+)?straight line\b|\bstraight line\b/i],
+  ["angles at a point", /\bangles?\s+at\s+(?:a\s+)?point\b/i],
+  ["vertically opposite angles", /\bvertically\s+opposite\s+angles?\b/i],
+  ["parallel-line angles", /\bparallel\s+lines?\b|\btransversal\b|\bcorresponding\s+angles?\b|\balternate\s+angles?\b|\binterior\s+angles?\b/i],
+  ["angle classification", /\b(?:right|acute|obtuse|reflex)\s+angles?\b/i],
   ["measurement", /\bmeasur(?:e|es|ed|ing|ement)s?\b|\bunits?\s+of\s+measurement\b/i],
   ["unit conversion", /\bconvert(?:s|ed|ing)?\b|\bconversion\b|\bfrom\s+(?:a\s+)?(?:smaller|larger)\s+unit\b/i],
   ["compound units", /\bcompound\s+units?\b/i],

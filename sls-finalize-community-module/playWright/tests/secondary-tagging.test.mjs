@@ -147,3 +147,32 @@ test("reflection prompts do not qualify, even when they award marks", () => {
   assert.equal(looksMathematical("What changes will I make in my next attempt?"), false);
   assert.equal(looksMathematical("What error(s) did I make?"), false);
 });
+
+const ANGLES_MAP = [
+  outcome("Right, acute, obtuse and reflex angles", [
+    "Geometry and Measurement",
+    "Angles, triangles and quadrilaterals"
+  ]),
+  outcome("Vertically opposite angles, angles on a straight line and angles at a point", [
+    "Geometry and Measurement",
+    "Angles, triangles and quadrilaterals"
+  ]),
+  outcome("Angles formed by two parallel lines and a transversal: corresponding angles, alternate angles, interior angles", [
+    "Geometry and Measurement",
+    "Angles, triangles and quadrilaterals"
+  ])
+].map((entry) => ({ ...entry, contentMap: "Sec 1 Mathematics (G1) (2020) - 2020" }));
+
+test("a straight-line angle stem chooses the exact angle-relationship outcome", () => {
+  const stem = "AOB is a straight line. Find the value of a.";
+  const result = proposeQuestionTag(stem, ANGLES_MAP, {
+    allowedContentMaps: ["Sec 1 Mathematics (G1) (2020) - 2020"],
+    contextText: "Chapter 6 Angles"
+  });
+  assert.equal(result.decision, "tag");
+  assert.equal(
+    result.outcome,
+    "Vertically opposite angles, angles on a straight line and angles at a point"
+  );
+  assert.equal(looksMathematical(stem), true);
+});
