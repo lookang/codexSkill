@@ -14,13 +14,19 @@ const args = process.argv.slice(2);
 const headless = args.includes("--headless");
 const explicitApply = args.includes("--apply");
 const explicitDryRun = args.includes("--dry-run");
+const verifyAfterApply = args.includes("--verify");
 
 if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not both.");
 
 console.log("\nSLS Meaningful Page Breaks");
 console.log("Reviews every section and activity before changing anything.");
 console.log("Places each question on its own page when SLS exposes a safe divider.");
-console.log("Single-question pages retain the existing length-based chunking rule.\n");
+console.log("Single-question pages retain the existing length-based chunking rule.");
+console.log(
+  verifyAfterApply
+    ? "Final full-module reopen audit: enabled (--verify).\n"
+    : "Final full-module reopen audit: skipped; each split is still save-checked. Use --verify to enable it.\n",
+);
 
 const target = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
 
@@ -32,13 +38,14 @@ const options = {
   timeoutMs: readInteger("--timeout", 20_000),
   slowMoMs: readInteger("--slow-mo", 150),
   headless,
+  verifyAfterApply,
   pageBreakPolicy: {
     longPageViewports: readNumber("--long-page-viewports", 1.75),
     targetChunkViewports: readNumber("--chunk-viewports", 1.1),
     maximumBreaksPerActivity: readInteger("--max-breaks-per-activity", 20),
   },
   holdOpen: async () => {
-    await ask("Press Enter after reviewing the verified Module View to close Chrome... ");
+    await ask("Press Enter after reviewing the final Module View to close Chrome... ");
   },
 };
 
@@ -69,7 +76,8 @@ if (explicitApply) {
 console.log(`\nReport: ${finalResult.reportPath}`);
 console.log(`Trace:  ${finalResult.tracePath}`);
 if (finalResult.report.mode === "apply") {
-  console.log(`Inserted and reopened-verified page breaks: ${finalResult.report.insertedBreaks.length}.`);
+  console.log(`Inserted page breaks: ${finalResult.report.insertedBreaks.length}.`);
+  console.log(`Full reopen audit: ${finalResult.report.verificationRequested ? "completed" : "skipped"}.`);
 }
 
 async function runWithAuthRetry(apply, holdOpen = true) {

@@ -72,7 +72,7 @@ The finishing commands ask for a Community Gallery module or lesson URL, convert
 
 `RUN-SLS-ADD-WEE-LOO-KANG.cmd` works with any valid SLS Community Gallery module URL, including a URL copied while viewing a section or activity. It searches the teacher directory for the exact directory name `Wee Loo Kang`, requires exactly one match, preserves existing credited teachers, and enables **Allow viewing as print-friendly completed assignment**. It saves through Module Settings, closes, reopens, and verifies both the teacher and completed-assignment permission persisted. The copying, print-friendly worksheet, self-study reattempt, leaderboard, and other settings are preserved.
 
-`RUN-SLS-PAGE-BREAK.cmd` reviews every activity in every section. Its first pass is read-only: whenever a page contains two or more questions, it proposes the safe SLS divider immediately before Q2. When the review has candidates and no ambiguous pages, a normal run automatically reopens the same module and inserts one verified break at a time. After a split, it inspects only the newly created continuation page; earlier pages remain checkpointed and untouched later pages retain their prior assessment with shifted page numbers. Separating page 5 into pages 5 and 6 therefore proceeds directly from page 6 instead of revisiting pages 1-5. It then selects **Done**, reopens the module, and performs one full persistence audit. A page containing one question remains one semantic chunk and uses the existing length-based rule (1.75 viewports). Use `--dry-run` when a report without SLS changes is required. Ambiguous layouts and missing save responses stop at a guard instead of clicking another divider.
+`RUN-SLS-PAGE-BREAK.cmd` reviews every activity in every section. Its first pass is read-only: whenever a page contains two or more questions, it proposes the safe SLS divider immediately before Q2. When the review has candidates and no ambiguous pages, a normal run automatically reopens the same module and inserts one verified break at a time. After a split, it inspects only the newly created continuation page; earlier pages remain checkpointed and untouched later pages retain their prior assessment with shifted page numbers. Separating page 5 into pages 5 and 6 therefore proceeds directly from page 6 instead of revisiting pages 1-5. Each split still requires an observed save response and page-count increase. The slower full-module reopen audit is skipped by default; add `--verify` to run it. A page containing one question remains one semantic chunk and uses the existing length-based rule (1.75 viewports). Use `--dry-run` when a report without SLS changes is required. Ambiguous layouts and missing save responses stop at a guard instead of clicking another divider.
 
 `RUN-SLS-ACPINTERACTIVE.cmd` reviews every page in every activity and section. For a page containing exactly one `FA Math` question without an existing interactive ZIP, it sends the question to the iwant2study Prompt Library, selects the configured grade and Mathematics, reads the generated prompt, inserts a Text component, and uses **Authoring Copilot > Interactive (Beta)** to generate and add the matching practice interactive. It waits up to ten minutes for each preview, reopens every changed activity, and verifies the generated ZIP persisted. Existing interactives are preserved. A page containing several FA Math questions stops at a guard so `RUN-SLS-PAGE-BREAK.cmd` can separate them first. The demonstrated default is `Primary 5-6`; override it with `--grade "Primary 3-4"` when required.
 
@@ -94,10 +94,16 @@ For an explicitly read-only run:
 RUN-SLS-PAGE-BREAK.cmd --dry-run
 ```
 
-To skip the separate read-only pass and start the guarded apply pass immediately, use `--apply`; it still rescans before every insertion and verifies after reopening:
+To skip the separate read-only pass and start the guarded apply pass immediately, use `--apply`; it still re-locates every insertion target and checks the save response and page-count increase:
 
 ```powershell
 RUN-SLS-PAGE-BREAK.cmd --apply
+```
+
+For an occasional full reopen audit after all page breaks are applied:
+
+```powershell
+RUN-SLS-PAGE-BREAK.cmd --verify
 ```
 
 ### PowerShell workflow

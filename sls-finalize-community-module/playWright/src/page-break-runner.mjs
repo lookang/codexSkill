@@ -31,6 +31,7 @@ export async function runPageBreakWorkflow({ target, options, apply = false }) {
     policy,
     status: "running",
     review: null,
+    verificationRequested: options.verifyAfterApply === true,
     verification: null,
     insertedBreaks: [],
     error: null,
@@ -55,7 +56,7 @@ export async function runPageBreakWorkflow({ target, options, apply = false }) {
     });
     await leaveEditMode(page, target);
 
-    if (apply) {
+    if (apply && report.verificationRequested) {
       console.log("\nReopening the module to verify every saved page break...");
       await enterEditMode(page, target);
       report.verification = await inspectModule(page, target, policy, { apply: false });
@@ -67,16 +68,26 @@ export async function runPageBreakWorkflow({ target, options, apply = false }) {
             "No further divider was guessed; inspect the report and trace.",
         );
       }
+    } else if (apply) {
+      console.log(
+        "\nSkipping the full reopen audit. Each inserted break was already checked by its save response " +
+          "and verified page-count increase; use --verify for a complete second sweep.",
+      );
     }
 
     report.status = apply ? "completed" : "reviewed";
-    const screenshotPath = path.join(paths.runDir, apply ? "page-break-verified.png" : "page-break-review.png");
+    const screenshotName = apply
+      ? report.verificationRequested
+        ? "page-break-verified.png"
+        : "page-break-completed.png"
+      : "page-break-review.png";
+    const screenshotPath = path.join(paths.runDir, screenshotName);
     await page.screenshot({ path: screenshotPath, fullPage: true });
     report.screenshotPath = screenshotPath;
     await saveJson(paths.reportPath, { ...report, finishedAt: new Date().toISOString() });
 
     if (options.holdOpen && !options.headless) {
-      console.log("\nThe final verified Module View is open in Chrome.");
+      console.log("\nThe final Module View is open in Chrome.");
       await options.holdOpen();
     }
   } catch (error) {
