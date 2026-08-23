@@ -111,10 +111,10 @@ Track completed questions so a resumed run does not retag them unnecessarily.
 Use `RUN-SLS-PAGE-BREAK.cmd` when an activity contains several questions on one page or an unusually long single-question chunk.
 
 1. Run the read-only review and inventory every section, activity, page, question heading, and available SLS divider.
-2. For multiple questions, break immediately before Q2, save, reopen, and rescan. Repeat so Q3 and later questions become separate pages in turn.
+2. For multiple questions, break immediately before Q2 and verify the page count increased by exactly one. Checkpoint the completed preceding page and continue directly from the new continuation page; do not revisit earlier pages between splits. Repeat so Q3 and later questions become separate pages in turn.
 3. For a single long question, add a break only at a semantically safe divider; leave short pages and ambiguous layouts unchanged.
 4. Stop if a section/activity disappears after rerender, a divider cannot be tied to the intended question, or SLS does not confirm persistence.
-5. Select **Done**, reopen Module View, and verify the resulting pages before reporting completion.
+5. Select **Done**, reopen Module View, and perform one full resulting-page audit before reporting completion.
 
 Use `--dry-run` when the user asks only for a proposal. A normal clear review may continue automatically; ambiguous pages must not.
 

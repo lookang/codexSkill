@@ -17,6 +17,8 @@ echo --------------------------
 echo This launcher reviews every activity in every section before changing SLS.
 echo It proposes a safe break before Q2, then Q3, so every question starts on its
 echo own page. Single-question pages retain the length-based chunking rule.
+echo After each verified split, it continues from the new next page without
+echo revisiting earlier pages. One full reopen audit still runs at the end.
 echo A normal run applies automatically after a clear review. Use --dry-run to
 echo review without changing SLS. Ambiguous layouts stop before any changes.
 echo.

@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import {
   DEFAULT_PAGE_BREAK_POLICY,
+  advancePageBreakScan,
   assessPageForBreak,
   normalizePageBreakPolicy,
 } from "../src/page-break.mjs";
@@ -77,6 +78,33 @@ test("three questions separate at Q2 first so iterative application can later se
 
   assert.equal(secondPass.needsBreak, true);
   assert.equal(secondPass.candidate.questionId, "q3");
+});
+
+test("a verified split advances the apply scan without revisiting earlier pages", () => {
+  const pages = [0, 1, 2, 3, 4, 5].map((pageIndex) => ({
+    pageIndex,
+    metrics: { questions: [{ id: `q${pageIndex + 1}` }] },
+    assessment: {
+      blocked: false,
+      needsBreak: pageIndex === 4,
+      candidate: pageIndex === 4 ? { questionId: "q6" } : null,
+      reason: pageIndex === 4 ? "each question starts on its own page" : "already complete",
+    },
+  }));
+
+  const result = advancePageBreakScan(pages, 4);
+
+  assert.equal(result.nextPageIndex, 5);
+  assert.deepEqual(result.completedPages.map((entry) => entry.pageIndex), [0, 1, 2, 3, 4]);
+  assert.deepEqual(result.shiftedFollowingPages.map((entry) => entry.pageIndex), [6]);
+  assert.equal(result.shiftedFollowingPages[0].metrics.questions[0].id, "q6");
+  assert.equal(result.completedPages.at(-1).assessment.needsBreak, false);
+  assert.equal(result.completedPages.at(-1).assessment.candidate, null);
+  assert.match(result.completedPages.at(-1).assessment.reason, /verified split/);
+});
+
+test("forward page scanning rejects a missing split checkpoint", () => {
+  assert.throws(() => advancePageBreakScan([{ pageIndex: 0 }], 2), /Page 3 is missing/);
 });
 
 test("long introductory material can be separated from the first question", () => {
