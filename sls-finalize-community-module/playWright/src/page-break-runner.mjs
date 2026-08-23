@@ -630,6 +630,7 @@ export async function enterEditMode(page, target) {
   console.log(`Opening admin Module View:\n${target.adminViewUrl}`);
   await openExactUrl(page, target.adminViewUrl);
   await assertAuthenticated(page, target.id);
+  await dismissModuleUrlUpdatedModal(page);
   const editButton = page.getByRole("button", { name: "Edit", exact: true });
   await expect(editButton).toBeVisible();
   await editButton.click();
@@ -638,6 +639,31 @@ export async function enterEditMode(page, target) {
   );
   await expect(page.getByRole("button", { name: "Done", exact: true })).toBeVisible();
   console.log("Edit mode verified.");
+}
+
+// SLS can show this informational notice after Done redirects an older lesson URL
+// to its current module URL. It has no choices or destructive action, but it sits
+// above Module View and intercepts the next Edit click. Match both the title and
+// explanatory text so other message, warning, and confirmation modals stay open.
+export async function dismissModuleUrlUpdatedModal(page) {
+  const modal = page
+    .locator(".bx--modal.is-visible.content-modal.message-modal:visible")
+    .filter({ hasText: /Module URL Updated/i })
+    .filter({ hasText: /module(?:'|’)s URL has been updated/i })
+    .first();
+  if ((await modal.count()) === 0 || !(await modal.isVisible().catch(() => false))) return false;
+
+  console.log("Closing the informational Module URL Updated notice before clicking Edit...");
+  const close = modal
+    .locator("button.bx--modal-close")
+    .or(modal.getByRole("button", { name: "OK", exact: true }))
+    .first();
+  if ((await close.count()) === 0) {
+    throw new GuardError("The Module URL Updated notice has no recognised Close or OK control.");
+  }
+  await close.click();
+  await expect(modal).toBeHidden({ timeout: 5_000 });
+  return true;
 }
 
 export async function leaveEditMode(page, target) {
