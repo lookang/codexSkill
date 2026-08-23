@@ -9,7 +9,11 @@ import {
   createSlsContext,
   launchSlsBrowser,
 } from "./sls-runner.mjs";
-import { assessPageForBreak, normalizePageBreakPolicy } from "./page-break.mjs";
+import {
+  advancePageBreakScan,
+  assessPageForBreak,
+  normalizePageBreakPolicy,
+} from "./page-break.mjs";
 
 const SLS_ORIGIN = "https://vle.learning.moe.edu.sg";
 let expect = baseExpect.configure({ timeout: 20_000 });
@@ -200,7 +204,20 @@ async function inspectActivity(page, policy, context) {
       `    Added page break before ${fresh.candidate.questionText || `question ${fresh.candidate.questionIndex + 1}`}; ` +
         `pages ${pageCountBefore} -> ${pageCountAfter}.`,
     );
-    pages = await inspectActivityPages(page, policy);
+    const forwardScan = advancePageBreakScan(pages, wanted.pageIndex);
+    console.log(
+      `    Inspecting only the new continuation page ${forwardScan.nextPageIndex + 1}; ` +
+        `pages 1-${forwardScan.nextPageIndex} stay checkpointed until the final reopen audit.`,
+    );
+    const continuationPage = await inspectActivityPages(page, policy, {
+      startPageIndex: forwardScan.nextPageIndex,
+      endPageIndexExclusive: forwardScan.nextPageIndex + 1,
+    });
+    pages = [
+      ...forwardScan.completedPages,
+      ...continuationPage,
+      ...forwardScan.shiftedFollowingPages,
+    ];
   }
 
   if (inserted >= policy.maximumBreaksPerActivity && pages.some((entry) => entry.assessment.needsBreak)) {
@@ -212,11 +229,26 @@ async function inspectActivity(page, policy, context) {
   return { pages, insertedBreaks: inserted };
 }
 
-async function inspectActivityPages(page, policy) {
+async function inspectActivityPages(
+  page,
+  policy,
+  { startPageIndex = 0, endPageIndexExclusive = null } = {},
+) {
   await settleActivity(page);
   const count = await visiblePageCount(page);
+  const endPageIndex = endPageIndexExclusive ?? count;
+  if (!Number.isInteger(startPageIndex) || startPageIndex < 0 || startPageIndex > count) {
+    throw new GuardError(
+      `Cannot resume page inspection at page ${startPageIndex + 1}; the activity exposes ${count} page(s).`,
+    );
+  }
+  if (!Number.isInteger(endPageIndex) || endPageIndex < startPageIndex || endPageIndex > count) {
+    throw new GuardError(
+      `Cannot end page inspection before page ${endPageIndex + 1}; the activity exposes ${count} page(s).`,
+    );
+  }
   const pages = [];
-  for (let pageIndex = 0; pageIndex < count; pageIndex += 1) {
+  for (let pageIndex = startPageIndex; pageIndex < endPageIndex; pageIndex += 1) {
     await selectPage(page, pageIndex);
     await settleActivity(page);
     const metrics = await readPageMetrics(page);

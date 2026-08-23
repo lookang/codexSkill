@@ -28,6 +28,36 @@ export function normalizePageBreakPolicy(overrides = {}) {
   return policy;
 }
 
+export function advancePageBreakScan(pages, splitPageIndex) {
+  if (!Array.isArray(pages)) throw new Error("pages must be an array.");
+  if (!Number.isInteger(splitPageIndex) || splitPageIndex < 0) {
+    throw new Error("splitPageIndex must be a non-negative integer.");
+  }
+
+  const splitPage = pages.find((entry) => entry.pageIndex === splitPageIndex);
+  if (!splitPage) throw new Error(`Page ${splitPageIndex + 1} is missing from the current scan.`);
+
+  return {
+    completedPages: [
+      ...pages.filter((entry) => entry.pageIndex < splitPageIndex),
+      {
+        ...splitPage,
+        assessment: {
+          ...splitPage.assessment,
+          blocked: false,
+          needsBreak: false,
+          candidate: null,
+          reason: "page break inserted; preceding page completed by the verified split",
+        },
+      },
+    ],
+    nextPageIndex: splitPageIndex + 1,
+    shiftedFollowingPages: pages
+      .filter((entry) => entry.pageIndex > splitPageIndex)
+      .map((entry) => ({ ...entry, pageIndex: entry.pageIndex + 1 })),
+  };
+}
+
 export function assessPageForBreak({
   viewportHeight,
   contentTop,
