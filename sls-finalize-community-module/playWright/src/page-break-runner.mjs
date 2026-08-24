@@ -495,12 +495,30 @@ export async function settleActivity(page) {
   await page.waitForTimeout(250);
 }
 
-export async function visiblePageCount(page) {
+export async function visiblePageCount(page, { timeoutMs = 2_000 } = {}) {
+  await expect
+    .poll(() => activityPageButtons(page).count(), {
+      message: "Wait for delayed activity pagination",
+      timeout: timeoutMs,
+      intervals: [250, 500, 750],
+    })
+    .toBeGreaterThan(0)
+    .catch(() => {});
   const count = await activityPageButtons(page).count();
   return Math.max(1, count);
 }
 
-export async function selectPage(page, index) {
+export async function selectPage(page, index, { timeoutMs = 12_000 } = {}) {
+  if (index > 0) {
+    await expect
+      .poll(() => activityPageButtons(page).count(), {
+        message: `Wait for activity page ${index + 1}`,
+        timeout: timeoutMs,
+        intervals: [250, 500, 750, 1000],
+      })
+      .toBeGreaterThan(index)
+      .catch(() => {});
+  }
   const buttons = activityPageButtons(page);
   const count = await buttons.count();
   if (count === 0) {

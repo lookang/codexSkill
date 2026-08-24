@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
 import { assessAcpPage, normalizeAcpOptions, normalizeQuestionText } from "../src/acp-interactive.mjs";
-import { selectTextComponentFromAddMenu } from "../src/acp-interactive-runner.mjs";
+import { acpTargetIncludes, selectTextComponentFromAddMenu } from "../src/acp-interactive-runner.mjs";
 
 test("one unserved FA Math question is an ACP candidate", () => {
   const question = { number: 1, text: "Write 180 min in hours." };
@@ -44,6 +44,23 @@ test("the demonstrated Primary 5-6 Mathematics prompt defaults are retained", ()
     generationTimeoutMs: 600000,
     maximumInteractives: 100,
   });
+});
+
+test("an activity-scoped ACP run excludes every other section and activity", () => {
+  const target = { sectionId: "105854770", activityId: "105854771" };
+  assert.equal(acpTargetIncludes(target, { sectionId: "105854770" }), true);
+  assert.equal(
+    acpTargetIncludes(target, { sectionId: "105854770", activityId: "105854771" }),
+    true,
+  );
+  assert.equal(
+    acpTargetIncludes(target, { sectionId: "105854770", activityId: "105854772" }),
+    false,
+  );
+  assert.equal(
+    acpTargetIncludes(target, { sectionId: "105854769", activityId: "105854771" }),
+    false,
+  );
 });
 
 test("the current Text/Media menu opens Text through a real hover", async () => {

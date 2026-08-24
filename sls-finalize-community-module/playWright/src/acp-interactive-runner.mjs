@@ -131,17 +131,24 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
 async function processModule({ slsPage, promptPage, target, policy, apply, generated }) {
   const sections = await inventorySections(slsPage, target);
   const report = [];
+  let matchedSection = !target.sectionId;
+  let matchedActivity = !target.activityId;
   console.log(`Found ${sections.length} section(s).`);
 
+  sectionLoop:
   for (const section of sections) {
     console.log(`\nSection ${section.label}: ${section.title || "(untitled)"}`);
     const opened = await openSection(slsPage, target, section);
+    if (!acpTargetIncludes(target, { sectionId: opened.id })) continue;
+    matchedSection = true;
     const activities = await inventoryActivities(slsPage, section);
     const sectionReport = { ...section, id: opened.id, activities: [] };
     console.log(`  ${activities.length} activit${activities.length === 1 ? "y" : "ies"}.`);
 
     for (const activity of activities) {
       const openedActivity = await openActivity(slsPage, target, section, opened.id, activity);
+      if (!acpTargetIncludes(target, { sectionId: opened.id, activityId: openedActivity.id })) continue;
+      matchedActivity = true;
       const activityReport = {
         ...activity,
         id: openedActivity.id,
@@ -187,6 +194,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         await enterEditMode(slsPage, target);
         await openSection(slsPage, target, section);
         await openActivity(slsPage, target, section, opened.id, activity);
+        await settleActivity(slsPage);
         await selectPage(slsPage, pageIndex);
         await settleActivity(slsPage);
         state = await readAcpPageState(slsPage);
@@ -216,10 +224,20 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         console.log(`      Added and locally verified ACP interactive (${result.fileName || "generated ZIP"}).`);
       }
       sectionReport.activities.push(activityReport);
+      if (target.activityId) break;
     }
     report.push(sectionReport);
+    if (target.activityId && matchedActivity) break sectionLoop;
   }
+  if (!matchedSection) throw new GuardError(`Supplied section ${target.sectionId} was not found in the module.`);
+  if (!matchedActivity) throw new GuardError(`Supplied activity ${target.activityId} was not found in the module.`);
   return report;
+}
+
+export function acpTargetIncludes(target, { sectionId, activityId = null }) {
+  if (target.sectionId && String(target.sectionId) !== String(sectionId)) return false;
+  if (activityId !== null && target.activityId && String(target.activityId) !== String(activityId)) return false;
+  return true;
 }
 
 async function buildPrompt(page, questionText, policy) {

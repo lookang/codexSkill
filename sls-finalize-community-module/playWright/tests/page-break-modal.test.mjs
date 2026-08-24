@@ -3,8 +3,35 @@ import test from "node:test";
 import { chromium } from "@playwright/test";
 import {
   dismissModuleUrlUpdatedModal,
+  selectPage,
+  visiblePageCount,
   waitForScopedPageBreakSingle,
 } from "../src/page-break-runner.mjs";
+
+test("delayed activity pagination is counted and page 2 can be selected", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <div id="mount"></div>
+      <script>
+        setTimeout(() => {
+          document.querySelector('#mount').innerHTML = ` + "`" + `
+            <nav class="activity-navigator">
+              <span class="activity-navigator-button page-button"><button aria-current="page">1</button></span>
+              <span class="activity-navigator-button page-button"><button onclick="document.body.dataset.page='2'">2</button></span>
+            </nav>` + "`" + `;
+        }, 600);
+      </script>
+    `);
+
+    assert.equal(await visiblePageCount(page, { timeoutMs: 2_000 }), 2);
+    await selectPage(page, 1, { timeoutMs: 2_000 });
+    assert.equal(await page.locator("body").getAttribute("data-page"), "2");
+  } finally {
+    await browser.close();
+  }
+});
 
 test("the Module URL Updated notice is dismissed before the next Edit click", async () => {
   const browser = await chromium.launch({ channel: "chrome", headless: true });
