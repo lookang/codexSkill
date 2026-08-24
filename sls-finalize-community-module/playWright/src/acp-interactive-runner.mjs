@@ -250,19 +250,7 @@ async function buildPrompt(page, questionText, policy) {
 
 async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
   const beforeComponents = await page.locator(".lesson-activity-component").count();
-  let textOption = page.locator("li.text:visible").last();
-  if ((await textOption.count()) !== 1) {
-    const textMedia = page.locator("li.text-media:visible").last();
-    if ((await textMedia.count()) !== 1) throw new GuardError("Text/Media was not available in ADD NEW.");
-    await textMedia.evaluate((node) => {
-      node.dispatchEvent(new MouseEvent("mouseenter", { bubbles: true }));
-      node.click();
-    });
-    await page.waitForTimeout(400);
-    textOption = page.locator("li.text:visible").last();
-  }
-  if ((await textOption.count()) !== 1) throw new GuardError("Text was not available under Text/Media.");
-  await textOption.evaluate((node) => node.click());
+  await selectTextComponentFromAddMenu(page);
   await expect.poll(() => page.locator(".lesson-activity-component").count()).toBe(beforeComponents + 1);
 
   const editor = page.locator('[contenteditable="true"].mce-content-body:visible').last();
@@ -333,6 +321,32 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
     generationSeconds: Math.round((Date.now() - started) / 1000),
     fileName: state.completedInteractiveFiles.at(-1) ?? null,
   };
+}
+
+export async function selectTextComponentFromAddMenu(page, { timeoutMs = 10_000 } = {}) {
+  const menu = page.locator(".add-component-bar .multi-layer-menu:visible").last();
+  const textMediaTrigger = menu.locator(
+    ":scope > ul.menu > li.text-media:visible > .item-wrapper:visible",
+  );
+  if ((await textMediaTrigger.count()) !== 1) {
+    throw new GuardError("Text/Media was not available in the visible ADD NEW menu.");
+  }
+
+  // SLS exposes the submenu through the browser's real :hover state. Synthetic
+  // mouseenter events do not activate that CSS state, and the Text entry is a
+  // generic multi-layer-menu-item rather than the retired li.text selector.
+  await textMediaTrigger.hover();
+  const textMediaItem = textMediaTrigger.locator("xpath=parent::li");
+  const textLabel = textMediaItem.getByText("Text", { exact: true });
+  try {
+    await textLabel.waitFor({ state: "visible", timeout: timeoutMs });
+  } catch {
+    throw new GuardError("SLS's visible Text/Media menu did not expose Text in time.");
+  }
+  if ((await textLabel.count()) !== 1) {
+    throw new GuardError("SLS's visible Text/Media menu exposed an ambiguous Text option.");
+  }
+  await textLabel.click();
 }
 
 async function verifyGeneratedEntry(page, target, entry) {
