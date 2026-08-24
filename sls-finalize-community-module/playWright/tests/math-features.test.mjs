@@ -57,6 +57,48 @@ test("fraction-decimal representation questions are mathematical", () => {
   assert.equal(looksMathematical("How did the feedback help me express my thinking?"), false);
 });
 
+test("expanded decimal notation is recognised as decimal place value", () => {
+  const liveStem =
+    "Find the value of 10 + 4 10 + 5 1000 10+ \\frac{4}{10}+ \\frac{5}{1000} 10 + 10 4";
+  const features = mathFeatures(liveStem);
+
+  assert.ok(features.operations.has("add"));
+  assert.ok(features.topics.has("place value"));
+  assert.ok(features.topics.has("decimal place value"));
+  assert.ok(features.operands.has("decimal"));
+});
+
+test("one fraction with denominator 10 remains an ordinary fractions question", () => {
+  const features = mathFeatures("1/10 + 2/5");
+  assert.ok(features.operands.has("fraction"));
+  assert.ok(!features.topics.has("decimal place value"));
+});
+
+test("a digit-place-value stem is recognised as whole-number mathematics", () => {
+  const features = mathFeatures("In 418 672, what does the digit 4 stand for?");
+  assert.ok(features.topics.has("place value"));
+  assert.ok(features.operands.has("whole number"));
+  assert.equal(looksMathematical("In 418 672, what does the digit 4 stand for?"), true);
+});
+
+test("a pie-chart subquestion is recognised as interpreting represented data", () => {
+  const features = mathFeatures(
+    "There were 100 students who ate apples. How many students ate papaya? " +
+      "[Shared stimulus: The pie chart below shows the type of fruits students ate.]"
+  );
+  assert.ok(features.topics.has("data representation"));
+  assert.ok(features.topics.has("pie chart"));
+  assert.ok(features.topics.has("interpret data"));
+  assert.equal(looksMathematical("The pie chart below shows the fruits students ate."), true);
+});
+
+test("completing a table remains distinct from interpreting a chart", () => {
+  const features = mathFeatures("Complete the table from the given data.");
+  assert.ok(features.topics.has("table"));
+  assert.ok(features.topics.has("complete table"));
+  assert.ok(!features.topics.has("interpret data"));
+});
+
 test("a straight-line diagram question is recognised as angle mathematics", () => {
   const features = mathFeatures("AOB is a straight line. Find the value of a.");
   assert.ok(features.topics.has("angle"));

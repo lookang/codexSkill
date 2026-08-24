@@ -444,9 +444,23 @@ export async function waitForScopedPageBreakSingle(
     throw new GuardError("SLS's visible Display menu did not expose Page Break in time.");
   }
 
-  await pageBreakLabel.hover();
   const pageBreakItem = pageBreakLabel.locator("xpath=ancestor::li[1]");
   const single = pageBreakItem.getByText("Single", { exact: true });
+  // SLS can place its fixed page navigator over this fly-out even though the
+  // Page Break item is visible. Activating the already-scoped menu item in the
+  // DOM opens its submenu without depending on pointer hit-testing; this does
+  // not create a break (only choosing Single below performs the mutation).
+  await pageBreakLabel.evaluate((label) => label.closest("li")?.click());
+  if (!(await single.isVisible().catch(() => false))) {
+    // Retain compatibility with CSS-only hover menus used by older SLS views.
+    try {
+      await pageBreakLabel.hover({ timeout: Math.min(1_000, timeoutMs) });
+    } catch {
+      throw new GuardError(
+        "SLS's Page Break menu was visible but could not be activated because another control covered it.",
+      );
+    }
+  }
   try {
     await single.waitFor({ state: "visible", timeout: timeoutMs });
   } catch {

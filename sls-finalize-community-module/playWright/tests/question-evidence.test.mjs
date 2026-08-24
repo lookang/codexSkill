@@ -1,8 +1,17 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
-import { createQuestionImageOcr, shouldUseImageOcr } from "../src/question-evidence.mjs";
-import { readQuestionMetadata, readQuestionStems } from "../src/sls-runner.mjs";
+import {
+  attachSharedQuestionContext,
+  createQuestionImageOcr,
+  primaryQuestionEvidenceText,
+  shouldUseImageOcr
+} from "../src/question-evidence.mjs";
+import {
+  readOpenQuestionEvidence,
+  readQuestionMetadata,
+  readQuestionStems
+} from "../src/sls-runner.mjs";
 
 async function paginatedActivityPage() {
   const browser = await chromium.launch({ channel: "chrome", headless: true });
@@ -110,8 +119,57 @@ test("ordinary SLS activity pagination is also walked for marks and question met
   }
 });
 
+test("FA-Math stem and suggested answer are captured as separate evidence", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const page = await browser.newPage({ viewport: { width: 900, height: 500 } });
+  try {
+    await page.setContent(`
+      <section id="component-q1">
+        <akit-interaction id="stem"></akit-interaction>
+        <akit-interaction id="answer"></akit-interaction>
+      </section>
+      <script>
+        document.querySelector('#stem').attachShadow({ mode: 'open' }).innerHTML =
+          '<div>There were 100 students who ate apples. How many ate papaya?</div>';
+        document.querySelector('#answer').attachShadow({ mode: 'open' }).innerHTML =
+          '<div>100 ÷ 25 × 15 = 60 students</div>';
+      </script>
+    `);
+    const evidence = await readOpenQuestionEvidence(page, "q1");
+    assert.match(evidence.stem, /How many ate papaya/);
+    assert.match(evidence.suggestedAnswer, /100 ÷ 25 × 15/);
+    assert.doesNotMatch(evidence.stem, /60 students/);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("pie-chart context and OCR labels follow related page-broken subquestions", () => {
+  const enriched = attachSharedQuestionContext(new Map([
+    ["q1", {
+      stem: "The pie chart below shows the type of fruits students ate in a school canteen.",
+      diagramOcr: "Apple Banana Orange Papaya"
+    }],
+    ["q2", {
+      stem: "There were 100 students who ate apples. How many students ate papaya?",
+      suggestedAnswer: "100 ÷ 25 × 15 = 60"
+    }],
+    ["q3", { stem: "Calculate the area of a rectangle measuring 8 cm by 4 cm." }]
+  ]), ["q1", "q2", "q3"]);
+
+  assert.match(enriched.get("q2").sharedStimulus, /pie chart/i);
+  assert.match(enriched.get("q2").sharedDiagramOcr, /Papaya/);
+  assert.equal(enriched.get("q2").sharedFromQuestionId, "q1");
+  assert.match(primaryQuestionEvidenceText(enriched.get("q2")), /Shared stimulus:.*pie chart/i);
+  assert.equal(enriched.get("q3").sharedStimulus, "", "unrelated questions do not inherit chart context");
+});
+
 test("OCR is reserved for concise or diagram-dependent question evidence", () => {
   assert.equal(shouldUseImageOcr("Find the total surface area of the given prism."), true);
+  assert.equal(
+    shouldUseImageOcr("The pie chart below shows the type of fruits students ate in a school canteen."),
+    true
+  );
   assert.equal(
     shouldUseImageOcr(
       "Expand and simplify the quadratic expression, showing every algebraic step and collecting like terms carefully.",

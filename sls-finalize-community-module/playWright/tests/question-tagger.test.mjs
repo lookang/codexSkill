@@ -3,7 +3,9 @@ import assert from "node:assert/strict";
 import {
   isSubstantiveCurriculumQuestion,
   levelToContentMap,
-  proposeQuestionTag
+  primaryMathematicsMapsFromModuleEvidence,
+  proposeQuestionTag,
+  questionContentMapGroups
 } from "../src/question-tagger.mjs";
 import { mathFeatures } from "../src/math-features.mjs";
 
@@ -27,6 +29,46 @@ test("levels map to their 2021 content maps", () => {
   assert.equal(levelToContentMap("Secondary 1"), null);
 });
 
+test("saved Primary Mathematics module levels become cumulative eligible maps", () => {
+  assert.deepEqual(
+    primaryMathematicsMapsFromModuleEvidence({
+      subjectLevels: [
+        { subject: "Mathematics - MATHS", level: "Primary 4" },
+        { subject: "Mathematics - MATHS", level: "Primary 5" },
+        { subject: "Mathematics - MATHS", level: "Primary 6" },
+        { subject: "Science - SCI", level: "Primary 6" }
+      ]
+    }),
+    [
+      "Pri 4 Mathematics (2021)",
+      "Pri 5 Mathematics (2021)",
+      "Pri 6 Mathematics (2021)"
+    ]
+  );
+});
+
+test("Primary levels compete once while explicit Secondary streams remain additive", () => {
+  assert.deepEqual(
+    questionContentMapGroups([], [
+      "Pri 4 Mathematics (2021)",
+      "Pri 5 Mathematics (2021)",
+      "Pri 6 Mathematics (2021)"
+    ]),
+    [[
+      "Pri 4 Mathematics (2021)",
+      "Pri 5 Mathematics (2021)",
+      "Pri 6 Mathematics (2021)"
+    ]]
+  );
+  assert.deepEqual(
+    questionContentMapGroups(
+      ["Sec 1 Mathematics (G2) (2020)", "Sec 1 Mathematics (G3) (2020)"],
+      ["Pri 6 Mathematics (2021)"]
+    ),
+    [["Sec 1 Mathematics (G2) (2020)"], ["Sec 1 Mathematics (G3) (2020)"]]
+  );
+});
+
 test("a fraction sum is tagged at the level the question is restricted to", () => {
   const result = proposeQuestionTag(`${FA} 2/5 + 3/7`, DICT, {
     allowedContentMaps: ["Pri 4 Mathematics (2021)", "Pri 6 Mathematics (2021)"]
@@ -42,6 +84,80 @@ test("a division question is tagged at P6 even though P4 was also allowed", () =
   });
   assert.equal(result.decision, "tag");
   assert.equal(result.contentMap, "Pri 6 Mathematics (2021)");
+});
+
+test("live expanded decimal notation selects the P4 decimal place-value outcome", () => {
+  const cumulative = [
+    ...DICT,
+    entry(
+      "Pri 4 Mathematics (2021)",
+      ["Number and Algebra", "Decimals", "Decimals up to 3 decimal places"],
+      "1.1 notation, representations and place values (tenths, hundredths, thousandths)"
+    ),
+    entry(
+      "Pri 6 Mathematics (2021)",
+      ["Number and Algebra", "Ratio", "Ratio"],
+      "1.7 relationship between fraction and ratio"
+    )
+  ];
+  const liveStem =
+    "Find the value of 10 + 4 10 + 5 1000 10+ \\frac{4}{10}+ \\frac{5}{1000} 10 + 10 4";
+  const result = proposeQuestionTag(liveStem, cumulative, {
+    allowedContentMaps: [
+      "Pri 4 Mathematics (2021)",
+      "Pri 5 Mathematics (2021)",
+      "Pri 6 Mathematics (2021)"
+    ]
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.contentMap, "Pri 4 Mathematics (2021)");
+  assert.match(result.outcome, /place values \(tenths, hundredths, thousandths\)/);
+});
+
+test("a page-broken pie-chart subquestion selects P4 data interpretation", () => {
+  const data = [
+    entry(
+      "Pri 4 Mathematics (2021)",
+      ["Statistics", "Data representation and interpretation", "Tables, Line Graphs and Pie Charts"],
+      "1.1 completing a table from given data"
+    ),
+    entry(
+      "Pri 4 Mathematics (2021)",
+      ["Statistics", "Data representation and interpretation", "Tables, Line Graphs and Pie Charts"],
+      "1.2 reading and interpreting data from tables/line graphs/pie charts"
+    )
+  ];
+  const primaryEvidence =
+    "There were 100 students who ate apples. How many students ate papaya? " +
+    "[Shared stimulus: The pie chart below shows the type of fruits students ate.] " +
+    "[Shared diagram OCR: Apple Banana Orange Papaya]";
+  const result = proposeQuestionTag(primaryEvidence, data, {
+    allowedContentMaps: ["Pri 4 Mathematics (2021)"],
+    supportingText: "100 ÷ 25 × 15 = 60 students"
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.contentMap, "Pri 4 Mathematics (2021)");
+  assert.match(result.outcome, /^1\.2 reading and interpreting data/);
+  assert.match(result.basis, /suggested answer/);
+});
+
+test("a suggested answer cannot invent a missing chart topic", () => {
+  const data = [
+    entry(
+      "Pri 4 Mathematics (2021)",
+      ["Statistics", "Data representation and interpretation", "Tables, Line Graphs and Pie Charts"],
+      "1.2 reading and interpreting data from tables/line graphs/pie charts"
+    )
+  ];
+  const result = proposeQuestionTag("How many students ate papaya?", data, {
+    allowedContentMaps: ["Pri 4 Mathematics (2021)"],
+    supportingText: "Read the pie chart and calculate 100 ÷ 25 × 15."
+  });
+
+  assert.equal(result.decision, "skip");
+  assert.match(result.reason, /primary question evidence contained no readable mathematical operation or topic/);
 });
 
 test("an unresolved tie is skipped instead of guessed", () => {

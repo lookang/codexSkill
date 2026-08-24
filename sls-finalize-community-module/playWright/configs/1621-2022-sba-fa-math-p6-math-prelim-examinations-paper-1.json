@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "3838140a-d3d9-402a-b7e7-1d9f080900fd",
+    "title": "(1621) 2022 SBA FA-Math P6 Math Prelim Examinations Paper 1",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/3838140a-d3d9-402a-b7e7-1d9f080900fd/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Primary 6 learners practising (1621) 2022 sba fa-math p6 math prelim examinations paper 1. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "1621 2022 Quest",
+    "shortTitle": "1621 Quest",
+    "description": "Build confidence and accuracy while mastering (1621) 2022 sba fa-math p6 math prelim examinations paper 1."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Primary 6",
+    "contentMap": "Pri 6 Mathematics (2021)",
+    "outcomePath": [
+      "Number and Algebra",
+      "Fractions",
+      "Four operations"
+    ],
+    "outcome": "1.1 dividing a proper fraction by a whole number without calculator",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "How to use the digitalised past year papers?",
+      "activities": []
+    },
+    {
+      "label": "B",
+      "title": "Part I: Authored with FA-Math - (1621) 2022 P6 Math Prelim Examinations Paper 1",
+      "activities": [
+        {
+          "title": "Set 1"
+        },
+        {
+          "title": "Set 2"
+        },
+        {
+          "title": "Set 3"
+        },
+        {
+          "title": "Set 4"
+        },
+        {
+          "title": "Set 5"
+        },
+        {
+          "title": "Set 6"
+        },
+        {
+          "title": "Set 7"
+        },
+        {
+          "title": "Set 8"
+        },
+        {
+          "title": "Set 9"
+        },
+        {
+          "title": "Set 10"
+        },
+        {
+          "title": "Set 11"
+        },
+        {
+          "title": "Set 12"
+        },
+        {
+          "title": "Set 13"
+        },
+        {
+          "title": "Set 14"
+        },
+        {
+          "title": "Set 15"
+        },
+        {
+          "title": "Set 16"
+        },
+        {
+          "title": "Set 17"
+        },
+        {
+          "title": "Set 18"
+        },
+        {
+          "title": "Set 19"
+        },
+        {
+          "title": "Set 20"
+        }
+      ]
+    },
+    {
+      "label": "C",
+      "title": "Part II: Authored with FA-Math - (1621) 2022 P6 Math Prelim Examinations Paper 1",
+      "activities": [
+        {
+          "title": "Set 21"
+        },
+        {
+          "title": "Set 22"
+        },
+        {
+          "title": "Set 23"
+        },
+        {
+          "title": "Set 24"
+        },
+        {
+          "title": "Set 25"
+        },
+        {
+          "title": "Set 26"
+        },
+        {
+          "title": "Set 27"
+        },
+        {
+          "title": "Set 28"
+        },
+        {
+          "title": "Set 29"
+        },
+        {
+          "title": "Set 30"
+        },
+        {
+          "title": "Set 31"
+        },
+        {
+          "title": "Set 32"
+        }
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY (1621) 2022 SBA FA-Math P6 Math Prelim Examinations Paper 1 Unstar Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP TOP Viewable Module Title Featured Image 105d0a9d-1ad9-4de3-b22b-c1f8080b5557.png Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Subject and Level ADD SUBJECT AND LEVEL Content Map and Topic Pri 6 Mathematics (2021) - 1 selected ADD CONTENT MAP AND TOPIC Module Description ADD NEW Module Authoring Copilot"
+  }
+}

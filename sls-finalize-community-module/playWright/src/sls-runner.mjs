@@ -6,12 +6,25 @@ import {
   isSubstantiveCurriculumQuestion,
   loadDictionaries,
   levelToContentMap,
+  primaryMathematicsMapsFromModuleEvidence,
   proposeQuestionTag,
+  questionContentMapGroups,
   questionStemFromSettingsCardText,
   resetDictionaries
 } from "./question-tagger.mjs";
 import { flattenMathml } from "./math-features.mjs";
-import { createQuestionImageOcr, shouldUseImageOcr } from "./question-evidence.mjs";
+import {
+  isQuestionRunComplete,
+  proposalForReport,
+  summarizeQuestionResults,
+  summarizeReportSections
+} from "./question-tag-report.mjs";
+import {
+  attachSharedQuestionContext,
+  createQuestionImageOcr,
+  primaryQuestionEvidenceText,
+  shouldUseImageOcr
+} from "./question-evidence.mjs";
 import {
   inferCurriculumClues,
   contentMapSupportsStreams,
@@ -46,7 +59,7 @@ export async function runSlsWorkflow(config, options, shared = {}) {
   const paths = await createRunPaths(options, config.module.id);
   const checkpoint = await loadCheckpoint(paths.checkpointPath, config.module.id);
   const report = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     mode: options.mode,
     startedAt: new Date().toISOString(),
     module: config.module,
@@ -90,6 +103,23 @@ export async function runSlsWorkflow(config, options, shared = {}) {
     report.inventory = await inventoryModule(page);
     if (!report.module.title) report.module.title = report.inventory.title;
     console.log(`Found ${report.inventory.sectionCount} visible section entries.`);
+
+    // A Primary assessment may intentionally declare several saved levels. Make
+    // those levels the candidate pool for each question; the tagger will still
+    // write only the one unambiguous best match. Explicit section.contentMaps
+    // continue to take precedence for multi-stream Secondary modules.
+    const modulePrimaryMaps = primaryMathematicsMapsFromModuleEvidence(
+      report.inventory.moduleEvidence
+    );
+    if (modulePrimaryMaps.length > 0 && !options.questionContentMaps?.length) {
+      options.questionContentMaps = modulePrimaryMaps;
+    }
+    if (options.questionContentMaps?.length) {
+      report.options.questionContentMaps = [...options.questionContentMaps];
+      console.log(
+        `Question-level Primary content maps: ${options.questionContentMaps.join(" | ")}.`
+      );
+    }
 
     if (options.mode === "inspect") {
       report.status = "inspected";
@@ -169,6 +199,7 @@ export async function runSlsWorkflow(config, options, shared = {}) {
     throw error;
   } finally {
     report.finishedAt = new Date().toISOString();
+    report.questionSummary = summarizeReportSections(report.sections);
     await saveJson(paths.reportPath, report).catch(() => {});
     if (context) {
       await context.tracing.stop({ path: paths.tracePath }).then(() => {
@@ -258,6 +289,10 @@ async function processActivity({
     copyId: activityState.copyId ?? activity.existingCopyId ?? null,
     questionCount: null,
     taggedQuestions: [],
+    newlyTaggedQuestions: [],
+    skippedQuestions: [],
+    questions: [],
+    questionSummary: null,
     originalDeleted: false,
     renamed: false
   };
@@ -328,7 +363,13 @@ async function processActivity({
     options
   });
   activityReport.questionCount = questionResult.count;
-  activityReport.taggedQuestions = questionResult.ids;
+  activityReport.taggedQuestions = questionResult.taggedIds;
+  activityReport.newlyTaggedQuestions = questionResult.questions
+    .filter((result) => result.status === "tagged")
+    .map((result) => result.id);
+  activityReport.skippedQuestions = questionResult.skippedIds;
+  activityReport.questions = questionResult.questions;
+  activityReport.questionSummary = questionResult.summary;
   activityState.questionsVerified = true;
   await saveCheckpoint(checkpointPath, checkpoint);
 
@@ -395,7 +436,14 @@ async function tagEveryQuestion({
   if (questionIds.length === 0) {
     if (activity.allowNoQuestions) {
       console.log("    No native SLS question cards expected for this activity.");
-      return { count: 0, ids: [] };
+      return {
+        count: 0,
+        ids: [],
+        questions: [],
+        summary: summarizeQuestionResults([]),
+        taggedIds: [],
+        skippedIds: []
+      };
     }
     // Distinguish "this activity genuinely has no questions" from "the page did
     // not load". A video or text-only activity still renders components; an
@@ -409,7 +457,15 @@ async function tagEveryQuestion({
       console.log(
         `    No question cards in "${activity.title}" (${rendered} non-question components present); continuing.`
       );
-      return { count: 0, ids: [], noQuestions: true };
+      return {
+        count: 0,
+        ids: [],
+        questions: [],
+        summary: summarizeQuestionResults([]),
+        taggedIds: [],
+        skippedIds: [],
+        noQuestions: true
+      };
     }
     throw new GuardError(
       `${activity.title} rendered no components at all, so its questions could not be read.`
@@ -421,13 +477,14 @@ async function tagEveryQuestion({
   // into view. Read and cache every stem before opening any settings modal: once a
   // modal is open, the overlay prevents later off-screen questions from hydrating,
   // which previously made Q2 onward look blank after each reload.
-  const questionStems = await readQuestionStems(page, questionIds);
+  const questionEvidenceById = await readQuestionEvidence(page, questionIds);
   const questionMetadata = await readQuestionMetadata(page);
   // Re-read per question rather than once per activity: a map harvested while
   // tagging one question must be available to the next, otherwise each question in
   // turn harvests the same syllabus again.
   const dictionariesFor = async () => (options.tagQuestions ? loadDictionaries(process.cwd()) : []);
   const previousChoices = [];
+  const questionResults = [];
   for (let index = 0; index < questionIds.length; index += 1) {
     const questionId = questionIds[index];
     const details = cardDetails.find((card) => card.id === questionId);
@@ -459,14 +516,15 @@ async function tagEveryQuestion({
     // whole activity, leaving its other questions untouched. The replacement pass
     // keeps failing loudly, because there a half-finished activity is unsafe.
     const isolateFailures = options.mode === "tag";
+    let questionResult;
     try {
-      await ensureQuestionTags(page, {
+      questionResult = await ensureQuestionTags(page, {
         questionId,
         contentMap: section.contentMap,
         keyword: activity.questionKeyword,
         applyKeyword,
         includeInProgress,
-        questionText: questionStems.get(questionId) || "",
+        questionEvidence: questionEvidenceById.get(questionId) ?? null,
         questionTags: facts ? facts.questionTags : "",
         sectionSubject: section.subject,
         sectionLevel: section.level,
@@ -481,8 +539,21 @@ async function tagEveryQuestion({
       });
     } catch (error) {
       if (!isolateFailures) throw error;
-      console.log(`      Question ${questionId} could not be tagged: ${firstLine(error.message)}`);
+      const reason = firstLine(error.message);
+      console.log(`      Question ${questionId} could not be tagged: ${reason}`);
+      questionResult = {
+        id: String(questionId),
+        number: details?.number ?? index + 1,
+        status: "error",
+        reason,
+        question: questionEvidenceById.get(questionId)?.stem || "",
+        primaryEvidence: questionEvidenceById.get(questionId)?.primaryText || "",
+        existingQuestionTags: facts?.questionTags || null,
+        proposal: null
+      };
     }
+    questionResult.number ??= details?.number ?? index + 1;
+    questionResults.push(questionResult);
     if (!activityState.completedQuestions.includes(questionId)) {
       activityState.completedQuestions.push(questionId);
     }
@@ -492,7 +563,25 @@ async function tagEveryQuestion({
       fullPage: false
     });
   }
-  return { count: questionIds.length, ids: questionIds };
+  const summary = summarizeQuestionResults(questionResults);
+  console.log(
+    `    Question results (${summary.total}): ${summary.newlyTagged} newly tagged, ` +
+      `${summary.alreadyTagged} already tagged, ${summary.partiallyTagged} partial, ` +
+      `${summary.skipped} skipped, ${summary.errors} errors, ` +
+      `${summary.notTargeted} not targeted, ${summary.notRequested} not requested.`
+  );
+  return {
+    count: questionIds.length,
+    ids: questionIds,
+    questions: questionResults,
+    summary,
+    taggedIds: questionResults
+      .filter((result) => result.status === "tagged" || result.status === "already-tagged")
+      .map((result) => result.id),
+    skippedIds: questionResults
+      .filter((result) => result.status === "skipped")
+      .map((result) => result.id)
+  };
 }
 
 
@@ -510,7 +599,7 @@ async function tagEveryQuestion({
 // so the reader visits every page before matching bodies to settings cards. Bodies
 // sit inside
 // "#component-<questionId>", which is what ties one back to its question.
-export async function readOpenQuestionText(page, questionId) {
+export async function readOpenQuestionEvidence(page, questionId) {
   return page
     .evaluate((id) => {
       const deepText = (root) => {
@@ -550,13 +639,27 @@ export async function readOpenQuestionText(page, questionId) {
       };
 
       const component = document.querySelector(`#component-${id}`);
-      if (!component) return "";
+      if (!component) return { stem: "", suggestedAnswer: "" };
       // FA-Math question stems live in the first <akit-interaction> shadow root;
-      // the second instance is the suggested solution. The old .question-body-only
-      // selector returned an empty string for these questions.
-      const interaction = Array.from(component.querySelectorAll("akit-interaction"))
-        .find((element) => element.getClientRects().length > 0 && deepText(element));
-      if (interaction) return deepText(interaction);
+      // the second instance is the suggested solution. Keep them separate: the
+      // solution may corroborate a readable stem, but must never replace it.
+      const interactions = Array.from(component.querySelectorAll("akit-interaction"));
+      const stemIndex = interactions.findIndex(
+        (element) => element.getClientRects().length > 0 && deepText(element)
+      );
+      if (stemIndex !== -1) {
+        const stem = deepText(interactions[stemIndex]);
+        const answerTexts = interactions
+          .slice(stemIndex + 1)
+          .map(deepText)
+          .filter(Boolean)
+          .map((text) => text.startsWith(stem) ? text.slice(stem.length).trim() : text)
+          .filter((text) => text && text !== stem);
+        return {
+          stem,
+          suggestedAnswer: [...new Set(answerTexts)].join(" ")
+        };
+      }
       // Multiple-choice answer options are part of the question evidence. They
       // often contain the discriminating physics concept (for example efficiency
       // or the direction of a magnetic force), while feedback and suggested
@@ -569,9 +672,20 @@ export async function readOpenQuestionText(page, questionId) {
       // A component repeats its question in the suggested-answer block, so the same
       // equation arrives twice. Duplicates change no feature but make the log
       // unreadable.
-      return [...new Set(bodies.map(deepText).filter(Boolean))].join(" ");
+      const suggested = Array.from(component.querySelectorAll(
+        '[class*="suggested-answer" i], [data-testid*="suggested" i]'
+      )).map(deepText).filter(Boolean);
+      const suggestedSet = new Set(suggested);
+      const stem = [...new Set(bodies.map(deepText).filter(Boolean))]
+        .filter((text) => !suggestedSet.has(text))
+        .join(" ");
+      return { stem, suggestedAnswer: [...suggestedSet].join(" ") };
     }, questionId)
-    .catch(() => "");
+    .catch(() => ({ stem: "", suggestedAnswer: "" }));
+}
+
+export async function readOpenQuestionText(page, questionId) {
+  return (await readOpenQuestionEvidence(page, questionId)).stem;
 }
 
 function standardActivityPageButtons(page) {
@@ -615,25 +729,27 @@ async function selectQuestionPage(page, kind, index) {
   return true;
 }
 
-async function readHydratedQuestionText(page, questionId) {
+async function readHydratedQuestionEvidence(page, questionId) {
   const component = page.locator(`#component-${questionId}`);
-  if ((await component.count()) === 0 || !(await component.isVisible().catch(() => false))) return "";
+  if ((await component.count()) === 0 || !(await component.isVisible().catch(() => false))) {
+    return { stem: "", suggestedAnswer: "" };
+  }
   await component.scrollIntoViewIfNeeded().catch(() => {});
-  let text = "";
+  let evidence = { stem: "", suggestedAnswer: "" };
   // The page button and URL update before FA-Math's <akit-interaction> has
   // hydrated. Poll the actual question evidence instead of assuming a short
   // fixed pause is enough on every network connection.
   await expect
     .poll(
       async () => {
-        text = await readOpenQuestionText(page, questionId);
-        return Boolean(text);
+        evidence = await readOpenQuestionEvidence(page, questionId);
+        return Boolean(evidence.stem);
       },
       { timeout: 12_000, intervals: [250, 400, 650, 1_000] },
     )
     .toBe(true)
     .catch(() => {});
-  return text;
+  return evidence;
 }
 
 async function visibleMountedQuestionIds(page, questionIds) {
@@ -687,8 +803,8 @@ async function ocrQuestionImages(page, questionId, ocr) {
   return [...new Set(recovered)].join(" ");
 }
 
-export async function readQuestionStems(page, questionIds, { enableOcr = true } = {}) {
-  const stems = new Map();
+export async function readQuestionEvidence(page, questionIds, { enableOcr = true } = {}) {
+  const evidenceById = new Map();
   const pending = new Set(questionIds);
   const originalUrl = new URL(page.url());
   const activityPageCount = await standardActivityPageButtons(page).count();
@@ -709,14 +825,14 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
         .catch(() => {});
     }
     for (const questionId of [...pending]) {
-      const text = await readHydratedQuestionText(page, questionId);
-      if (!text) continue;
-      let completeText = text;
-      if (enableOcr && shouldUseImageOcr(text)) {
+      const evidence = await readHydratedQuestionEvidence(page, questionId);
+      if (!evidence.stem) continue;
+      let diagramOcr = "";
+      if (enableOcr && shouldUseImageOcr(evidence.stem)) {
         const imageText = await ocrQuestionImages(page, questionId, ocr);
-        if (imageText) completeText = `${text} [Diagram OCR: ${imageText}]`;
+        if (imageText) diagramOcr = imageText;
       }
-      stems.set(questionId, completeText);
+      evidenceById.set(questionId, { ...evidence, diagramOcr });
       pending.delete(questionId);
     }
   };
@@ -753,7 +869,7 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
         .innerText()
         .catch(() => "");
       const text = questionStemFromSettingsCardText(cardText);
-      if (text) stems.set(questionId, text);
+      if (text) evidenceById.set(questionId, { stem: text, suggestedAnswer: "", diagramOcr: "" });
     }
   } finally {
     const originalActivityPage = Number(originalUrl.searchParams.get("pageNo") || "1") - 1;
@@ -762,7 +878,17 @@ export async function readQuestionStems(page, questionIds, { enableOcr = true } 
     else if (quizPageCount > 0) await selectQuestionPage(page, "quiz", originalQuizPage).catch(() => {});
     await ocr.terminate();
   }
-  return stems;
+  return attachSharedQuestionContext(evidenceById, questionIds);
+}
+
+export async function readQuestionStems(page, questionIds, options = {}) {
+  const evidenceById = await readQuestionEvidence(page, questionIds, options);
+  return new Map(
+    [...evidenceById].map(([questionId, evidence]) => [
+      questionId,
+      evidence.primaryText || primaryQuestionEvidenceText(evidence)
+    ])
+  );
 }
 
 // A question offers no content maps until it has a Subject and Level: the three
@@ -819,6 +945,7 @@ async function ensureQuestionSubjectLevel(page, { subject, level, questionId }) 
 async function appendProposedOutcome(page, {
   questionId,
   questionText,
+  supportingText,
   questionTags,
   dictionaries: initialDictionaries,
   previousChoices,
@@ -838,7 +965,16 @@ async function appendProposedOutcome(page, {
     const value = (await levelCombos.nth(row).inputValue().catch(() => "")).trim();
     if (value) levels.push(value);
   }
-  const allowedContentMaps = [...new Set(levels.map(levelToContentMap).filter(Boolean))];
+  const livePrimaryMaps = [...new Set(levels.map(levelToContentMap).filter(Boolean))];
+  const savedModulePrimaryMaps = Array.isArray(options?.questionContentMaps)
+    ? options.questionContentMaps.filter(Boolean)
+    : [];
+  // Saved Module Tags are less susceptible to unrelated comboboxes elsewhere in
+  // the page than a global placeholder lookup. When present, they are the exact
+  // cumulative Primary pool the module author declared.
+  const allowedContentMaps = savedModulePrimaryMaps.length > 0
+    ? [...new Set(savedModulePrimaryMaps)]
+    : livePrimaryMaps;
 
   // Primary levels name their content map ("Primary 4" -> "Pri 4 Mathematics
   // (2021)"). Secondary ones do not: "Secondary 1" does not say whether the
@@ -860,7 +996,12 @@ async function appendProposedOutcome(page, {
       console.log(
         `      Question ${questionId}: no tag proposed (no dictionary harvested for "${sectionContentMap}"; run npm run sls:harvest).`
       );
-      return;
+      return {
+        status: "skipped",
+        reason: `no dictionary harvested for "${sectionContentMap}"`,
+        proposal: null,
+        attempts: []
+      };
     }
   }
 
@@ -871,25 +1012,45 @@ async function appendProposedOutcome(page, {
     console.log(
       `      Question ${questionId}: no tag proposed (no dictionary for level ${levels.join(", ") || "(none set)"}).`
     );
-    return;
+    return {
+      status: "skipped",
+      reason: `no dictionary for level ${levels.join(", ") || "(none set)"}`,
+      proposal: null,
+      attempts: []
+    };
   }
 
-  // A module written for two streams needs both tagged: "Sec 1 G2/G3" questions
-  // carry a G3 pair and a G2 pair, each with its own content map. The config names
-  // them; a single contentMap stays a list of one.
-  const targets = configuredMaps.length > 0 ? configuredMaps : allowedContentMaps;
+  // Explicit section maps represent additive streams (for example G2 and G3), so
+  // each is applied independently. Primary module levels instead form one choice
+  // set: propose once across P4/P5/P6 and write only the best matching map.
+  const targetGroups = questionContentMapGroups(configuredMaps, allowedContentMaps);
 
-  let wrote = false;
-  for (const target of targets) {
+  const attempts = [];
+  for (const group of targetGroups) {
+    const missing = group.filter((target) => !dictionaries.some(
+      (entry) => entry.contentMap.toLowerCase() === String(target).toLowerCase()
+    ));
+    if (group.length > 1 && missing.length > 0) {
+      const reason = `candidate maps have no harvested dictionary: ${missing.join(", ")}`;
+      console.log(`      Question ${questionId}: no tag proposed (${reason}).`);
+      attempts.push({ status: "skipped", reason, proposal: null, contentMaps: group });
+      continue;
+    }
+
+    const target = group[0];
     const harvested =
       !options?.refreshTaxonomy &&
       dictionaries.some((entry) => entry.contentMap.toLowerCase() === String(target).toLowerCase());
-    if (!harvested) {
+    if (group.length === 1 && !harvested) {
       // Nothing in taxonomy/ describes this map. If this is a substantive assessed
       // question, read the syllabus straight off the tree the map renders and cache
       // it for every question after this one. This is deliberately subject-neutral:
       // conceptual Physics questions need not contain a mathematical operator.
-      if (!isSubstantiveCurriculumQuestion(questionText, sectionSubject)) continue;
+      if (!isSubstantiveCurriculumQuestion(questionText, sectionSubject)) {
+        const reason = "primary question evidence is reflective or contains no readable curriculum evidence";
+        attempts.push({ status: "skipped", reason, proposal: null, contentMaps: group });
+        continue;
+      }
       console.log(`      Question ${questionId}: harvesting "${target}" from this question...`);
       const harvestedMap = await harvestMapFromQuestion(page, {
         contentMap: target,
@@ -902,6 +1063,12 @@ async function appendProposedOutcome(page, {
       });
       if (!harvestedMap || harvestedMap.outcomes.length === 0) {
         console.log(`         no outcomes found for "${target}"; leaving this question alone.`);
+        attempts.push({
+          status: "skipped",
+          reason: `no outcomes found for "${target}"`,
+          proposal: null,
+          contentMaps: group
+        });
         continue;
       }
       const cachePath = taxonomyCachePath(process.cwd(), target);
@@ -913,26 +1080,52 @@ async function appendProposedOutcome(page, {
     const applied = await applyContentMapToQuestion(page, {
       questionId,
       questionText,
+      supportingText,
       questionTags,
       dictionaries,
       previousChoices,
       onlyQuestion,
-      contentMap: target,
+      contentMaps: group,
       activityTitle,
       reviewedOutcomePrefix,
       sectionSubject,
       sectionLevel
     });
-    wrote = wrote || applied;
+    attempts.push(applied);
   }
 
+  const wrote = attempts.some(
+    (attempt) => attempt.status === "tagged" || attempt.status === "partially-tagged"
+  );
   if (wrote) {
     console.log("         saving the question.");
     await page.locator('button:has(svg[name="Save24"])').first().click();
     await assertNoSlsError(page);
     await page.waitForTimeout(1500);
   }
-  return wrote;
+
+  const completed = attempts.filter(
+    (attempt) => attempt.status === "tagged" || attempt.status === "already-tagged"
+  );
+  let status = "skipped";
+  if (attempts.length > 0 && completed.length === attempts.length) {
+    status = attempts.some((attempt) => attempt.status === "tagged")
+      ? "tagged"
+      : "already-tagged";
+  } else if (completed.length > 0 || attempts.some((attempt) => attempt.status === "partially-tagged")) {
+    status = "partially-tagged";
+  } else if (attempts.length > 0 && attempts.every((attempt) => attempt.status === "not-targeted")) {
+    status = "not-targeted";
+  }
+  const incomplete = attempts.filter(
+    (attempt) => attempt.status !== "tagged" && attempt.status !== "already-tagged"
+  );
+  return {
+    status,
+    reason: incomplete.map((attempt) => attempt.reason).filter(Boolean).join("; ") || null,
+    proposal: attempts.length === 1 ? attempts[0].proposal ?? null : null,
+    attempts
+  };
 }
 
 // Harvests a content map that no section carries, by adding it to the question that
@@ -1031,17 +1224,19 @@ async function readMapTree(page, { contentMap }) {
   return { contentMap, rowCount: rows.length, outcomes };
 }
 
-// Applies one content map to the open question: proposes an outcome from that
-// map's dictionary, sets the Subject and Level the map belongs to, adds the map
-// and ticks the outcome. Returns true when something was written.
+// Chooses one outcome across the eligible content maps, then sets the Subject and
+// Level belonging to that chosen map and ticks the outcome. Explicit additive
+// multi-stream maps call this once per map; cumulative Primary levels call it once
+// with the whole P4/P5/P6 pool.
 async function applyContentMapToQuestion(page, {
   questionId,
   questionText,
+  supportingText,
   questionTags,
   dictionaries,
   previousChoices,
   onlyQuestion,
-  contentMap,
+  contentMaps,
   activityTitle,
   reviewedOutcomePrefix,
   sectionSubject,
@@ -1053,13 +1248,19 @@ async function applyContentMapToQuestion(page, {
   // never to decide whether a question is mathematical: a reflection prompt sitting
   // in a mathematics activity must still count as a reflection.
   const proposal = proposeQuestionTag(questionText, dictionaries, {
-    allowedContentMaps: [contentMap],
+    allowedContentMaps: contentMaps,
     contextText: activityTitle ?? "",
-    reviewedOutcomePrefix
+    reviewedOutcomePrefix,
+    supportingText
   });
   if (proposal.decision === "skip") {
     console.log(`      Question ${questionId}: no tag proposed (${proposal.reason}).`);
-    return false;
+    return {
+      status: "skipped",
+      reason: proposal.reason,
+      proposal,
+      contentMaps
+    };
   }
 
   // Whether this question already carries the map, read from its own settings card.
@@ -1071,10 +1272,14 @@ async function applyContentMapToQuestion(page, {
   // and nothing else.
   if (questionCarriesMap(questionTags, proposal.contentMap)) {
     console.log(`      Question ${questionId}: ${proposal.contentMap} already present; leaving it alone.`);
-    return false;
+    return {
+      status: "already-tagged",
+      reason: `${proposal.contentMap} already present`,
+      proposal,
+      contentMaps
+    };
   }
 
-  previousChoices.push({ contentMap: proposal.contentMap, outcome: proposal.outcome });
   console.log(
     `      Question ${questionId}: ${proposal.contentMap} -> ${proposal.outcome.slice(0, 56)}`
   );
@@ -1087,8 +1292,15 @@ async function applyContentMapToQuestion(page, {
 
   if (onlyQuestion && String(onlyQuestion) !== String(questionId)) {
     console.log("         (not the nominated question; nothing written)");
-    return false;
+    return {
+      status: "not-targeted",
+      reason: `only question ${onlyQuestion} was nominated`,
+      proposal,
+      contentMaps
+    };
   }
+
+  previousChoices.push({ contentMap: proposal.contentMap, outcome: proposal.outcome });
 
   // Add the content map if the question has no row for it yet, otherwise open the
   // row it already has. Either way the outcome is ticked additively, and
@@ -1182,7 +1394,7 @@ async function applyContentMapToQuestion(page, {
   // Saving closes the panel, so it cannot happen here: a question tagged against
   // two syllabuses needs both maps applied while the panel is still open. The
   // caller saves once, after every map has been added.
-  return true;
+  return { status: "tagged", reason: null, proposal, contentMaps };
 }
 
 async function ensureQuestionTags(page, {
@@ -1191,7 +1403,7 @@ async function ensureQuestionTags(page, {
   keyword,
   applyKeyword,
   includeInProgress,
-  questionText,
+  questionEvidence,
   questionTags,
   sectionSubject,
   sectionLevel,
@@ -1225,13 +1437,42 @@ async function ensureQuestionTags(page, {
 
   // Prefer the stem cached while its component was deliberately scrolled into
   // view. A fresh read is still useful for ordinary non-lazy question types.
-  const openText = questionText || (await readOpenQuestionText(page, questionId));
-  // Only the live question stem is evidence for outcome tagging. The metadata text
-  // contains drawer labels and suggested answers, and previously allowed an empty
-  // stem to be replaced silently by an activity title.
-  const fullText = openText.trim();
-  if (openText) {
-    console.log(`      Question ${questionId} reads: "${flattenMathml(openText).slice(0, 80)}"`);
+  const freshEvidence = questionEvidence?.stem
+    ? null
+    : await readOpenQuestionEvidence(page, questionId);
+  const evidence = {
+    stem: String(questionEvidence?.stem ?? freshEvidence?.stem ?? "").trim(),
+    suggestedAnswer: String(
+      questionEvidence?.suggestedAnswer ?? freshEvidence?.suggestedAnswer ?? ""
+    ).trim(),
+    diagramOcr: String(questionEvidence?.diagramOcr ?? "").trim(),
+    sharedStimulus: String(questionEvidence?.sharedStimulus ?? "").trim(),
+    sharedDiagramOcr: String(questionEvidence?.sharedDiagramOcr ?? "").trim(),
+    sharedFromQuestionId: questionEvidence?.sharedFromQuestionId ?? null
+  };
+  // The stem/shared stimulus/OCR are primary evidence. Suggested-answer working
+  // stays separate and can only corroborate a topic the primary evidence already
+  // establishes.
+  const fullText = questionEvidence?.primaryText || primaryQuestionEvidenceText(evidence);
+  const supportingText = evidence.suggestedAnswer;
+  const evidenceSources = questionEvidence?.sources ?? [
+    evidence.stem && "stem",
+    evidence.diagramOcr && "diagram-ocr",
+    evidence.sharedStimulus && "shared-stimulus",
+    evidence.sharedDiagramOcr && "shared-diagram-ocr",
+    evidence.suggestedAnswer && "suggested-answer"
+  ].filter(Boolean);
+  if (evidence.stem) {
+    console.log(`      Question ${questionId} reads: "${flattenMathml(evidence.stem).slice(0, 80)}"`);
+    if (evidence.sharedStimulus) {
+      console.log(
+        `      Question ${questionId} uses shared context from ${evidence.sharedFromQuestionId}: ` +
+          `"${flattenMathml(evidence.sharedStimulus).slice(0, 72)}"`
+      );
+    }
+    if (supportingText) {
+      console.log(`      Question ${questionId}: suggested answer retained as corroborating evidence.`);
+    }
   } else {
     console.log(`      Question ${questionId}: question body could not be read; no outcome will be added.`);
   }
@@ -1248,7 +1489,8 @@ async function ensureQuestionTags(page, {
   // The box is still never unticked - only ever ticked when it should be on.
   if (includeInProgress && !curriculumQuestion) {
     console.log(
-      `      Question ${questionId} awards marks but is reflective or unreadable; left out of Learning Progress.`
+      `      Question ${questionId} awards marks but no substantive curriculum evidence was recognised; ` +
+        "left out of Learning Progress."
     );
   } else if (includeInProgress && !(await progress.isChecked())) {
     await page
@@ -1278,10 +1520,12 @@ async function ensureQuestionTags(page, {
   // Only questions using Feedback Assistant - Mathematics carry the keyword. On
   // any other question type the keyword is not added, and an existing one is
   // still never removed.
+  let tagResult;
   if (tagQuestions) {
-    await appendProposedOutcome(page, {
+    tagResult = await appendProposedOutcome(page, {
       questionId,
       questionText: fullText,
+      supportingText,
       questionTags,
       dictionaries,
       previousChoices,
@@ -1294,6 +1538,20 @@ async function ensureQuestionTags(page, {
       activityTitle,
       options
     });
+  } else if (options.tagQuestions) {
+    tagResult = {
+      status: "already-tagged",
+      reason: `existing question tags retained: ${questionTags || "(tag present)"}`,
+      proposal: null,
+      attempts: []
+    };
+  } else {
+    tagResult = {
+      status: "not-requested",
+      reason: "question outcome tagging was disabled for this run",
+      proposal: null,
+      attempts: []
+    };
   }
 
   const modalKeywordArea = page.locator(".keywords").first();
@@ -1329,6 +1587,31 @@ async function ensureQuestionTags(page, {
     ).toBeChecked();
   }
   await page.locator("svg.btn-close").click();
+
+  return {
+    id: String(questionId),
+    status: tagResult.status,
+    reason: tagResult.reason ?? null,
+    question: fullText,
+    stem: evidence.stem,
+    evidenceSources,
+    questionEvidence: {
+      diagramOcr: evidence.diagramOcr || null,
+      sharedStimulus: evidence.sharedStimulus || null,
+      sharedDiagramOcr: evidence.sharedDiagramOcr || null,
+      sharedFromQuestionId: evidence.sharedFromQuestionId,
+      suggestedAnswer: evidence.suggestedAnswer || null
+    },
+    existingQuestionTags: questionTags || null,
+    curriculumQuestion,
+    proposal: proposalForReport(tagResult.proposal),
+    attempts: (tagResult.attempts ?? []).map((attempt) => ({
+      status: attempt.status,
+      reason: attempt.reason ?? null,
+      contentMaps: attempt.contentMaps ?? [],
+      proposal: proposalForReport(attempt.proposal)
+    }))
+  };
 }
 
 async function openQuestionSettings(card, page) {
@@ -3105,12 +3388,19 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
 
     const sectionReport = { label: section.label, title: section.title, activities: [] };
     for (const activity of targetActivities) {
-      const entry = { title: activity.title, tagged: false };
+      const entry = {
+        title: activity.title,
+        processed: false,
+        tagged: false,
+        questionCount: null,
+        questionSummary: null,
+        questions: []
+      };
       try {
         await openSection(page, config, section);
         await openSidebarActivity(page, activity.title, section);
         console.log(`  Activity: ${activity.title}`);
-        await tagEveryQuestion({
+        const questionResult = await tagEveryQuestion({
           page,
           activity,
           section,
@@ -3120,7 +3410,14 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
           runDir,
           options
         });
-        entry.tagged = true;
+        entry.processed = true;
+        entry.questionCount = questionResult.count;
+        entry.questionSummary = questionResult.summary;
+        entry.questions = questionResult.questions;
+        // Retain the old field for report readers, but give it its literal
+        // meaning: true only when every visited question is fully tagged. A run
+        // that merely finished without throwing is represented by processed.
+        entry.tagged = isQuestionRunComplete(questionResult.summary);
       } catch (error) {
         // One awkward activity should not cost the rest of the module.
         entry.error = firstLine(error.message);

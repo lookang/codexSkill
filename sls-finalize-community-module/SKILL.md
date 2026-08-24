@@ -66,6 +66,7 @@ Use the module title as the primary signal and activity titles as supporting evi
 2. Infer Subject from the strongest curriculum concept match. Prefer the exact available SLS label.
 3. Infer Level from explicit markers such as `P3`, `Primary 3`, or `S2`. Do not override an explicit level with a content-based guess.
    - Recognize compact combined markers such as `Sec 4G2G3 AMath`. Resolve the exact SLS Additional Mathematics G2 and G3 subjects independently and retain both content maps when both streams lead to the same outcome.
+   - When a Primary assessment has several saved Mathematics Subject/Level rows, treat those levels as the eligible cumulative pool for each question. Choose one best-fit outcome across those maps; do not force every question into the section's highest-level default map.
 4. Choose the available Content Map matching Subject and Level. Do not guess between equally plausible maps.
 5. Compare available official learning outcomes with the normalized module and activity titles.
 6. Select the single most specific leaf outcome covering the current activity batch.
@@ -102,15 +103,16 @@ For every question card in every retained copy:
 1. Inventory all cards. Scroll the question-settings sidebar independently to expose cards outside the initial viewport.
 2. Visit every numbered activity page before caching question evidence. Ordinary SLS activities, not only quizzes, may mount just the current page; never conclude that Q2 onward are blank while still on page 1.
 3. Scroll each mounted question component into view before reading it. FA Math hydrates `<akit-interaction>` lazily, and the mathematical stem may exist only inside its shadow root.
-4. Build evidence in this order: visible DOM and shadow-DOM text, WIRIS MathML, image `alt`/`title`, then local OCR of substantial raster diagrams only when the earlier evidence remains weak. Treat OCR as supporting evidence, preserve its confidence, and do not send SLS question images to an external OCR service.
+4. Build primary evidence in this order: visible DOM and shadow-DOM text, WIRIS MathML, image `alt`/`title`, then local OCR of substantial raster diagrams only when the earlier evidence remains weak. Preserve a common chart/table/diagram stimulus and its OCR for related subquestions when page breaks separate them, but require overlap with the later stem or diagram labels before carrying it forward. Read the question's suggested answer separately: it may corroborate operations, operands, or an already-established topic, but must never create a topic for an otherwise unreadable stem. Preserve evidence provenance and OCR confidence, and do not send SLS question images to an external OCR service.
 5. Open the card's settings and select the matching details panel, such as **Free-Response Details**.
 6. Enable **Include in Learning Progress** only for an assessed mathematical question. Fraction-to-decimal, decimal-to-fraction, and decimal-to-mixed-number conversion prompts are mathematical; reflection prompts are not, even if they carry marks.
-7. Verify Subject, Level, and Content Map match the saved section tags. Do not silently replace contradictory question tags.
+7. Verify Subject, Level, and Content Map against the saved curriculum evidence. For a Primary module with several saved Mathematics levels, select one unambiguous best-fit question outcome across those declared levels. Keep explicit multi-stream Secondary maps additive. Do not silently replace contradictory question tags.
 8. Add the requested keyword. When unspecified, derive one concise formative-assessment tag such as `FA math`.
 9. Save, reload, reopen the same question, and verify Learning Progress plus the expected Keyword Tags and Question Tags persisted.
 10. Reload the activity before editing the next question, then restore sidebar position. This prevents SLS from silently dropping later keywords.
 
 Track completed questions so a resumed run does not retag them unnecessarily.
+Record one report entry per visited question with its exact status (`tagged`, `already-tagged`, `skipped`, `partially-tagged`, or `error`), reason, readable stem, and tied candidates. Never use an activity-level success flag to imply that skipped questions were tagged.
 
 ## Add Meaningful Page Breaks
 
@@ -204,7 +206,7 @@ Before reporting completion:
 
 1. Verify Subject, Level, Content Map, and current learning outcome in Module View.
 2. Verify one intended tagged copy per original and no authorized target originals remain.
-3. Verify every retained question has learning progress, curriculum tags, and its keyword.
+3. Verify every retained question has learning progress, curriculum tags, and its keyword. Reconcile the exact per-question totals for newly tagged, already tagged, skipped, partially tagged, and failed questions; list candidate outcomes for unresolved ties.
 4. Verify every inserted page break and ACP interactive after reopening the affected activity.
 5. Verify the featured-image filename.
 6. Reopen Gamification and report the persisted title and generated elements; explicitly note any `Untitled Game` reversion.

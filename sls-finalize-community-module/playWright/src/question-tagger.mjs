@@ -17,6 +17,28 @@ export function levelToContentMap(level) {
   return match ? `Pri ${match[1]} Mathematics (2021)` : null;
 }
 
+// A Primary examination module can deliberately carry several saved
+// Subject/Level rows because its questions assess learning from earlier years.
+// Those saved rows are authoritative eligibility evidence; the section's single
+// default Content Map is not. Keep this Primary/Mathematics-specific so ambiguous
+// Secondary streams are still governed by explicitly configured content maps.
+export function primaryMathematicsMapsFromModuleEvidence(moduleEvidence = {}) {
+  const maps = [];
+  for (const entry of moduleEvidence.subjectLevels ?? []) {
+    if (!/mathematics/i.test(String(entry?.subject ?? ""))) continue;
+    const contentMap = levelToContentMap(entry?.level);
+    if (contentMap) maps.push(contentMap);
+  }
+  return [...new Set(maps)];
+}
+
+export function questionContentMapGroups(configuredMaps = [], eligiblePrimaryMaps = []) {
+  const explicit = [...new Set(configuredMaps.filter(Boolean))];
+  if (explicit.length > 0) return explicit.map((contentMap) => [contentMap]);
+  const primary = [...new Set(eligiblePrimaryMaps.filter(Boolean))];
+  return primary.length > 0 ? [primary] : [];
+}
+
 // Lets a run that has just harvested a new content map pick it up without
 // restarting.
 export function resetDictionaries() {
@@ -78,7 +100,8 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   const {
     allowedContentMaps = null,
     contextText = "",
-    reviewedOutcomePrefix = null
+    reviewedOutcomePrefix = null,
+    supportingText = ""
   } = options;
   const cleanQuestion = String(questionText ?? "").replace(/\s+/g, " ").trim();
   if (!cleanQuestion) {
@@ -201,17 +224,33 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   if (questionFeatures.operations.size === 0 && questionFeatures.topics.size === 0) {
     return {
       decision: "skip",
-      reason: "question body contained no readable mathematical operation or topic",
+      reason: "primary question evidence contained no readable mathematical operation or topic",
       features: questionFeatures
     };
   }
 
   const contextFeatures = mathFeatures(contextText || "");
+  const supportingFeatures = mathFeatures(supportingText || "");
+  // A suggested answer may confirm the operation or representation used, but it
+  // cannot create a topic that the stem/shared stimulus/activity context never
+  // mentions. This keeps a bare numerical answer from turning an unreadable stem
+  // into a confident curriculum tag.
+  const primaryTopics = new Set([...questionFeatures.topics, ...contextFeatures.topics]);
+  const corroboratedSupportingTopics = [...supportingFeatures.topics]
+    .filter((topic) => primaryTopics.has(topic));
   const features = {
     clean: questionFeatures.clean,
-    operations: new Set([...questionFeatures.operations, ...contextFeatures.operations]),
-    operands: new Set([...questionFeatures.operands, ...contextFeatures.operands]),
-    topics: new Set([...questionFeatures.topics, ...contextFeatures.topics])
+    operations: new Set([
+      ...questionFeatures.operations,
+      ...contextFeatures.operations,
+      ...supportingFeatures.operations
+    ]),
+    operands: new Set([
+      ...questionFeatures.operands,
+      ...contextFeatures.operands,
+      ...supportingFeatures.operands
+    ]),
+    topics: new Set([...primaryTopics, ...corroboratedSupportingTopics])
   };
   // A named topic is evidence on its own. "Solve 8z = 11 - 2z" carries no operation
   // this extractor trusts - "-" is too often a hyphen to count as subtraction - but
@@ -232,12 +271,21 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   const tiedCount = ranked.filter((entry) => entry.score === best.score).length;
 
   let chosen = best;
-  let basis = contextText ? "question-body match, disambiguated by activity context" : "best question-body feature match";
+  const supportingUsed = Boolean(
+    supportingText &&
+    (supportingFeatures.operations.size > 0 ||
+      supportingFeatures.operands.size > 0 ||
+      corroboratedSupportingTopics.length > 0)
+  );
+  let basis = contextText
+    ? "primary question evidence, disambiguated by activity context"
+    : "best primary-question feature match";
+  if (supportingUsed) basis += ", corroborated by the suggested answer";
   if (tiedCount > 1) {
     const tied = ranked.filter((entry) => entry.score === best.score);
     return {
       decision: "skip",
-      reason: `${tiedCount} outcomes tied on the readable question body`,
+      reason: `${tiedCount} outcomes tied on the readable primary question evidence`,
       tiedCount,
       candidates: tied.map(({ contentMap, outcome, outcomePath, score }) => ({
         contentMap, outcome, outcomePath, score
@@ -260,7 +308,11 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
       operations: [...questionFeatures.operations],
       operands: [...questionFeatures.operands],
       topics: [...questionFeatures.topics],
-      contextTopics: [...contextFeatures.topics]
+      contextTopics: [...contextFeatures.topics],
+      supportingAnswer: supportingFeatures.clean,
+      supportingOperations: [...supportingFeatures.operations],
+      supportingOperands: [...supportingFeatures.operands],
+      supportingTopics: corroboratedSupportingTopics
     }
   };
 }

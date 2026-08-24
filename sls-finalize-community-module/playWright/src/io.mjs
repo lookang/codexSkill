@@ -34,8 +34,8 @@ export function validateConfig(config) {
     throw new Error("At least one section is required.");
   }
   for (const section of config.sections) {
-    if (!section.label || !section.title || !Array.isArray(section.activities) || section.activities.length === 0) {
-      throw new Error("Each section requires label, title, and at least one activity.");
+    if (!section.label || !section.title || !Array.isArray(section.activities)) {
+      throw new Error("Each section requires label, title, and an activities array.");
     }
     for (const activity of section.activities) {
       if (!activity.title) {

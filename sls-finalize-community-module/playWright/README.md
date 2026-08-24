@@ -248,7 +248,7 @@ npm.cmd run sls:resume -- --config configs/p3-multiplication-algorithms.json --s
 
 Each run creates:
 
-- `report.json`
+- `report.json`, including exact per-question decisions, evidence provenance (stem, shared stimulus, diagram OCR, and suggested-answer corroboration), tied candidates, and totals for newly tagged, already tagged, skipped, partially tagged, and failed questions
 - `trace.zip`
 - `failure.png` when a run stops
 - one verification screenshot per question

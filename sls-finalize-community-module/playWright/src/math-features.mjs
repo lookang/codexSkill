@@ -76,6 +76,19 @@ const TOPICS = [
   // number.
   ["fraction to decimal", /\b(?:express|write|convert)\b[\s\S]{0,120}\b(?:as|to|in)\s+(?:a\s+)?decimal\b/i],
   ["decimal to fraction", /\b(?:express|write|convert)\b[\s\S]{0,120}\b(?:as|to|in)\s+(?:a\s+)?(?:fraction|mixed number)\b/i],
+  // Place-value questions often contain no trusted operation at all ("what does
+  // the digit 4 stand for?"). Decimal expanded notation is even less explicit
+  // after SLS duplicates its MathML and LaTeX accessibility text. These named
+  // concepts give both forms the same evidence as the syllabus wording.
+  ["place value", /\bplace values?\b|\bwhat does (?:the )?digit\b[\s\S]{0,80}\bstand for\b|\bvalue of (?:the )?digit\b/i],
+  ["decimal place value", /\bdecimal place values?\b|\b(?:tenths?|hundredths?|thousandths?)\b/i],
+  ["data representation", /\bdata representation(?: and interpretation)?\b|\bpie charts?\b|\bbar graphs?\b|\bline graphs?\b|\bpictograms?\b|\bgraphs?\b[\s\S]{0,60}\b(?:number of|data)\b/i],
+  ["pie chart", /\bpie charts?\b/i],
+  ["bar graph", /\bbar graphs?\b/i],
+  ["line graph", /\bline graphs?\b/i],
+  ["table", /\bdata tables?\b|\btables?\b(?=[\s,/-]{0,24}(?:below|above|from|shows?|line graphs?|pie charts?))|\bcomplet(?:e|es|ed|ing)\b[\s\S]{0,50}\btables?\b/i],
+  ["interpret data", /\bread(?:ing)?\s+and\s+interpret(?:ing)?\s+data\b|\binterpret(?:ing|ation)?\s+(?:the\s+)?data\b/i],
+  ["complete table", /\bcomplet(?:e|es|ed|ing)\b[\s\S]{0,50}\btables?\b/i],
   ["solve", /\bsolv(?:e|es|ing|ed)\b/i],
   ["equation", /\bequations?\b|[A-Za-z0-9)\s]=\s*[A-Za-z0-9(]/],
   ["linear", /\blinear\b/i],
@@ -158,6 +171,44 @@ export function mathFeatures(text) {
   for (const [name, pattern] of TOPICS) if (pattern.test(clean)) topics.add(name);
   for (const [name, pattern] of OPERATIONS) if (pattern.test(clean)) operations.add(name);
   for (const [name, pattern] of OPERANDS) if (pattern.test(clean)) operands.add(name);
+
+  // Expanded decimal notation is commonly authored as a whole number plus two
+  // fractions whose denominators are powers of ten. The live accessible text can
+  // contain both a flattened MathML copy and a LaTeX copy, so identify the
+  // mathematical structure instead of depending on one rendering. One such term
+  // is not enough: ordinary fraction addition with a denominator of 10 must remain
+  // a fractions question.
+  const decimalFractionTerms = clean.match(
+    /\\frac\s*\{\s*[^{}]+\s*\}\s*\{\s*(?:10|100|1000)\s*\}|\b\d+\s*\/\s*(?:10|100|1000)\b/gi
+  ) ?? [];
+  if (operations.has("add") && decimalFractionTerms.length >= 2) {
+    topics.add("place value");
+    topics.add("decimal place value");
+    operands.add("decimal");
+  }
+
+  // A display-dependent subquestion may say only "How many students ate
+  // papaya?" while the shared stimulus supplies "pie chart". Once the combined
+  // primary evidence identifies a data display, interrogative reading language
+  // means the learner is interpreting it rather than constructing/completing it.
+  if (
+    topics.has("data representation") &&
+    /\b(?:how many|how much|which|read|find|determine|calculate)\b/i.test(clean)
+  ) {
+    topics.add("interpret data");
+  }
+
+  // A digit-place-value question about a numeral is about whole numbers even when
+  // the author never writes the phrase "whole number". This also prevents it from
+  // matching the decimal place-value outcome merely because both mention place
+  // value.
+  if (
+    topics.has("place value") &&
+    !topics.has("decimal place value") &&
+    /\b\d[\d\s,]{1,}\d\b/.test(clean)
+  ) {
+    operands.add("whole number");
+  }
   let measurementPresent = false;
   let compatibleUnitPair = false;
   for (const [topic, patterns] of MEASUREMENT_FAMILIES) {

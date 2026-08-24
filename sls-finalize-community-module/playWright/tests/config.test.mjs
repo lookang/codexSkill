@@ -146,6 +146,34 @@ test("config rejects a non-admin or non-SLS URL", () => {
   assert.throws(() => validateConfig(invalid), /vle\.learning\.moe\.edu\.sg/);
 });
 
+test("config accepts an informational section with no activities", () => {
+  const config = {
+    schemaVersion: 1,
+    module: {
+      id: "3838140a-d3d9-402a-b7e7-1d9f080900fd",
+      title: "Primary 6 Mathematics Paper",
+      adminEditUrl:
+        "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/" +
+        "3838140a-d3d9-402a-b7e7-1d9f080900fd/module-plan"
+    },
+    defaults: {
+      subject: "Mathematics - MATHS",
+      level: "Primary 6",
+      contentMap: "Pri 6 Mathematics (2021)",
+      outcomePath: ["Number and Algebra"],
+      outcome: "Four operations",
+      questionKeyword: "FA Math"
+    },
+    sections: [
+      { label: "A", title: "How to use this paper", activities: [] },
+      { label: "B", title: "Questions", activities: [{ title: "Set 1" }] }
+    ]
+  };
+
+  assert.doesNotThrow(() => validateConfig(config));
+  assert.deepEqual(mergeDefaults(config).sections[0].activities, []);
+});
+
 test("detectScope classifies module, lesson, and activity URLs without throwing", () => {
   const moduleId = "aa9e13e8-9a47-4c1c-ae1c-40268ce42935";
   assert.equal(
