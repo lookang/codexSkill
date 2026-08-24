@@ -4,6 +4,7 @@ import readline from "node:readline/promises";
 import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
+import { moduleWideAcpTarget } from "../src/acp-interactive.mjs";
 import { runAcpInteractiveWorkflow } from "../src/acp-interactive-runner.mjs";
 import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
@@ -25,7 +26,14 @@ console.log("For each FA Math question without an existing interactive, it gener
 console.log("matching Prompt Library prompt and adds one ACP Interactive component.");
 console.log("Pages with several FA Math questions stop at a guard until page breaks exist.\n");
 
-const target = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
+const selectedTarget = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
+const target = moduleWideAcpTarget(selectedTarget);
+if (selectedTarget.scope !== "module") {
+  console.log(
+    "The supplied nested URL selected this module; ACP traversal will still continue through " +
+      "every section, activity and page.",
+  );
+}
 
 const options = {
   authStatePath: path.join(root, ".auth", "sls-state.json"),
@@ -39,7 +47,9 @@ const options = {
     grade: readText("--grade", "Primary 5-6"),
     subject: readText("--subject", "Mathematics"),
     generationTimeoutMs: readInteger("--generation-timeout", 600) * 1000,
-    maximumInteractives: readInteger("--max-interactives", 100),
+    maximumInteractives: args.includes("--max-interactives")
+      ? readInteger("--max-interactives", null)
+      : null,
   },
   holdOpen: selectedWorkflow
     ? null

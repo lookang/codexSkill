@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
-import { assessAcpPage, normalizeAcpOptions, normalizeQuestionText } from "../src/acp-interactive.mjs";
+import {
+  assessAcpPage,
+  moduleWideAcpTarget,
+  normalizeAcpOptions,
+  normalizeQuestionText,
+} from "../src/acp-interactive.mjs";
 import { acpTargetIncludes, selectTextComponentFromAddMenu } from "../src/acp-interactive-runner.mjs";
 
 test("one unserved FA Math question is an ACP candidate", () => {
@@ -42,8 +47,28 @@ test("the demonstrated Primary 5-6 Mathematics prompt defaults are retained", ()
     grade: "Primary 5-6",
     subject: "Mathematics",
     generationTimeoutMs: 600000,
-    maximumInteractives: 100,
+    maximumInteractives: null,
   });
+});
+
+test("the ACP launcher expands a nested URL to the whole supplied module", () => {
+  const target = moduleWideAcpTarget({
+    id: "3cdf23c6-0a73-4b12-88dd-9c2dbe776d69",
+    scope: "activity",
+    sectionId: "105854770",
+    activityId: "105854771",
+    sourceUrl: "https://vle.learning.moe.edu.sg/community-gallery/module/view/3cdf23c6-0a73-4b12-88dd-9c2dbe776d69/section/105854770/activity/105854771?pageNo=1",
+  });
+  assert.equal(target.id, "3cdf23c6-0a73-4b12-88dd-9c2dbe776d69");
+  assert.equal(target.scope, "module");
+  assert.equal(target.sectionId, null);
+  assert.equal(target.activityId, null);
+  assert.match(target.sourceUrl, /activity\/105854771/);
+});
+
+test("ACP generation is unlimited unless an explicit cap is supplied", () => {
+  assert.equal(normalizeAcpOptions().maximumInteractives, null);
+  assert.equal(normalizeAcpOptions({ maximumInteractives: 7 }).maximumInteractives, 7);
 });
 
 test("an activity-scoped ACP run excludes every other section and activity", () => {

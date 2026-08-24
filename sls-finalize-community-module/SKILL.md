@@ -130,7 +130,7 @@ Use `--dry-run` when the user asks only for a proposal. A normal clear review ma
 
 Use `RUN-SLS-ACPINTERACTIVE.cmd` for FA Math questions that should receive a matching practice interactive.
 
-1. Require exactly one eligible FA Math question on the page. Run the page-break workflow first when several questions share a page.
+1. Treat a supplied nested section or activity URL as module selection only: the launcher must continue through every section, activity, and page. Do not impose a generation-count cap unless the user explicitly supplies `--max-interactives`. Require exactly one eligible FA Math question on each page; run the page-break workflow first when several questions share a page.
 2. Read the live question stem, send it to the iwant2study Prompt Library with the reviewed grade and Mathematics settings, and capture the generated prompt.
 3. Return to SLS, add a Text component, choose **Authoring Copilot > Interactive (Beta)**, paste the prompt, and wait for the complete preview. Generation may take several minutes.
 4. Add only the reviewed result. Preserve an existing interactive ZIP and never create a duplicate merely because generation is slow.

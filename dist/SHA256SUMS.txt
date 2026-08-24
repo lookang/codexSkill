@@ -1,2 +1,2 @@
 460bd9e5623cf7710042b4b4bc34df5732455e7b332abd1b3b7a3df8ff3f760e  build-famath-interactives.zip
-bd3dd8347a8b8a85fda886aab4c5c43e336ba5caee69f1895fccd3d2b8abf2b4  sls-finalize-community-module.zip
+a013a93f792f75f7b70b6648045a6e1859b427cb37f5bcf502e1ffe5ae321626  sls-finalize-community-module.zip

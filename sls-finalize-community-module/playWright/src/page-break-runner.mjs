@@ -697,6 +697,21 @@ export async function openActivity(page, target, section, sectionId, activity) {
   return { id };
 }
 
+export function activityEditUrl(target, sectionId, activityId) {
+  return `${SLS_ORIGIN}/admin/community-gallery/module/edit/${target.id}/section/${sectionId}/activity/${activityId}`;
+}
+
+export async function openActivityById(page, target, sectionId, activityId) {
+  const url = activityEditUrl(target, sectionId, activityId);
+  await openExactUrl(page, url);
+  await expect(page).toHaveURL(
+    new RegExp(
+      `/admin/community-gallery/module/edit/${escapeRegExp(target.id)}/section/` +
+        `${escapeRegExp(sectionId)}/activity/${escapeRegExp(activityId)}`,
+    ),
+  );
+}
+
 function activityRowsForSection(page, section) {
   return page
     .locator("button.bx--accordion__heading")

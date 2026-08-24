@@ -2,11 +2,24 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
 import {
+  activityEditUrl,
   dismissModuleUrlUpdatedModal,
   selectPage,
   visiblePageCount,
   waitForScopedPageBreakSingle,
 } from "../src/page-break-runner.mjs";
+
+test("ACP reopen verification can navigate directly to an exact activity ID", () => {
+  assert.equal(
+    activityEditUrl(
+      { id: "3cdf23c6-0a73-4b12-88dd-9c2dbe776d69" },
+      "105854770",
+      "105854777",
+    ),
+    "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/" +
+      "3cdf23c6-0a73-4b12-88dd-9c2dbe776d69/section/105854770/activity/105854777",
+  );
+});
 
 test("delayed activity pagination is counted and page 2 can be selected", async () => {
   const browser = await chromium.launch({ channel: "chrome", headless: true });

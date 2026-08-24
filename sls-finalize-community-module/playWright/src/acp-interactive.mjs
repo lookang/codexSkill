@@ -14,16 +14,27 @@ export function normalizeAcpOptions(overrides = {}) {
   const grade = String(overrides.grade ?? "Primary 5-6").trim();
   const subject = String(overrides.subject ?? "Mathematics").trim();
   const generationTimeoutMs = Number(overrides.generationTimeoutMs ?? 10 * 60_000);
-  const maximumInteractives = Number(overrides.maximumInteractives ?? 100);
+  const maximumInteractives = overrides.maximumInteractives == null
+    ? null
+    : Number(overrides.maximumInteractives);
   if (!GRADES.has(grade)) throw new Error(`Unsupported prompt-library grade: ${grade}`);
   if (!subject) throw new Error("Prompt-library subject is required.");
   if (!Number.isInteger(generationTimeoutMs) || generationTimeoutMs < 60_000) {
     throw new Error("generationTimeoutMs must be an integer of at least 60000.");
   }
-  if (!Number.isInteger(maximumInteractives) || maximumInteractives < 1) {
+  if (maximumInteractives !== null && (!Number.isInteger(maximumInteractives) || maximumInteractives < 1)) {
     throw new Error("maximumInteractives must be a positive integer.");
   }
   return { grade, subject, generationTimeoutMs, maximumInteractives };
+}
+
+export function moduleWideAcpTarget(target) {
+  return {
+    ...target,
+    scope: "module",
+    sectionId: null,
+    activityId: null,
+  };
 }
 
 export function assessAcpPage({ faQuestions = [], completedInteractives = 0 } = {}) {

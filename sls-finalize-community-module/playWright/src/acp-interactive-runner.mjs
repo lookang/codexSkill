@@ -16,6 +16,7 @@ import {
   inventorySections,
   leaveEditMode,
   openActivity,
+  openActivityById,
   openSection,
   selectPage,
   settleActivity,
@@ -168,7 +169,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         console.log(`    Page ${pageIndex + 1}: ${assessment.status} - ${assessment.reason}.`);
 
         if (!apply || assessment.status !== "candidate") continue;
-        if (generated.length >= policy.maximumInteractives) {
+        if (policy.maximumInteractives !== null && generated.length >= policy.maximumInteractives) {
           pageReport.limited = true;
           console.log(`      Run limit ${policy.maximumInteractives} reached; remaining candidates are unchanged.`);
           continue;
@@ -368,23 +369,27 @@ export async function selectTextComponentFromAddMenu(page, { timeoutMs = 10_000 
 }
 
 async function verifyGeneratedEntry(page, target, entry) {
-  const section = { ...entry.section, index: sectionIndex(entry.section.label) };
-  await openSection(page, target, section);
-  const activity = entry.activity;
-  await openActivity(page, target, section, entry.section.id, activity);
-  await selectPage(page, entry.pageIndex);
-  await settleActivity(page);
-  const state = await readAcpPageState(page);
-  const found = state.completedInteractiveFiles.some((name) =>
-    entry.fileName ? name === entry.fileName : /\.zip$/i.test(name),
-  );
-  if (!found) {
-    throw new GuardError(
-      `Generated ACP interactive did not persist in ${entry.activity.title}, page ${entry.pageIndex + 1}.`,
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    await openActivityById(page, target, entry.section.id, entry.activity.id);
+    await settleActivity(page);
+    await selectPage(page, entry.pageIndex);
+    await settleActivity(page);
+    const state = await readAcpPageState(page);
+    const found = state.completedInteractiveFiles.some((name) =>
+      entry.fileName ? name === entry.fileName : /\.zip$/i.test(name),
     );
+    if (found) {
+      entry.reopenVerified = true;
+      console.log(`  Verified ${entry.activity.title}, page ${entry.pageIndex + 1}: ${entry.fileName || "ZIP present"}.`);
+      return;
+    }
+    if (attempt === 0) {
+      console.log(`  Reloading ${entry.activity.title}, page ${entry.pageIndex + 1} once before the final ACP check...`);
+    }
   }
-  entry.reopenVerified = true;
-  console.log(`  Verified ${entry.activity.title}, page ${entry.pageIndex + 1}: ${entry.fileName || "ZIP present"}.`);
+  throw new GuardError(
+    `Generated ACP interactive did not persist in ${entry.activity.title}, page ${entry.pageIndex + 1}.`,
+  );
 }
 
 export async function readAcpPageState(page) {
@@ -465,9 +470,4 @@ function allPages(sections) {
     for (const activity of section.activities ?? []) pages.push(...(activity.pages ?? []));
   }
   return pages;
-}
-
-function sectionIndex(label) {
-  const value = String(label || "A").toUpperCase().charCodeAt(0) - 65;
-  return Number.isInteger(value) && value >= 0 ? value : 0;
 }
