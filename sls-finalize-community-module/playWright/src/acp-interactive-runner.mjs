@@ -1,7 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { expect as baseExpect } from "@playwright/test";
-import { assessAcpPage, normalizeAcpOptions, normalizeQuestionText } from "./acp-interactive.mjs";
+import {
+  assessAcpPage,
+  assessAcpPreAddState,
+  buildAcpSpecificRequirements,
+  normalizeAcpOptions,
+  normalizeQuestionText,
+  normalizeRandomizationParameters,
+} from "./acp-interactive.mjs";
 import { createRunPaths, saveJson } from "./io.mjs";
 import {
   GuardError,
@@ -162,7 +169,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
       for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
         await selectPage(slsPage, pageIndex);
         await settleActivity(slsPage);
-        let state = await readAcpPageState(slsPage);
+        let state = await readStableAcpPageState(slsPage);
         let assessment = assessAcpPage(state);
         const pageReport = { pageIndex, state, assessment };
         activityReport.pages.push(pageReport);
@@ -176,12 +183,25 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         }
 
         const questionText = normalizeQuestionText(assessment.question.text);
-        const prompt = await buildPrompt(promptPage, questionText, policy);
+        const randomization = await readFaMathRandomization(slsPage, assessment.question);
+        const specificRequirements = buildAcpSpecificRequirements({ questionText, randomization });
+        pageReport.randomization = randomization;
+        pageReport.specificRequirements = specificRequirements || null;
+        if (specificRequirements) {
+          console.log(
+            `      Read ${randomization.parameters.length} randomized parameter(s); ` +
+              "requesting constrained source-matching sliders.",
+          );
+        }
+        const prompt = await buildPrompt(promptPage, questionText, policy, specificRequirements);
         await slsPage.bringToFront();
         await selectPage(slsPage, pageIndex);
-        const before = await readAcpPageState(slsPage);
+        const before = await readStableAcpPageState(slsPage);
         assessment = assessAcpPage(before);
-        if (assessment.status !== "candidate" || normalizeQuestionText(assessment.question.text) !== questionText) {
+        const sameQuestion = randomization
+          ? assessment.question?.componentId === pageReport.assessment.question?.componentId
+          : normalizeQuestionText(assessment.question?.text) === questionText;
+        if (assessment.status !== "candidate" || !sameQuestion) {
           throw new GuardError(
             `The candidate changed before ACP generation in ${activity.title}, page ${pageIndex + 1}.`,
           );
@@ -198,7 +218,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         await settleActivity(slsPage);
         await selectPage(slsPage, pageIndex);
         await settleActivity(slsPage);
-        state = await readAcpPageState(slsPage);
+        state = await readStableAcpPageState(slsPage);
         if (state.completedInteractives !== before.completedInteractives + 1) {
           throw new GuardError(
             `ACP reported Add, but the reopened page changed from ${before.completedInteractives} ` +
@@ -217,6 +237,8 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
           questionText,
           grade: policy.grade,
           subject: policy.subject,
+          randomization,
+          specificRequirements: specificRequirements || null,
           promptCharacters: prompt.length,
           reopenVerified: true,
           ...result,
@@ -241,7 +263,7 @@ export function acpTargetIncludes(target, { sectionId, activityId = null }) {
   return true;
 }
 
-async function buildPrompt(page, questionText, policy) {
+async function buildPrompt(page, questionText, policy, specificRequirements = "") {
   await page.bringToFront();
   if (!page.url().startsWith(PROMPT_LIBRARY_URL)) {
     await page.goto(PROMPT_LIBRARY_URL, { waitUntil: "domcontentloaded" });
@@ -249,6 +271,7 @@ async function buildPrompt(page, questionText, policy) {
   await page.locator("#topic").fill(questionText);
   await page.locator("#gradeLevel").selectOption(policy.grade);
   await page.locator("#subject").selectOption(policy.subject);
+  await page.locator("#specificRequirements").fill(specificRequirements);
   await page.getByRole("button", { name: "🚀 Generate Prompt", exact: true }).click();
   const copy = page.locator("#copyBtnTop");
   await expect(copy).toBeVisible({ timeout: 30_000 });
@@ -267,10 +290,103 @@ async function buildPrompt(page, questionText, policy) {
   return prompt;
 }
 
+export async function readFaMathRandomization(page, question) {
+  const componentId = String(question?.componentId ?? "");
+  if (!/^component-[A-Za-z0-9_-]+$/.test(componentId)) {
+    throw new GuardError("The FA Math question did not expose a stable component ID for randomization review.");
+  }
+
+  let questionEditorOpened = false;
+  let modal;
+  try {
+    const questionComponent = page.locator(`#${componentId}:visible`);
+    if ((await questionComponent.count()) !== 1) {
+      throw new GuardError(`FA Math question ${componentId} was not uniquely visible.`);
+    }
+    const outerEdit = questionComponent.locator(".edit-indicator:visible").first();
+    await expect(outerEdit).toBeVisible();
+    await outerEdit.click();
+    questionEditorOpened = true;
+    await expect(page.getByText("Prepopulated Student Response", { exact: true })).toBeVisible();
+
+    const defaultAnswerEditor = page.locator(
+      '.field-set.default-answer .rich-text-editor.loaded [contenteditable="true"].mce-content-body:visible',
+    );
+    await expect(defaultAnswerEditor).toHaveCount(1);
+
+    const algebraKit = defaultAnswerEditor.locator(".sls-algebra-kit");
+    const algebraKitLoaded = await algebraKit.waitFor({ state: "attached", timeout: 8_000 })
+      .then(() => true, () => false);
+    if (!algebraKitLoaded) return null;
+    if (await algebraKit.getAttribute("data-has-randomised") !== "true") return null;
+
+    const nestedEdit = defaultAnswerEditor.locator(".sls-algebra-kit-wrapper button.edit:visible");
+    await expect(nestedEdit).toHaveCount(1);
+    await nestedEdit.click();
+    modal = page.locator(".bx--modal-container:visible").filter({ hasText: "Create New Question" }).last();
+    await expect(modal).toBeVisible();
+    const editor = modal.locator("akit-interaction-editor:visible");
+    await expect(editor).toHaveCount(1);
+
+    const randomizationHeading = editor.locator(".heading-button-title").filter({ hasText: /^Randomization$/ });
+    await expect(randomizationHeading).toHaveCount(1);
+    await randomizationHeading.click();
+    await expect.poll(() => editor.locator("tr").count(), {
+      timeout: 20_000,
+      intervals: [250, 500, 1000],
+    }).toBeGreaterThan(1);
+
+    const rowCells = await editor.locator("tr").evaluateAll((rows) => rows.map((row) => ({
+      cells: Array.from(row.querySelectorAll("th,td"))
+        .map((cell) => (cell.innerText || cell.textContent || "").replace(/\s+/g, " ").trim()),
+    })));
+    const parameters = normalizeRandomizationParameters(rowCells);
+    if (parameters.length === 0) {
+      throw new GuardError("The randomized FA Math response opened, but no parameter definitions were readable.");
+    }
+
+    const editorTexts = await editor.locator('div.ql-editor[contenteditable="true"]:visible').allInnerTexts();
+    const instructionTemplate = editorTexts
+      .map((value) => normalizeQuestionText(value))
+      .find((value) => value && parameters.every((parameter) =>
+        new RegExp(`\\b${parameter.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i").test(value))) ?? "";
+    const expressionInputs = await editor.locator("input.akit-authoring-editor-value")
+      .evaluateAll((inputs) => inputs.map((input) => input.value.trim()).filter(Boolean));
+
+    return {
+      instructionTemplate,
+      answerExpression: expressionInputs[0] ?? "",
+      parameters,
+    };
+  } finally {
+    if (modal && await modal.isVisible().catch(() => false)) {
+      await modal.locator("button.cancel").click().catch(async () => {
+        await modal.locator('button[aria-label="Close"]').click().catch(() => {});
+      });
+    }
+    if (questionEditorOpened) {
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await settleActivity(page);
+      await assertNoSlsError(page);
+    }
+  }
+}
+
 async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
+  const textComponentIdsBefore = await page.locator(".lesson-activity-component.text")
+    .evaluateAll((nodes) => nodes.map((node) => node.id).filter(Boolean));
   const beforeComponents = await page.locator(".lesson-activity-component").count();
   await selectTextComponentFromAddMenu(page);
   await expect.poll(() => page.locator(".lesson-activity-component").count()).toBe(beforeComponents + 1);
+  const textComponentIdsAfter = await page.locator(".lesson-activity-component.text")
+    .evaluateAll((nodes) => nodes.map((node) => node.id).filter(Boolean));
+  const ownTextComponentIds = textComponentIdsAfter.filter((id) => !textComponentIdsBefore.includes(id));
+  if (ownTextComponentIds.length !== 1) {
+    throw new GuardError(
+      `Adding the ACP host exposed ${ownTextComponentIds.length} new Text components instead of one.`,
+    );
+  }
+  const ownTextComponentId = ownTextComponentIds[0];
 
   const editor = page.locator('[contenteditable="true"].mce-content-body:visible').last();
   await expect(editor).toBeVisible();
@@ -307,15 +423,23 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
   let addClicked = false;
   while (Date.now() - started < timeoutMs) {
     await assertNoSlsError(page);
-    addClicked = await page.locator(".bx--modal-container:visible button")
-      .evaluateAll((buttons) => {
-        const button = buttons.find((node) =>
-          node.getClientRects().length > 0 && !node.disabled && (node.innerText || "").trim() === "ADD");
-        if (!button) return false;
-        button.click();
-        return true;
-      });
-    if (addClicked) {
+    const addButton = page.locator(".bx--modal-container:visible button")
+      .filter({ hasText: /^ADD$/ })
+      .last();
+    if (await addButton.isVisible().catch(() => false) && await addButton.isEnabled().catch(() => false)) {
+      const current = await readAcpPageState(page);
+      const preAdd = assessAcpPreAddState({
+        completedBefore,
+        textComponentIdsBefore,
+        ownTextComponentId,
+      }, current);
+      if (!preAdd.safe) {
+        throw new GuardError(
+          `ACP preview is ready, but ${preAdd.reason}; ADD was not clicked.`,
+        );
+      }
+      await addButton.click();
+      addClicked = true;
       break;
     }
     const body = await page.locator("body").innerText().catch(() => "");
@@ -335,7 +459,7 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
   const completed = async () => (await readAcpPageState(page)).completedInteractives;
   await expect.poll(completed, { timeout: 45_000, intervals: [1000, 2000, 3000] })
     .toBe(completedBefore + 1);
-  const state = await readAcpPageState(page);
+  const state = await readStableAcpPageState(page);
   return {
     generationSeconds: Math.round((Date.now() - started) / 1000),
     fileName: state.completedInteractiveFiles.at(-1) ?? null,
@@ -374,7 +498,7 @@ async function verifyGeneratedEntry(page, target, entry) {
     await settleActivity(page);
     await selectPage(page, entry.pageIndex);
     await settleActivity(page);
-    const state = await readAcpPageState(page);
+    const state = await readStableAcpPageState(page);
     const found = state.completedInteractiveFiles.some((name) =>
       entry.fileName ? name === entry.fileName : /\.zip$/i.test(name),
     );
@@ -394,7 +518,7 @@ async function verifyGeneratedEntry(page, target, entry) {
 
 export async function readAcpPageState(page) {
   await page.waitForTimeout(300);
-  return page.evaluate(() => {
+  const state = await page.evaluate(() => {
     const visible = (node) => {
       if (!(node instanceof Element)) return false;
       const style = getComputedStyle(node);
@@ -444,11 +568,11 @@ export async function readAcpPageState(page) {
           .find((host) => host.shadowRoot && deepText(host).trim());
         text = shadowHost ? deepText(shadowHost) : "";
       }
-      return [{ number: Number.isFinite(number) ? number : null, text }];
+      return [{ componentId: component.id || null, number: Number.isFinite(number) ? number : null, text }];
     });
 
-    const completedInteractiveFiles = currentComponents
-      .filter((component) => component.classList.contains("text"))
+    const textComponents = currentComponents.filter((component) => component.classList.contains("text"));
+    const completedInteractiveFiles = textComponents
       .flatMap((component) => {
         const names = Array.from(component.querySelectorAll('a[href*=".zip" i], button, a'))
           .map((node) => (node.textContent || node.getAttribute("download") || "").replace(/\s+/g, " ").trim())
@@ -456,12 +580,64 @@ export async function readAcpPageState(page) {
         if (names.length > 0) return names;
         return (component.innerText || "").match(/[\w.-]+\.zip\b/gi) || [];
       });
+    const pendingTextComponentIds = textComponents.filter((component) => {
+      const text = (component.innerText || "")
+        .replace(/\bMove Up\b|\bMove Down\b|\bRead More\b|\bRead Less\b/gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+      return !/[\w.-]+\.zip\b/i.test(text) && !text;
+    }).map((component) => component.id || null);
     return {
       faQuestions,
       completedInteractives: completedInteractiveFiles.length,
       completedInteractiveFiles,
+      pendingTextComponents: pendingTextComponentIds.length,
+      pendingTextComponentIds,
+      textComponentIds: textComponents.map((component) => component.id || null),
     };
   });
+  state.faQuestions = state.faQuestions.map((question) => ({
+    ...question,
+    text: normalizeQuestionText(question.text),
+  }));
+  return state;
+}
+
+export async function readStableAcpPageState(page, {
+  timeoutMs = 35_000,
+  reloadOnPending = true,
+} = {}) {
+  for (let loadAttempt = 0; loadAttempt < (reloadOnPending ? 2 : 1); loadAttempt += 1) {
+    const started = Date.now();
+    let previous = "";
+    let steady = 0;
+    let state;
+    while (Date.now() - started < timeoutMs) {
+      state = await readAcpPageState(page);
+      const signature = JSON.stringify({
+        questions: state.faQuestions.map((question) => question.componentId),
+        textComponents: state.textComponentIds,
+        files: state.completedInteractiveFiles,
+        pending: state.pendingTextComponents,
+      });
+      if (signature === previous && state.pendingTextComponents === 0) steady += 1;
+      else steady = 0;
+      previous = signature;
+      if (steady >= 2) return state;
+      await page.waitForTimeout(750);
+    }
+    if (loadAttempt === 0 && reloadOnPending) {
+      console.log("      Text attachment evidence is still loading; reopening this page once before deciding...");
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await settleActivity(page);
+      continue;
+    }
+    throw new GuardError(
+      `SLS left ${state?.pendingTextComponents ?? "unknown"} Text component(s) unhydrated; ` +
+        "ACP candidate status cannot be decided safely.",
+    );
+  }
+  throw new GuardError("ACP page state did not stabilize.");
 }
 
 function allPages(sections) {

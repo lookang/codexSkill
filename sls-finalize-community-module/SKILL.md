@@ -131,9 +131,9 @@ Use `--dry-run` when the user asks only for a proposal. A normal clear review ma
 Use `RUN-SLS-ACPINTERACTIVE.cmd` for FA Math questions that should receive a matching practice interactive.
 
 1. Treat a supplied nested section or activity URL as module selection only: the launcher must continue through every section, activity, and page. Do not impose a generation-count cap unless the user explicitly supplies `--max-interactives`. Require exactly one eligible FA Math question on each page; run the page-break workflow first when several questions share a page.
-2. Read the live question stem, send it to the iwant2study Prompt Library with the reviewed grade and Mathematics settings, and capture the generated prompt.
+2. Read the live question stem. When the FA Math response is randomized, open the question pencil and the nested randomized-component pencil without saving; read the instruction template, correct expression, parameter names, ranges, dependencies, and current rendered values. Put that evidence into the iwant2study Prompt Library's **Specific Requirements** together with the reviewed grade and Mathematics settings. Require one constrained slider per numeric parameter, dynamic dependent bounds, and a control that restores the exact rendered source values. For a non-randomized response, leave **Specific Requirements** empty rather than inventing variables.
 3. Return to SLS, add a Text component, choose **Authoring Copilot > Interactive (Beta)**, paste the prompt, and wait for the complete preview. Generation may take several minutes.
-4. Add only the reviewed result. Preserve an existing interactive ZIP and never create a duplicate merely because generation is slow.
+4. Add only the reviewed result. Treat an empty, still-hydrating Text component as unresolved: wait for its attachment evidence and reopen the page once before deciding it lacks an ACP ZIP. Preserve an existing interactive ZIP and never create a duplicate merely because generation or attachment loading is slow.
 5. Reopen the changed activity and verify the interactive ZIP persisted before advancing.
 
 Use `--dry-run` for inventory only and `--max-interactives 1` for a controlled first trial.

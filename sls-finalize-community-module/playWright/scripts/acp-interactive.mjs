@@ -24,6 +24,7 @@ console.log("\nSLS FA Math ACP Interactives");
 console.log("Reviews every section, activity and page before changing anything.");
 console.log("For each FA Math question without an existing interactive, it generates the");
 console.log("matching Prompt Library prompt and adds one ACP Interactive component.");
+console.log("Randomized FA Math variables and bounds become source-matching ACP sliders.");
 console.log("Pages with several FA Math questions stop at a guard until page breaks exist.\n");
 
 const selectedTarget = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
