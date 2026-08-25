@@ -13,6 +13,7 @@ import {
 } from "../src/acp-interactive.mjs";
 import {
   acpTargetIncludes,
+  formatAcpFailureSummary,
   readStableAcpPageState,
   selectTextComponentFromAddMenu,
 } from "../src/acp-interactive-runner.mjs";
@@ -175,6 +176,26 @@ test("an activity-scoped ACP run excludes every other section and activity", () 
     acpTargetIncludes(target, { sectionId: "105854769", activityId: "105854771" }),
     false,
   );
+});
+
+test("ACP failures are summarized with exact section, activity, and page", () => {
+  const lines = formatAcpFailureSummary({
+    failures: [{
+      stage: "apply",
+      section: { label: "A", title: "Untitled", id: "109240916" },
+      activity: {
+        index: 4,
+        title: "Compare numbers to 40 - WPLN23 P1 FA Math",
+        id: "109614759",
+      },
+      pageIndex: 1,
+      pageNo: 2,
+      message: "ACP did not expose ADD within 600 seconds.",
+    }],
+  });
+  assert.deepEqual(lines, [
+    'Section A; Activity 5 "Compare numbers to 40 - WPLN23 P1 FA Math"; Page 2; apply: ACP did not expose ADD within 600 seconds.',
+  ]);
 });
 
 test("the current Text/Media menu opens Text through a real hover", async () => {

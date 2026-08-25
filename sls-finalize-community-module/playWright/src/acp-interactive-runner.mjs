@@ -39,7 +39,7 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
   const policy = normalizeAcpOptions(options.acpInteractive);
   const paths = await createRunPaths(options, target.id);
   const report = {
-    schemaVersion: 1,
+    schemaVersion: 2,
     action: "acp-interactive",
     mode: apply ? "apply" : "review",
     startedAt: new Date().toISOString(),
@@ -47,6 +47,7 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
     policy,
     sections: [],
     generated: [],
+    failures: [],
     status: "running",
     error: null,
   };
@@ -79,17 +80,39 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
       policy,
       apply,
       generated: report.generated,
+      failures: report.failures,
+      paths,
     });
     await leaveEditMode(slsPage, target);
 
     if (apply && report.generated.length > 0) {
       console.log("\nReopening generated activities to verify their ACP ZIPs persisted...");
       await enterEditMode(slsPage, target);
-      for (const entry of report.generated) await verifyGeneratedEntry(slsPage, target, entry);
+      for (const entry of report.generated) {
+        try {
+          await verifyGeneratedEntry(slsPage, target, entry);
+        } catch (error) {
+          entry.reopenVerified = false;
+          entry.verificationError = serializeAcpError(error);
+          const failure = await recordAcpFailure(report.failures, {
+            stage: "verify",
+            page: slsPage,
+            paths,
+            section: entry.section,
+            activity: entry.activity,
+            pageIndex: entry.pageIndex,
+            questionText: entry.questionText,
+            error,
+          });
+          console.log(`  Verification follow-up logged: ${formatAcpFailureLine(failure)}`);
+        }
+      }
       await leaveEditMode(slsPage, target);
     }
 
-    report.status = apply ? "completed" : "reviewed";
+    report.status = apply
+      ? (report.failures.length > 0 ? "completed_with_errors" : "completed")
+      : (report.failures.length > 0 ? "reviewed_with_errors" : "reviewed");
     report.finishedAt = new Date().toISOString();
     const screenshotPath = path.join(paths.runDir, apply ? "acp-interactive-verified.png" : "acp-interactive-review.png");
     await slsPage.screenshot({ path: screenshotPath, fullPage: true });
@@ -133,10 +156,12 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
     candidateCount: allPages(report.sections).filter((entry) => entry.assessment.status === "candidate").length,
     blockedCount: allPages(report.sections).filter((entry) => entry.assessment.status === "blocked").length,
     generatedCount: report.generated.length,
+    verifiedGeneratedCount: report.generated.filter((entry) => entry.reopenVerified !== false).length,
+    failureCount: report.failures.length,
   };
 }
 
-async function processModule({ slsPage, promptPage, target, policy, apply, generated }) {
+async function processModule({ slsPage, promptPage, target, policy, apply, generated, failures, paths }) {
   const sections = await inventorySections(slsPage, target);
   const report = [];
   let matchedSection = !target.sectionId;
@@ -167,84 +192,124 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
       const pageCount = await visiblePageCount(slsPage);
 
       for (let pageIndex = 0; pageIndex < pageCount; pageIndex += 1) {
-        await selectPage(slsPage, pageIndex);
-        await settleActivity(slsPage);
-        let state = await readStableAcpPageState(slsPage);
-        let assessment = assessAcpPage(state);
-        const pageReport = { pageIndex, state, assessment };
+        const pageReport = { pageIndex };
         activityReport.pages.push(pageReport);
-        console.log(`    Page ${pageIndex + 1}: ${assessment.status} - ${assessment.reason}.`);
 
-        if (!apply || assessment.status !== "candidate") continue;
-        if (policy.maximumInteractives !== null && generated.length >= policy.maximumInteractives) {
-          pageReport.limited = true;
-          console.log(`      Run limit ${policy.maximumInteractives} reached; remaining candidates are unchanged.`);
-          continue;
-        }
+        try {
+          await selectPage(slsPage, pageIndex);
+          await settleActivity(slsPage);
+          let state = await readStableAcpPageState(slsPage);
+          let assessment = assessAcpPage(state);
+          Object.assign(pageReport, { state, assessment });
+          console.log(`    Page ${pageIndex + 1}: ${assessment.status} - ${assessment.reason}.`);
 
-        const questionText = normalizeQuestionText(assessment.question.text);
-        const randomization = await readFaMathRandomization(slsPage, assessment.question);
-        const specificRequirements = buildAcpSpecificRequirements({ questionText, randomization });
-        pageReport.randomization = randomization;
-        pageReport.specificRequirements = specificRequirements || null;
-        if (specificRequirements) {
-          console.log(
-            `      Read ${randomization.parameters.length} randomized parameter(s); ` +
-              "requesting constrained source-matching sliders.",
-          );
-        }
-        const prompt = await buildPrompt(promptPage, questionText, policy, specificRequirements);
-        await slsPage.bringToFront();
-        await selectPage(slsPage, pageIndex);
-        const before = await readStableAcpPageState(slsPage);
-        assessment = assessAcpPage(before);
-        const sameQuestion = randomization
-          ? assessment.question?.componentId === pageReport.assessment.question?.componentId
-          : normalizeQuestionText(assessment.question?.text) === questionText;
-        if (assessment.status !== "candidate" || !sameQuestion) {
-          throw new GuardError(
-            `The candidate changed before ACP generation in ${activity.title}, page ${pageIndex + 1}.`,
-          );
-        }
+          if (!apply || assessment.status !== "candidate") continue;
+          if (policy.maximumInteractives !== null && generated.length >= policy.maximumInteractives) {
+            pageReport.limited = true;
+            console.log(`      Run limit ${policy.maximumInteractives} reached; remaining candidates are unchanged.`);
+            continue;
+          }
 
-        const result = await createInteractive(slsPage, prompt, {
-          timeoutMs: policy.generationTimeoutMs,
-          completedBefore: before.completedInteractives,
-        });
-        await leaveEditMode(slsPage, target);
-        await enterEditMode(slsPage, target);
-        await openSection(slsPage, target, section);
-        await openActivity(slsPage, target, section, opened.id, activity);
-        await settleActivity(slsPage);
-        await selectPage(slsPage, pageIndex);
-        await settleActivity(slsPage);
-        state = await readStableAcpPageState(slsPage);
-        if (state.completedInteractives !== before.completedInteractives + 1) {
-          throw new GuardError(
-            `ACP reported Add, but the reopened page changed from ${before.completedInteractives} ` +
-              `to ${state.completedInteractives} completed interactives instead of increasing by one.`,
-          );
+          const questionText = normalizeQuestionText(assessment.question.text);
+          pageReport.questionText = questionText;
+          const randomization = await readFaMathRandomization(slsPage, assessment.question);
+          const specificRequirements = buildAcpSpecificRequirements({ questionText, randomization });
+          pageReport.randomization = randomization;
+          pageReport.specificRequirements = specificRequirements || null;
+          if (specificRequirements) {
+            console.log(
+              `      Read ${randomization.parameters.length} randomized parameter(s); ` +
+                "requesting constrained source-matching sliders.",
+            );
+          }
+          const prompt = await buildPrompt(promptPage, questionText, policy, specificRequirements);
+          await slsPage.bringToFront();
+          await selectPage(slsPage, pageIndex);
+          const before = await readStableAcpPageState(slsPage);
+          assessment = assessAcpPage(before);
+          const sameQuestion = randomization
+            ? assessment.question?.componentId === pageReport.assessment.question?.componentId
+            : normalizeQuestionText(assessment.question?.text) === questionText;
+          if (assessment.status !== "candidate" || !sameQuestion) {
+            throw new GuardError(
+              `The candidate changed before ACP generation in ${activity.title}, page ${pageIndex + 1}.`,
+            );
+          }
+
+          const result = await createInteractive(slsPage, prompt, {
+            timeoutMs: policy.generationTimeoutMs,
+            completedBefore: before.completedInteractives,
+          });
+          await leaveEditMode(slsPage, target);
+          await enterEditMode(slsPage, target);
+          await openSection(slsPage, target, section);
+          await openActivity(slsPage, target, section, opened.id, activity);
+          await settleActivity(slsPage);
+          await selectPage(slsPage, pageIndex);
+          await settleActivity(slsPage);
+          state = await readStableAcpPageState(slsPage);
+          if (state.completedInteractives !== before.completedInteractives + 1) {
+            throw new GuardError(
+              `ACP reported Add, but the reopened page changed from ${before.completedInteractives} ` +
+                `to ${state.completedInteractives} completed interactives instead of increasing by one.`,
+            );
+          }
+          if (result.fileName && !state.completedInteractiveFiles.includes(result.fileName)) {
+            throw new GuardError(`ACP ZIP ${result.fileName} was not present after reopening the activity.`);
+          }
+          pageReport.stateAfter = state;
+          pageReport.assessmentAfter = assessAcpPage(state);
+          pageReport.applyStatus = "generated";
+          const evidence = {
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+            questionText,
+            grade: policy.grade,
+            subject: policy.subject,
+            randomization,
+            specificRequirements: specificRequirements || null,
+            promptCharacters: prompt.length,
+            reopenVerified: true,
+            ...result,
+          };
+          generated.push(evidence);
+          console.log(`      Added and locally verified ACP interactive (${result.fileName || "generated ZIP"}).`);
+        } catch (error) {
+          if (!isRecoverableAcpPageError(error)) throw error;
+          const message = firstErrorLine(error);
+          if (!pageReport.assessment) {
+            pageReport.assessment = { status: "blocked", reason: `ACP page review failed: ${message}` };
+          }
+          pageReport.applyStatus = apply ? "failed" : null;
+          pageReport.error = serializeAcpError(error);
+          const failure = await recordAcpFailure(failures, {
+            stage: apply ? "apply" : "review",
+            page: slsPage,
+            paths,
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+            questionText: pageReport.questionText || normalizeQuestionText(pageReport.assessment?.question?.text),
+            error,
+          });
+          pageReport.failureId = failure.id;
+          pageReport.assessmentAfter ??= { status: "error", reason: failure.message };
+          console.log(`      ACP follow-up logged; continuing after: ${failure.message}`);
+
+          if (apply) {
+            try {
+              await recoverAfterAcpPageFailure(slsPage, target, {
+                sectionId: opened.id,
+                activityId: openedActivity.id,
+              });
+              console.log("      SLS edit view recovered; moving to the next page.");
+            } catch (recoveryError) {
+              failure.recoveryError = serializeAcpError(recoveryError);
+              throw recoveryError;
+            }
+          }
         }
-        if (result.fileName && !state.completedInteractiveFiles.includes(result.fileName)) {
-          throw new GuardError(`ACP ZIP ${result.fileName} was not present after reopening the activity.`);
-        }
-        pageReport.stateAfter = state;
-        pageReport.assessmentAfter = assessAcpPage(state);
-        const evidence = {
-          section: { label: section.label, title: section.title, id: opened.id },
-          activity: { title: activity.title, index: activity.index, id: openedActivity.id },
-          pageIndex,
-          questionText,
-          grade: policy.grade,
-          subject: policy.subject,
-          randomization,
-          specificRequirements: specificRequirements || null,
-          promptCharacters: prompt.length,
-          reopenVerified: true,
-          ...result,
-        };
-        generated.push(evidence);
-        console.log(`      Added and locally verified ACP interactive (${result.fileName || "generated ZIP"}).`);
       }
       sectionReport.activities.push(activityReport);
       if (target.activityId) break;
@@ -255,6 +320,150 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
   if (!matchedSection) throw new GuardError(`Supplied section ${target.sectionId} was not found in the module.`);
   if (!matchedActivity) throw new GuardError(`Supplied activity ${target.activityId} was not found in the module.`);
   return report;
+}
+
+function isRecoverableAcpPageError(error) {
+  const message = String(error?.message ?? error ?? "");
+  if (/authentication is required|authentication was not found/i.test(message)) return false;
+  if (/SLS reported that the action result is uncertain/i.test(message)) return false;
+  if (/Target page, context or browser has been closed|Browser has been closed/i.test(message)) return false;
+  return true;
+}
+
+async function recordAcpFailure(failures, {
+  stage,
+  page,
+  paths,
+  section,
+  activity,
+  pageIndex,
+  questionText,
+  error,
+}) {
+  const failure = {
+    id: buildAcpFailureId({ stage, section, activity, pageIndex, ordinal: failures.length + 1 }),
+    stage,
+    section: normalizeFailureSection(section),
+    activity: normalizeFailureActivity(activity),
+    pageIndex,
+    pageNo: Number.isInteger(pageIndex) ? pageIndex + 1 : null,
+    questionText: normalizeQuestionText(questionText),
+    message: firstErrorLine(error),
+    error: serializeAcpError(error),
+  };
+
+  if (paths?.runDir && page) {
+    const screenshotPath = path.join(paths.runDir, `${failure.id}.png`);
+    await page.screenshot({ path: screenshotPath, fullPage: true })
+      .then(() => { failure.screenshotPath = screenshotPath; })
+      .catch((screenshotError) => {
+        failure.screenshotError = firstErrorLine(screenshotError);
+      });
+  }
+
+  failures.push(failure);
+  return failure;
+}
+
+function buildAcpFailureId({ stage, section, activity, pageIndex, ordinal }) {
+  return [
+    "acp",
+    String(ordinal).padStart(2, "0"),
+    stage,
+    `s-${section?.label ?? section?.id ?? "unknown"}`,
+    `a-${Number.isInteger(activity?.index) ? activity.index + 1 : activity?.id ?? "unknown"}`,
+    `p-${Number.isInteger(pageIndex) ? pageIndex + 1 : "unknown"}`,
+  ].map(safeSlug).join("-");
+}
+
+function normalizeFailureSection(section = {}) {
+  return {
+    label: section.label ?? null,
+    title: section.title ?? null,
+    id: section.id ?? null,
+  };
+}
+
+function normalizeFailureActivity(activity = {}) {
+  return {
+    title: activity.title ?? null,
+    index: Number.isInteger(activity.index) ? activity.index : null,
+    id: activity.id ?? null,
+  };
+}
+
+function serializeAcpError(error) {
+  return {
+    name: error?.name ?? "Error",
+    message: String(error?.message ?? error ?? ""),
+    stack: error?.stack ?? null,
+  };
+}
+
+function firstErrorLine(error) {
+  return String(error?.message ?? error ?? "Unknown ACP failure")
+    .split(/\r?\n/)[0]
+    .replace(/\s+/g, " ")
+    .trim() || "Unknown ACP failure";
+}
+
+function safeSlug(value) {
+  return String(value ?? "unknown")
+    .normalize("NFKD")
+    .replace(/[^\w.-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "unknown";
+}
+
+export function formatAcpFailureSummary(input = []) {
+  const failures = Array.isArray(input) ? input : input?.failures ?? [];
+  return failures.map((failure) => formatAcpFailureLine(failure));
+}
+
+function formatAcpFailureLine(failure) {
+  const section = failure.section?.label
+    ? `Section ${failure.section.label}`
+    : (failure.section?.id ? `Section ${failure.section.id}` : "Unknown section");
+  const activityNumber = Number.isInteger(failure.activity?.index)
+    ? `Activity ${failure.activity.index + 1}`
+    : (failure.activity?.id ? `Activity ${failure.activity.id}` : "Unknown activity");
+  const activityTitle = failure.activity?.title ? ` "${failure.activity.title}"` : "";
+  const pageNo = failure.pageNo ?? (Number.isInteger(failure.pageIndex) ? failure.pageIndex + 1 : "?");
+  const message = failure.message || failure.error?.message || "Unknown ACP failure";
+  return `${section}; ${activityNumber}${activityTitle}; Page ${pageNo}; ${failure.stage || "apply"}: ${message}`;
+}
+
+async function recoverAfterAcpPageFailure(page, target, { sectionId, activityId } = {}) {
+  await page.bringToFront().catch(() => {});
+  await closeVisibleAcpDialogs(page);
+  await page.keyboard.press("Escape").catch(() => {});
+  await page.waitForTimeout(750);
+  await assertNoSlsError(page);
+  if (sectionId && activityId) {
+    await openActivityById(page, target, sectionId, activityId);
+    await settleActivity(page);
+    return;
+  }
+  await enterEditMode(page, target);
+}
+
+async function closeVisibleAcpDialogs(page) {
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const modal = page.locator(".bx--modal-container:visible").last();
+    if ((await modal.count().catch(() => 0)) === 0 || !(await modal.isVisible().catch(() => false))) return;
+    const close = modal
+      .locator("button.bx--modal-close:visible")
+      .or(modal.getByRole("button", { name: /^(cancel|close)$/i }))
+      .first();
+    const clicked = (await close.count().catch(() => 0)) > 0 &&
+      (await close.isEnabled().catch(() => false));
+    if (clicked) {
+      await close.click().catch(async () => { await page.keyboard.press("Escape").catch(() => {}); });
+    } else {
+      await page.keyboard.press("Escape").catch(() => {});
+    }
+    await page.waitForTimeout(1_000);
+  }
 }
 
 export function acpTargetIncludes(target, { sectionId, activityId = null }) {

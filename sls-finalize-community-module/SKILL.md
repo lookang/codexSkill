@@ -135,6 +135,7 @@ Use `RUN-SLS-ACPINTERACTIVE.cmd` for FA Math questions that should receive a mat
 3. Return to SLS, add a Text component, choose **Authoring Copilot > Interactive (Beta)**, paste the prompt, and wait for the complete preview. Generation may take several minutes.
 4. Add only the reviewed result. Treat an empty, still-hydrating Text component as unresolved: wait for its attachment evidence and reopen the page once before deciding it lacks an ACP ZIP. Preserve an existing interactive ZIP and never create a duplicate merely because generation or attachment loading is slow.
 5. Reopen the changed activity and verify the interactive ZIP persisted before advancing.
+6. If one page fails to generate or fails reopen verification, record the exact section, activity, page, error, screenshot, and trace evidence, recover the edit view, and continue to later pages. Keep structural guards such as authentication loss, uncertain SLS action errors, missing target sections, or multi-question pages as stop/block conditions.
 
 Use `--dry-run` for inventory only and `--max-interactives 1` for a controlled first trial.
 

@@ -5,7 +5,7 @@ import { spawn } from "node:child_process";
 import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { moduleWideAcpTarget } from "../src/acp-interactive.mjs";
-import { runAcpInteractiveWorkflow } from "../src/acp-interactive-runner.mjs";
+import { formatAcpFailureSummary, runAcpInteractiveWorkflow } from "../src/acp-interactive-runner.mjs";
 import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
 
 const root = process.cwd();
@@ -68,7 +68,13 @@ if (explicitApply) {
   console.log(`\nReview report: ${review.reportPath}`);
   console.log(`Candidates: ${review.candidateCount}; guarded pages: ${review.blockedCount}.`);
 
-  if (!explicitDryRun && review.blockedCount > 0) {
+  if (!explicitDryRun && review.failureCount > 0) {
+    printAcpFailures(review);
+    stop(
+      `Review hit ${review.failureCount} page error(s). Nothing was changed; ` +
+        "inspect the report and trace before applying.",
+    );
+  } else if (!explicitDryRun && review.blockedCount > 0) {
     stop(
       `Review found ${review.blockedCount} ambiguous page(s). Nothing was changed; ` +
         "run RUN-SLS-PAGE-BREAK.cmd first, then retry.",
@@ -86,8 +92,9 @@ if (explicitApply) {
 console.log(`\nReport: ${finalResult.reportPath}`);
 console.log(`Trace:  ${finalResult.tracePath}`);
 if (finalResult.report.mode === "apply") {
-  console.log(`Added and reopened-verified ACP interactives: ${finalResult.generatedCount}.`);
+  console.log(`Added ACP interactives with reopen evidence: ${finalResult.verifiedGeneratedCount}.`);
 }
+printAcpFailures(finalResult);
 
 async function runWithAuthRetry(apply, holdOpen = !headless) {
   const runOptions = { ...options, holdOpen: holdOpen ? options.holdOpen : null };
@@ -104,6 +111,14 @@ async function runWithAuthRetry(apply, holdOpen = !headless) {
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");
     if ((await runAuth()).status !== 0) stop("Authentication refresh was not completed.");
     return runAcpInteractiveWorkflow({ target, options: runOptions, apply });
+  }
+}
+
+function printAcpFailures(result) {
+  if (!result?.failureCount) return;
+  console.log(`\nACP pages needing follow-up: ${result.failureCount}.`);
+  for (const line of formatAcpFailureSummary(result.report)) {
+    console.log(`  - ${line}`);
   }
 }
 
