@@ -40,7 +40,13 @@ images locally and appends only results above the confidence floor; no question
 image is sent to an external service. It distinguishes
 assessed representation questions—such as fraction/decimal/mixed-number
 conversions—from reflection prompts before enabling **Include in Learning
-Progress**. The runner requires the configured `expectedQuestionCount` before
+Progress**. Common Primary story actions such as receiving more, losing, eating,
+selling, or giving away are recognised as arithmetic evidence. Within a saved
+Primary 1 Mathematics map, readable number stories may use explicit activity
+structures—Joining, Separating, Part-Part-Whole, and Comparison—to resolve a tie:
+values within 20 select the mental-calculation outcome, while larger values up to
+100 select the within-100 outcome. Empty stems, reflections, other levels, and
+contradictory metadata never use this fallback. The runner requires the configured `expectedQuestionCount` before
 any tagging begins. For broad
 multi-topic examinations, an activity may carry `reviewedOutcomePrefixes` keyed
 by question number. Each reviewed syllabus code is resolved uniquely against the

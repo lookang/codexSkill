@@ -1476,7 +1476,11 @@ async function ensureQuestionTags(page, {
   } else {
     console.log(`      Question ${questionId}: question body could not be read; no outcome will be added.`);
   }
-  const curriculumQuestion = isSubstantiveCurriculumQuestion(fullText, sectionSubject);
+  const curriculumQuestion = isSubstantiveCurriculumQuestion(
+    fullText,
+    sectionSubject,
+    activityTitle
+  );
 
   // A question that awards marks is a real assessed question, so it is included in
   // Learning Progress. Anything else is left exactly as the author set it, and the

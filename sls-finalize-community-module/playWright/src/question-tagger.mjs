@@ -76,11 +76,72 @@ export async function loadDictionaries(root) {
 const REFLECTIVE_QUESTION =
   /\b(?:reflect(?:ion|ive)?|metacognit|confidence|suggested answer|next attempt|thinking strateg|what (?:did|will) i|how (?:did|does|could|will) (?:the )?(?:feedback|hint|strateg))\b/i;
 
-export function isSubstantiveCurriculumQuestion(text, subject = "") {
+function primaryActivityOperations(text = "") {
+  const clean = String(text);
+  const operations = new Set();
+  if (/\bjoining\b|\bfinding (?:the )?whole\b|\bstart\s*\+\s*change\b/i.test(clean)) {
+    operations.add("add");
+  }
+  if (
+    /\bseparating\b|\bfinding (?:the )?part\b|\bcomparison\b|\bend\s*[-−]\s*(?:start|change)\b/i.test(clean)
+  ) {
+    operations.add("subtract");
+  }
+  return operations;
+}
+
+function readableNumberStory(text = "") {
+  const values = [...String(text).matchAll(/\b\d+(?:\.\d+)?\b/g)].map((match) => Number(match[0]));
+  return new Set(values.filter(Number.isFinite)).size >= 2;
+}
+
+export function isSubstantiveCurriculumQuestion(text, subject = "", contextText = "") {
   const clean = String(text ?? "").replace(/\s+/g, " ").trim();
   if (!clean || REFLECTIVE_QUESTION.test(clean)) return false;
-  if (/math/i.test(String(subject ?? ""))) return looksMathematical(clean);
+  if (/math/i.test(String(subject ?? ""))) {
+    return looksMathematical(clean) || (
+      readableNumberStory(clean) && primaryActivityOperations(contextText).size > 0
+    );
+  }
   return tokenize(clean).size >= 2;
+}
+
+function primaryOneArithmeticFallback(pool, features, questionFeatures, contextText) {
+  const maps = [...new Set(pool.map((entry) => entry.contentMap))];
+  if (maps.length !== 1 || !/^Pri 1 Mathematics \(2021\)$/i.test(maps[0])) return null;
+
+  const operations = new Set([
+    ...features.operations,
+    ...primaryActivityOperations(contextText)
+  ]);
+  if (![...operations].some((operation) => operation === "add" || operation === "subtract")) {
+    return null;
+  }
+  if (!readableNumberStory(questionFeatures.clean)) return null;
+
+  const additionSubtraction = pool.filter((entry) =>
+    entry.outcomePath?.some((part) => /^Addition and subtraction$/i.test(String(part)))
+  );
+  if (additionSubtraction.length === 0) return null;
+
+  const numbers = [...new Set(
+    [...questionFeatures.clean.matchAll(/\b\d+(?:\.\d+)?\b/g)]
+      .map((match) => Number(match[0]))
+      .filter(Number.isFinite)
+  )];
+  const allWithin20 = numbers.length >= 2 && numbers.every((value) => value >= 0 && value <= 20);
+  const moreThanTwoOneDigit =
+    operations.size === 1 && operations.has("add") && numbers.length > 2 && numbers.every((value) => value < 10);
+
+  let pattern = null;
+  if (/\balgorithms?\b/i.test(contextText)) pattern = /^2\.6\b/i;
+  else if (moreThanTwoOneDigit) pattern = /^2\.4\b/i;
+  else if (allWithin20) pattern = /^2\.7\b/i;
+  else if (numbers.every((value) => value >= 0 && value <= 100)) pattern = /^2\.5\b/i;
+  if (!pattern) return null;
+
+  const matches = additionSubtraction.filter((entry) => pattern.test(String(entry.outcome)));
+  return matches.length === 1 ? matches[0] : null;
 }
 
 // Quiz activities keep every question's complete stem in the right-side settings
@@ -218,10 +279,20 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     };
   }
 
-  // Context can disambiguate a real mathematical stem, but it must never invent
-  // mathematics when SLS failed to expose the stem. That exact failure turned the
-  // punctuation in "Length – Convert" into a fractions outcome.
-  if (questionFeatures.operations.size === 0 && questionFeatures.topics.size === 0) {
+  const contextFeatures = mathFeatures(contextText || "");
+  for (const operation of primaryActivityOperations(contextText)) {
+    contextFeatures.operations.add(operation);
+  }
+  // Context can disambiguate a readable Primary number story, but it must never
+  // invent mathematics when SLS failed to expose the stem. That exact failure
+  // turned the punctuation in "Length – Convert" into a fractions outcome.
+  const contextBackedPrimaryStory =
+    readableNumberStory(questionFeatures.clean) && contextFeatures.operations.size > 0;
+  if (
+    questionFeatures.operations.size === 0 &&
+    questionFeatures.topics.size === 0 &&
+    !contextBackedPrimaryStory
+  ) {
     return {
       decision: "skip",
       reason: "primary question evidence contained no readable mathematical operation or topic",
@@ -229,7 +300,6 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     };
   }
 
-  const contextFeatures = mathFeatures(contextText || "");
   const supportingFeatures = mathFeatures(supportingText || "");
   // A suggested answer may confirm the operation or representation used, but it
   // cannot create a topic that the stem/shared stimulus/activity context never
@@ -264,6 +334,26 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score);
   if (ranked.length === 0) {
+    const fallback = primaryOneArithmeticFallback(pool, features, questionFeatures, contextText);
+    if (fallback) {
+      return {
+        decision: "tag",
+        contentMap: fallback.contentMap,
+        outcome: fallback.outcome,
+        outcomePath: fallback.outcomePath,
+        score: null,
+        tiedCount: 1,
+        basis: "best-fit Primary 1 arithmetic outcome from a readable number story and explicit activity structure",
+        features,
+        evidence: {
+          question: questionFeatures.clean,
+          operations: [...questionFeatures.operations],
+          operands: [...questionFeatures.operands],
+          topics: [...questionFeatures.topics],
+          contextTopics: [...contextFeatures.topics]
+        }
+      };
+    }
     return { decision: "skip", reason: "no outcome matched the mathematics", features };
   }
 
@@ -283,6 +373,26 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   if (supportingUsed) basis += ", corroborated by the suggested answer";
   if (tiedCount > 1) {
     const tied = ranked.filter((entry) => entry.score === best.score);
+    const fallback = primaryOneArithmeticFallback(pool, features, questionFeatures, contextText);
+    if (fallback) {
+      return {
+        decision: "tag",
+        contentMap: fallback.contentMap,
+        outcome: fallback.outcome,
+        outcomePath: fallback.outcomePath,
+        score: null,
+        tiedCount: 1,
+        basis: "best-fit Primary 1 arithmetic outcome from a readable number story and explicit activity structure",
+        features,
+        evidence: {
+          question: questionFeatures.clean,
+          operations: [...questionFeatures.operations],
+          operands: [...questionFeatures.operands],
+          topics: [...questionFeatures.topics],
+          contextTopics: [...contextFeatures.topics]
+        }
+      };
+    }
     return {
       decision: "skip",
       reason: `${tiedCount} outcomes tied on the readable primary question evidence`,

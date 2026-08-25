@@ -70,7 +70,7 @@ Use the module title as the primary signal and activity titles as supporting evi
 4. Choose the available Content Map matching Subject and Level. Do not guess between equally plausible maps.
 5. Compare available official learning outcomes with the normalized module and activity titles.
 6. Select the single most specific leaf outcome covering the current activity batch.
-7. Proceed automatically only when level and outcome have one clear best match. Ask before saving when the level is absent, two outcomes are similarly plausible, or available labels contradict the title.
+7. Proceed automatically when level and outcome have one clear best match. For a readable assessed Primary 1 Mathematics number story inside the saved Primary 1 map, use explicit activity structures such as Joining, Separating, Part-Part-Whole, or Comparison to resolve an otherwise tied addition/subtraction outcome. Prefer `2.7 mental calculation involving addition and subtraction` when the visible values are within 20; use the matching within-100 outcome for larger values. Never apply this fallback to an empty/unreadable stem, a reflection, another subject or level, or contradictory saved metadata. Ask before saving for other unresolved ties.
 
 Record the inferred Subject, Level, Content Map, outcome, and a one-line rationale in the final report.
 

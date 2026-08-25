@@ -53,10 +53,10 @@ export function stripBoilerplate(text) {
 // symbolic ones. Note "-" is deliberately not treated as subtraction: it appears
 // in ordinary hyphenation far more often than as an operator.
 const OPERATIONS = [
-  ["add", /\+|\badd(?:ing|ition|ed)?\b|\bsum\b|\baltogether\b|\bin total\b|\bmore than\b/i],
+  ["add", /\+|\badd(?:ing|ition|ed)?\b|\bsum\b|\baltogether\b|\bin total\b|\bmore than\b|\b(?:gives?|gave|receives?|received|gets?|got|collects?|collected|buys?|bought|finds?|found)\b[^.!?\n]{0,60}\bmore\b/i],
   // U+2013 EN DASH is punctuation in SLS activity titles ("Length – Convert"),
   // not a mathematical minus. Only U+2212 MINUS SIGN is trusted as a symbol.
-  ["subtract", /[−]|\bsubtract(?:ing|ion|ed)?\b|\bdifference\b|\bminus\b|\bhow many more\b|\bleft over\b|\bremaining\b/i],
+  ["subtract", /[−]|\bsubtract(?:ing|ion|ed)?\b|\bdifference\b|\bminus\b|\bhow many more\b|\bleft over\b|\bremaining\b|\bthe rest\b|\b(?:has|had)\b[\s\S]{0,100}\b(?:loses?|lost|eats?|ate|sells?|sold|spends?|spent|uses?|used|removes?|removed)\b|\b(?:gives?|gave)\b[^.!?\n]{0,50}\b(?:away|to)\b/i],
   // "of <number>" was far too loose: "a total mass of 14 kg" is not a
   // multiplication. Only explicit grouping language counts.
   ["multiply", /[×✕]|\\times|\\cdot|\bmultipl(?:y|ying|ication|ied)\b|\bproduct\b|\btimes\b|\b\d+\s*(?:sets?|groups?|rows?)\s+of\b/i],

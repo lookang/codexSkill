@@ -23,6 +23,23 @@ const DICT = [
         "2.1 adding and subtracting two related fractions within one whole")
 ];
 const FA = "Q1 Find FEEDBACK ASSISTANT Feedback Assistant - Mathematics will provide marks and feedback for this question. MARKS [1] ";
+const P1_ADDITION = [
+  entry(
+    "Pri 1 Mathematics (2021)",
+    ["Number and Algebra", "Whole Numbers", "Addition and subtraction"],
+    "2.1 concepts of addition and subtraction"
+  ),
+  entry(
+    "Pri 1 Mathematics (2021)",
+    ["Number and Algebra", "Whole Numbers", "Addition and subtraction"],
+    "2.5 adding and Subtracting within 100"
+  ),
+  entry(
+    "Pri 1 Mathematics (2021)",
+    ["Number and Algebra", "Whole Numbers", "Addition and subtraction"],
+    "2.7 mental calculation involving addition and subtraction within 20 of a 2-digit number and ones without renaming of a 2-digit number and tens"
+  )
+];
 
 test("levels map to their 2021 content maps", () => {
   assert.equal(levelToContentMap("Primary 4"), "Pri 4 Mathematics (2021)");
@@ -168,6 +185,60 @@ test("an unresolved tie is skipped instead of guessed", () => {
   assert.equal(result.decision, "skip");
   assert.equal(result.tiedCount, 2);
   assert.match(result.reason, /tied/);
+});
+
+test("a Primary 1 joining story uses the within-20 mental-calculation fallback", () => {
+  const result = proposeQuestionTag(
+    "John has 12 apples. His mother gives him 8 more apples. How many apples does John have now?",
+    P1_ADDITION,
+    {
+      allowedContentMaps: ["Pri 1 Mathematics (2021)"],
+      contextText: "Joining (Start + Change = End)"
+    }
+  );
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /^2\.7 mental calculation/);
+  assert.match(result.basis, /best-fit Primary 1 arithmetic outcome/);
+});
+
+test("a Primary 1 part-whole story can use explicit activity structure", () => {
+  const stem = "There are 16 boys and 3 girls in the classroom. How many children are there altogether?";
+  const result = proposeQuestionTag(stem, P1_ADDITION, {
+    allowedContentMaps: ["Pri 1 Mathematics (2021)"],
+    contextText: "Part-Part-Whole (Finding the Whole)"
+  });
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /^2\.7 mental calculation/);
+  assert.equal(
+    isSubstantiveCurriculumQuestion(stem, "Mathematics - MATHS", "Part-Part-Whole (Finding the Whole)"),
+    true
+  );
+});
+
+test("a Primary 1 separating story recognises common subtraction verbs", () => {
+  const result = proposeQuestionTag(
+    "Sarah has 13 biscuits. She eats 10 biscuits. How many biscuits are left?",
+    P1_ADDITION,
+    {
+      allowedContentMaps: ["Pri 1 Mathematics (2021)"],
+      contextText: "Separating (Start − Change = End)"
+    }
+  );
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /^2\.7 mental calculation/);
+});
+
+test("a Primary 1 number story above 20 falls back to addition and subtraction within 100", () => {
+  const result = proposeQuestionTag(
+    "A box has 42 red balls and 17 blue balls. How many balls are there altogether?",
+    P1_ADDITION,
+    {
+      allowedContentMaps: ["Pri 1 Mathematics (2021)"],
+      contextText: "Part-Part-Whole (Finding the Whole)"
+    }
+  );
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /^2\.5 adding and Subtracting within 100/);
 });
 
 test("an activity title cannot invent mathematics when the question body is unreadable", () => {
