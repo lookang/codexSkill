@@ -632,10 +632,8 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
   let addClicked = false;
   while (Date.now() - started < timeoutMs) {
     await assertNoSlsError(page);
-    const addButton = page.locator(".bx--modal-container:visible button")
-      .filter({ hasText: /^ADD$/ })
-      .last();
-    if (await addButton.isVisible().catch(() => false) && await addButton.isEnabled().catch(() => false)) {
+    const addButton = await findAcpPreviewAddButton(page);
+    if (await isUsableLocator(addButton)) {
       const current = await readAcpPageState(page);
       const preAdd = assessAcpPreAddState({
         completedBefore,
@@ -673,6 +671,34 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
     generationSeconds: Math.round((Date.now() - started) / 1000),
     fileName: state.completedInteractiveFiles.at(-1) ?? null,
   };
+}
+
+export async function findAcpPreviewAddButton(page) {
+  const dialog = await activeAcpPreviewDialog(page);
+  const roleButton = dialog.getByRole("button", { name: /^add$/i }).last();
+  if (await isUsableLocator(roleButton)) return roleButton;
+  const iconButton = dialog.locator('button:visible:has(svg[name="Plus24"])')
+    .filter({ hasText: /\badd\b/i })
+    .last();
+  if (await isUsableLocator(iconButton)) return iconButton;
+  return dialog.locator("button:visible")
+    .filter({ hasText: /\badd\b/i })
+    .last();
+}
+
+async function activeAcpPreviewDialog(page) {
+  const dialogs = page.locator(".bx--modal-container:visible");
+  const previewDialog = dialogs.filter({ hasText: /Preview Interactive/i }).last();
+  if (await isVisibleLocator(previewDialog)) return previewDialog;
+  return dialogs.last();
+}
+
+async function isUsableLocator(locator) {
+  return await isVisibleLocator(locator) && await locator.isEnabled().catch(() => false);
+}
+
+async function isVisibleLocator(locator) {
+  return (await locator.count().catch(() => 0)) > 0 && await locator.isVisible().catch(() => false);
 }
 
 export async function selectTextComponentFromAddMenu(page, { timeoutMs = 10_000 } = {}) {

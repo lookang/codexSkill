@@ -13,6 +13,7 @@ import {
 } from "../src/acp-interactive.mjs";
 import {
   acpTargetIncludes,
+  findAcpPreviewAddButton,
   formatAcpFailureSummary,
   readStableAcpPageState,
   selectTextComponentFromAddMenu,
@@ -196,6 +197,38 @@ test("ACP failures are summarized with exact section, activity, and page", () =>
   assert.deepEqual(lines, [
     'Section A; Activity 5 "Compare numbers to 40 - WPLN23 P1 FA Math"; Page 2; apply: ACP did not expose ADD within 600 seconds.',
   ]);
+});
+
+test("ACP preview Add button detection ignores hidden message text and mixed case", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <div class="bx--modal-container">
+        <h1>Preview Interactive</h1>
+        <button class="cv-button bx--btn bx--btn--primary" type="button">
+          <div class="message-component message" style="display: none;">
+            <span>Something went wrong while performing this action. Please try again later.</span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" name="Plus24"></svg>
+          <span>Add</span>
+        </button>
+      </div>
+      <script>
+        document.querySelector("button").addEventListener("click", () => {
+          document.body.dataset.added = "true";
+        });
+      </script>
+    `);
+
+    const addButton = await findAcpPreviewAddButton(page);
+    assert.equal(await addButton.isVisible(), true);
+    assert.equal(await addButton.isEnabled(), true);
+    await addButton.click();
+    assert.equal(await page.locator("body").getAttribute("data-added"), "true");
+  } finally {
+    await browser.close();
+  }
 });
 
 test("the current Text/Media menu opens Text through a real hover", async () => {
