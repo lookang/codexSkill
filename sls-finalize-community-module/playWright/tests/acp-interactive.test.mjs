@@ -15,6 +15,7 @@ import {
   acpTargetIncludes,
   findAcpPreviewAddButton,
   formatAcpFailureSummary,
+  formatPromptForCli,
   readStableAcpPageState,
   selectTextComponentFromAddMenu,
 } from "../src/acp-interactive-runner.mjs";
@@ -197,6 +198,32 @@ test("ACP failures are summarized with exact section, activity, and page", () =>
   assert.deepEqual(lines, [
     'Section A; Activity 5 "Compare numbers to 40 - WPLN23 P1 FA Math"; Page 2; apply: ACP did not expose ADD within 600 seconds.',
   ]);
+});
+
+test("ACP prompts are printed with copy-safe section, activity, and page markers", () => {
+  const prompt = [
+    "Create an interactive for this exact FA Math question.",
+    "Use sliders c1 and c2.",
+  ].join("\n");
+  const output = formatPromptForCli(prompt, {
+    section: { label: "A", id: "109240916" },
+    activity: {
+      index: 7,
+      title: "Compare - ***Comparison (Find the Larger or Smaller Quantity",
+      id: "109614762",
+    },
+    pageIndex: 0,
+  });
+
+  assert.match(
+    output,
+    /^      ----- BEGIN PROMPT LIBRARY TEXT \(Section A; Activity 8 "Compare - \*\*\*Comparison \(Find the Larger or Smaller Quantity"; Page 1; \d+ characters\) -----/,
+  );
+  assert.match(output, /Create an interactive for this exact FA Math question\.\nUse sliders c1 and c2\./);
+  assert.match(
+    output,
+    /----- END PROMPT LIBRARY TEXT \(Section A; Activity 8 "Compare - \*\*\*Comparison \(Find the Larger or Smaller Quantity"; Page 1\) -----$/,
+  );
 });
 
 test("ACP preview Add button detection ignores hidden message text and mixed case", async () => {

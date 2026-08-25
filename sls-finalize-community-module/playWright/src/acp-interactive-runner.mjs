@@ -223,6 +223,13 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
             );
           }
           const prompt = await buildPrompt(promptPage, questionText, policy, specificRequirements);
+          pageReport.promptText = prompt;
+          console.log(`      Prompt Library generated ${prompt.length} characters; full text follows.`);
+          console.log(formatPromptForCli(prompt, {
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+          }));
           await slsPage.bringToFront();
           await selectPage(slsPage, pageIndex);
           const before = await readStableAcpPageState(slsPage);
@@ -270,6 +277,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
             randomization,
             specificRequirements: specificRequirements || null,
             promptCharacters: prompt.length,
+            promptText: prompt,
             reopenVerified: true,
             ...result,
           };
@@ -433,6 +441,26 @@ function formatAcpFailureLine(failure) {
   return `${section}; ${activityNumber}${activityTitle}; Page ${pageNo}; ${failure.stage || "apply"}: ${message}`;
 }
 
+export function formatPromptForCli(prompt, { section = {}, activity = {}, pageIndex = null } = {}) {
+  const location = formatPromptLocation({ section, activity, pageIndex });
+  const text = String(prompt ?? "").replace(/\s+$/g, "");
+  return [
+    `      ----- BEGIN PROMPT LIBRARY TEXT (${location}; ${text.length} characters) -----`,
+    text,
+    `      ----- END PROMPT LIBRARY TEXT (${location}) -----`,
+  ].join("\n");
+}
+
+function formatPromptLocation({ section = {}, activity = {}, pageIndex = null } = {}) {
+  const sectionLabel = section.label ? `Section ${section.label}` : (section.id ? `Section ${section.id}` : "Unknown section");
+  const activityNumber = Number.isInteger(activity.index)
+    ? `Activity ${activity.index + 1}`
+    : (activity.id ? `Activity ${activity.id}` : "Unknown activity");
+  const activityTitle = activity.title ? ` "${activity.title}"` : "";
+  const pageNo = Number.isInteger(pageIndex) ? pageIndex + 1 : "?";
+  return `${sectionLabel}; ${activityNumber}${activityTitle}; Page ${pageNo}`;
+}
+
 async function recoverAfterAcpPageFailure(page, target, { sectionId, activityId } = {}) {
   await page.bringToFront().catch(() => {});
   await closeVisibleAcpDialogs(page);
@@ -495,7 +523,6 @@ async function buildPrompt(page, questionText, policy, specificRequirements = ""
   if (!prompt || prompt.length < 500) {
     throw new GuardError(`Prompt Library returned only ${prompt.length} characters for "${questionText}".`);
   }
-  console.log(`      Prompt Library generated ${prompt.length} characters.`);
   return prompt;
 }
 
