@@ -1,5 +1,5 @@
 # SLS Playwright Automation
-
+https://docs.google.com/spreadsheets/d/e/2PACX-1vTTXhI28OmihOg_4Z5lkObQI4u3mEdWUzpdte4fjtlv3ld6Y7Q-0DgUUBbGkiFajk6Ypbogr2mPtq76/pubhtml
 This is the reproducible browser-automation package bundled with the
 [`sls-finalize-community-module`](../SKILL.md) Codex skill. It works through the
 real SLS Community Gallery authoring interface with guarded Playwright locators,
