@@ -36,8 +36,8 @@ private SLS content exports to this repository.
 ## Reproduce on Windows
 
 ```powershell
-git clone https://github.com/lookang/codexSkill.git
-cd .\codexSkill\sls-finalize-community-module\playWright
+git clone https://github.com/lookang/sls-playwright-automation.git
+cd .\sls-playwright-automation
 npm.cmd ci --cache .npm-cache
 npm.cmd run check
 npm.cmd test
@@ -52,8 +52,8 @@ start with `RUN-SLS-SMOKE-CHECK.cmd` for a read-only live check or
 ## Reproduce on macOS
 
 ```bash
-git clone https://github.com/lookang/codexSkill.git
-cd codexSkill/sls-finalize-community-module/playWright
+git clone https://github.com/lookang/sls-playwright-automation.git
+cd sls-playwright-automation
 chmod +x ./*.command ./scripts/run-macos.sh
 ./00-install-and-check.command
 ./01-authenticate-sls.command

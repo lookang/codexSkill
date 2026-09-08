@@ -1,14 +1,14 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
-export async function loadConfig(configPath) {
+export async function loadConfig(configPath, options = {}) {
   const source = await fs.readFile(configPath, "utf8");
   const config = JSON.parse(source);
-  validateConfig(config);
+  validateConfig(config, options);
   return config;
 }
 
-export function validateConfig(config) {
+export function validateConfig(config, { allowIncompleteCurriculum = false } = {}) {
   if (config?.schemaVersion !== 1) {
     throw new Error("The config must use schemaVersion 1.");
   }
@@ -22,12 +22,20 @@ export function validateConfig(config) {
   if (!url.pathname.includes(`/admin/community-gallery/module/edit/${config.module.id}`)) {
     throw new Error("module.adminEditUrl must be the exact admin edit route for module.id.");
   }
-  for (const field of ["subject", "level", "contentMap", "outcome", "questionKeyword"]) {
-    if (!config?.defaults?.[field]) {
-      throw new Error(`defaults.${field} is required.`);
+  if (!config?.defaults || typeof config.defaults !== "object") {
+    throw new Error("The config requires a defaults object.");
+  }
+  if (!allowIncompleteCurriculum) {
+    for (const field of ["subject", "level", "contentMap", "outcome", "questionKeyword"]) {
+      if (!config.defaults[field]) {
+        throw new Error(`defaults.${field} is required.`);
+      }
     }
   }
-  if (!Array.isArray(config?.defaults?.outcomePath)) {
+  if (
+    (!allowIncompleteCurriculum && !Array.isArray(config?.defaults?.outcomePath)) ||
+    (config?.defaults?.outcomePath != null && !Array.isArray(config.defaults.outcomePath))
+  ) {
     throw new Error("defaults.outcomePath must be an array of curriculum branches.");
   }
   if (!Array.isArray(config.sections) || config.sections.length === 0) {
@@ -37,9 +45,21 @@ export function validateConfig(config) {
     if (!section.label || !section.title || !Array.isArray(section.activities)) {
       throw new Error("Each section requires label, title, and an activities array.");
     }
+    if (section.supplementalQuestionOutcomes != null) {
+      validateSupplementalQuestionOutcomes(
+        section.supplementalQuestionOutcomes,
+        `Section ${section.label}`
+      );
+    }
     for (const activity of section.activities) {
       if (!activity.title) {
         throw new Error(`Section ${section.label} contains an activity without a title.`);
+      }
+      if (activity.supplementalQuestionOutcomes != null) {
+        validateSupplementalQuestionOutcomes(
+          activity.supplementalQuestionOutcomes,
+          `Section ${section.label} activity ${activity.title}`
+        );
       }
       if (activity.reviewedOutcomePrefixes != null) {
         if (
@@ -62,6 +82,34 @@ export function validateConfig(config) {
   }
   if (config.gamification) {
     validateGamificationConfig(config.gamification);
+  }
+  if (config.defaults.supplementalQuestionOutcomes != null) {
+    validateSupplementalQuestionOutcomes(
+      config.defaults.supplementalQuestionOutcomes,
+      "defaults"
+    );
+  }
+}
+
+function validateSupplementalQuestionOutcomes(entries, label) {
+  if (!Array.isArray(entries)) {
+    throw new Error(`${label} supplementalQuestionOutcomes must be an array.`);
+  }
+  for (const [index, entry] of entries.entries()) {
+    for (const field of ["contentMap", "outcome", "source"]) {
+      if (typeof entry?.[field] !== "string" || !entry[field].trim()) {
+        throw new Error(`${label} supplementalQuestionOutcomes[${index}].${field} is required.`);
+      }
+    }
+    if (
+      entry.questionNumbers != null &&
+      (!Array.isArray(entry.questionNumbers) ||
+        entry.questionNumbers.some((value) => !Number.isInteger(value) || value < 1))
+    ) {
+      throw new Error(
+        `${label} supplementalQuestionOutcomes[${index}].questionNumbers must contain positive integers.`
+      );
+    }
   }
 }
 
@@ -129,6 +177,11 @@ export function mergeDefaults(config) {
       ...section,
       activities: section.activities.map((activity) => ({
         questionKeyword: section.questionKeyword ?? config.defaults.questionKeyword,
+        supplementalQuestionOutcomes:
+          activity.supplementalQuestionOutcomes ??
+          section.supplementalQuestionOutcomes ??
+          config.defaults.supplementalQuestionOutcomes ??
+          [],
         ...activity
       }))
     }))
@@ -270,11 +323,20 @@ export const PLACEHOLDER_MARKER = "REVIEW-BEFORE-RUNNING";
 export function unreviewedPlaceholders(config) {
   const found = [];
   const check = (where, key, value) => {
-    if (typeof value === "string" && value.includes(PLACEHOLDER_MARKER)) found.push(`${where}.${key}`);
+    if (
+      value == null ||
+      (typeof value === "string" && (!value.trim() || value.includes(PLACEHOLDER_MARKER)))
+    ) {
+      found.push(`${where}.${key}`);
+    }
   };
   for (const [key, value] of Object.entries(config.defaults || {})) check("defaults", key, value);
   for (const section of config.sections || []) {
-    for (const [key, value] of Object.entries(section)) check(`section ${section.label}`, key, value);
+    for (const [key, value] of Object.entries(section)) {
+      if (typeof value === "string" && value.includes(PLACEHOLDER_MARKER)) {
+        found.push(`section ${section.label}.${key}`);
+      }
+    }
   }
   return found;
 }
@@ -308,6 +370,9 @@ export function questionCarriesMap(questionTags, contentMap) {
 // says which pair it belongs to - "Sec 1 Mathematics (G1) (2028)" is the G1 subject
 // at Secondary 1 - so the pair can be derived rather than guessed.
 export function subjectForContentMap(contentMap, fallback = null) {
+  if (/Foundation Mathematics/i.test(String(contentMap ?? ""))) {
+    return "Foundation Mathematics - FMATHS";
+  }
   if (/Additional Mathematics/i.test(String(contentMap ?? ""))) {
     const stream = /\(G([23])\)/i.exec(String(contentMap ?? ""))?.[1];
     return stream

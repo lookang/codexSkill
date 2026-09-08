@@ -17,21 +17,35 @@ const headless = args.includes("--headless");
 const explicitApply = args.includes("--apply");
 const explicitDryRun = args.includes("--dry-run");
 const selectedWorkflow = isSelectedWorkflowChild(args);
+const provider = readText("--provider", "sls").toLowerCase();
+if (!new Set(["sls", "chatgpt"]).has(provider)) {
+  stop("--provider must be either sls or chatgpt.");
+}
+const usingChatGpt = provider === "chatgpt";
 
 if (explicitApply && explicitDryRun) stop("Use either --apply or --dry-run, not both.");
 
-console.log("\nSLS FA Math ACP Interactives");
+console.log(usingChatGpt ? "\nSLS FA Math ChatGPT Interactives" : "\nSLS FA Math ACP Interactives");
 console.log("Reviews every section, activity and page before changing anything.");
-console.log("For each FA Math question without an existing interactive, it generates the");
-console.log("matching Prompt Library prompt and adds one ACP Interactive component.");
-console.log("Randomized FA Math variables and bounds become source-matching ACP sliders.");
-console.log("Pages with several FA Math questions stop at a guard until page breaks exist.\n");
+if (usingChatGpt) {
+  console.log("For each eligible FA Math question, it sends the matching Prompt Library");
+  console.log("text to ChatGPT, preferring GPT-5.6 Sol High when available, downloads a real ZIP,");
+  console.log("and warns before continuing with the currently selected fallback model.");
+  console.log("validates root-level index.html, and uploads the ZIP to the same SLS page.");
+  console.log("Existing native ACP ZIPs are preserved for side-by-side comparison.");
+} else {
+  console.log("For each FA Math question without an existing interactive, it generates the");
+  console.log("matching Prompt Library prompt and adds one ACP Interactive component.");
+}
+console.log("Randomized FA Math variables and bounds become source-matching interactive sliders.");
+console.log("Multipart questions keep their shared context and nested parts in one interactive.");
+console.log("Pages with several top-level FA Math questions stop until page breaks exist.\n");
 
 const selectedTarget = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
 const target = moduleWideAcpTarget(selectedTarget);
 if (selectedTarget.scope !== "module") {
   console.log(
-    "The supplied nested URL selected this module; ACP traversal will still continue through " +
+    `The supplied nested URL selected this module; ${usingChatGpt ? "GPT" : "ACP"} traversal will still continue through ` +
       "every section, activity and page.",
   );
 }
@@ -47,10 +61,14 @@ const options = {
   acpInteractive: {
     grade: readText("--grade", "Primary 5-6"),
     subject: readText("--subject", "Mathematics"),
-    generationTimeoutMs: readInteger("--generation-timeout", 600) * 1000,
+    generationTimeoutMs: readInteger("--generation-timeout", usingChatGpt ? 1800 : 200) * 1000,
     maximumInteractives: args.includes("--max-interactives")
       ? readInteger("--max-interactives", null)
       : null,
+  },
+  gptInteractive: {
+    profileDir: path.join(root, ".auth", "chatgpt-profile"),
+    waitForUser: ask,
   },
   holdOpen: selectedWorkflow
     ? null
@@ -80,10 +98,14 @@ if (explicitApply) {
         "run RUN-SLS-PAGE-BREAK.cmd first, then retry.",
     );
   } else if (!explicitDryRun && review.candidateCount > 0) {
-    console.log("\nReview is clear. Continuing automatically with the guarded ACP apply pass...");
+    console.log(
+      `\nReview is clear. Continuing automatically with the guarded ${usingChatGpt ? "ChatGPT" : "ACP"} apply pass...`,
+    );
     finalResult = await runWithAuthRetry(true);
   } else if (review.candidateCount === 0) {
-    console.log("No FA Math questions need a new ACP interactive. Nothing was changed in SLS.");
+    console.log(
+      `No FA Math questions need a new ${usingChatGpt ? "ChatGPT" : "ACP"} interactive. Nothing was changed in SLS.`,
+    );
   } else {
     console.log("Dry-run review complete. Nothing was changed in SLS.");
   }
@@ -92,14 +114,17 @@ if (explicitApply) {
 console.log(`\nReport: ${finalResult.reportPath}`);
 console.log(`Trace:  ${finalResult.tracePath}`);
 if (finalResult.report.mode === "apply") {
-  console.log(`Added ACP interactives with reopen evidence: ${finalResult.verifiedGeneratedCount}.`);
+  console.log(
+    `Added ${usingChatGpt ? "ChatGPT" : "ACP"} interactives with reopen evidence: ` +
+      `${finalResult.verifiedGeneratedCount}.`,
+  );
 }
 printAcpFailures(finalResult);
 
 async function runWithAuthRetry(apply, holdOpen = !headless) {
   const runOptions = { ...options, holdOpen: holdOpen ? options.holdOpen : null };
   try {
-    return await runAcpInteractiveWorkflow({ target, options: runOptions, apply });
+    return await runAcpInteractiveWorkflow({ target, options: runOptions, apply, provider });
   } catch (error) {
     if (!/authentication is required|authentication was not found/i.test(error.message)) throw error;
     if (selectedWorkflow) {
@@ -110,13 +135,13 @@ async function runWithAuthRetry(apply, holdOpen = !headless) {
     }
     console.log("\nThe reusable SLS session is missing or expired. Chrome will open for manual authentication.");
     if ((await runAuth()).status !== 0) stop("Authentication refresh was not completed.");
-    return runAcpInteractiveWorkflow({ target, options: runOptions, apply });
+    return runAcpInteractiveWorkflow({ target, options: runOptions, apply, provider });
   }
 }
 
 function printAcpFailures(result) {
   if (!result?.failureCount) return;
-  console.log(`\nACP pages needing follow-up: ${result.failureCount}.`);
+  console.log(`\n${usingChatGpt ? "GPT" : "ACP"} pages needing follow-up: ${result.failureCount}.`);
   for (const line of formatAcpFailureSummary(result.report)) {
     console.log(`  - ${line}`);
   }
@@ -171,11 +196,11 @@ function stop(message, code = 1) {
 }
 
 process.on("uncaughtException", (error) => {
-  console.error(`\nSLS ACP interactive automation stopped: ${error.message}`);
+  console.error(`\nSLS ${usingChatGpt ? "GPT" : "ACP"} interactive automation stopped: ${error.message}`);
   process.exitCode = 1;
 });
 
 process.on("unhandledRejection", (error) => {
-  console.error(`\nSLS ACP interactive automation stopped: ${error?.message ?? error}`);
+  console.error(`\nSLS ${usingChatGpt ? "GPT" : "ACP"} interactive automation stopped: ${error?.message ?? error}`);
   process.exitCode = 1;
 });

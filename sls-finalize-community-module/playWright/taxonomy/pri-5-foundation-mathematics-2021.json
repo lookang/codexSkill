@@ -1,0 +1,525 @@
+{
+  "contentMap": "Pri 5 Foundation Mathematics (2021)",
+  "rowCount": 94,
+  "outcomes": [
+    {
+      "outcome": "Acquire mathematical concepts and skills for everyday use and continuous learning in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Build confidence and foster interest in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "1.1 reading and writing numbers in numerals and in words",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 10 million"
+      ]
+    },
+    {
+      "outcome": "1.2 comparing and ordering numbers up to 100 000",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 10 million"
+      ]
+    },
+    {
+      "outcome": "1.3 rounding numbers to the nearest 10, 100 or 1000",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 10 million"
+      ]
+    },
+    {
+      "outcome": "1.4 patterns in number sequences",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 10 million"
+      ]
+    },
+    {
+      "outcome": "1.5 use of almost equal to",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Numbers up to 10 million"
+      ]
+    },
+    {
+      "outcome": "2.1 addition and subtraction algorithms (up to 3 digits) without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "2.2 multiplication and division algorithms (up to 2 digits by 1 digit) without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "2.3 multiplying and dividing by 10, 100, 1000 and their multiples without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "2.4 order of operations",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "2.5 use of brackets",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "2.6 mental calculation involving addition and subtraction of a 3-digit number and ones/tens/hundreds multiplication and division within the multiplication tables",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Four Operations"
+      ]
+    },
+    {
+      "outcome": "3.1 factors and multiples and their relationship",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Factors and Multiples"
+      ]
+    },
+    {
+      "outcome": "3.2 determining if a 1-digit number is a factor of a given number within 100",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Factors and Multiples"
+      ]
+    },
+    {
+      "outcome": "3.3 finding the common factors of two given numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Factors and Multiples"
+      ]
+    },
+    {
+      "outcome": "3.4 determining if a number is a multiple of a given 1-digit number",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Factors and Multiples"
+      ]
+    },
+    {
+      "outcome": "3.5 finding the common multiples of two given 1-digit numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Whole Numbers",
+        "Factors and Multiples"
+      ]
+    },
+    {
+      "outcome": "1.1 fraction as part of a whole",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Concepts of fractions"
+      ]
+    },
+    {
+      "outcome": "1.2 fraction as part of a set",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Concepts of fractions"
+      ]
+    },
+    {
+      "outcome": "2.1 equivalent fractions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Equivalent fractions"
+      ]
+    },
+    {
+      "outcome": "2.2 expressing a fraction in its simplest form",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Equivalent fractions"
+      ]
+    },
+    {
+      "outcome": "2.3 comparing and ordering unlike fractions with denominators of given fractions not exceeding 12",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Equivalent fractions"
+      ]
+    },
+    {
+      "outcome": "2.4 writing the equivalent fraction of a fraction given the denominator or the numerator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Equivalent fractions"
+      ]
+    },
+    {
+      "outcome": "3.1 mixed numbers and improper fractions, and their relationships",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Mixed numbers and improper fractions"
+      ]
+    },
+    {
+      "outcome": "4.1 adding and subtracting proper fractions with denominators of given fractions not exceeding 12 and not more than two different denominators without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "4.2 adding and subtracting mixed numbers",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "4.3 multiplying a proper/improper fraction and a whole number without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "4.4 multiplying a proper fraction and a proper/improper fraction without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "1.1 notation, representations and place values (tenths, hundredths, thousandths)",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Decimals up to 3 decimal places"
+      ]
+    },
+    {
+      "outcome": "1.2 comparing and ordering decimals",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Decimals up to 3 decimal places"
+      ]
+    },
+    {
+      "outcome": "1.3 expressing decimals as fractions",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Decimals up to 3 decimal places"
+      ]
+    },
+    {
+      "outcome": "1.4 expressing fractions as decimals when the denominator is a factor of 10 or 100",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Decimals up to 3 decimal places"
+      ]
+    },
+    {
+      "outcome": "1.5 rounding decimals to the nearest whole number 1 decimal place 2 decimal places",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Decimals up to 3 decimal places"
+      ]
+    },
+    {
+      "outcome": "2.1 adding and subtracting decimals (up to 2 decimal places) without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "2.2 multiplying and dividing (up to 3 decimal places) by 10,100,1000 and their multiples without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "2.3 converting a measurement from a smaller unit to a larger unit in decimal form, and vice versa kilometres and metres metres and centimetres kilograms and grams litres and millilitres",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "1.1 rate as the amount of a quantity per unit of another quantity",
+      "outcomePath": [
+        "Number and Algebra",
+        "Rate and speed",
+        "Rate"
+      ]
+    },
+    {
+      "outcome": "1.2 finding rate, total amount, or number of units given the other two quantities",
+      "outcomePath": [
+        "Number and Algebra",
+        "Rate and speed",
+        "Rate"
+      ]
+    },
+    {
+      "outcome": "1.1 measuring time in hours and minutes",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "1.2 converting time in hours and minutes to minutes only, and vice versa",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "1.3 finding the starting time, finishing time or duration given the other two quantities",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "1.4 24-hour clock",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Measurement",
+        "Time"
+      ]
+    },
+    {
+      "outcome": "1.1 concepts of area and perimeter of a plane figure",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "1.2 measuring area in square units, cm blank squared /m blank squared , excluding conversion between cm blank squared and m blank squared",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "1.3 area and perimeter of rectangle/square",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "1.4 finding one dimension of a rectangle given the other dimension and its area/ perimeter",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "1.5 finding the length of one side of a square given its area/perimeter",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "1.6 finding the area and perimeter of composite figures made up of rectangles and squares",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area and perimeter"
+      ]
+    },
+    {
+      "outcome": "2.1 building solids with unit cubes",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.2 measuring volume in cubic units, cm cubed / straight m cubed , excluding conversion between cm cubed and straight m cubed",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.3 drawing cubes and cuboids on isometric grid",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "1.1 perpendicular and parallel lines",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Perpendicular and parallel lines"
+      ]
+    },
+    {
+      "outcome": "1.2 draw perpendicular and parallel lines on square grid",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Perpendicular and parallel lines"
+      ]
+    },
+    {
+      "outcome": "2.1 using notation such as angle ABC and angle a to name angles",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.2 measuring angles in degrees",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.3 drawing an angle of a given size",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.4 angles on a straight line",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.5 angles at a point",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.6 vertically opposite angles",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "2.7 finding unknown angles",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Angles"
+      ]
+    },
+    {
+      "outcome": "3.1 properties of rectangle and square, excluding diagonal properties",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Rectangle and square"
+      ]
+    },
+    {
+      "outcome": "3.2 drawing rectangle and square",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Rectangle and square"
+      ]
+    },
+    {
+      "outcome": "1.1 reading and interpreting data from tables/graphs",
+      "outcomePath": [
+        "Statistics",
+        "Data representation and interpretation",
+        "Tables, Bar Graphs and Line Graphs"
+      ]
+    },
+    {
+      "outcome": "1.2 completing a table from given data",
+      "outcomePath": [
+        "Statistics",
+        "Data representation and interpretation",
+        "Tables, Bar Graphs and Line Graphs"
+      ]
+    }
+  ],
+  "subject": "Foundation Mathematics - FMATHS",
+  "level": "Primary 5",
+  "harvestedAt": "2026-09-03T00:44:14.508Z"
+}

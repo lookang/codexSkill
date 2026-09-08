@@ -61,12 +61,18 @@ for (const section of report.scan.sections) {
 
   console.log(`[${section.label}] ${section.title}`);
   console.log(`      evidence: ${questions.length} questions`);
-  if (!picked) {
-    console.log("      -> no outcome could be proposed");
+  if (!picked || !outcomeProposalIsWritable(picked)) {
+    console.log("      -> no confident outcome proposed; the existing config is unchanged");
+    if (picked?.reason) console.log(`      why     : ${picked.reason}`);
+    for (const alternative of (picked?.alternatives ?? picked?.candidates ?? []).slice(0, 3)) {
+      const score = Number.isFinite(alternative?.score) ? alternative.score.toFixed(2) : "?";
+      const outcome = String(alternative?.outcome ?? alternative?.label ?? "unlabelled candidate");
+      console.log(`      candidate ${score}: ${outcome.slice(0, 72)}`);
+    }
     console.log("");
     continue;
   }
-  if (outcomeProposalIsWritable(picked)) proposals.set(section.title, picked);
+  proposals.set(section.title, picked);
   console.log(`      propose : ${picked.outcome}`);
   console.log(`      path    : ${picked.outcomePath.join(" > ") || "(top level)"}`);
   console.log(`      why     : ${picked.reason}`);

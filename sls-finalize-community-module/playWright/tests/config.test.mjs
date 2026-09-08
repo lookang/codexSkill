@@ -56,6 +56,12 @@ test("discover is a supported read-only curriculum crawl mode", () => {
   assert.equal(options.deleteOriginals, false);
 });
 
+test("section-tags-only runs the surgical inheritance phase without question traversal", () => {
+  const options = parseArgs(["tag", "--section-tags-only"], projectRoot);
+  assert.equal(options.mode, "tag");
+  assert.equal(options.sectionTagsOnly, true);
+});
+
 test("inspect accepts an exact admin URL for another module", async () => {
   const config = mergeDefaults(await loadConfig(
     path.join(projectRoot, "configs", "p3-multiplication-algorithms.json")
@@ -172,6 +178,36 @@ test("config accepts an informational section with no activities", () => {
 
   assert.doesNotThrow(() => validateConfig(config));
   assert.deepEqual(mergeDefaults(config).sections[0].activities, []);
+});
+
+test("read-only discovery accepts missing curriculum while write validation still rejects it", () => {
+  const config = {
+    schemaVersion: 1,
+    module: {
+      id: "3dc58759-7e61-4684-9b79-c8940ff6d33b",
+      title: "JC1 Physics of Skydiving",
+      adminEditUrl:
+        "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/" +
+        "3dc58759-7e61-4684-9b79-c8940ff6d33b/module-plan"
+    },
+    defaults: {
+      subject: "Physics - H2PHY",
+      level: null,
+      contentMap: null,
+      outcomePath: [],
+      outcome: null,
+      questionKeyword: "FA Physics"
+    },
+    sections: [{ label: "A", title: "Untitled", activities: [{ title: "Skydiving Experience" }] }]
+  };
+
+  assert.doesNotThrow(() => validateConfig(config, { allowIncompleteCurriculum: true }));
+  assert.throws(() => validateConfig(config), /defaults\.level is required/);
+  assert.deepEqual(unreviewedPlaceholders(config), [
+    "defaults.level",
+    "defaults.contentMap",
+    "defaults.outcome"
+  ]);
 });
 
 test("detectScope classifies module, lesson, and activity URLs without throwing", () => {

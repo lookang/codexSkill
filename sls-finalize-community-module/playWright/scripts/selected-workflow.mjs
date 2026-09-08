@@ -5,6 +5,7 @@ import { stdin as input, stdout as output } from "node:process";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import {
   isReusableSlsAuthFailure,
+  INDIVIDUAL_STAGE_BEHAVIOR_FLAG,
   parseSelectedWorkflowSteps,
   SELECTED_WORKFLOW_CHILD_FLAG,
   SELECTED_WORKFLOW_STAGES,
@@ -21,7 +22,12 @@ console.log("Selects the module once and runs the chosen guarded stages in order
 console.log("Each stage inventories SLS first and leaves already-complete work unchanged.\n");
 
 const target = await pickAndRememberModule({ root, defaultUrl, ask, stop, argv: args });
-const selection = readFlag("--steps") ?? (args.includes("--auto") ? "AUTO" : await askForSteps());
+const selection = readFlag("--steps") ?? (
+  args.includes("--auto")
+    ? "AUTO"
+    : (args.includes("--complete") ? "COMPLETE" : await askForSteps())
+);
+const unattended = args.includes("--unattended");
 let stages;
 try {
   stages = parseSelectedWorkflowSteps(selection);
@@ -43,8 +49,23 @@ for (let index = 0; index < stages.length; index += 1) {
     target.sourceUrl,
     SELECTED_WORKFLOW_CHILD_FLAG,
   ];
+  if (!unattended) childArgs.push(INDIVIDUAL_STAGE_BEHAVIOR_FLAG);
   if (args.includes("--headless")) childArgs.push("--headless");
   if (stage.script !== "scripts/module-action.mjs") forwardPair(childArgs, "--slow-mo");
+  if (stage.id === "automation") {
+    forwardSwitch(childArgs, "--tag-questions");
+    forwardSwitch(childArgs, "--refresh-taxonomy");
+    forwardSwitch(childArgs, "--duplicate-and-replace");
+    forwardSwitch(childArgs, "--section-tags-only");
+    forwardPair(childArgs, "--tag-only-question");
+  }
+  if (stage.id === "page-break") {
+    forwardSwitch(childArgs, "--verify");
+    forwardPair(childArgs, "--timeout");
+    forwardPair(childArgs, "--long-page-viewports");
+    forwardPair(childArgs, "--chunk-viewports");
+    forwardPair(childArgs, "--max-breaks-per-activity");
+  }
   if (stage.id === "thumbnail") {
     forwardPair(childArgs, "--prompt");
     if (args.includes("--replace-existing")) childArgs.push("--replace-existing");
@@ -90,7 +111,8 @@ async function askForSteps() {
   }
   return ask(
     "\nType 1-7, a range/subset such as 1-4,6,7, or individual choices such as 1,2,5. " +
-      "Press Enter or type AUTO to check all seven and act only where needed: ",
+      "Press Enter or type COMPLETE for Automation, Page Break, Thumbnail, and Add Wee Loo Kang. " +
+      "Type AUTO only when you want all seven stages: ",
   );
 }
 
@@ -105,6 +127,10 @@ function readFlag(flag) {
 function forwardPair(targetArgs, flag) {
   const value = readFlag(flag);
   if (value !== null) targetArgs.push(flag, value);
+}
+
+function forwardSwitch(targetArgs, flag) {
+  if (args.includes(flag)) targetArgs.push(flag);
 }
 
 function runNode(childArgs, { captureOutput = false } = {}) {

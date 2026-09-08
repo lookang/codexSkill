@@ -9,7 +9,10 @@ import { parseArgs } from "../src/cli.mjs";
 import { pickAndRememberModule } from "../src/module-picker.mjs";
 import { createSlsContext, launchSlsBrowser, runSlsWorkflow } from "../src/sls-runner.mjs";
 import { applyModuleEvidenceToConfig } from "../src/module-evidence.mjs";
-import { isSelectedWorkflowChild } from "../src/selected-workflow.mjs";
+import {
+  INDIVIDUAL_STAGE_BEHAVIOR_FLAG,
+  isSelectedWorkflowChild,
+} from "../src/selected-workflow.mjs";
 
 // Browser speed can come from an argument (npm run sls:one-shot -- --slow-mo 800)
 // or the SLS_SLOW_MO environment variable, so it works from cmd.exe, PowerShell
@@ -19,7 +22,10 @@ const slowMoArgs = readSlowMo();
 // list, so anything not forwarded here is silently dropped.
 const argvFlags = process.argv.slice(2);
 const selectedWorkflow = isSelectedWorkflowChild(argvFlags);
-const passThroughArgs = ["--tag-questions", "--refresh-taxonomy", "--headless"].filter((flag) =>
+const individualStageBehavior = argvFlags.includes(INDIVIDUAL_STAGE_BEHAVIOR_FLAG);
+const unattendedSelectedWorkflow = selectedWorkflow && !individualStageBehavior;
+const duplicateAndReplace = argvFlags.includes("--duplicate-and-replace");
+const passThroughArgs = ["--tag-questions", "--refresh-taxonomy", "--headless", "--section-tags-only"].filter((flag) =>
   argvFlags.includes(flag)
 );
 const onlyQuestionFlag = argvFlags.indexOf("--tag-only-question");
@@ -137,11 +143,13 @@ console.log(`\nMatching configuration: ${path.relative(root, matchingConfig)}`);
 // A config scaffolded but never scanned still holds placeholders, and tagging
 // cannot run on those. Scanning is read-only and discovers the module's real
 // subject, level and content map, so do it here rather than dead-ending.
-const loaded = mergeDefaults(await loadConfig(matchingConfig));
+const loaded = mergeDefaults(await loadConfig(matchingConfig, { allowIncompleteCurriculum: true }));
 if (unreviewedPlaceholders(loaded).length > 0) {
   console.log("\nThis config has not been scanned yet; discovering its tagging first (read-only)...");
   if (!(await completeConfigForTagging(matchingConfig, target))) {
-    const stillMissing = unreviewedPlaceholders(mergeDefaults(await loadConfig(matchingConfig)));
+    const stillMissing = unreviewedPlaceholders(
+      mergeDefaults(await loadConfig(matchingConfig, { allowIncompleteCurriculum: true })),
+    );
     await stop(
       "The module carries no usable curriculum metadata, and the cached SLS taxonomies " +
         "did not produce one strong, unique match.\n\n" +
@@ -162,45 +170,11 @@ if (census) {
       "already carry a question-level tag."
   );
 }
-let methodAnswer;
-if (census?.total > 0 && census.tagged === 0) {
-  if (selectedWorkflow) {
-    methodAnswer = "2";
-    console.log(
-      "No question-level tags exist yet. Selected workflow is using guarded duplicate-and-replace preparation " +
-        "so section outcomes flow into the copied activities. Originals remain until every replacement guard passes.",
-    );
-  } else {
-    console.log("No question-level tags exist yet.");
-    methodAnswer = await ask(
-      "\nHow should this standalone run continue?\n" +
-        "  1  Surgical - tag existing activities and skip duplication (recommended for a quick pass)\n" +
-        "  2  Duplicate and replace - create guarded copies; deletion still requires DELETE\n" +
-        "\nChoose 1 or 2 (Enter for 1): ",
-    );
-  }
-} else if (census?.total > 0 && census.tagged === census.total) {
-  methodAnswer = "1";
-  console.log("Every question is already tagged. Selecting the non-copying surgical verification pass automatically.");
-} else {
-  if (selectedWorkflow) {
-    methodAnswer = "1";
-    console.log(
-      "The tagging state is mixed or unavailable. Selected workflow is using the safe surgical pass " +
-        "instead of pausing for a method choice.",
-    );
-  } else {
-    methodAnswer = await ask(
-      "\nHow should this module be tagged?\n" +
-        "  1  Surgical - tag the existing questions in place (nothing created or deleted)\n" +
-        "  2  Duplicate and replace - the original method, copies each activity and can delete originals\n" +
-        "\nChoose 1 or 2 (Enter for 1): "
-    );
-  }
-}
-
-if (methodAnswer.trim() !== "2") {
-  console.log("\nSurgical tagging: appending question tags in place. No activity is copied or deleted.");
+if (!duplicateAndReplace) {
+  console.log(
+    "\nSurgical tagging is the standard Automation workflow: updating existing questions in place. " +
+      "No section or activity is copied, renamed, or deleted.",
+  );
   if ((await runWorkflow("tag", matchingConfig, target.url)).status !== 0) {
     await stop("The surgical tagging pass stopped at a guard. Nothing was created or deleted.");
   }
@@ -208,6 +182,11 @@ if (methodAnswer.trim() !== "2") {
   console.log("\nSurgical tagging completed. Review the newest report.json under output for what changed.");
   process.exit(0);
 }
+
+console.log(
+  "\nExplicit legacy mode: --duplicate-and-replace was supplied. " +
+    "Guarded copies will be prepared before any original can be deleted.",
+);
 
 console.log(
   "\nStep 2 of 3: starting the guarded edit pass automatically.\n" +
@@ -220,7 +199,7 @@ if ((await runWorkflow("apply", matchingConfig, target.url, ["--keep-originals"]
 }
 
 console.log("\nStep 2 completed. The copied activities and question settings passed the scripted checks.");
-if (selectedWorkflow) {
+if (unattendedSelectedWorkflow) {
   console.log(
     "Selected workflow: stage 1 authorizes deletion of only the exact originals whose retained copies " +
       "have passed all copy, title, and question-tag verification guards.",
@@ -268,7 +247,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
     }
     const inferred = await runNode(
       "scripts/resolve-config.mjs",
-      selectedWorkflow ? [configPath] : [configPath, "--interactive"],
+      unattendedSelectedWorkflow ? [configPath] : [configPath, "--interactive"],
     );
     if (inferred.status !== 0) return false;
 
@@ -277,7 +256,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
     if (scan.status !== 0) return false;
   }
 
-  let current = mergeDefaults(await loadConfig(configPath));
+  let current = mergeDefaults(await loadConfig(configPath, { allowIncompleteCurriculum: true }));
   const unresolved = unreviewedPlaceholders(current);
   const onlySectionOutcomesRemain =
     unresolved.length > 0 && unresolved.every((field) => /\.outcome$/i.test(field));
@@ -294,7 +273,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
   }
   if (unreviewedPlaceholders(current).length > 0) {
     console.log("Completing the remaining placeholders from cached SLS taxonomy wording...");
-    const resolverArgs = selectedWorkflow ? [configPath] : [configPath, "--interactive"];
+    const resolverArgs = unattendedSelectedWorkflow ? [configPath] : [configPath, "--interactive"];
     if ((await runNode("scripts/resolve-config.mjs", resolverArgs)).status !== 0) return false;
   }
 
@@ -303,7 +282,7 @@ async function completeConfigForTagging(configPath, selectedTarget) {
     return false;
   }
 
-  current = mergeDefaults(await loadConfig(configPath));
+  current = mergeDefaults(await loadConfig(configPath, { allowIncompleteCurriculum: true }));
   return unreviewedPlaceholders(current).length === 0;
 }
 
@@ -390,7 +369,11 @@ Could not start the ${mode} phase: ${error.message}`);
   }
 
   try {
-    const config = applyTargetUrl(mergeDefaults(await loadConfig(options.configPath)), options);
+    const allowIncompleteCurriculum = ["inspect", "scan", "discover"].includes(options.mode);
+    const config = applyTargetUrl(
+      mergeDefaults(await loadConfig(options.configPath, { allowIncompleteCurriculum })),
+      options,
+    );
     const result = await runSlsWorkflow(config, options, shared);
     console.log(`
 SLS ${mode} run completed.`);

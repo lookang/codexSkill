@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "f83b103e-c17c-47ba-9646-b2564678bc07",
+    "title": "Further Differentiation (FA-Math)",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/f83b103e-c17c-47ba-9646-b2564678bc07/module-plan",
+    "curriculumEvidence": {
+      "source": "existing saved SLS Module Tags",
+      "subject": "Additional Mathematics - G3AMATHS",
+      "level": "Secondary 4",
+      "contentMap": "Sec 3 & 4 Additional Mathematics (G3) (2020)"
+    }
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Secondary 3 learners practising further differentiation (fa-math). Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Further Differentiation Quest",
+    "shortTitle": "Further Quest",
+    "description": "Build confidence and accuracy while mastering further differentiation (fa-math)."
+  },
+  "defaults": {
+    "subject": "Additional Mathematics - G3AMATHS",
+    "level": "Secondary 4",
+    "contentMap": "Sec 3 & 4 Additional Mathematics (G3) (2020)",
+    "outcomePath": [
+      "Calculus",
+      "Differentiation and integration"
+    ],
+    "outcome": "Derivative as rate of change",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Further Differentiation",
+      "activities": [
+        {
+          "title": "Further Differentiation"
+        }
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY Further Differentiation (FA-Math) Star Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP TOP Viewable Module Title Featured Image Image_20260826134513.jpeg Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Subject and Level ADD SUBJECT AND LEVEL Content Map and Topic Sec 3 & 4 Additional Mathematics (G3) (2020) - 18 selected Content Map Topics Please select the relevant subtopics Only learning outcomes with level(s) of learning added will be available for ALS recommendation Introduction to Mathematics Algebra Quadratic Functions Finding the maximum and minimum value of a quadratic function using the method of completing the square Conditions for to be always positive (or always negative) Using the quadratic functions as models Equations and inequalities Conditions for quadratic equation to have: two real roots two equal roots no real roots and related conditions for given line to: intersect a given curve be tangent to a given curve not intersect a given curve Solving simultaneous equations in two variables with at least one linear equation, by substitution Solving quadratic inequalities, and representing the solution on the number line Surds Four operations on surds, including rationalising the denominator Solving equations involving surds Polynomials and partial fractions Multiplication and division of polynomials Use of remainder and factor theorems, including factorising polynomials and solving cubic equations Use of and Partial fractions with cases where the denominator is no more complicated than: Binomial expansions Use of Binomial Theorem for positive integer n Use of notations and Use of the general term Exponential and Logarithmic Functions Exponential and Logarithmic Functions and their graphs, including laws of logarithms; Equivalence of and ; Change of base of logarithms Simplifying expressions and solving simple equations involving exponential, logarithmic functions Using exponential and logarithmic functions as models Geometry and Trigonometry Trigonometric functions, identities and equations Six trigonometric functions for angles of any magnitude (in degrees or radians) Principal values of Exact values of trigonometric functions for special angles () or () Amplitude, periodicity and symmetries related to sine and cosine functions Graphs of , where a is real, b is a positive integer, and c is an integer Use of , , the expansions of and , the formulae for and , the expression of in the form or . Simplification of trigonomometric expressions Solution of simple trigonometric equations in a given interval (excluding general solution) Proofs of simple trigonometric identities Use of trigonometric functions as models Coordinate Geometry in two dimensions Condition for two lines to be parallel or perpendicular Midpoint of a line segment Area of rectilinear figure Coordinate geometry of circles in the form and (excluding problems involving two circles) Transformation of given relationships, including and , to linear form to determine the unknown constants from a straight line graph Proofs in plane geometry Use of properties of parallel lines cut by transversal, perpendicular and angle bisectors, triangles, special quadrilaterals and circles Use of congruent and similar triangles Use of midpoint theorem Use of tangent-chord theorem (alternate segment theorem) Calculus Differentiation and integration Derivative of f(x) as the gradient of the tangent to the graph of y = f(x) at a point Derivative as rate of change Use of standard notation f'(x), f''(x), , Derivatives of for any rational n, sin x, cos x, tan x, and , together with constant multiples, sums and differences Derivatives of products and quotients of functions Use of chain rule Increasing and decreasing functions Stationary points (maximum and minimum turning points and stationary points of inflexion) Use of second derivative test to discriminate between maxima and minima Apply differentiation to gradients, tangents and normals, connected rates of change and maxima and minima problems Integration as the reverse of differentiation Integration of for any rational n, sin x, cos x, and , together with constant multiples, sums and differences Integration of for any rational n, sin(ax+b), cos(ax+b) and Definite integral as area under a curve Evaluation of definite integrals Finding the area of a region bounded by a curve and line(s) (excluding area of region between 2 curves) Finding areas of regions below the x-axis Application of differentiation and integration to problems involving displacement, velocity and acceleration of a particle moving in a straight line ADD CONTENT MAP AND TOPIC Module Description ADD NEW Module Authoring Copilot"
+  }
+}

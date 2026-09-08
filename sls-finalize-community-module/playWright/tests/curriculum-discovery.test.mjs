@@ -146,3 +146,33 @@ test("saved Pre-U Physics Module Tags supply the exact live cascade", () => {
     "Pre-U Physics (H2) - 2025"
   );
 });
+
+test("multi-map saved evidence supplies the common Pre-U level and retains both maps", () => {
+  const clues = inferCurriculumClues({
+    module: {
+      title: "Skydiving Simulation",
+      savedCurriculumEvidence: {
+        subjectLevels: [
+          { subject: "Physics - H2PHY", level: "Pre-U 1" },
+          { subject: "21st Century Competencies - 21CC", level: "Pre-U 1" }
+        ],
+        contentMaps: [
+          "Pre-U Physics (H2) - 2016",
+          "Pre-U Emerging 21st Century Competencies - E21CC"
+        ]
+      }
+    },
+    defaults: {
+      subject: "Physics - H2PHY",
+      level: null,
+      contentMap: null
+    },
+    sections: []
+  });
+  assert.equal(clues.level, "Pre-U 1");
+  assert.equal(clues.subjectId, "physics");
+  assert.deepEqual(clues.existingContentMaps, [
+    "Pre-U Physics (H2) - 2016",
+    "Pre-U Emerging 21st Century Competencies - E21CC"
+  ]);
+});

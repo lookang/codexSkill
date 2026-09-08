@@ -54,7 +54,7 @@ export function assessAcpPage({ faQuestions = [], completedInteractives = 0 } = 
     return { status: "blocked", reason: "the question-to-interactive pairing is ambiguous" };
   }
   const question = faQuestions[0];
-  if (!normalizeQuestionText(question.text)) {
+  if (!formatAcpQuestionTopic(question)) {
     return { status: "blocked", reason: "the FA Math question text could not be read safely" };
   }
   return { status: "candidate", reason: "one FA Math question needs one ACP interactive", question };
@@ -67,6 +67,23 @@ export function normalizeQuestionText(value) {
     .replace(/\s+/g, " ")
     .replace(/\b(-?\d+(?:\.\d+)?)\s+\1(?:\s+\1)*\b/g, "$1")
     .trim();
+}
+
+export function formatAcpQuestionTopic(question = {}) {
+  const sharedText = normalizeQuestionText(question.sharedText);
+  const parts = Array.isArray(question.parts) ? question.parts : [];
+  const lines = [];
+  if (sharedText) lines.push(`Shared question context: ${sharedText}`);
+  if (parts.length > 0) {
+    for (const [index, part] of parts.entries()) {
+      const text = normalizeQuestionText(part.text);
+      if (!text) continue;
+      const label = String(part.label ?? "").trim() || String(index + 1);
+      lines.push(`Part ${label}: ${text}`);
+    }
+  }
+  if (lines.length === 0) return normalizeQuestionText(question.text);
+  return lines.join("\n");
 }
 
 function compactMathText(value) {
@@ -121,38 +138,81 @@ export function inferRandomizationSourceValues(instructionTemplate, renderedQues
   return result;
 }
 
-export function buildAcpSpecificRequirements({ questionText, randomization } = {}) {
-  const parameters = randomization?.parameters ?? [];
-  if (parameters.length === 0) return "";
-  const instruction = normalizeQuestionText(randomization.instructionTemplate);
-  const rendered = normalizeQuestionText(questionText);
-  const answerExpression = compactMathText(randomization.answerExpression);
-  const sourceValues = {
-    ...inferRandomizationSourceValues(instruction, rendered, parameters),
-    ...(randomization.sourceValues ?? {}),
-  };
-  const parameterLines = parameters.map((parameter) => {
-    const source = Number.isFinite(Number(sourceValues[parameter.name]))
-      ? `; source value ${Number(sourceValues[parameter.name])}`
-      : "";
-    return `- ${parameter.name} (${parameter.type}): ${parameter.description}${source}`;
+export function buildAcpSpecificRequirements({ questionText, randomization, question } = {}) {
+  const parts = Array.isArray(question?.parts) && question.parts.length > 0
+    ? question.parts
+    : [{
+        label: null,
+        text: question?.text ?? questionText,
+        answerKey: question?.answerKey ?? "",
+        randomization,
+      }];
+  const answerLines = parts.flatMap((part, index) => {
+    const answerKey = compactEvidenceText(part.answerKey);
+    if (!answerKey) return [];
+    const label = String(part.label ?? "").trim() || (parts.length > 1 ? String(index + 1) : "");
+    return [`- ${label ? `Part ${label}` : "Question"}: ${answerKey}`];
   });
+  const randomizedParts = parts.filter((part) => (part.randomization?.parameters ?? []).length > 0);
+  const rendered = normalizeQuestionText(questionText);
+  const output = [];
 
-  return [
-    "Replicate the source FA Math randomized question as a manipulable practice experience.",
-    rendered ? `Rendered source instance: ${rendered}` : "",
-    instruction ? `Source instruction template: ${instruction}` : "",
-    answerExpression ? `Correct answer expression: ${answerExpression}` : "",
-    "Source randomization parameters:",
-    ...parameterLines,
-    "Specific interaction requirements:",
-    "- Provide one clearly labelled slider for every Number parameter above, using step 1 for integer ranges.",
-    "- Initialise every slider to its source value when listed so the first view exactly reproduces the rendered source instance.",
-    "- Add a clearly labelled Match source question or Reset to source values control that restores those exact values.",
-    "- Preserve every stated range and dependency dynamically. For example, a bound such as [2,c1-1] must update when c1 changes and must never permit an invalid combination.",
-    "- Update the story values, mathematical model or equation, student answer control, computed correct answer, hints, and feedback immediately whenever a slider changes.",
-    "- Keep the mathematical structure, operation, context, accessibility, mobile usability, and age-appropriate wording faithful to the source. Do not invent wider ranges or unrelated variables.",
-  ].filter(Boolean).join("\n");
+  if (answerLines.length > 0) {
+    output.push(
+      "Use the following source answer-key evidence to keep checking, worked steps, hints, and feedback mathematically faithful:",
+      ...answerLines,
+      "Do not reveal the complete answer before the learner attempts the question.",
+    );
+  }
+
+  if (randomizedParts.length > 0) {
+    output.push(
+      "Replicate the source FA Math randomized question as a manipulable practice experience.",
+      rendered ? `Rendered source instance: ${rendered}` : "",
+    );
+    for (const [index, part] of randomizedParts.entries()) {
+      const partRandomization = part.randomization;
+      const parameters = partRandomization.parameters;
+      const instruction = normalizeQuestionText(partRandomization.instructionTemplate);
+      const answerExpression = compactMathText(partRandomization.answerExpression);
+      const partRendered = normalizeQuestionText(part.text || questionText);
+      const sourceValues = {
+        ...inferRandomizationSourceValues(instruction, partRendered, parameters),
+        ...(partRandomization.sourceValues ?? {}),
+      };
+      const label = String(part.label ?? "").trim();
+      if (randomizedParts.length > 1 || label) {
+        output.push(`Randomization for ${label ? `part ${label}` : `part ${index + 1}`}:`);
+      }
+      if (instruction) output.push(`Source instruction template: ${instruction}`);
+      if (answerExpression) output.push(`Correct answer expression: ${answerExpression}`);
+      output.push("Source randomization parameters:");
+      for (const parameter of parameters) {
+        const source = Number.isFinite(Number(sourceValues[parameter.name]))
+          ? `; source value ${Number(sourceValues[parameter.name])}`
+          : "";
+        output.push(`- ${parameter.name} (${parameter.type}): ${parameter.description}${source}`);
+      }
+    }
+    output.push(
+      "Specific interaction requirements:",
+      "- Provide one clearly labelled slider for every Number parameter above, using step 1 for integer ranges.",
+      "- Initialise every slider to its source value when listed so the first view exactly reproduces the rendered source instance.",
+      "- Add a clearly labelled Match source question or Reset to source values control that restores those exact values.",
+      "- Preserve every stated range and dependency dynamically. For example, a bound such as [2,c1-1] must update when c1 changes and must never permit an invalid combination.",
+      "- Update the story values, mathematical model or equation, student answer control, computed correct answer, hints, and feedback immediately whenever a slider changes.",
+      "- Keep the mathematical structure, operation, context, accessibility, mobile usability, and age-appropriate wording faithful to the source. Do not invent wider ranges or unrelated variables.",
+    );
+  }
+
+  return output.filter(Boolean).join("\n");
+}
+
+function compactEvidenceText(value) {
+  return String(value ?? "")
+    .replace(/\b(Read More|Read Less|Suggested Answer|Feedback)\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function assessAcpPreAddState({

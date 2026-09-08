@@ -21,6 +21,7 @@ export function parseArgs(argv, cwd = process.cwd()) {
     refreshTaxonomy: false,
     tagQuestions: false,
     tagOnlyQuestion: null,
+    sectionTagsOnly: false,
     deleteOriginals: false,
     renameCopies: true,
     startSection: null,
@@ -63,6 +64,8 @@ export function parseArgs(argv, cwd = process.cwd()) {
       index += 1;
     } else if (argument === "--tag-questions") {
       options.tagQuestions = true;
+    } else if (argument === "--section-tags-only") {
+      options.sectionTagsOnly = true;
     } else if (argument === "--refresh-taxonomy") {
       options.refreshTaxonomy = true;
     } else if (argument === "--headless") {

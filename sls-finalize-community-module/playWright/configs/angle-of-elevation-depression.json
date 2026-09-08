@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "bd398506-fdbd-43b0-9c5f-c26f5affaf19",
+    "title": "Angle of Elevation & Depression",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/bd398506-fdbd-43b0-9c5f-c26f5affaf19/module-plan"
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Secondary 3 learners practising angle of elevation & depression. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Angle Elevation Quest",
+    "shortTitle": "Angle Quest",
+    "description": "Build confidence and accuracy while mastering angle of elevation & depression."
+  },
+  "defaults": {
+    "subject": "Mathematics - MATHS",
+    "level": "Secondary 3",
+    "contentMap": "Sec 3 & 4 Mathematics (G2) (2020)",
+    "outcomePath": [
+      "GEOMETRY AND MEASUREMENT",
+      "Pythagoras' theorem and trigonometry"
+    ],
+    "outcome": "Problems in two and three dimensions including those involving angles of elevation and depression and bearings",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Angle of Elevation & Depression",
+      "activities": [
+        {
+          "title": "Angle of Elevation & Depression"
+        }
+      ],
+      "outcome": "Problems in two and three dimensions including those involving angles of elevation and depression and bearings",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY Angle of Elevation & Depression Star Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP Viewable Module Title ADD IMAGE Featured Image Please refer to the list of acceptable file types, sizes, and dimensions here. Click to upload Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Subject and Level ADD SUBJECT AND LEVEL Content Map and Topic Sec 3 & 4 Mathematics (G2) (2020) - 1 selected ADD CONTENT MAP AND TOPIC Module Description ADD NEW Module Authoring Copilot"
+  }
+}

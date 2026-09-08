@@ -10,7 +10,9 @@ import {
 import {
   readOpenQuestionEvidence,
   readQuestionMetadata,
-  readQuestionStems
+  readQuestionStems,
+  readSavedModuleOutcomeLabels,
+  selectedOutcomesContainProposal
 } from "../src/sls-runner.mjs";
 
 async function paginatedActivityPage() {
@@ -142,6 +144,78 @@ test("FA-Math stem and suggested answer are captured as separate evidence", asyn
   } finally {
     await browser.close();
   }
+});
+
+test("multipart FA-Math children inherit only their parent common question body", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const page = await browser.newPage({ viewport: { width: 900, height: 700 } });
+  try {
+    await page.setContent(`
+      <section id="component-parent" class="component question-component mpq">
+        <div class="multiple-part-editor-view"><form>
+          <dl class="field-set type-text question-body">
+            A bag contains n red marbles, 7 white marbles and 5 blue marbles.
+            The probability of picking a red marble is now 7/11.
+          </dl>
+          <div class="multiple-part-editor-sub-question">
+            <section id="component-q1a"><div class="question-body">Find the value of n.</div></section>
+          </div>
+          <div class="multiple-part-editor-sub-question">
+            <section id="component-q1b"><div class="question-body">Sibling text must not leak.</div></section>
+          </div>
+        </form></div>
+      </section>
+    `);
+    const evidence = await readOpenQuestionEvidence(page, "q1a");
+    assert.match(evidence.stem, /Find the value of n/i);
+    assert.match(evidence.sharedStimulus, /probability of picking a red marble/i);
+    assert.equal(evidence.sharedFromQuestionId, "parent");
+    assert.doesNotMatch(evidence.sharedStimulus, /Sibling text must not leak/i);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("saved read-only Module Tag outcome labels are recovered from the summary", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const page = await browser.newPage();
+  try {
+    await page.setContent(`
+      <li class="bx--accordion__item">
+        <button class="bx--accordion__heading"><p class="bx--accordion__title">Module Tags</p></button>
+        <div class="bx--accordion__content">
+          <dl class="field-set topic"><ul>
+            <li><div class="output-text">Probability of simple combined events</div></li>
+            <li><div class="output-text">Addition and multiplication of probabilities</div></li>
+          </ul></dl>
+        </div>
+      </li>
+      <aside><dl class="field-set topic"><ul><li>Unrelated question tag</li></ul></dl></aside>
+    `);
+    assert.deepEqual(await readSavedModuleOutcomeLabels(page), [
+      "Probability of simple combined events",
+      "Addition and multiplication of probabilities"
+    ]);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("an existing content map is complete only when the exact proposed outcome is selected", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const selected = [{
+    contentMap,
+    outcome: "Positive, negative, zero and fractional indices",
+    outcomePath: ["Number and Algebra", "Numbers and their operations"]
+  }];
+  assert.equal(selectedOutcomesContainProposal(selected, {
+    contentMap,
+    outcome: "Probability of simple combined events"
+  }), false);
+  assert.equal(selectedOutcomesContainProposal(selected, {
+    contentMap,
+    outcome: "Positive, negative, zero and fractional indices"
+  }), true);
 });
 
 test("pie-chart context and OCR labels follow related page-broken subquestions", () => {

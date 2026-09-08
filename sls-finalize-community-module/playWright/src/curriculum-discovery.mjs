@@ -40,6 +40,7 @@ const SUBJECT_RULES = [
 ];
 
 function evidenceText(config) {
+  const savedModuleEvidence = config?.module?.savedCurriculumEvidence ?? {};
   return [
     config?.defaults?.subject,
     config?.defaults?.level,
@@ -47,6 +48,8 @@ function evidenceText(config) {
     config?.module?.curriculumEvidence?.subject,
     config?.module?.curriculumEvidence?.level,
     config?.module?.curriculumEvidence?.contentMap,
+    ...(savedModuleEvidence.subjectLevels ?? []).flatMap((entry) => [entry?.subject, entry?.level]),
+    ...(savedModuleEvidence.contentMaps ?? []),
     config?.module?.description,
     config?.discoveryEvidence?.moduleDescription,
     config?.discoveryEvidence?.moduleText,
@@ -62,11 +65,14 @@ function evidenceText(config) {
 }
 
 export function inferCurriculumClues(config) {
+  const savedModuleEvidence = config?.module?.savedCurriculumEvidence ?? {};
   const text = evidenceText(config);
   const authoritativeText = [
     config?.module?.curriculumEvidence?.subject,
     config?.module?.curriculumEvidence?.level,
     config?.module?.curriculumEvidence?.contentMap,
+    ...(savedModuleEvidence.subjectLevels ?? []).flatMap((entry) => [entry?.subject, entry?.level]),
+    ...(savedModuleEvidence.contentMaps ?? []),
   ].filter(Boolean).join(" ");
   const configuredText = [
     config?.defaults?.subject,
@@ -89,7 +95,7 @@ export function inferCurriculumClues(config) {
     config?.module?.curriculumEvidence?.level ??
       (config?.defaults?.level && !String(config.defaults.level).includes("REVIEW-BEFORE-RUNNING")
         ? config.defaults.level
-        : "")
+        : commonSavedLevel(savedModuleEvidence.subjectLevels))
   ).trim();
   const primary = /\b(?:P|Pri(?:mary)?)\s*([1-6])(?=G\d|\b)/i.exec(savedText) ??
     /\b(?:P|Pri(?:mary)?)\s*([1-6])(?=G\d|\b)/i.exec(text);
@@ -107,6 +113,7 @@ export function inferCurriculumClues(config) {
   const existingContentMaps = [...new Set([
     config?.module?.curriculumEvidence?.contentMap,
     config?.defaults?.contentMap,
+    ...(savedModuleEvidence.contentMaps ?? []),
   ].filter((value) => value && !String(value).includes("REVIEW-BEFORE-RUNNING")))];
   return {
     text,
@@ -119,6 +126,13 @@ export function inferCurriculumClues(config) {
     existingContentMaps,
     evidenceSource: existingContentMaps.length > 0 ? "saved SLS curriculum metadata" : "module and activity text",
   };
+}
+
+function commonSavedLevel(subjectLevels = []) {
+  const levels = [...new Set(
+    subjectLevels.map((entry) => String(entry?.level ?? "").trim()).filter(Boolean)
+  )];
+  return levels.length === 1 ? levels[0] : "";
 }
 
 export function rankSubjectOptions(labels, clues) {

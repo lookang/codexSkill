@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { chromium } from "@playwright/test";
-import { overflowMenuForTitle } from "../src/sls-runner.mjs";
+import { overflowMenuForTitle, sidebarActivityMatch } from "../src/sls-runner.mjs";
 
 const fixture = `
   <div class="bx--accordion__item">
@@ -41,4 +41,19 @@ test("the same repeated title remains guarded without a section", async (t) => {
     () => overflowMenuForTitle(page, "Success Criteria"),
     /Expected one overflow menu.*found 2/,
   );
+});
+
+test("sidebar activity matching ignores appended Active Learning Process affordances", async (t) => {
+  const browser = await chromium.launch({ channel: "chrome" });
+  t.after(() => browser.close());
+  const page = await browser.newPage();
+  await page.setContent(`
+    <a class="bx--side-nav__link-text">
+      <span class="ellipsis-text title" title="Skydiving Experience">Skydiving Experience</span>
+      <span class="alp-phase">ACTIVATE LEARNING</span>
+    </a>
+  `);
+
+  const match = await sidebarActivityMatch(page, "Skydiving Experience");
+  assert.equal(match.count, 1);
 });

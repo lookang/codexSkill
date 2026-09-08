@@ -89,6 +89,62 @@ const TOPICS = [
   ["table", /\bdata tables?\b|\btables?\b(?=[\s,/-]{0,24}(?:below|above|from|shows?|line graphs?|pie charts?))|\bcomplet(?:e|es|ed|ing)\b[\s\S]{0,50}\btables?\b/i],
   ["interpret data", /\bread(?:ing)?\s+and\s+interpret(?:ing)?\s+data\b|\binterpret(?:ing|ation)?\s+(?:the\s+)?data\b/i],
   ["complete table", /\bcomplet(?:e|es|ed|ing)\b[\s\S]{0,50}\btables?\b/i],
+  // Probability conditions such as "multiple of 4" must not be mistaken for
+  // the Number-and-Algebra topic "factors and multiples". Probability is a
+  // first-class topic, while combined/independent-event wording distinguishes
+  // the two Secondary outcomes used by this module.
+  ["probability", /\bprobabilit(?:y|ies)\b|\bchance\b|\blikelihood\b/i],
+  [
+    "combined probability",
+    /\bcombined events?\b|\bwithout replac(?:ing|ement)\b|\bwith replacement\b|\bpossibility diagrams?\b|\btree diagrams?\b/i
+  ],
+  ["independent events", /\bindependent events?\b|\bindependently\b/i],
+  ["mutually exclusive events", /\bmutually exclusive events?\b/i],
+  // Secondary outcomes often contain the same arithmetic words while assessing
+  // completely different structures.  In particular, "addition, subtraction
+  // and multiplication of matrices" must not match an ordinary calculation just
+  // because the operations coincide.  These named structures are therefore
+  // first-class topics, and featureScore applies a prerequisite to them below.
+  ["matrix", /\bmatri(?:x|ces)\b/i],
+  ["quadratic", /\bquadratic\b|\bparabolas?\b/i],
+  // Further Differentiation questions can be almost entirely symbolic. The
+  // imperative "Differentiate" establishes the Calculus domain, while the
+  // suggested answer can safely corroborate the exact rule (for example,
+  // Quotient Rule) without opening the candidate pool beyond saved Module Tags.
+  ["differentiation", /\bdifferentiat(?:e|es|ed|ing|ion)\b|\bderivatives?\b/i],
+  ["derivative notation", /\bf['′](?:\(x\))?|\bf['′]{2}|\bd\s*\/\s*d[xyt]\b|\bstandard notation\b/i],
+  ["rate of change", /\brates? of change\b|\bconnected rates?\b/i],
+  ["product rule", /\bproduct rule\b|\bproducts? of functions\b/i],
+  ["quotient rule", /\bquotient rule\b|\bquotients? of functions\b/i],
+  ["chain rule", /\bchain rule\b/i],
+  ["second derivative", /\bsecond derivatives?\b|\bf['′]{2}\b|\bd\s*2\s*\/\s*d[xyt]\s*2\b/i],
+  ["stationary point", /\bstationary points?\b|\bturning points?\b/i],
+  ["maxima minima", /\bmaxim(?:um|a)\b|\bminim(?:um|a)\b/i],
+  ["tangent normal", /\btangents?\b|\bnormals?\b/i],
+  // Do not use bare "integral": in "integral coefficients" it describes whole
+  // number coefficients, not Calculus. Integration verbs, explicit definite or
+  // indefinite integrals, and the integral symbol are reliable.
+  ["integration", /\bintegrat(?:e|es|ed|ing|ion)\b|\b(?:definite|indefinite) integrals?\b|∫/i],
+  ["definite integral", /\bdefinite integrals?\b/i],
+  ["area under curve", /\barea\b[\s\S]{0,80}\b(?:under|bounded by|below)\b[\s\S]{0,80}\b(?:curve|x-axis|lines?)\b/i],
+  ["kinematics", /\bdisplacement\b|\bvelocity\b|\bacceleration\b|\bparticle moving\b/i],
+  // Set questions can be almost entirely symbolic (for example X ∪ Y or
+  // A ∩ B'). Treat those symbols as curriculum evidence instead of letting the
+  // answer blank's equals sign make the question look like an algebraic equation.
+  ["set operation", /[∪∩]|\\(?:cup|cap)\b|\b(?:union|intersection)\b/i],
+  [
+    "set notation",
+    /[∪∩∈∉⊂⊆⊃⊇∅]|\\(?:cup|cap|in|notin|subset(?:eq)?|supset(?:eq)?|emptyset)\b|\bset\s+(?:language|notation)\b/i
+  ],
+  ["venn diagram", /\bvenn(?:\s+diagrams?)?\b/i],
+  [
+    "fractional equation",
+    /\bfractional\s+equations?\b|\b(?:equations?|solv(?:e|ing))\b[\s\S]{0,100}\b(?:variable|unknown)\b[\s\S]{0,60}\bdenominators?\b/i
+  ],
+  [
+    "function graph",
+    /\b(?:sketch(?:ing)?|draw(?:ing)?|plot(?:ting)?)\s+(?:the\s+)?graphs?\b|\bgraphs?\s+of\s+(?:(?:quadratic|linear|cubic|exponential)\s+)?functions?\b|\bparabolas?\b|\bturning\s+points?\b/i
+  ],
   ["solve", /\bsolv(?:e|es|ing|ed)\b/i],
   ["equation", /\bequations?\b|[A-Za-z0-9)\s]=\s*[A-Za-z0-9(]/],
   ["linear", /\blinear\b/i],
@@ -172,6 +228,52 @@ export function mathFeatures(text) {
   for (const [name, pattern] of OPERATIONS) if (pattern.test(clean)) operations.add(name);
   for (const [name, pattern] of OPERANDS) if (pattern.test(clean)) operands.add(name);
 
+  // In an SLS fill-in response, "X ∪ Y =" means "evaluate this set
+  // operation", not "solve an equation". Keep equation evidence only when the
+  // author explicitly says equation/solve; otherwise the set structure wins.
+  if (
+    topics.has("set operation") &&
+    !/\b(?:equations?|solv(?:e|es|ed|ing))\b/i.test(clean)
+  ) {
+    topics.delete("equation");
+  }
+
+  // Rule names are unambiguously differentiation even when the official
+  // outcome is tersely worded as only "Use of chain rule". Likewise, definite
+  // integrals and area-under-curve wording imply integration. Adding the parent
+  // domain here lets the scorer reject Algebra and integration outcomes before
+  // comparing the finer rule evidence.
+  if ([
+    "derivative notation",
+    "rate of change",
+    "product rule",
+    "quotient rule",
+    "chain rule",
+    "second derivative",
+    "stationary point",
+    "maxima minima",
+    "tangent normal"
+  ].some((topic) => topics.has(topic))) {
+    topics.add("differentiation");
+  }
+  if (topics.has("definite integral") || topics.has("area under curve")) {
+    topics.add("integration");
+  }
+
+  // Diagram OCR for a coordinate graph is commonly little more than tick values
+  // followed by the axis labels "x y".  Requiring both axes and several numeric
+  // ticks avoids treating an ordinary two-variable expression as a graph, while
+  // retaining the only machine-readable clue available for an image-only
+  // parabola question.
+  const numericTicks = clean.match(/[−-]?\d+(?:[.,]\d+)?/g) ?? [];
+  if (
+    numericTicks.length >= 4 &&
+    /(?:^|\s)x(?:\s|$)/i.test(clean) &&
+    /(?:^|\s)y(?:\s|$)/i.test(clean)
+  ) {
+    topics.add("function graph");
+  }
+
   // Expanded decimal notation is commonly authored as a whole number plus two
   // fractions whose denominators are powers of ten. The live accessible text can
   // contain both a flattened MathML copy and a LaTeX copy, so identify the
@@ -246,6 +348,35 @@ export function featureScore(questionFeatures, outcomeFeatures) {
   const operationHits = overlap(questionFeatures.operations, outcomeFeatures.operations);
   const operandHits = overlap(questionFeatures.operands, outcomeFeatures.operands);
   const topicHits = overlap(questionFeatures.topics || new Set(), outcomeFeatures.topics || new Set());
+
+  // A specialised representation must be named or otherwise detected on both
+  // sides. Generic operations are never sufficient evidence for a matrix or a
+  // function-graph outcome. This is deliberately narrow: it prevents structural
+  // false positives without making every broad syllabus topic mandatory.
+  for (const required of [
+    "matrix",
+    "function graph",
+    "set operation",
+    "venn diagram",
+    "probability"
+  ]) {
+    if (
+      (outcomeFeatures.topics || new Set()).has(required) &&
+      !(questionFeatures.topics || new Set()).has(required)
+    ) {
+      return 0;
+    }
+  }
+
+  // Conversely, once the assessed question explicitly establishes probability,
+  // an outcome from a different syllabus branch cannot win merely because the
+  // event condition says "odd", "divisible", "factor", or "multiple".
+  if (
+    (questionFeatures.topics || new Set()).has("probability") &&
+    !(outcomeFeatures.topics || new Set()).has("probability")
+  ) {
+    return 0;
+  }
 
   // A shared topic stands on its own: an outcome about solving equations matches a
   // solve-the-equation question even though the outcome names no operation. Without

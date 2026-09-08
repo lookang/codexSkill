@@ -13,3 +13,5 @@ eng.traineddata
 recordings/
 test-results/
 playwright-report/
+# Local playwright-cli snapshots can contain page text and browser state.
+.playwright-cli/

@@ -5,7 +5,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { parseAdminModuleEditUrl, detectScope } from "../src/io.mjs";
+import { parseAdminModuleEditUrl, detectScope, unreviewedPlaceholders } from "../src/io.mjs";
 import { inferCurriculumClues } from "../src/curriculum-discovery.mjs";
 import { applyModuleEvidenceToConfig } from "../src/module-evidence.mjs";
 
@@ -70,7 +70,7 @@ let config = {
     title: inventory.title,
     adminEditUrl: `https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/${moduleId}/module-plan`
   },
-  gamification: gamificationFor(inventory.title, curriculumClues.level),
+  gamification: gamificationFor(inventory.title, curriculumClues.level, curriculumClues.subjectId),
   defaults: {
     subject: exactSubjectKnown ?? "REVIEW-BEFORE-RUNNING: select the exact SLS subject",
     level: curriculumClues.level ?? "REVIEW-BEFORE-RUNNING: set the level exactly as SLS lists it",
@@ -81,7 +81,7 @@ let config = {
     outcome: inferred
       ? inferred.outcome
       : "REVIEW-BEFORE-RUNNING: paste the exact learning outcome text from the SLS dropdown",
-    questionKeyword: "FA Math"
+    questionKeyword: questionKeywordFor(curriculumClues.subjectId)
   },
   sections
 };
@@ -115,8 +115,10 @@ if (inferred) {
   console.log("Learning outcome inferred (" + inferred.reason + "):");
   console.log("  " + inferred.outcome);
   console.log("  Review it against the SLS dropdown before the edit pass.");
-} else {
+} else if (unreviewedPlaceholders(config).length > 0) {
   console.log("\nBefore running an edit pass, replace every REVIEW-BEFORE-RUNNING value.");
+} else {
+  console.log("\nThe saved Module Tags supplied complete exact curriculum wording for this config.");
 }
 console.log("If the outcome wording is wrong, the run stops at a guard and prints the options SLS offers.");
 
@@ -144,7 +146,7 @@ function inferOutcome(moduleTitle, sectionTitles) {
 // A scaffolded config also gets a gamification block, so `sls:gamify` is usable
 // on a new module without hand-editing. The wording is derived from the module
 // title and is meant to be reviewed, like every other scaffolded value.
-function gamificationFor(moduleTitle, level) {
+function gamificationFor(moduleTitle, level, subjectId) {
   const topic = moduleTitle
     .replace(/^AST[\s_-]*FA[-\s]?Math[\s_-]*/i, "")
     .replace(/^P\d\s*/, "")
@@ -153,16 +155,29 @@ function gamificationFor(moduleTitle, level) {
     .trim();
   const words = topic.split(/[\s,()]+/).filter((word) => word.length > 3);
   const shortName = words.slice(0, 2).join(" ") || "Maths";
+  const subject = subjectDisplayName(subjectId);
   return {
     recipe: "Fantasy Hero Journey",
     instructions:
-      `Create a friendly fantasy mathematics quest for ${level || "Primary"} learners practising ` +
+      `Create a friendly fantasy ${subject} quest for ${level || "school"} learners practising ` +
       `${topic.toLowerCase()}. Keep the story encouraging, age-appropriate, concise, and focused on ` +
       "effort, accuracy, and reflection.",
     title: `${shortName} Quest`,
     shortTitle: `${shortName.split(" ")[0]} Quest`,
     description: `Build confidence and accuracy while mastering ${topic.toLowerCase()}.`
   };
+}
+
+function subjectDisplayName(subjectId) {
+  if (subjectId === "additional-mathematics" || subjectId === "mathematics") return "mathematics";
+  return String(subjectId || "learning").replaceAll("-", " ");
+}
+
+function questionKeywordFor(subjectId) {
+  const subject = subjectDisplayName(subjectId);
+  return subject === "mathematics"
+    ? "FA Math"
+    : `FA ${subject.replace(/\b\w/g, (letter) => letter.toUpperCase())}`;
 }
 
 async function newestInventory(id) {

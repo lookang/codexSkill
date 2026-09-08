@@ -178,3 +178,14 @@ test("a fractions question still matches a fractions outcome", () => {
   );
   assert.ok(featureScore(question, fractions) > 0);
 });
+
+test("probability conditions cannot match an unrelated factors or indices outcome", () => {
+  const question = mathFeatures("Find the probability that the number is a multiple of 4.");
+  const probability = mathFeatures("Probability of simple combined events");
+  const indices = mathFeatures("Positive, negative, zero and fractional indices and factors");
+
+  assert.ok(question.topics.has("probability"));
+  assert.ok(question.topics.has("factor"));
+  assert.ok(featureScore(question, probability) > 0);
+  assert.equal(featureScore(question, indices), 0);
+});

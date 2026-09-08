@@ -36,7 +36,7 @@ if [ "$ACTION" = "setup" ]; then
 fi
 
 case "$ACTION" in
-  sls:auth|sls:one-shot|sls:inspect|sls:apply|sls:resume|sls:gamify|sls:add-teacher|sls:thumbnail|sls:page-break|sls:remove-copy|sls:acp-interactive|sls:record|sls:selected|sls:smoke-actions) ;;
+  sls:auth|sls:one-shot|sls:inspect|sls:apply|sls:resume|sls:gamify|sls:add-teacher|sls:thumbnail|sls:page-break|sls:remove-copy|sls:rename-titles|sls:revert-ast-titles|sls:acp-interactive|sls:gpt-interactive|sls:record|sls:selected|sls:smoke-actions) ;;
   *)
     printf 'Unsupported SLS action: %s\n' "$ACTION"
     pause_and_exit 2

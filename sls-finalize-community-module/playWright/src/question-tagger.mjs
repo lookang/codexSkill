@@ -65,7 +65,8 @@ export async function loadDictionaries(root) {
         contentMap,
         outcome: outcome.outcome,
         outcomePath: outcome.outcomePath,
-        features: mathFeatures(`${outcome.outcomePath.join(" ")} ${outcome.outcome}`)
+        features: mathFeatures(`${outcome.outcomePath.join(" ")} ${outcome.outcome}`),
+        leafFeatures: mathFeatures(outcome.outcome)
       });
     }
   }
@@ -161,6 +162,7 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   const {
     allowedContentMaps = null,
     contextText = "",
+    moduleOutcomeReferences = [],
     reviewedOutcomePrefix = null,
     supportingText = ""
   } = options;
@@ -181,7 +183,7 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   }
 
   const questionFeatures = mathFeatures(questionText || "");
-  const pool = allowedContentMaps?.length
+  let pool = allowedContentMaps?.length
     ? dictionaries.filter((entry) =>
         allowedContentMaps.some((wanted) => entry.contentMap.toLowerCase() === wanted.toLowerCase())
       )
@@ -192,6 +194,34 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
       reason: "no harvested content map for this question's levels",
       features: questionFeatures
     };
+  }
+
+  // Saved Module Tags are the teacher-authored curriculum boundary for this
+  // module. When exact selected outcomes are available, a question may choose
+  // only among those outcomes; the activity/question evidence still decides
+  // which one. Previously these references were only a tie-breaker, which let a
+  // locally strong but out-of-scope Algebra outcome beat the module's selected
+  // Calculus outcomes.
+  let moduleReferenceRestricted = false;
+  if (moduleOutcomeReferences.length > 0) {
+    const normal = (value) => String(value ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+    const restricted = pool.filter((entry) => moduleOutcomeReferences.some((reference) => {
+      if (normal(reference?.contentMap) !== normal(entry.contentMap)) return false;
+      if (normal(reference?.outcome) !== normal(entry.outcome)) return false;
+      if (!Array.isArray(reference?.outcomePath) || reference.outcomePath.length === 0) return true;
+      return JSON.stringify(reference.outcomePath.map(normal)) ===
+        JSON.stringify((entry.outcomePath ?? []).map(normal));
+    }));
+    if (restricted.length === 0) {
+      return {
+        decision: "skip",
+        reason:
+          "the exact selected Module Tag outcomes did not match the harvested outcomes for this question's content map",
+        features: questionFeatures
+      };
+    }
+    pool = restricted;
+    moduleReferenceRestricted = true;
   }
 
   // Mathematics benefits from the operation/operand matcher below. Other
@@ -232,7 +262,9 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
         outcomePath: matched.outcomePath,
         score: null,
         tiedCount: 1,
-        basis: "reviewed question-by-question syllabus mapping, validated against the harvested SLS content map",
+        basis:
+          "reviewed question-by-question syllabus mapping, validated against the harvested SLS content map" +
+          (moduleReferenceRestricted ? " and the teacher-selected Module Tag outcomes" : ""),
         features: questionFeatures,
         evidence: {
           question: cleanQuestion,
@@ -267,7 +299,9 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
       outcomePath: picked.outcomePath,
       score: picked.score,
       tiedCount: 1,
-      basis: "best question-body lexical match within the saved content map",
+      basis:
+        "best question-body lexical match within the saved content map" +
+        (moduleReferenceRestricted ? " and the teacher-selected Module Tag outcomes" : ""),
       features: questionFeatures,
       evidence: {
         question: cleanQuestion,
@@ -306,8 +340,19 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   // mentions. This keeps a bare numerical answer from turning an unreadable stem
   // into a confident curriculum tag.
   const primaryTopics = new Set([...questionFeatures.topics, ...contextFeatures.topics]);
+  const sameDomainSupportingTopics = new Set();
+  if (primaryTopics.has("differentiation")) {
+    for (const topic of ["product rule", "quotient rule", "chain rule", "second derivative"]) {
+      if (supportingFeatures.topics.has(topic)) sameDomainSupportingTopics.add(topic);
+    }
+  }
+  if (primaryTopics.has("integration")) {
+    for (const topic of ["definite integral", "area under curve"]) {
+      if (supportingFeatures.topics.has(topic)) sameDomainSupportingTopics.add(topic);
+    }
+  }
   const corroboratedSupportingTopics = [...supportingFeatures.topics]
-    .filter((topic) => primaryTopics.has(topic));
+    .filter((topic) => primaryTopics.has(topic) || sameDomainSupportingTopics.has(topic));
   const features = {
     clean: questionFeatures.clean,
     operations: new Set([
@@ -329,7 +374,35 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     return { decision: "skip", reason: "no mathematical operation or topic detected", features };
   }
 
+  // When the question itself exposes a specialised representation, it outranks
+  // the activity-title prior.  Thus axis OCR from a parabola can funnel into the
+  // quadratic-graph branch, while a genuine stem that explicitly says "matrix"
+  // still overrides a broad or mixed activity title.
+  const primarySpecialisedTopics = ["matrix", "function graph"]
+    .filter((topic) => questionFeatures.topics.has(topic));
+  const calculusIntent = (questionFeatures.topics.has("differentiation") ||
+      questionFeatures.topics.has("integration"))
+    ? questionFeatures.topics
+    : contextFeatures.topics;
   const ranked = pool
+    .filter((entry) =>
+      primarySpecialisedTopics.every((topic) => entry.features.topics.has(topic))
+    )
+    .filter((entry) => {
+      // The shared SLS parent branch is literally "Differentiation and
+      // integration", so path-derived features put both words on every leaf.
+      // Compare the question's primary Calculus intent with the leaf wording to
+      // keep differentiation questions out of Integration outcomes and vice
+      // versa.
+      const leafTopics = entry.leafFeatures?.topics ?? mathFeatures(entry.outcome).topics;
+      if (calculusIntent.has("differentiation") && !calculusIntent.has("integration")) {
+        return !leafTopics.has("integration");
+      }
+      if (calculusIntent.has("integration") && !calculusIntent.has("differentiation")) {
+        return leafTopics.has("integration") || !leafTopics.has("differentiation");
+      }
+      return true;
+    })
     .map((entry) => ({ ...entry, score: featureScore(features, entry.features) }))
     .filter((entry) => entry.score > 0)
     .sort((a, b) => b.score - a.score);
@@ -358,9 +431,10 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
   }
 
   const best = ranked[0];
-  const tiedCount = ranked.filter((entry) => entry.score === best.score).length;
+  const topTied = ranked.filter((entry) => entry.score === best.score);
+  let tiedCount = topTied.length;
 
-  let chosen = best;
+  const chosen = best;
   const supportingUsed = Boolean(
     supportingText &&
     (supportingFeatures.operations.size > 0 ||
@@ -371,8 +445,9 @@ export function proposeQuestionTag(questionText, dictionaries, options = {}) {
     ? "primary question evidence, disambiguated by activity context"
     : "best primary-question feature match";
   if (supportingUsed) basis += ", corroborated by the suggested answer";
+  if (moduleReferenceRestricted) basis += ", restricted to the teacher-selected Module Tag outcomes";
   if (tiedCount > 1) {
-    const tied = ranked.filter((entry) => entry.score === best.score);
+    const tied = topTied;
     const fallback = primaryOneArithmeticFallback(pool, features, questionFeatures, contextText);
     if (fallback) {
       return {

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "3dc58759-7e61-4684-9b79-c8940ff6d33b",
+    "title": "JC1 Physics of Skydiving using Simulation for Active Learning and Home Based Learning",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/3dc58759-7e61-4684-9b79-c8940ff6d33b/module-plan",
+    "savedCurriculumEvidence": {
+      "subjectLevels": [
+        {
+          "subject": "Physics - H2PHY",
+          "level": "Pre-U 1"
+        },
+        {
+          "subject": "21st Century Competencies - 21CC",
+          "level": "Pre-U 1"
+        }
+      ],
+      "contentMaps": [
+        "Pre-U Physics (H2) - 2016",
+        "Pre-U Emerging 21st Century Competencies - E21CC"
+      ],
+      "selectedOutcomes": [
+        {
+          "contentMap": "Pre-U Physics (H2) - 2016",
+          "outcome": "2(f) describe qualitatively the motion of bodies falling in a uniform gravitational field with air resistance.",
+          "outcomePath": [
+            "Newtonian Mechanics",
+            "Kinematics"
+          ]
+        }
+      ],
+      "selectedOutcomeErrors": [
+        "Pre-U Emerging 21st Century Competencies - E21CC says 1 selected but its checked tree exposed 0"
+      ]
+    },
+    "description": "Source of Featured Image, https://weelookang.blogspot.com/2022/02/10-steps-to-instantly-improve-your.html, Loo Kang WEE, parachute EJSS simulation, assessed 21 Feb 2022 The learning objective of this lesson is to describe qualitatively the motion of particles falling in a uniform gravitational field with air resistance. LO-2(f)",
+    "curriculumEvidence": {
+      "source": "existing saved SLS Module Tags",
+      "subject": "Physics - H2PHY",
+      "level": "Pre-U 1",
+      "contentMap": "Pre-U Physics (H2) - 2016"
+    }
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy physics quest for Pre-U 1 learners practising jc1 physics of skydiving using simulation for active learning and home based learning. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Physics Skydiving Quest",
+    "shortTitle": "Physics Quest",
+    "description": "Build confidence and accuracy while mastering jc1 physics of skydiving using simulation for active learning and home based learning."
+  },
+  "defaults": {
+    "subject": "Physics - H2PHY",
+    "level": "Pre-U 1",
+    "contentMap": "Pre-U Physics (H2) - 2016",
+    "outcomePath": [
+      "Newtonian Mechanics",
+      "Kinematics"
+    ],
+    "outcome": "2(f) describe qualitatively the motion of bodies falling in a uniform gravitational field with air resistance.",
+    "questionKeyword": "FA Physics"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Untitled",
+      "activities": [
+        {
+          "title": "Skydiving Experience"
+        },
+        {
+          "title": "Recall Prior Knowledge"
+        },
+        {
+          "title": "Analyze the motion graphically"
+        },
+        {
+          "title": "And...the parachute is opened"
+        },
+        {
+          "title": "Application"
+        },
+        {
+          "title": "Summary"
+        },
+        {
+          "title": "Traffic Light Poll"
+        }
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY JC1 Physics of Skydiving using Simulation for Active Learning and Home Based Learning Star Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP TOP Viewable Module Title Featured Image 26b8a9b5-ee9e-4152-a1fc-f8d869b92b55.gif Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Subject and Level ADD SUBJECT AND LEVEL Content Map and Topic Pre-U Physics (H2) - 2016 - 1 selected Pre-U Emerging 21st Century Competencies - E21CC - 1 selected Content Map Topics Please select the relevant subtopics Only learning outcomes with level(s) of learning added will be available for ALS recommendation Critical, Adaptive and Inventive Thinking (CAIT) Critical Thinking Adaptive Thinking Inventive Thinking Communication, Collaboration and Information Skills (CCI) Communication Collaboration Information Skills Civic, Global and Cross-Cultural Literacy (CGC) Civic Literacy Global Literacy Cross-Cultural Literacy ADD CONTENT MAP AND TOPIC Module Description Source of Featured Image, https://weelookang.blogspot.com/2022/02/10-steps-to-instantly-improve-your.html, Loo Kang WEE, parachute EJSS simulation, assessed 21 Feb 2022 The learning objective of this lesson is to describe qualitatively the motion of particles falling in a uniform gravitational field with air resistance. LO-2(f) ADD NEW Module Authoring Copilot",
+    "moduleDescription": "Source of Featured Image, https://weelookang.blogspot.com/2022/02/10-steps-to-instantly-improve-your.html, Loo Kang WEE, parachute EJSS simulation, assessed 21 Feb 2022 The learning objective of this lesson is to describe qualitatively the motion of particles falling in a uniform gravitational field with air resistance. LO-2(f)"
+  }
+}

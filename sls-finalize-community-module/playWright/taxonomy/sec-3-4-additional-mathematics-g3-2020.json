@@ -10,7 +10,7 @@
       ]
     },
     {
-      "outcome": "Conditions for to be always positive (or always negative)",
+      "outcome": "Conditions for y equals a x squared plus b x plus c to be always positive (or always negative)",
       "outcomePath": [
         "Algebra",
         "Quadratic Functions"
@@ -73,14 +73,14 @@
       ]
     },
     {
-      "outcome": "Use of and",
+      "outcome": "Use of a cubed plus b cubed equals left parenthesis a plus b right parenthesis left parenthesis a squared minus a b plus b squared right parenthesis and a cubed minus b cubed equals left parenthesis a minus b right parenthesis left parenthesis a squared plus a b plus b squared right parenthesis",
       "outcomePath": [
         "Algebra",
         "Polynomials and partial fractions"
       ]
     },
     {
-      "outcome": "Partial fractions with cases where the denominator is no more complicated than:",
+      "outcome": "Partial fractions with cases where the denominator is no more complicated than: left parenthesis a x plus b right parenthesis left parenthesis c x plus d right parenthesis comma space left parenthesis a x plus b right parenthesis left parenthesis c x plus d right parenthesis squared comma space left parenthesis a x plus b right parenthesis left parenthesis x squared plus c squared right parenthesis",
       "outcomePath": [
         "Algebra",
         "Polynomials and partial fractions"
@@ -94,21 +94,21 @@
       ]
     },
     {
-      "outcome": "Use of notations and",
+      "outcome": "Use of notations n factorial and open parentheses table row n row r end table close parentheses",
       "outcomePath": [
         "Algebra",
         "Binomial expansions"
       ]
     },
     {
-      "outcome": "Use of the general term",
+      "outcome": "Use of the general term open parentheses table row n row r end table close parentheses a to the power of n minus r end exponent b to the power of r comma space 0 less or equal than r less or equal than n",
       "outcomePath": [
         "Algebra",
         "Binomial expansions"
       ]
     },
     {
-      "outcome": "Exponential and Logarithmic Functions and their graphs, including laws of logarithms; Equivalence of and ; Change of base of logarithms",
+      "outcome": "Exponential and Logarithmic Functions a to the power of x comma space e to the power of x comma space log subscript a open parentheses x close parentheses comma space ln open parentheses x close parentheses and their graphs, including laws of logarithms; Equivalence of y equals a to the power of x and x equals log subscript a open parentheses y close parentheses ; Change of base of logarithms",
       "outcomePath": [
         "Algebra",
         "Exponential and Logarithmic Functions"
@@ -136,14 +136,14 @@
       ]
     },
     {
-      "outcome": "Principal values of",
+      "outcome": "Principal values of sin to the power of negative 1 end exponent open parentheses x close parentheses comma space cos to the power of negative 1 end exponent open parentheses x close parentheses comma space tan to the power of negative 1 end exponent open parentheses x close parentheses",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Trigonometric functions, identities and equations"
       ]
     },
     {
-      "outcome": "Exact values of trigonometric functions for special angles () or ()",
+      "outcome": "Exact values of trigonometric functions for special angles ( 30 degree comma space 45 degree comma space 60 degree ) or ( straight pi over 6 comma space straight pi over 4 comma space straight pi over 3 )",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Trigonometric functions, identities and equations"
@@ -157,14 +157,14 @@
       ]
     },
     {
-      "outcome": "Graphs of , where a is real, b is a positive integer, and c is an integer",
+      "outcome": "Graphs of y equals a space sin open parentheses b x close parentheses plus thin space c comma space y equals a space sin open parentheses x over b close parentheses plus c comma space y equals a space cos open parentheses b x close parentheses plus c comma space y equals a space cos open parentheses x over b close parentheses plus c comma space y equals a space tan open parentheses b x close parentheses , where a is real, b is a positive integer, and c is an integer",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Trigonometric functions, identities and equations"
       ]
     },
     {
-      "outcome": "Use of , , the expansions of and , the formulae for and , the expression of in the form or .",
+      "outcome": "Use of fraction numerator sin open parentheses A close parentheses over denominator cos open parentheses A close parentheses end fraction equals tan open parentheses A close parentheses , fraction numerator cos open parentheses A close parentheses over denominator sin open parentheses A close parentheses end fraction equals c o t left parenthesis A right parenthesis , sin squared open parentheses A close parentheses plus cos squared open parentheses A close parentheses equals 1 comma space s e c squared open parentheses A close parentheses equals 1 plus tan squared open parentheses A close parentheses comma space cos e c squared left parenthesis A right parenthesis equals 1 plus c o t squared left parenthesis A right parenthesis comma the expansions of sin open parentheses A plus-or-minus B close parentheses comma space cos open parentheses A plus-or-minus B close parentheses and tan open parentheses A plus-or-minus B close parentheses , the formulae for sin open parentheses 2 A close parentheses comma space cos open parentheses 2 A close parentheses and tan open parentheses 2 A close parentheses , the expression of a space cos left parenthesis theta right parenthesis plus b space sin left parenthesis theta right parenthesis in the form R space cos left parenthesis theta plus-or-minus alpha right parenthesis or R space sin left parenthesis theta plus-or-minus alpha right parenthesis .",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Trigonometric functions, identities and equations"
@@ -220,14 +220,14 @@
       ]
     },
     {
-      "outcome": "Coordinate geometry of circles in the form and (excluding problems involving two circles)",
+      "outcome": "Coordinate geometry of circles in the form left parenthesis x minus a right parenthesis squared plus left parenthesis y minus b right parenthesis squared equals r squared and x squared plus y squared plus 2 g x plus 2 f y plus c equals 0 (excluding problems involving two circles)",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Coordinate Geometry in two dimensions"
       ]
     },
     {
-      "outcome": "Transformation of given relationships, including and , to linear form to determine the unknown constants from a straight line graph",
+      "outcome": "Transformation of given relationships, including y equals a x to the power of n and y equals k b to the power of x , to linear form to determine the unknown constants from a straight line graph",
       "outcomePath": [
         "Geometry and Trigonometry",
         "Coordinate Geometry in two dimensions"
@@ -276,14 +276,14 @@
       ]
     },
     {
-      "outcome": "Use of standard notation f'(x), f''(x), ,",
+      "outcome": "Use of standard notation f'(x), f''(x), fraction numerator d y over denominator d x end fraction , fraction numerator d squared y over denominator d x squared end fraction space open square brackets equals fraction numerator d over denominator d x end fraction open parentheses fraction numerator d y over denominator d x end fraction close parentheses close square brackets",
       "outcomePath": [
         "Calculus",
         "Differentiation and integration"
       ]
     },
     {
-      "outcome": "Derivatives of for any rational n, sin x, cos x, tan x, and , together with constant multiples, sums and differences",
+      "outcome": "Derivatives of x to the power of n for any rational n, sin x, cos x, tan x, e to the power of x and ln open parentheses x close parentheses , together with constant multiples, sums and differences",
       "outcomePath": [
         "Calculus",
         "Differentiation and integration"
@@ -339,14 +339,14 @@
       ]
     },
     {
-      "outcome": "Integration of for any rational n, sin x, cos x, and , together with constant multiples, sums and differences",
+      "outcome": "Integration of x to the power of n for any rational n, sin x, cos x, s e c squared x and e to the power of x , together with constant multiples, sums and differences",
       "outcomePath": [
         "Calculus",
         "Differentiation and integration"
       ]
     },
     {
-      "outcome": "Integration of for any rational n, sin(ax+b), cos(ax+b) and",
+      "outcome": "Integration of left parenthesis a x plus b right parenthesis to the power of n for any rational n, sin(ax+b), cos(ax+b) and e to the power of a x plus b end exponent",
       "outcomePath": [
         "Calculus",
         "Differentiation and integration"
@@ -388,8 +388,5 @@
       ]
     }
   ],
-  "subject": "Additional Mathematics - G3AMATHS",
-  "level": "Secondary 4",
-  "harvestedAt": "2026-08-21T08:12:50.047Z",
-  "discoveredFromModule": "52bfb827-c796-454f-8d6e-5024111f515f"
+  "harvestedAt": "2026-08-27T06:18:18.185Z"
 }

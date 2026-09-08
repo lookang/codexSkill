@@ -250,6 +250,256 @@ test("an activity title cannot invent mathematics when the question body is unre
   assert.match(result.reason, /question body/);
 });
 
+test("parabola axis OCR and activity context select a quadratic graph, not matrices", () => {
+  const secondary = [
+    entry(
+      "Sec 3 & 4 Mathematics (G3) (2020)",
+      ["Number and Algebra", "Functions and Graphs"],
+      "Sketching the graphs of quadratic functions given in the form y equals left parenthesis x minus p right parenthesis squared plus q"
+    ),
+    entry(
+      "Sec 3 & 4 Mathematics (G3) (2020)",
+      ["Number and Algebra", "Matrices"],
+      "Problems involving addition, subtraction and multiplication of matrices"
+    )
+  ];
+  const result = proposeQuestionTag("5 10 −5 −10 5 10 15 −5 0 0,0 x y", secondary, {
+    allowedContentMaps: ["Sec 3 & 4 Mathematics (G3) (2020)"],
+    contextText: "Quadratic and Fractional Equations"
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /graphs of quadratic functions/i);
+  assert.doesNotMatch(result.outcome, /matrices/i);
+});
+
+test("generic arithmetic cannot satisfy a matrix outcome", () => {
+  const secondary = [
+    entry(
+      "Sec 3 & 4 Mathematics (G3) (2020)",
+      ["Number and Algebra", "Matrices"],
+      "Problems involving addition, subtraction and multiplication of matrices"
+    )
+  ];
+  const result = proposeQuestionTag("Calculate the remaining time.", secondary, {
+    allowedContentMaps: ["Sec 3 & 4 Mathematics (G3) (2020)"],
+    contextText: "Quadratic and Fractional Equations",
+    supportingText: "60 × 85 ÷ (90 + 12) = 50 minutes"
+  });
+
+  assert.equal(result.decision, "skip");
+  assert.match(result.reason, /no outcome matched/i);
+});
+
+test("an explicit matrix stem overrides unrelated activity context", () => {
+  const secondary = [
+    entry(
+      "Sec 3 & 4 Mathematics (G3) (2020)",
+      ["Number and Algebra", "Functions and Graphs"],
+      "Sketching the graphs of quadratic functions"
+    ),
+    entry(
+      "Sec 3 & 4 Mathematics (G3) (2020)",
+      ["Number and Algebra", "Matrices"],
+      "Problems involving addition, subtraction and multiplication of matrices"
+    )
+  ];
+  const result = proposeQuestionTag("Given matrices A and B, calculate A + 2B.", secondary, {
+    allowedContentMaps: ["Sec 3 & 4 Mathematics (G3) (2020)"],
+    contextText: "Quadratic and Fractional Equations"
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /matrices/i);
+});
+
+test("set notation uses the selected Module Tag outcomes and does not become an equation", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const sets = [
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Use of set language and notation"),
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Union and intersection of two sets"),
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Venn diagrams"),
+    entry(contentMap, ["Number and Algebra", "Equations and Inequalities"],
+      "Solving quadratic equations in one variable")
+  ];
+  const moduleOutcomeReferences = sets.slice(0, 3).map(({ contentMap, outcome, outcomePath }) => ({
+    contentMap, outcome, outcomePath
+  }));
+  const result = proposeQuestionTag("X ∪ Y =", sets, {
+    allowedContentMaps: [contentMap],
+    contextText: "Sets",
+    moduleOutcomeReferences
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.outcome, "Union and intersection of two sets");
+  assert.ok(result.features.topics.has("set operation"));
+  assert.ok(result.features.topics.has("set notation"));
+  assert.ok(!result.features.topics.has("equation"));
+});
+
+test("one exact selected Module Tag outcome is the authoritative candidate pool", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const sets = [
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Finding a union of sets"),
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Union and intersection of two sets")
+  ];
+  const result = proposeQuestionTag("A ∪ B =", sets, {
+    allowedContentMaps: [contentMap],
+    moduleOutcomeReferences: [{
+      contentMap,
+      outcome: "Union and intersection of two sets",
+      outcomePath: ["Number and Algebra", "Set Language and notation"]
+    }]
+  });
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.outcome, "Union and intersection of two sets");
+  assert.match(result.basis, /restricted to the teacher-selected Module Tag outcomes/);
+});
+
+test("clear question evidence outside selected Module Tags is skipped rather than tagged out of scope", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const outcomes = [
+    entry(contentMap, ["Number and Algebra", "Set Language and notation"],
+      "Union and intersection of two sets"),
+    entry(contentMap, ["Number and Algebra", "Functions and Graphs"],
+      "Sketching the graphs of quadratic functions")
+  ];
+  const result = proposeQuestionTag("Sketch the graph of the quadratic function y = x^2.", outcomes, {
+    allowedContentMaps: [contentMap],
+    moduleOutcomeReferences: [{
+      contentMap,
+      outcome: "Union and intersection of two sets",
+      outcomePath: ["Number and Algebra", "Set Language and notation"]
+    }]
+  });
+
+  assert.equal(result.decision, "skip");
+  assert.match(result.reason, /no outcome matched/i);
+});
+
+test("Further Differentiation Q2 selects the quotient outcome only from the 18 Module Tags", () => {
+  const contentMap = "Sec 3 & 4 Additional Mathematics (G3) (2020)";
+  const calculusPath = ["Calculus", "Differentiation and integration"];
+  const outcomes = [
+    entry(contentMap, ["Algebra", "Polynomials and partial fractions"],
+      "Multiplication and division of polynomials"),
+    entry(contentMap, calculusPath,
+      "Derivatives of x^n for any rational n, together with constant multiples, sums and differences"),
+    entry(contentMap, calculusPath,
+      "Derivatives of products and quotients of functions"),
+    entry(contentMap, calculusPath, "Use of chain rule"),
+    entry(contentMap, calculusPath, "Integration as the reverse of differentiation")
+  ];
+  const moduleOutcomeReferences = outcomes.slice(1).map(({ contentMap: map, outcome, outcomePath }) => ({
+    contentMap: map,
+    outcome,
+    outcomePath
+  }));
+  const result = proposeQuestionTag(
+    "Differentiate x / sqrt(2x - 1).",
+    outcomes,
+    {
+      allowedContentMaps: [contentMap],
+      contextText: "Further Differentiation",
+      supportingText: "Rewrite the square root into a power function. Apply the Quotient Rule.",
+      moduleOutcomeReferences
+    }
+  );
+
+  assert.equal(result.decision, "tag");
+  assert.equal(result.outcome, "Derivatives of products and quotients of functions");
+  assert.ok(result.features.topics.has("differentiation"));
+  assert.ok(result.features.topics.has("quotient rule"));
+  assert.match(result.basis, /suggested answer/);
+  assert.match(result.basis, /teacher-selected Module Tag outcomes/);
+});
+
+test("a stale Module Tag reference never falls back to the whole content map", () => {
+  const contentMap = "Sec 3 & 4 Additional Mathematics (G3) (2020)";
+  const outcomes = [
+    entry(contentMap, ["Algebra", "Polynomials and partial fractions"],
+      "Multiplication and division of polynomials")
+  ];
+  const result = proposeQuestionTag("Differentiate x^2.", outcomes, {
+    allowedContentMaps: [contentMap],
+    moduleOutcomeReferences: [{
+      contentMap,
+      outcome: "Derivatives of products and quotients of functions",
+      outcomePath: ["Calculus", "Differentiation and integration"]
+    }]
+  });
+
+  assert.equal(result.decision, "skip");
+  assert.match(result.reason, /exact selected Module Tag outcomes did not match/i);
+});
+
+test("probability multipart questions funnel through the module's selected probability outcomes", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const outcomes = [
+    entry(contentMap, ["Statistics and Probability", "Probability"],
+      "Probability of simple combined events (including using possibility diagrams and tree diagrams, where appropriate)"),
+    entry(contentMap, ["Statistics and Probability", "Probability"],
+      "Addition and multiplication of probabilities (mutually exclusive events and independent events)"),
+    entry(contentMap, ["Number and Algebra", "Indices"],
+      "Positive, negative, zero and fractional indices")
+  ];
+  const moduleOutcomeReferences = outcomes.slice(0, 2).map(({ contentMap: map, outcome }) => ({
+    contentMap: map,
+    outcome,
+    outcomePath: []
+  }));
+  const cases = [
+    "Find the value of n. [Shared stimulus: A bag contains n red marbles, 7 white marbles and 5 blue marbles. The probability of picking a red marble is 7/11.]",
+    "Without replacing the first marble, what is the probability of picking 2 red marbles?",
+    "Find the probability that the number shown is a multiple of 4."
+  ];
+
+  for (const stem of cases) {
+    const result = proposeQuestionTag(stem, outcomes, {
+      allowedContentMaps: [contentMap],
+      contextText: "Probability of Combined Events",
+      moduleOutcomeReferences
+    });
+    assert.equal(result.decision, "tag", stem);
+    assert.match(result.outcome, /probabilit/i, stem);
+    assert.doesNotMatch(result.outcome, /indices/i, stem);
+  }
+});
+
+test("explicit independent-event evidence selects the probability operations outcome", () => {
+  const contentMap = "Sec 3 & 4 Mathematics (G3) (2020)";
+  const outcomes = [
+    entry(contentMap, ["Statistics and Probability", "Probability"],
+      "Probability of simple combined events (including using possibility diagrams and tree diagrams, where appropriate)"),
+    entry(contentMap, ["Statistics and Probability", "Probability"],
+      "Addition and multiplication of probabilities (mutually exclusive events and independent events)")
+  ];
+  const result = proposeQuestionTag(
+    "Three devices operate independently. Find the probability that all three devices work.",
+    outcomes,
+    {
+      allowedContentMaps: [contentMap],
+      contextText: "Probability of Combined Events",
+      supportingText: "0.8 × 0.7 × 0.9",
+      moduleOutcomeReferences: outcomes.map(({ contentMap: map, outcome }) => ({
+        contentMap: map,
+        outcome,
+        outcomePath: []
+      }))
+    }
+  );
+
+  assert.equal(result.decision, "tag");
+  assert.match(result.outcome, /addition and multiplication of probabilities/i);
+});
+
 test("a mass conversion chooses the measurement conversion outcome, not fractions", () => {
   const measurement = [
     entry("Pri 3 Mathematics (2021)", ["Number and Algebra", "Fractions", "Addition and subtraction"],

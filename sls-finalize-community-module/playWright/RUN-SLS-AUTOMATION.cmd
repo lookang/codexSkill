@@ -22,6 +22,15 @@ echo Explicit multi-stream titles such as G2G3 harvest and retain both maps.
 echo If the curriculum cannot be selected confidently, the run shows numbered
 echo candidates. Choose 1, 2, 3, and so on to record the reviewed exact SLS
 echo wording and continue in the same run. Press Enter to stop without guessing.
+echo When a section's Section Tags are completely empty, the exact saved Module
+echo Tags are copied into that section before question tagging. A prior exact
+echo copy showing 0 selected topics is repaired from the Module Tags. Reviewed
+echo supplemental curricula, such as Foundation Mathematics, are then appended
+echo to empty or already-tagged sections without removing existing selections.
+echo Automation uses surgical question tagging: existing sections and activities
+echo are updated in place and are never copied, renamed or deleted.
+echo The retired replacement workflow is available only when deliberately passing
+echo --duplicate-and-replace; it retains its guarded DELETE checkpoint.
 echo.
 
 call npm.cmd run sls:one-shot -- %*

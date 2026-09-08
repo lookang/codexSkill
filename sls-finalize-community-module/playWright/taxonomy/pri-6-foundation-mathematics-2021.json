@@ -1,0 +1,205 @@
+{
+  "contentMap": "Pri 6 Foundation Mathematics (2021)",
+  "rowCount": 45,
+  "outcomes": [
+    {
+      "outcome": "Acquire mathematical concepts and skills for everyday use and continuous learning in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Develop thinking, reasoning, communication, application and metacognitive skills through a mathematical approach to problem-solving",
+      "outcomePath": []
+    },
+    {
+      "outcome": "Build confidence and foster interest in mathematics",
+      "outcomePath": []
+    },
+    {
+      "outcome": "1.1 dividing a whole number by a whole number with quotient as a fraction",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Fraction and division"
+      ]
+    },
+    {
+      "outcome": "1.2 expressing fractions as decimals",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Fraction and division"
+      ]
+    },
+    {
+      "outcome": "2.1 dividing a proper fraction by a whole number",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "2.2 dividing a whole number/proper fraction by a proper fraction",
+      "outcomePath": [
+        "Number and Algebra",
+        "Fractions",
+        "Four operations"
+      ]
+    },
+    {
+      "outcome": "1.1 multiplying and dividing decimals",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "1.2 dividing a whole number by a whole number with quotient as a decimal without calculator",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "1.3 rounding answers to a specified degree of accuracy",
+      "outcomePath": [
+        "Number and Algebra",
+        "Decimals",
+        "Multiplication and division"
+      ]
+    },
+    {
+      "outcome": "1.1 expressing a part of a whole as a percentage",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.2 use of %",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.3 finding a percentage part of a whole",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.4 finding discount, GST and annual interest",
+      "outcomePath": [
+        "Number and Algebra",
+        "Percentage",
+        "Percentage"
+      ]
+    },
+    {
+      "outcome": "1.1 concepts of base and height of a triangle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area of triangle"
+      ]
+    },
+    {
+      "outcome": "1.2 area of triangle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area of triangle"
+      ]
+    },
+    {
+      "outcome": "1.3 finding area and perimeter of composite figures made up of squares, rectangles and triangles",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Area of triangle"
+      ]
+    },
+    {
+      "outcome": "2.1 volume of a cube/cuboid",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.2 finding the volume of liquid in a rectangular tank excluding conversion between cm blank cubed and m blank cubed",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "2.3 relationship between calligraphic l (or ml) with cm blank cubed",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Area and Volume",
+        "Volume of cube and cuboid"
+      ]
+    },
+    {
+      "outcome": "1.1 properties of isosceles triangle equilateral triangle right-angled triangle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Rectangle, square and triangle"
+      ]
+    },
+    {
+      "outcome": "1.2 angle sum of a triangle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Rectangle, square and triangle"
+      ]
+    },
+    {
+      "outcome": "1.3 finding unknown angles, without additional construction of lines, in composite geometrical figures involving square rectangle triangle",
+      "outcomePath": [
+        "Measurement and Geometry",
+        "Geometry",
+        "Rectangle, square and triangle"
+      ]
+    },
+    {
+      "outcome": "1.1 reading and interpreting data from pie charts",
+      "outcomePath": [
+        "Statistics",
+        "Data representation and interpretation",
+        "Pie charts"
+      ]
+    },
+    {
+      "outcome": "1.1 average as 'total value divided by number of data'",
+      "outcomePath": [
+        "Statistics",
+        "Data analysis",
+        "Average of a set of data"
+      ]
+    },
+    {
+      "outcome": "1.2 relationship between average, total value and number of data",
+      "outcomePath": [
+        "Statistics",
+        "Data analysis",
+        "Average of a set of data"
+      ]
+    }
+  ],
+  "subject": "Foundation Mathematics - FMATHS",
+  "level": "Primary 6",
+  "harvestedAt": "2026-09-03T00:19:47.421Z"
+}

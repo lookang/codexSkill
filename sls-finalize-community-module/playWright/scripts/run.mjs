@@ -5,8 +5,9 @@ import { runSlsWorkflow } from "../src/sls-runner.mjs";
 
 try {
   const options = parseArgs(process.argv.slice(2));
+  const allowIncompleteCurriculum = ["inspect", "scan", "discover"].includes(options.mode);
   const config = applyTargetUrl(
-    mergeDefaults(await loadConfig(options.configPath)),
+    mergeDefaults(await loadConfig(options.configPath, { allowIncompleteCurriculum })),
     options
   );
   const result = await runSlsWorkflow(config, options);

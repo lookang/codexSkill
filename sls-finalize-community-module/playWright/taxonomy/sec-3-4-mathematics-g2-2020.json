@@ -1,0 +1,311 @@
+{
+  "contentMap": "Sec 3 & 4 Mathematics (G2) (2020)",
+  "rowCount": 58,
+  "outcomes": [
+    {
+      "outcome": "Use of standard form A cross times 10 to the power of n , where n is an integer, and 1 less or equal than A less than 10",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Positive, negative, zero and fractional indices",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Laws of indices",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Factorisation of linear expressions of the form ax + bx + kay + kby",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Expansion of the product of algebraic expressions",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Changing the subject of a formula",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Finding the value of an unknown quantity in a given formula",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Addition and subtraction of algebraic fractions with linear or quadratic denominator such as fraction numerator 1 over denominator x minus 2 end fraction plus fraction numerator 2 over denominator x minus 3 end fraction comma space fraction numerator 1 over denominator x squared minus 9 end fraction plus fraction numerator 2 over denominator x minus 3 end fraction comma space fraction numerator 1 over denominator x minus 3 end fraction plus fraction numerator 2 over denominator left parenthesis x minus 3 right parenthesis squared end fraction",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Algebraic expressions and formulae"
+      ]
+    },
+    {
+      "outcome": "Quadratic functions y equals a x squared plus b x plus c",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Functions and graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of quadratic functions and their properties: - positive or negative coefficient of x squared - maximum and minimum points - symmetry",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Functions and graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of power functions y equals a x to the power of n , where n = -2, -1, 0, 1, 2, 3, and simple sums of not more than three of these",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Functions and graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of exponential functions y equals k a to the power of x , where a is a positive integer",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Functions and graphs"
+      ]
+    },
+    {
+      "outcome": "Estimation of the gradient of a curve by drawing a tangent",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Functions and graphs"
+      ]
+    },
+    {
+      "outcome": "Solving quadratic equations in one variable by: - factorisation - use of formula - completing the square for y equals x squared plus p x plus q - graphical method",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving fractional equations that can be reduced to quadratic equations such as fraction numerator 6 over denominator x plus 4 end fraction equals x plus 3 comma space fraction numerator 1 over denominator x minus 2 end fraction plus fraction numerator 2 over denominator x minus 3 end fraction equals 5",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Formulating a quadratic equation in one variable to solve problems",
+      "outcomePath": [
+        "NUMBERS AND ALGEBRA",
+        "Equations and inequalities"
+      ]
+    },
+    {
+      "outcome": "Enlargement and reduction of a plane figure",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Congruence and similarity"
+      ]
+    },
+    {
+      "outcome": "Scale drawings",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Congruence and similarity"
+      ]
+    },
+    {
+      "outcome": "Solving simple problems involving congruence and similarity",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Congruence and similarity"
+      ]
+    },
+    {
+      "outcome": "Properties and construction of perpendicular bisectors of line segments and angle bisectors",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Congruence and similarity"
+      ]
+    },
+    {
+      "outcome": "Symmetry properties of circles: - equal chords are equidistant from the centre - the perpendicular bisector of a chord passes through the centre - tangents from an external point are equal in length - the line joining an external point to the centre of the circle bisects the angle between the tangents",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Properties of circles"
+      ]
+    },
+    {
+      "outcome": "Angle properties of circles: - angle in a semicircle is a right angle - angle between tangent and radius of a circle is a right angle - angle at the centre is twice the angle at the circumference - angles in the same segment are equal - angles in opposite segments are supplementary",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Properties of circles"
+      ]
+    },
+    {
+      "outcome": "Use of trigonometric ratios (sine, cosine and tangent) of acute angles to calculate unknown sides and angles in right-angled triangles",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Extending sine and cosine to obtuse angles",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Use of the formula 1 half a b space sin open parentheses C close parentheses for the area of a triangle",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Use of sine rule and cosine rule for any triangle",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Problems in two and three dimensions including those involving angles of elevation and depression and bearings",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Arc length as fraction of the circumference and sector area as fraction of the area of a circle",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Area of a segment",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Use of radian measure of angle (including conversion between radians and degrees)",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Problems involving the arc length, sector area of a circle and area of a segment",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Finding the gradient of a straight line given the coordinates of two points on it",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Coordinate geometry"
+      ]
+    },
+    {
+      "outcome": "Finding the length of a line segment given the coordinates of its end points",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Coordinate geometry"
+      ]
+    },
+    {
+      "outcome": "Interpreting and finding the equation of a straight line",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Coordinate geometry"
+      ]
+    },
+    {
+      "outcome": "Geometric problems involving the use of coordinates",
+      "outcomePath": [
+        "GEOMETRY AND MEASUREMENT",
+        "Coordinate geometry"
+      ]
+    },
+    {
+      "outcome": "Quartiles and percentiles",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Range, interquartile range and standard deviation as measures of spread for a set of data",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Analysis and interpretation of: - cumulative frequency diagrams - box-and-whisker plots",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Calculation of the standard deviation for a set of data (grouped and ungrouped)",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Using the mean and standard deviation to compare two sets of data",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of teh different forms of statistical representations",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Data analysis"
+      ]
+    },
+    {
+      "outcome": "Probability of simple combined events (including using possibility diagrams and tree diagrams, where appropriate)",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Probability"
+      ]
+    },
+    {
+      "outcome": "Addition and multiplication of probabilities (mutually exclusive events and independent events)",
+      "outcomePath": [
+        "STATISTICS AND PROBABILITY",
+        "Probability"
+      ]
+    }
+  ],
+  "subject": "Mathematics - G2MATHS",
+  "level": "Secondary 3",
+  "harvestedAt": "2026-08-27T01:11:49.002Z",
+  "discoveredFromModule": "67002015-984b-414c-b852-db523a0b140e"
+}

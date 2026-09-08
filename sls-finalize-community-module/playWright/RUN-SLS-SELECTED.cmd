@@ -14,10 +14,17 @@ if not exist "node_modules\@playwright\test" (
 echo.
 echo SLS Selected Finalization Workflow
 echo ----------------------------------
-echo Select Automation, Page Break, Thumbnail, Gamification, ACP Interactive,
-echo Add Wee Loo Kang, Remove Copy Suffixes, or any combination.
-echo AUTO checks all seven in safe order; each stage skips work already complete.
-echo After selection, the workflow runs without review pauses or DELETE prompts.
+echo Press Enter or choose COMPLETE to run the same functional flow as:
+echo   1. RUN-SLS-AUTOMATION.cmd
+echo   2. RUN-SLS-PAGE-BREAK.cmd
+echo   3. RUN-SLS-THUMBNAIL.cmd
+echo   4. RUN-SLS-ADD-WEE-LOO-KANG.cmd
+echo Automation is surgical: it updates existing questions without duplicating,
+echo renaming or deleting any section or activity.
+echo Successful stages continue without their redundant final review pause.
+echo AUTO is the separate seven-stage workflow. Add --unattended only when you
+echo deliberately want non-interactive curriculum choices. Legacy replacement is
+echo available only with --duplicate-and-replace and is not part of COMPLETE.
 echo A guard stops the sequence before later stages are started.
 echo.
 

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "module": {
+    "id": "12326c6c-b327-4fb2-9c33-3589962f5346",
+    "title": "Quadratic and Fractional Equations",
+    "adminEditUrl": "https://vle.learning.moe.edu.sg/admin/community-gallery/module/edit/12326c6c-b327-4fb2-9c33-3589962f5346/module-plan",
+    "curriculumEvidence": {
+      "source": "existing saved SLS Module Tags",
+      "subject": "Mathematics - G3MATHS",
+      "level": "Secondary 3",
+      "contentMap": "Sec 3 & 4 Mathematics (G3) (2020)"
+    }
+  },
+  "gamification": {
+    "recipe": "Fantasy Hero Journey",
+    "instructions": "Create a friendly fantasy mathematics quest for Secondary 3 learners practising quadratic and fractional equations. Keep the story encouraging, age-appropriate, concise, and focused on effort, accuracy, and reflection.",
+    "title": "Quadratic Fractional Quest",
+    "shortTitle": "Quadratic Quest",
+    "description": "Build confidence and accuracy while mastering quadratic and fractional equations."
+  },
+  "defaults": {
+    "subject": "Mathematics - G3MATHS",
+    "level": "Secondary 3",
+    "contentMap": "Sec 3 & 4 Mathematics (G3) (2020)",
+    "outcomePath": [],
+    "outcome": "REVIEW-BEFORE-RUNNING: paste the exact learning outcome text from the SLS dropdown",
+    "questionKeyword": "FA Math"
+  },
+  "sections": [
+    {
+      "label": "A",
+      "title": "Untitled",
+      "activities": [
+        {
+          "title": "Quadratic and Fractional Equations"
+        }
+      ]
+    }
+  ],
+  "discoveryEvidence": {
+    "moduleText": "COMMUNITY GALLERY Quadratic and Fractional Equations Star Teacher Reviews Done Unpublish More Actions FEATURED Module has been featured Admin Reviews HELP TOP Viewable Module Title Featured Image Image_20260826221850.jpeg Learning Outcomes Tags make your module easier to find. New sections automatically inherit module tags, but existing ones don’t. Tags will appear on the module cover. Module Tags Subject and Level ADD SUBJECT AND LEVEL Content Map and Topic Sec 3 & 4 Mathematics (G3) (2020) - 2 selected Content Map Topics Please select the relevant subtopics Only learning outcomes with level(s) of learning added will be available for ALS recommendation Introduction to Mathematics Number and Algebra Numbers and their operations Use of standard form , where n is an integer and Positive, negative, zero and fractional indices Laws of indices Functions and Graphs Sketching the graphs of quadratic functions given in the form Graphs of power functions , where n = -2, -1, 0, 1, 2,3, and simple sums of not more than three of these Graphs of exponential functions , where a is a positive integer Estimation of the gradient of a curve by drawing a tangent Equations and Inequalities Solving quadratic equations in one variable by use of formula, completing the square for , graphical method Solving fractional equations that can be reduced to quadratic equations such as Solving linear inequalities in one variable, and representing the solution on the number line Formulating a quadratic equation in one variable to solve problems Set Language and notation Use of set language and notation Union and intersection of two sets Venn diagrams Matrices Display of information in the form of a matrix of any order Interpreting the data in a given matrix Product of a scalar quantity and a matrix Problems involving addition, subtraction and multiplication of matrices Geometry and Measurement Congruence and Similarity Determining whether two triangles are congruent or similar Ratio of areas of similar plane figures Ratio of volumes of similar solids Scale drawings Properties and construction of perpendicular bisectors of line segments and angle bisectors Properties of circles Symmetry properties of circles: equal chords are equidistant from the centre the perpendicular bisector of a chord passes through the centre tangents from an external point are equal in length the line joining an external point to the centre of the circle bisects the angle between the tangents Angle properties of circles: angle in a semicircle is a right angle angle between tangent and radius of a circle is a right angle angle at the centre is twice the angle at the circumference angles in the same segment are equal angles in opposite segments are supplementary Pythagoras' theorem and trigonometry Extending sine and cosine to obtuse angles Use of the formula ab sin C for the area of a triangle Use of sine rule and cosine rule for any triangle Problems in two and three dimensions including those involving angles of elevation and depression and bearings Mensuration Arc length, sector area and area of a segment of a circle Use of radian measure of angle (including conversion between radians and degrees) Coordinate Geometry Finding the gradient of a straight line given the coordinates of two points on it Finding the length of a line segment given the coordinates of its end points Interpreting and finding the equation of a straight line graph in the form y = mx + c Geometric problems involving the use of coordinates Vectors in two dimensions Use of notations: ,, a, and Representing a vector as a directed line segment Translation by a vector Position vectors Magnitude of a vector as Use of sum and difference of two vectors to express given vectors in terms of two coplanar vectors Multiplication of a vector by a scalar Geometric problems involving the use of vectors Statistics and Probability Data Analysis Quartiles and percentiles Range, interquartile range and standard deviation as measures of spread for a set of data Analysis and interpretation of cumulative frequency diagrams and box-and-whisker plots. Purposes and uses, advantages and disadvantages of the different forms of statistical representations Calculation of the standard deviation for a set of data (grouped and ungrouped) Using the mean and standard deviation to compare two sets of data Probability Probability of simple combined events (including using possibility diagrams and tree diagrams, where appropriate) Addition and multiplication of probabilities (mutually exclusive events and independent events) ADD CONTENT MAP AND TOPIC Module Description ADD NEW Module Authoring Copilot"
+  }
+}

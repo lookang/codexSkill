@@ -33,6 +33,19 @@ import {
   rankSubjectOptions
 } from "./curriculum-discovery.mjs";
 import {
+  exactSupplementalProposal,
+  mirroredSupplementalProposal,
+  secondaryFiveG2MirrorTarget,
+  supplementalSectionTagPlan,
+  supplementalOutcomesForQuestion
+} from "./supplemental-tagging.mjs";
+import {
+  moduleToSectionTagCopyPlan,
+  sectionCurriculumStateContainsPlan,
+  sectionCurriculumStateIsEmpty,
+  sectionZeroSelectedTopicRepairPlan
+} from "./module-evidence.mjs";
+import {
   createRunPaths,
   loadCheckpoint,
   saveCheckpoint,
@@ -54,6 +67,22 @@ let expect = baseExpect.configure({ timeout: 15_000 });
 
 export class GuardError extends Error {}
 
+export function moduleOutcomeReferenceIntegrityError(moduleEvidence = {}, allowedContentMaps = []) {
+  const allowed = new Set((allowedContentMaps ?? []).map((entry) => normalize(entry).toLowerCase()));
+  const errors = (moduleEvidence.selectedOutcomeErrors ?? [])
+    .map((entry) => normalize(entry))
+    .filter((entry) => {
+      if (allowed.size === 0) return true;
+      return [...allowed].some((contentMap) => entry.toLowerCase().startsWith(contentMap));
+    })
+    .filter(Boolean);
+  if (errors.length === 0) return null;
+  return (
+    `SLS reports selected Module Tag outcomes, but the exact teacher-selected pool could not be read: ` +
+    `${errors.join("; ")}. Question tagging is stopped rather than considering unselected outcomes.`
+  );
+}
+
 export async function runSlsWorkflow(config, options, shared = {}) {
   expect = baseExpect.configure({ timeout: options.timeoutMs });
   const paths = await createRunPaths(options, config.module.id);
@@ -67,7 +96,8 @@ export async function runSlsWorkflow(config, options, shared = {}) {
       deleteOriginals: options.deleteOriginals,
       renameCopies: options.renameCopies,
       headless: options.headless,
-      startSection: options.startSection
+      startSection: options.startSection,
+      sectionTagsOnly: options.sectionTagsOnly
     },
     inventory: null,
     sections: [],
@@ -104,6 +134,17 @@ export async function runSlsWorkflow(config, options, shared = {}) {
     if (!report.module.title) report.module.title = report.inventory.title;
     console.log(`Found ${report.inventory.sectionCount} visible section entries.`);
 
+    options.secondaryFiveG2Mirror = secondaryFiveG2MirrorTarget(
+      report.inventory.moduleEvidence
+    );
+    if (options.secondaryFiveG2Mirror) {
+      report.options.secondaryFiveG2Mirror = options.secondaryFiveG2Mirror;
+      console.log(
+        `Secondary compatibility tagging enabled: ${options.secondaryFiveG2Mirror.sourceContentMap} ` +
+          `-> ${options.secondaryFiveG2Mirror.contentMap}.`
+      );
+    }
+
     // A Primary assessment may intentionally declare several saved levels. Make
     // those levels the candidate pool for each question; the tagger will still
     // write only the one unambiguous best match. Explicit section.contentMaps
@@ -119,6 +160,35 @@ export async function runSlsWorkflow(config, options, shared = {}) {
       console.log(
         `Question-level Primary content maps: ${options.questionContentMaps.join(" | ")}.`
       );
+    }
+    const moduleOutcomeReferences = report.inventory.moduleEvidence?.selectedOutcomes ?? [];
+    if (moduleOutcomeReferences.length > 0 && !options.questionOutcomeReferences?.length) {
+      options.questionOutcomeReferences = moduleOutcomeReferences;
+    }
+    if (options.questionOutcomeReferences?.length) {
+      report.options.questionOutcomeReferences = options.questionOutcomeReferences.map((entry) => ({
+        contentMap: entry.contentMap,
+        outcome: entry.outcome,
+        outcomePath: entry.outcomePath ?? []
+      }));
+      console.log(
+        `Question-level reference pool: ${options.questionOutcomeReferences.length} exact selected Module Tag outcome(s).`
+      );
+    }
+    const configuredQuestionMaps = [...new Set([
+      ...(options.questionContentMaps ?? []),
+      ...(config.sections ?? []).flatMap((section) => [
+        ...(section.contentMaps ?? []),
+        section.contentMap
+      ]),
+      config.defaults?.contentMap
+    ].filter(Boolean))];
+    const moduleOutcomeIntegrityError = moduleOutcomeReferenceIntegrityError(
+      report.inventory.moduleEvidence,
+      configuredQuestionMaps
+    );
+    if ((options.mode === "tag" || options.tagQuestions) && moduleOutcomeIntegrityError) {
+      throw new GuardError(moduleOutcomeIntegrityError);
     }
 
     if (options.mode === "inspect") {
@@ -506,7 +576,15 @@ async function tagEveryQuestion({
     // their choice. Anything else in scope is tagged only if it is untagged, and a
     // reflective question ("How could I have answered this better?") drops out
     // further down anyway, because no mathematics can be read from it.
-    const worthTagging = applyKeyword || !(facts && facts.alreadyTagged);
+    const supplementalOutcomes = supplementalOutcomesForQuestion(
+      activity,
+      details?.number ?? index + 1
+    );
+    const worthTagging =
+      applyKeyword ||
+      !(facts && facts.alreadyTagged) ||
+      supplementalOutcomes.length > 0 ||
+      Boolean(options.secondaryFiveG2Mirror);
     if (options.tagQuestions && !worthTagging) {
       console.log(`      Question ${questionId} is already tagged (${facts.questionTags}); leaving it alone.`);
     }
@@ -535,7 +613,8 @@ async function tagEveryQuestion({
         dictionaries: await dictionariesFor(),
         previousChoices,
         reviewedOutcomePrefix,
-        onlyQuestion: options.tagOnlyQuestion
+        onlyQuestion: options.tagOnlyQuestion,
+        supplementalOutcomes
       });
     } catch (error) {
       if (!isolateFailures) throw error;
@@ -639,7 +718,19 @@ export async function readOpenQuestionEvidence(page, questionId) {
       };
 
       const component = document.querySelector(`#component-${id}`);
-      if (!component) return { stem: "", suggestedAnswer: "" };
+      if (!component) return { stem: "", suggestedAnswer: "", sharedStimulus: "" };
+
+      // A multipart FA-Math child contains only its own instruction/answer box.
+      // The probability setup, diagram, givens, and variable range live once in
+      // the parent MPQ form. Read only that form's direct question-body field so
+      // sibling subquestions never leak into one another's evidence.
+      const subQuestion = component.closest(".multiple-part-editor-sub-question");
+      const multipartView = subQuestion?.closest(".multiple-part-editor-view");
+      const multipartForm = multipartView?.querySelector(":scope > form");
+      const sharedBody = multipartForm?.querySelector(":scope > .field-set.question-body");
+      const multipartRoot = multipartView?.closest("[id^='component-']");
+      const sharedStimulus = deepText(sharedBody);
+      const sharedFromQuestionId = multipartRoot?.id?.replace(/^component-/, "") || null;
       // FA-Math question stems live in the first <akit-interaction> shadow root;
       // the second instance is the suggested solution. Keep them separate: the
       // solution may corroborate a readable stem, but must never replace it.
@@ -657,7 +748,9 @@ export async function readOpenQuestionEvidence(page, questionId) {
           .filter((text) => text && text !== stem);
         return {
           stem,
-          suggestedAnswer: [...new Set(answerTexts)].join(" ")
+          suggestedAnswer: [...new Set(answerTexts)].join(" "),
+          sharedStimulus,
+          sharedFromQuestionId
         };
       }
       // Multiple-choice answer options are part of the question evidence. They
@@ -679,9 +772,14 @@ export async function readOpenQuestionEvidence(page, questionId) {
       const stem = [...new Set(bodies.map(deepText).filter(Boolean))]
         .filter((text) => !suggestedSet.has(text))
         .join(" ");
-      return { stem, suggestedAnswer: [...suggestedSet].join(" ") };
+      return {
+        stem,
+        suggestedAnswer: [...suggestedSet].join(" "),
+        sharedStimulus,
+        sharedFromQuestionId
+      };
     }, questionId)
-    .catch(() => ({ stem: "", suggestedAnswer: "" }));
+    .catch(() => ({ stem: "", suggestedAnswer: "", sharedStimulus: "" }));
 }
 
 export async function readOpenQuestionText(page, questionId) {
@@ -956,6 +1054,7 @@ async function appendProposedOutcome(page, {
   sectionSubject,
   sectionLevel,
   activityTitle,
+  supplementalOutcomes = [],
   options
 }) {
   let dictionaries = initialDictionaries;
@@ -1072,7 +1171,12 @@ async function appendProposedOutcome(page, {
         continue;
       }
       const cachePath = taxonomyCachePath(process.cwd(), target);
-      await saveJson(cachePath, { ...harvestedMap, harvestedAt: new Date().toISOString() });
+      await saveJson(cachePath, {
+        contentMap: harvestedMap.contentMap,
+        rowCount: harvestedMap.rowCount,
+        outcomes: harvestedMap.outcomes,
+        harvestedAt: new Date().toISOString()
+      });
       console.log(`         harvested ${harvestedMap.outcomes.length} outcomes; cached to ${path.relative(process.cwd(), cachePath)}.`);
       resetDictionaries();
       dictionaries = await loadDictionaries(process.cwd());
@@ -1088,10 +1192,99 @@ async function appendProposedOutcome(page, {
       contentMaps: group,
       activityTitle,
       reviewedOutcomePrefix,
+      moduleOutcomeReferences: options?.questionOutcomeReferences ?? [],
       sectionSubject,
       sectionLevel
     });
     attempts.push(applied);
+  }
+
+  for (const target of supplementalOutcomes) {
+    dictionaries = await ensureSupplementalDictionary(page, {
+      dictionaries,
+      target,
+      questionId,
+      questionText,
+      sectionSubject,
+      sectionLevel,
+      refreshTaxonomy: options?.refreshTaxonomy
+    });
+    const proposal = exactSupplementalProposal(target, dictionaries);
+    if (!proposal) {
+      const reason = `reviewed outcome was not found exactly in ${target.contentMap}: ${target.outcome}`;
+      console.log(`      Question ${questionId}: no supplemental tag added (${reason}).`);
+      attempts.push({ status: "skipped", reason, proposal: null, contentMaps: [target.contentMap] });
+      continue;
+    }
+    attempts.push(await applyContentMapToQuestion(page, {
+      questionId,
+      questionText,
+      supportingText,
+      questionTags,
+      dictionaries,
+      previousChoices,
+      onlyQuestion,
+      contentMaps: [target.contentMap],
+      activityTitle,
+      reviewedOutcomePrefix: null,
+      moduleOutcomeReferences: [],
+      sectionSubject,
+      sectionLevel,
+      proposalOverride: proposal
+    }));
+  }
+
+  const mirrorTarget = options?.secondaryFiveG2Mirror;
+  if (mirrorTarget && !supplementalOutcomes.some(
+    (target) => normalize(target.contentMap).toLowerCase() === normalize(mirrorTarget.contentMap).toLowerCase()
+  )) {
+    const sourceMaps = mirrorTarget.sourceContentMaps ?? [mirrorTarget.sourceContentMap];
+    const sourceAttempt = attempts.find((attempt) => sourceMaps.some((contentMap) =>
+      normalize(attempt.proposal?.contentMap).toLowerCase() === normalize(contentMap).toLowerCase()
+    ));
+    if (!sourceAttempt?.proposal) {
+      const reason = `no unambiguous ${mirrorTarget.sourceContentMap} outcome was available to mirror`;
+      console.log(`      Question ${questionId}: no Secondary 5 G2 tag added (${reason}).`);
+      attempts.push({ status: "skipped", reason, proposal: null, contentMaps: [mirrorTarget.contentMap] });
+    } else {
+      dictionaries = await ensureSupplementalDictionary(page, {
+        dictionaries,
+        target: mirrorTarget,
+        questionId,
+        questionText,
+        sectionSubject,
+        sectionLevel,
+        refreshTaxonomy: options?.refreshTaxonomy
+      });
+      const proposal = mirroredSupplementalProposal(
+        sourceAttempt.proposal,
+        mirrorTarget,
+        dictionaries
+      );
+      if (!proposal) {
+        const reason =
+          `the exact ${mirrorTarget.sourceContentMap} outcome was not present in ${mirrorTarget.contentMap}`;
+        console.log(`      Question ${questionId}: no Secondary 5 G2 tag added (${reason}).`);
+        attempts.push({ status: "skipped", reason, proposal: null, contentMaps: [mirrorTarget.contentMap] });
+      } else {
+        attempts.push(await applyContentMapToQuestion(page, {
+          questionId,
+          questionText,
+          supportingText,
+          questionTags,
+          dictionaries,
+          previousChoices,
+          onlyQuestion,
+          contentMaps: [mirrorTarget.contentMap],
+          activityTitle,
+          reviewedOutcomePrefix: null,
+          moduleOutcomeReferences: [],
+          sectionSubject,
+          sectionLevel,
+          proposalOverride: proposal
+        }));
+      }
+    }
   }
 
   const wrote = attempts.some(
@@ -1167,7 +1360,18 @@ async function harvestMapFromQuestion(page, { contentMap, subject, level, questi
 }
 
 // Expands one content map's tree, with every other map collapsed, and reads it.
-async function readMapTree(page, { contentMap }) {
+export async function readMapTree(page, { contentMap, expectedSelectedCount = null }) {
+  const summaryPattern = new RegExp(`^${escapeRegExp(contentMap)} - \\d+ selected$`);
+  const summary = page.getByRole("button", { name: summaryPattern }).first();
+  let mapScope = summary.locator(
+    "xpath=ancestor::*[contains(concat(' ', normalize-space(@class), ' '), ' bx--accordion__item ')][1]"
+  );
+  // Older SLS builds did not wrap each Content Map in its own Carbon accordion
+  // item. Retain the page-wide fallback for those builds, but prefer the exact
+  // map item whenever it exists so a second visible tree cannot contaminate this
+  // map's rows or checked state.
+  if ((await mapScope.count().catch(() => 0)) !== 1) mapScope = page.locator("body");
+
   // Another map's tree left open would be read as part of this one: that is how a
   // 42-outcome syllabus arrived as 89 outcomes carrying a second syllabus's branch
   // names, which then matched nothing when the outcome came to be ticked.
@@ -1180,11 +1384,8 @@ async function readMapTree(page, { contentMap }) {
     }
   }
 
-  const treeRows = page.locator("ul.tree-list li.tree-row:visible");
+  const treeRows = mapScope.locator("ul.tree-list li.tree-row:visible");
   if (!(await treeRows.first().isVisible().catch(() => false))) {
-    const summary = page
-      .getByRole("button", { name: new RegExp(`^${escapeRegExp(contentMap)} - \d+ selected$`) })
-      .first();
     if ((await summary.count()) > 0) {
       await summary.click().catch(() => {});
       await page.waitForTimeout(1200);
@@ -1193,7 +1394,7 @@ async function readMapTree(page, { contentMap }) {
   if (!(await treeRows.first().isVisible().catch(() => false))) return null;
 
   for (let pass = 1; pass <= 400; pass += 1) {
-    const rows = await readTaxonomyRows(page);
+    const rows = await readTaxonomyRows(page, mapScope);
     const next = rows.findIndex((row) => row.collapsed && !row.isOutcome);
     if (next === -1) break;
     const chevron = treeRows.nth(next).locator(".tree-row-item-icon-wrapper").first();
@@ -1216,12 +1417,39 @@ async function readMapTree(page, { contentMap }) {
     await page.waitForTimeout(250);
   }
 
-  const rows = await readTaxonomyRows(page);
+  let rows = await readTaxonomyRows(page, mapScope);
+  // The accordion summary is saved immediately, while checkbox hydration can
+  // lag behind on a freshly opened edit form. Wait for the exact teacher-saved
+  // count rather than treating a transient zero as an empty selection pool.
+  if (Number.isInteger(expectedSelectedCount) && expectedSelectedCount >= 0) {
+    const deadline = Date.now() + 10_000;
+    while (
+      rows.filter((row) => row.isOutcome && row.selected).length !== expectedSelectedCount &&
+      Date.now() < deadline
+    ) {
+      await page.waitForTimeout(250);
+      rows = await readTaxonomyRows(page, mapScope);
+    }
+  }
   const outcomes = buildOutcomePaths(rows);
   if (outcomes.length === 0) {
     throw new GuardError(`${contentMap} exposed a tree but no readable learning outcomes.`);
   }
-  return { contentMap, rowCount: rows.length, outcomes };
+  const outcomeRows = rows.filter((row) => row.isOutcome);
+  const selected = outcomeRows
+    .map((row, index) => row.selected ? outcomes[index] : null)
+    .filter(Boolean);
+  return { contentMap, rowCount: rows.length, outcomes, selected };
+}
+
+export function selectedOutcomesContainProposal(selectedOutcomes = [], proposal = {}) {
+  const wantedMap = normalize(proposal.contentMap).toLowerCase();
+  const wantedOutcome = normalize(proposal.outcome).toLowerCase();
+  if (!wantedMap || !wantedOutcome) return false;
+  return selectedOutcomes.some((selected) =>
+    normalize(selected.contentMap ?? proposal.contentMap).toLowerCase() === wantedMap &&
+    normalize(selected.outcome).toLowerCase() === wantedOutcome
+  );
 }
 
 // Chooses one outcome across the eligible content maps, then sets the Subject and
@@ -1239,17 +1467,20 @@ async function applyContentMapToQuestion(page, {
   contentMaps,
   activityTitle,
   reviewedOutcomePrefix,
+  moduleOutcomeReferences,
   sectionSubject,
-  sectionLevel
+  sectionLevel,
+  proposalOverride = null
 }) {
   // The activity title is the teacher's own description of the skill being
   // practised - "Find number of objects of a fractional part given whole" says far
   // more than a bare question can. It is used only to choose between outcomes,
   // never to decide whether a question is mathematical: a reflection prompt sitting
   // in a mathematics activity must still count as a reflection.
-  const proposal = proposeQuestionTag(questionText, dictionaries, {
+  const proposal = proposalOverride ?? proposeQuestionTag(questionText, dictionaries, {
     allowedContentMaps: contentMaps,
     contextText: activityTitle ?? "",
+    moduleOutcomeReferences,
     reviewedOutcomePrefix,
     supportingText
   });
@@ -1271,13 +1502,22 @@ async function applyContentMapToQuestion(page, {
   // none were ever tagged. The card's "Question Tags" field belongs to the question
   // and nothing else.
   if (questionCarriesMap(questionTags, proposal.contentMap)) {
-    console.log(`      Question ${questionId}: ${proposal.contentMap} already present; leaving it alone.`);
-    return {
-      status: "already-tagged",
-      reason: `${proposal.contentMap} already present`,
-      proposal,
-      contentMaps
-    };
+    const existingTree = await readMapTree(page, { contentMap: proposal.contentMap });
+    if (selectedOutcomesContainProposal(existingTree?.selected, proposal)) {
+      console.log(
+        `      Question ${questionId}: exact outcome already present in ${proposal.contentMap}; leaving it alone.`
+      );
+      return {
+        status: "already-tagged",
+        reason: `${proposal.contentMap} and the proposed outcome are already present`,
+        proposal,
+        contentMaps
+      };
+    }
+    console.log(
+      `      Question ${questionId}: ${proposal.contentMap} is present, but the proposed outcome is not; ` +
+        "appending it without removing existing selections."
+    );
   }
 
   console.log(
@@ -1397,6 +1637,50 @@ async function applyContentMapToQuestion(page, {
   return { status: "tagged", reason: null, proposal, contentMaps };
 }
 
+async function ensureSupplementalDictionary(page, {
+  dictionaries,
+  target,
+  questionId,
+  questionText,
+  sectionSubject,
+  sectionLevel,
+  refreshTaxonomy = false
+}) {
+  const alreadyLoaded = dictionaries.some(
+    (entry) => normalize(entry.contentMap).toLowerCase() === normalize(target.contentMap).toLowerCase()
+  );
+  if (alreadyLoaded && !refreshTaxonomy) return dictionaries;
+  if (!isSubstantiveCurriculumQuestion(questionText, sectionSubject)) return dictionaries;
+
+  console.log(`      Question ${questionId}: harvesting supplemental map "${target.contentMap}"...`);
+  const harvestedMap = await harvestMapFromQuestion(page, {
+    contentMap: target.contentMap,
+    subject: target.subject ?? subjectForContentMap(target.contentMap, sectionSubject),
+    level: target.level ?? levelForContentMap(target.contentMap, sectionLevel),
+    questionId
+  }).catch((error) => {
+    console.log(`         could not harvest: ${firstLine(error.message)}`);
+    return null;
+  });
+  if (!harvestedMap?.outcomes?.length) return dictionaries;
+
+  const cachePath = taxonomyCachePath(process.cwd(), target.contentMap);
+  await saveJson(cachePath, {
+    contentMap: harvestedMap.contentMap,
+    rowCount: harvestedMap.rowCount,
+    outcomes: harvestedMap.outcomes,
+    subject: target.subject ?? subjectForContentMap(target.contentMap, sectionSubject),
+    level: target.level ?? levelForContentMap(target.contentMap, sectionLevel),
+    harvestedAt: new Date().toISOString()
+  });
+  console.log(
+    `         harvested ${harvestedMap.outcomes.length} outcomes; cached to ` +
+      `${path.relative(process.cwd(), cachePath)}.`
+  );
+  resetDictionaries();
+  return loadDictionaries(process.cwd());
+}
+
 async function ensureQuestionTags(page, {
   questionId,
   contentMap,
@@ -1414,7 +1698,8 @@ async function ensureQuestionTags(page, {
   dictionaries,
   previousChoices,
   reviewedOutcomePrefix,
-  onlyQuestion
+  onlyQuestion,
+  supplementalOutcomes = []
 }) {
   let card = page.locator(`#settings-card-${questionId}`);
   await expect(card, `Question card ${questionId} must exist`).toBeVisible();
@@ -1540,6 +1825,7 @@ async function ensureQuestionTags(page, {
       sectionSubject,
       sectionLevel,
       activityTitle,
+      supplementalOutcomes,
       options
     });
   } else if (options.tagQuestions) {
@@ -1921,21 +2207,26 @@ async function selectComboboxOption(page, combo, optionText) {
   await page.waitForTimeout(400);
 }
 
-// SLS renders section metadata in two states. An untagged section exposes a
-// "Section Tags" button directly. A section that already carries learning
-// outcomes renders a read-only card instead, whose hover pencil
-// (div.edit-indicator, not a button) switches it into the same tagging editor.
+// SLS renders the Section Tags control only after the section's main component
+// has entered edit mode. Enter through the hover pencil on the section title;
+// clicking the component body is not equivalent and can leave the read-only card
+// mounted. When a caller has already entered edit mode, reuse the visible button.
 async function openSectionTagsEditor(page, section) {
-  const sectionTags = page.getByRole("button", { name: "Section Tags", exact: true });
-  if ((await sectionTags.count()) === 1) {
+  const component = page.locator(`#component-${section.id}`);
+  await expect(component).toBeVisible();
+  let sectionTags = component.getByRole("button", { name: "Section Tags", exact: true }).first();
+  if ((await sectionTags.isVisible().catch(() => false))) {
     await sectionTags.click();
     return;
   }
 
-  const pencil = page.locator(`#component-${section.id} .edit-indicator`).first();
+  await component.hover();
+  const pencil = component
+    .locator('.edit-indicator, button:has(svg[name="Pencil24"]), svg[name="Pencil24"]')
+    .first();
   if ((await pencil.count()) === 0) {
     throw new GuardError(
-      `Section ${section.label} exposed neither a Section Tags button nor an edit pencil; ` +
+      `Section ${section.label} exposed neither an active Section Tags editor nor its hover pencil; ` +
       "the metadata card may have failed to load."
     );
   }
@@ -1944,6 +2235,7 @@ async function openSectionTagsEditor(page, section) {
     await pencil.dispatchEvent("click");
   });
 
+  sectionTags = component.getByRole("button", { name: "Section Tags", exact: true }).first();
   await expect(sectionTags).toBeVisible();
   await sectionTags.click();
 }
@@ -2198,7 +2490,16 @@ export async function sidebarActivityMatch(page, title, section = null) {
   const wanted = normalizeActivityRowTitle(title);
   for (let index = 0; index < await rows.count(); index += 1) {
     const row = rows.nth(index);
-    const label = normalizeActivityRowTitle(await row.innerText().catch(() => ""));
+    // ALP-enabled lessons append phase affordances such as "Activate Learning"
+    // and "Facilitate Demonstration" inside the link-text wrapper. The title
+    // span remains exact, so match that rather than treating the affordance as
+    // part of the authored activity name.
+    const titleElement = row.locator("span.title, .ellipsis-text.title").first();
+    const label = normalizeActivityRowTitle(
+      (await titleElement.getAttribute("title").catch(() => "")) ||
+        (await titleElement.innerText().catch(() => "")) ||
+        (await row.innerText().catch(() => ""))
+    );
     if (label === wanted) matches.push(row);
   }
   const rawCount = matches.length;
@@ -2685,7 +2986,462 @@ async function inventoryModule(page) {
 // and Content Map when a module title omits P/S markers. This reader never types,
 // selects, or saves: it only opens the existing module-details form and navigates
 // back to the original URL afterwards.
-async function readModuleEvidence(page, restoreUrl) {
+export async function readSavedModuleOutcomeLabels(page) {
+  const title = page.locator("p.bx--accordion__title", { hasText: /^Module Tags$/ }).first();
+  let scope = title.locator("xpath=ancestor::*[contains(@class,'bx--accordion__item')][1]");
+  if ((await scope.count()) === 0) {
+    scope = page.getByText("Module Tags", { exact: true }).first()
+      .locator("xpath=ancestor::*[contains(@class,'bx--accordion__item')][1]");
+  }
+  if ((await scope.count()) === 0) return [];
+  const labels = await scope
+    .locator(".field-set.topic li")
+    .allTextContents()
+    .catch(() => []);
+  return [...new Set(labels.map(normalize).filter(Boolean))];
+}
+
+async function readOpenSectionCurriculumState(page, section) {
+  const scope = page.locator(`#component-${section.id}`);
+  await expect(scope).toBeVisible();
+  const values = async (locator) => {
+    const result = [];
+    for (let index = 0; index < (await locator.count()); index += 1) {
+      const value = normalize(await locator.nth(index).inputValue().catch(() => ""));
+      if (value) result.push(value);
+    }
+    return result;
+  };
+  const mapSummaryTexts = (await scope
+    .getByRole("button", { name: /- \d+ selected$/ })
+    .allTextContents()
+    .catch(() => []))
+    .map(normalize)
+    .filter(Boolean);
+  const mapSelections = mapSummaryTexts
+    .map((text) => {
+      const match = /^(.*?)\s*-\s*(\d+) selected$/i.exec(text);
+      return match
+        ? { contentMap: match[1].trim(), selectedCount: Number(match[2]) }
+        : null;
+    })
+    .filter(Boolean);
+  return {
+    subjects: await values(scope.getByPlaceholder("Select Subject", { exact: true })),
+    levels: await values(scope.getByPlaceholder("Select Level", { exact: true })),
+    mapSelections,
+    contentMaps: [
+      ...mapSelections.map((entry) => entry.contentMap),
+      ...await values(scope.getByPlaceholder("Select Content Map", { exact: true }))
+    ]
+  };
+}
+
+async function syncEmptySectionTagsFromModule(page, config, section, moduleEvidence) {
+  const plan = moduleToSectionTagCopyPlan(moduleEvidence);
+  if (!plan.copyable) {
+    return { status: "not-available", reason: plan.reason, outcomes: [] };
+  }
+
+  const sectionUrl = sectionUrlFor(config, section.id);
+  await openExactUrl(page, sectionUrl);
+  await assertAuthenticated(page);
+  const component = page.locator(`#component-${section.id}`);
+  await expect(component).toBeVisible();
+  await dismissVisibleShellOverlay(page);
+  await openSectionTagsEditor(page, section);
+
+  const before = await readOpenSectionCurriculumState(page, section);
+  const sectionWasEmpty = sectionCurriculumStateIsEmpty(before);
+  const zeroSelectedRepair = sectionZeroSelectedTopicRepairPlan(before, plan);
+  if (!sectionWasEmpty && !zeroSelectedRepair.repairable) {
+    console.log(
+      `  Section ${section.label} already has Section Tags or staged values; preserving them and ` +
+        "skipping only the Module Tag copy. Reviewed supplemental tags will still be checked."
+    );
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await assertAuthenticated(page);
+    return { status: "unchanged-nonempty", reason: "Section Tags were not empty", outcomes: [] };
+  }
+
+  if (sectionWasEmpty) {
+    console.log(
+      `  Section ${section.label} has empty Section Tags; copying the exact saved Module Tags ` +
+        `(${plan.subjectLevels.map((entry) => `${entry.subject} / ${entry.level}`).join(" | ")}; ` +
+        `${plan.contentMaps.join(" | ")}, ${plan.outcomes.length} outcome(s)).`
+    );
+  } else {
+    console.log(
+      `  Section ${section.label} has the exact Module Subject/Level rows and Content Map but 0 selected topics; ` +
+        `repairing it additively with the ${plan.outcomes.length} exact saved Module outcome(s).`
+    );
+  }
+  for (const pair of sectionWasEmpty ? plan.subjectLevels : []) {
+    // Re-locate after every addition: SLS rerenders all combobox rows when the
+    // Add button creates the next empty row.
+    let subjects = component.getByPlaceholder("Select Subject", { exact: true });
+    let levels = component.getByPlaceholder("Select Level", { exact: true });
+    let target = await emptySubjectLevelRow(subjects, levels);
+    if (target === -1) {
+      await component.getByRole("button", { name: "Add Subject and Level", exact: true }).click();
+      await page.waitForTimeout(700);
+      subjects = component.getByPlaceholder("Select Subject", { exact: true });
+      levels = component.getByPlaceholder("Select Level", { exact: true });
+      target = await emptySubjectLevelRow(subjects, levels);
+    }
+    if (target === -1) {
+      throw new GuardError(
+        `Section ${section.label} exposed no empty Subject and Level row for ` +
+          `${pair.subject} / ${pair.level}; nothing was saved.`
+      );
+    }
+    await selectComboboxOption(page, subjects.nth(target), pair.subject);
+    await assertNoDestructiveTagWarning(page);
+    await selectComboboxOption(page, levels.nth(target), pair.level);
+    await assertNoDestructiveTagWarning(page);
+    // Do not press Add after the last pair: Add creates another empty row. If
+    // another saved pair remains, the next iteration will create that row before
+    // filling it. This keeps the copied Section Tags structurally identical to
+    // the Module Tags instead of leaving a staged blank row behind.
+  }
+
+  const copiedMaps = [];
+  for (const mapPlan of plan.maps) {
+    const sectionTag = {
+      ...section,
+      subject: plan.subjectLevels[plan.subjectLevels.length - 1].subject,
+      level: plan.subjectLevels[plan.subjectLevels.length - 1].level,
+      contentMap: mapPlan.contentMap
+    };
+    await openContentMapTree(page, sectionTag);
+    if (zeroSelectedRepair.repairable) {
+      const existingTree = await readMapTree(page, { contentMap: mapPlan.contentMap });
+      if ((existingTree?.selected ?? []).length > 0) {
+        console.log(
+          `  Section ${section.label}'s topic tree hydrated with existing selections; leaving it untouched.`
+        );
+        await page.reload({ waitUntil: "domcontentloaded" });
+        await assertAuthenticated(page);
+        return {
+          status: "unchanged-nonempty",
+          reason: "The topic tree contained existing selections after hydration",
+          outcomes: []
+        };
+      }
+    }
+    let outcomesToCopy = mapPlan.outcomes;
+    if (outcomesToCopy.some((entry) => entry.outcomePath.length === 0)) {
+      // Some existing modules expose selected outcomes only as a read-only list,
+      // without their branch paths. Expand the destination's official tree and
+      // recover each path by exact outcome wording. A missing or duplicate label is
+      // ambiguous and must stop rather than selecting the first visual match.
+      const destinationTree = await readMapTree(page, { contentMap: mapPlan.contentMap });
+      outcomesToCopy = outcomesToCopy.map((entry) => {
+        if (entry.outcomePath.length > 0) return entry;
+        const matches = (destinationTree?.outcomes ?? []).filter(
+          (candidate) => normalize(candidate.outcome) === normalize(entry.outcome)
+        );
+        if (matches.length !== 1) {
+          throw new GuardError(
+            `Section ${section.label}: Module Tag outcome "${entry.outcome}" matched ` +
+              `${matches.length} outcomes in ${mapPlan.contentMap}; nothing was saved.`
+          );
+        }
+        return { ...entry, outcomePath: matches[0].outcomePath };
+      });
+    }
+    for (const selected of outcomesToCopy) {
+      await selectOutcomeByPath(page, {
+        ...sectionTag,
+        outcome: selected.outcome,
+        outcomePath: selected.outcomePath
+      });
+    }
+    if (sectionWasEmpty) {
+      await page.getByRole("button", { name: "Add Content Map and Topic", exact: true }).click();
+      await assertNoSlsError(page);
+    }
+    copiedMaps.push({ ...mapPlan, outcomes: outcomesToCopy });
+  }
+
+  const commitTarget = page.locator(".page-nav-info.right:visible, .page-nav-info.left:visible").first();
+  await expect(commitTarget).toBeVisible();
+  const taggingSaved = page.waitForResponse((response) =>
+    response.url().includes("/apis/resource/tagging/save/") && response.request().method() === "POST"
+  );
+  await commitTarget.click();
+  await taggingSaved;
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await assertNoSlsError(page);
+
+  // Reopen only to verify persistence; no curriculum is re-inferred from the
+  // section. The expected values remain the exact saved Module Tags captured at
+  // the start of the same Automation run.
+  await openExactUrl(page, sectionUrl);
+  await assertAuthenticated(page);
+  await expect(page.locator(`#component-${section.id}`)).toBeVisible();
+  await dismissVisibleShellOverlay(page);
+  await openSectionTagsEditor(page, section);
+  let after = await readOpenSectionCurriculumState(page, section);
+  let retained = sectionCurriculumStateContainsPlan(after, plan);
+  const hydrationDeadline = Date.now() + 12_000;
+  while (!retained.complete && Date.now() < hydrationDeadline) {
+    await page.waitForTimeout(300);
+    after = await readOpenSectionCurriculumState(page, section);
+    retained = sectionCurriculumStateContainsPlan(after, plan);
+  }
+  if (!retained.complete) {
+    throw new GuardError(
+      `Section ${section.label} did not retain the complete copied Subject/Level rows and Content Map. ` +
+        `Missing pairs: ${retained.missingPairs.map((entry) => `${entry.subject} / ${entry.level}`).join(" | ") || "(none)"}; ` +
+        `saved maps read after reopen: ${after.contentMaps.join(" | ") || "(none)"}.`
+    );
+  }
+  const missing = [];
+  for (const mapPlan of plan.maps) {
+    const persistedTree = await readMapTree(page, { contentMap: mapPlan.contentMap });
+    missing.push(...mapPlan.outcomes.filter(
+      (wanted) => !selectedOutcomesContainProposal(persistedTree?.selected, wanted)
+    ));
+  }
+  if (missing.length > 0) {
+    throw new GuardError(
+      `Section ${section.label} did not retain ${missing.length} copied Module Tag outcome(s): ` +
+        missing.map((entry) => entry.outcome).join(" | ")
+    );
+  }
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await assertAuthenticated(page);
+  return {
+    status: sectionWasEmpty ? "copied" : "repaired-zero-selected-topics",
+    subjectLevels: plan.subjectLevels,
+    contentMaps: plan.contentMaps,
+    outcomes: copiedMaps.flatMap((entry) => entry.outcomes.map((outcome) => outcome.outcome))
+  };
+}
+
+async function appendSupplementalSectionTags(page, config, section, activities = []) {
+  const plan = supplementalSectionTagPlan(activities);
+  if (!plan.copyable) {
+    return { status: "not-configured", subjectLevels: [], contentMaps: [], outcomes: [] };
+  }
+
+  const sectionUrl = sectionUrlFor(config, section.id);
+  await openExactUrl(page, sectionUrl);
+  await assertAuthenticated(page);
+  const component = page.locator(`#component-${section.id}`);
+  await expect(component).toBeVisible();
+  await dismissVisibleShellOverlay(page);
+  await openSectionTagsEditor(page, section);
+
+  const before = await readOpenSectionCurriculumState(page, section);
+  const existingPairs = new Set((before.subjects ?? []).map((subject, index) =>
+    `${normalize(subject).toLowerCase()}|${normalize((before.levels ?? [])[index]).toLowerCase()}`
+  ));
+  let changed = false;
+  const addedPairs = [];
+  for (const pair of plan.subjectLevels) {
+    const pairKey = `${normalize(pair.subject).toLowerCase()}|${normalize(pair.level).toLowerCase()}`;
+    if (existingPairs.has(pairKey)) continue;
+
+    let subjects = component.getByPlaceholder("Select Subject", { exact: true });
+    let levels = component.getByPlaceholder("Select Level", { exact: true });
+    let target = await emptySubjectLevelRow(subjects, levels);
+    if (target === -1) {
+      await component.getByRole("button", { name: "Add Subject and Level", exact: true }).click();
+      await page.waitForTimeout(700);
+      subjects = component.getByPlaceholder("Select Subject", { exact: true });
+      levels = component.getByPlaceholder("Select Level", { exact: true });
+      target = await emptySubjectLevelRow(subjects, levels);
+    }
+    if (target === -1) {
+      throw new GuardError(
+        `Section ${section.label} exposed no empty Subject and Level row for the reviewed ` +
+          `${pair.subject} / ${pair.level} supplement; nothing was saved.`
+      );
+    }
+    console.log(
+      `  Section ${section.label}: adding reviewed Subject/Level ${pair.subject} / ${pair.level}.`
+    );
+    await selectComboboxOption(page, subjects.nth(target), pair.subject);
+    await assertNoDestructiveTagWarning(page);
+    await page.waitForTimeout(500);
+    await selectComboboxOption(page, levels.nth(target), pair.level);
+    await assertNoDestructiveTagWarning(page);
+    await page.waitForTimeout(700);
+    existingPairs.add(pairKey);
+    addedPairs.push(pair);
+    changed = true;
+  }
+
+  const resolvedMaps = [];
+  for (const mapPlan of plan.maps) {
+    let mapSummary = page
+      .getByRole("button", {
+        name: new RegExp(`^${escapeRegExp(mapPlan.contentMap)} - \\d+ selected$`)
+      })
+      .first();
+    let tree;
+    let mapChanged = false;
+    if ((await mapSummary.count()) > 0) {
+      tree = await readMapTree(page, { contentMap: mapPlan.contentMap });
+    } else {
+      for (const summary of await page.getByRole("button", { name: /- \d+ selected$/ }).all()) {
+        if ((await summary.getAttribute("aria-expanded").catch(() => null)) === "true") {
+          await summary.click().catch(() => {});
+          await page.waitForTimeout(350);
+        }
+      }
+      let chooser = page.getByRole("button", { name: "Content Map", exact: true }).last();
+      if ((await chooser.count()) === 0) {
+        const addMap = component
+          .getByRole("button", { name: /^ADD CONTENT MAP AND TOPIC$/i })
+          .first();
+        if ((await addMap.count()) > 0) {
+          await addMap.click();
+          await page.waitForTimeout(900);
+          chooser = page.getByRole("button", { name: "Content Map", exact: true }).last();
+        }
+      }
+      if ((await chooser.count()) === 0) {
+        throw new GuardError(
+          `Section ${section.label} exposed no empty Content Map row for ` +
+            `${mapPlan.contentMap}; nothing was saved.`
+        );
+      }
+      console.log(`  Section ${section.label}: adding reviewed map ${mapPlan.contentMap}.`);
+      await chooser.click();
+      const combo = page.getByPlaceholder("Select Content Map", { exact: true }).last();
+      await selectComboboxOption(page, combo, mapPlan.contentMap);
+      await page.waitForTimeout(1_200);
+      mapSummary = page
+        .getByRole("button", {
+          name: new RegExp(`^${escapeRegExp(mapPlan.contentMap)} - \\d+ selected$`)
+        })
+        .first();
+      tree = await readMapTree(page, { contentMap: mapPlan.contentMap });
+      mapChanged = true;
+      changed = true;
+    }
+    if (!tree?.outcomes?.length) {
+      throw new GuardError(
+        `Section ${section.label}: ${mapPlan.contentMap} exposed no readable learning outcomes; ` +
+          "nothing was saved."
+      );
+    }
+
+    const resolvedOutcomes = [];
+    for (const wanted of mapPlan.outcomes) {
+      const candidates = tree.outcomes.filter((candidate) => {
+        if (normalize(candidate.outcome).toLowerCase() !== normalize(wanted.outcome).toLowerCase()) {
+          return false;
+        }
+        if (!wanted.outcomePath?.length) return true;
+        return wanted.outcomePath.length === candidate.outcomePath.length &&
+          wanted.outcomePath.every((value, index) =>
+            normalize(value).toLowerCase() === normalize(candidate.outcomePath[index]).toLowerCase()
+          );
+      });
+      if (candidates.length !== 1) {
+        throw new GuardError(
+          `Section ${section.label}: reviewed supplemental outcome "${wanted.outcome}" matched ` +
+            `${candidates.length} outcomes in ${mapPlan.contentMap}; nothing was saved.`
+        );
+      }
+      const resolved = {
+        ...wanted,
+        contentMap: mapPlan.contentMap,
+        outcomePath: candidates[0].outcomePath
+      };
+      resolvedOutcomes.push(resolved);
+      if (selectedOutcomesContainProposal(tree.selected, resolved)) {
+        console.log(
+          `  Section ${section.label}: ${mapPlan.contentMap} already contains ` +
+            `"${resolved.outcome}"; leaving it selected.`
+        );
+        continue;
+      }
+      await selectOutcomeByPath(page, { ...section, ...resolved });
+      tree.selected.push(resolved);
+      mapChanged = true;
+      changed = true;
+    }
+    if (mapChanged) {
+      const commitMap = component
+        .getByRole("button", { name: /^ADD CONTENT MAP AND TOPIC$/i })
+        .first();
+      if (await commitMap.isVisible().catch(() => false)) await commitMap.click();
+      await assertNoSlsError(page);
+    }
+    resolvedMaps.push({ ...mapPlan, outcomes: resolvedOutcomes });
+  }
+
+  if (!changed) {
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await assertAuthenticated(page);
+    return {
+      status: "already-present",
+      subjectLevels: plan.subjectLevels,
+      contentMaps: plan.contentMaps,
+      outcomes: plan.outcomes.map((entry) => entry.outcome)
+    };
+  }
+
+  const commitTarget = page.locator(".page-nav-info.right:visible, .page-nav-info.left:visible").first();
+  await expect(commitTarget).toBeVisible();
+  const taggingSaved = page.waitForResponse((response) =>
+    response.url().includes("/apis/resource/tagging/save/") && response.request().method() === "POST"
+  );
+  await commitTarget.click();
+  await taggingSaved;
+  await expect(page.getByText("Saved", { exact: true })).toBeVisible();
+  await assertNoSlsError(page);
+
+  await openExactUrl(page, sectionUrl);
+  await assertAuthenticated(page);
+  await expect(page.locator(`#component-${section.id}`)).toBeVisible();
+  await dismissVisibleShellOverlay(page);
+  await openSectionTagsEditor(page, section);
+  let after = await readOpenSectionCurriculumState(page, section);
+  let retained = sectionCurriculumStateContainsPlan(after, plan);
+  const hydrationDeadline = Date.now() + 12_000;
+  while (!retained.complete && Date.now() < hydrationDeadline) {
+    await page.waitForTimeout(300);
+    after = await readOpenSectionCurriculumState(page, section);
+    retained = sectionCurriculumStateContainsPlan(after, plan);
+  }
+  if (!retained.complete) {
+    throw new GuardError(
+      `Section ${section.label} did not retain the reviewed supplemental Subject/Level and map. ` +
+        `Missing pairs: ${retained.missingPairs.map((entry) => `${entry.subject} / ${entry.level}`).join(" | ") || "(none)"}; ` +
+        `saved maps: ${after.contentMaps.join(" | ") || "(none)"}.`
+    );
+  }
+  const missingOutcomes = [];
+  for (const mapPlan of resolvedMaps) {
+    const persisted = await readMapTree(page, { contentMap: mapPlan.contentMap });
+    missingOutcomes.push(...mapPlan.outcomes.filter(
+      (wanted) => !selectedOutcomesContainProposal(persisted?.selected, wanted)
+    ));
+  }
+  if (missingOutcomes.length > 0) {
+    throw new GuardError(
+      `Section ${section.label} did not retain ${missingOutcomes.length} reviewed supplemental outcome(s): ` +
+        missingOutcomes.map((entry) => entry.outcome).join(" | ")
+    );
+  }
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await assertAuthenticated(page);
+  return {
+    status: "supplemented",
+    addedPairs,
+    subjectLevels: plan.subjectLevels,
+    contentMaps: plan.contentMaps,
+    outcomes: resolvedMaps.flatMap((entry) => entry.outcomes.map((outcome) => outcome.outcome))
+  };
+}
+
+export async function readModuleEvidence(page, restoreUrl) {
   const moduleId = /\/module\/(?:edit|view)\/([0-9a-f-]{36})/i.exec(restoreUrl)?.[1];
   if (!moduleId) return { subjectLevels: [], contentMaps: [], error: "module ID was not present in the URL" };
   try {
@@ -2695,6 +3451,11 @@ async function readModuleEvidence(page, restoreUrl) {
     await assertAuthenticated(page);
     await page.waitForTimeout(1_200);
 
+    // Capture the exact saved read-only list before the pencil switches Module
+    // Tags into its editable tree. It is a safe fallback if a future SLS tree
+    // build does not expose checked state, and its item count must still agree
+    // with the saved "N selected" summary.
+    const readOnlyOutcomeLabels = await readSavedModuleOutcomeLabels(page);
     const { subjects, levels } = await openModuleTagsEditor(page);
 
     const subjectLevels = [];
@@ -2708,13 +3469,68 @@ async function readModuleEvidence(page, restoreUrl) {
     // The Module Tags accordion is a sibling of the Learning Outcomes heading,
     // not a descendant of its component wrapper. Search visible accordion
     // headings on this dedicated module-details route.
-    const contentMaps = (await page
+    const contentMapSummaries = (await page
       .locator("button.bx--accordion__heading:visible")
       .allTextContents()
       .catch(() => []))
-      .filter((text) => /-\s*[1-9]\d* selected\s*$/i.test(normalize(text)))
-      .map((text) => normalize(text).replace(/\s*-\s*[1-9]\d* selected$/, "").trim())
+      .map((text) => normalize(text))
+      .map((text) => {
+        const match = /^(.*?)\s*-\s*([1-9]\d*) selected$/i.exec(text);
+        return match ? { contentMap: match[1].trim(), selectedCount: Number(match[2]) } : null;
+      })
       .filter(Boolean);
+    const summariesByMap = new Map();
+    for (const summary of contentMapSummaries) {
+      if (!summariesByMap.has(summary.contentMap)) summariesByMap.set(summary.contentMap, summary);
+    }
+    const uniqueContentMaps = [...summariesByMap.keys()];
+    const selectedOutcomes = [];
+    const selectedOutcomeErrors = [];
+    for (const contentMap of uniqueContentMaps) {
+      const expectedCount = summariesByMap.get(contentMap)?.selectedCount ?? null;
+      const tree = await readMapTree(page, {
+        contentMap,
+        expectedSelectedCount: expectedCount
+      }).catch(() => null);
+      const selected = tree?.selected ?? [];
+      if (expectedCount !== null && selected.length !== expectedCount) {
+        selectedOutcomeErrors.push(
+          `${contentMap} says ${expectedCount} selected but its checked tree exposed ${selected.length}`
+        );
+        continue;
+      }
+      for (const outcome of selected) {
+        selectedOutcomes.push({ contentMap, ...outcome });
+      }
+    }
+    // On existing Community Gallery modules SLS commonly renders saved Module
+    // Tags as a read-only <dl class="field-set topic"><ul><li>...</li></ul></dl>.
+    // Use that list only when its exact count agrees with the one saved map's
+    // summary; otherwise stop section copying rather than inventing or truncating.
+    if (selectedOutcomes.length === 0 && uniqueContentMaps.length === 1) {
+      const contentMap = uniqueContentMaps[0];
+      const expectedCount = summariesByMap.get(contentMap)?.selectedCount ?? null;
+      if (expectedCount !== null && readOnlyOutcomeLabels.length === expectedCount) {
+        selectedOutcomeErrors.length = 0;
+        for (const outcome of readOnlyOutcomeLabels) {
+          selectedOutcomes.push({
+            contentMap,
+            outcome,
+            outcomePath: []
+          });
+        }
+      } else if (readOnlyOutcomeLabels.length > 0) {
+        selectedOutcomeErrors.push(
+          `${contentMap} says ${expectedCount ?? "an unknown number"} selected but its read-only list exposed ` +
+            `${readOnlyOutcomeLabels.length}`
+        );
+      }
+    }
+    if (selectedOutcomeErrors.length > 0) {
+      console.log(
+        `Module Tag selected outcomes could not be copied exactly: ${selectedOutcomeErrors.join("; ")}.`
+      );
+    }
     const moduleText = normalize(await page.locator("body").innerText().catch(() => "")).slice(0, 8_000);
     const descriptionLabel = page.getByText("Module Description", { exact: true }).first();
     const descriptionEditor = descriptionLabel.locator(
@@ -2730,7 +3546,9 @@ async function readModuleEvidence(page, restoreUrl) {
 
     return {
       subjectLevels,
-      contentMaps: [...new Set(contentMaps)],
+      contentMaps: uniqueContentMaps,
+      selectedOutcomes,
+      selectedOutcomeErrors,
       moduleText,
       description,
       sourceUrl: page.url(),
@@ -2991,13 +3809,13 @@ export async function suppressOverlayWidgets(context) {
 //
 // Nothing here saves: the tagging editor is opened, read, and abandoned.
 // ---------------------------------------------------------------------------
-async function readTaxonomyRows(page) {
+export async function readTaxonomyRows(page, scope = page) {
   // Child rows are nested inside their parent <li>, so every read is scoped to
   // the row's own .tree-row-item. Using li.innerText would fold the whole subtree
   // into the parent's label (making an expanded branch look like a new one and
   // getting it clicked shut again), and an unscoped querySelector would report a
   // branch as an outcome merely because a descendant is one.
-  return page.$$eval("ul.tree-list li.tree-row", (nodes) => {
+  return scope.locator("ul.tree-list li.tree-row").evaluateAll((nodes) => {
     const deepText = (root) => {
       let out = "";
       const walk = (node) => {
@@ -3039,7 +3857,17 @@ async function readTaxonomyRows(page) {
       .filter((li) => li.getClientRects().length > 0)
       .map((li) => {
         const item = li.querySelector(":scope > .tree-row-item");
-        const label = item ? item.querySelector(".node-container .rich-text") : null;
+        // Parent rows contain their child <li> elements. Descendant selectors
+        // therefore make an unselected parent look selected whenever any child is
+        // checked, and fold the child's text into the parent. Pin every read to the
+        // row's own direct node container.
+        const container = item
+          ? Array.from(item.children).find((child) => child.classList?.contains("node-container")) ?? null
+          : null;
+        const label = container
+          ? Array.from(container.children).find((child) => child.classList?.contains("rich-text")) ?? null
+          : null;
+        const checkbox = container?.querySelector(":scope > .input-checkbox input[type='checkbox']") ?? null;
         return {
           text: deepText(label),
           // Depth comes from nesting, not padding: every row carries the same
@@ -3051,8 +3879,8 @@ async function readTaxonomyRows(page) {
             }
             return level;
           })(),
-          isOutcome: Boolean(item && item.querySelector(":scope > .learning-outcome-node-container")),
-          selected: Boolean(item && item.querySelector(":scope > .node-container .input-checkbox.selected")),
+          isOutcome: Boolean(container?.classList?.contains("learning-outcome-node-container")),
+          selected: Boolean(checkbox?.checked),
           // Collapsed branches show a down chevron and expanded ones do not, so the
           // DOM itself says what still needs opening. Tracking that by label would
           // fail wherever two branches share a name - P5 has "Four operations"
@@ -3089,11 +3917,25 @@ async function loadCachedTaxonomy(cachePath) {
 // allowAnyMap is for read-only callers (harvesting, verification) that just need
 // whatever tree the section has. The tagging path leaves it off: opening a map the
 // config never named would append outcomes to the wrong taxonomy.
-async function openContentMapTree(page, section, { allowAnyMap = false, readOnly = false } = {}) {
+export async function openContentMapTree(page, section, { allowAnyMap = false, readOnly = false } = {}) {
   const treeRows = page.locator("ul.tree-list li.tree-row:visible");
   // The map actually opened, which is the configured one unless the fallback ran.
   let opened = section.contentMap;
-  if ((await treeRows.count()) === 0 && !readOnly) {
+  const wanted = page
+    .getByRole("button", { name: new RegExp(`^${escapeRegExp(section.contentMap)} - \\d+ selected$`) })
+    .first();
+
+  // Prefer the exact map already attached to the Section. SLS mounts its topic
+  // tree asynchronously after the accordion click; checking immediately can see
+  // zero rows even though the tree appears a moment later. That race previously
+  // made a valid "0 selected" map look unreadable and blocked exact Module-topic
+  // repair.
+  if (!(await treeRows.first().isVisible().catch(() => false)) && (await wanted.count()) > 0) {
+    await wanted.click().catch(() => {});
+    await treeRows.first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
+  }
+
+  if (!(await treeRows.first().isVisible().catch(() => false)) && !readOnly && (await wanted.count()) === 0) {
     // Choosing a content map attaches it to the section, so this is a write. A
     // harvest must never do it: reading a syllabus is not a reason to change
     // somebody's module.
@@ -3104,15 +3946,11 @@ async function openContentMapTree(page, section, { allowAnyMap = false, readOnly
       // end rather than the first, which would replace an existing one.
       const combo = page.getByPlaceholder("Select Content Map", { exact: true }).last();
       await selectComboboxOption(page, combo, section.contentMap);
+      await treeRows.first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
     }
   }
   if (!(await treeRows.first().isVisible().catch(() => false))) {
-    const wanted = page
-      .getByRole("button", { name: new RegExp(`${escapeRegExp(section.contentMap)} - \\d+ selected`) })
-      .first();
-    if ((await wanted.count()) > 0) {
-      await wanted.click().catch(() => {});
-    } else {
+    if ((await wanted.count()) === 0) {
       // A scaffolded config still carries a placeholder content map, and a section
       // may hold maps this run has never seen (Secondary uses names like
       // "Sec 1 Mathematics (G2) (2020)"). Open whichever map the section actually
@@ -3123,6 +3961,7 @@ async function openContentMapTree(page, section, { allowAnyMap = false, readOnly
         opened = label.replace(/\s*-\s*\d+ selected$/, "").trim();
         console.log(`    Content map "${section.contentMap}" is not on this section; opening "${opened}".`);
         await anyMap.click().catch(() => {});
+        await treeRows.first().waitFor({ state: "visible", timeout: 10_000 }).catch(() => {});
       }
     }
   }
@@ -3218,6 +4057,7 @@ async function scanSectionContent(page, config, section) {
   const activities = [];
   for (const activity of activitiesInTargetScope(config, section)) {
     const entry = { title: activity.title, questions: [] };
+    console.log(`    Activity: ${activity.title}`);
     try {
       await openSection(page, config, section);
       // A module part-way through a replacement pass holds "<title> - Copy"
@@ -3383,14 +4223,38 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
   assertTargetActivityConfigured(config);
   for (const section of config.sections) {
     const targetActivities = activitiesInTargetScope(config, section);
-    if (targetActivities.length === 0) continue;
     console.log(`[Section ${section.label}] ${section.title}`);
     const resolved = await openSection(page, config, section);
     section.id = resolved.id;
-    // Section-level tags are deliberately untouched here; this pass is about
-    // questions.
-
-    const sectionReport = { label: section.label, title: section.title, activities: [] };
+    const sectionTagSync = await syncEmptySectionTagsFromModule(
+      page,
+      config,
+      section,
+      report.inventory?.moduleEvidence
+    );
+    const supplementalSectionTagSync = await appendSupplementalSectionTags(
+      page,
+      config,
+      section,
+      targetActivities
+    );
+    const sectionReport = {
+      label: section.label,
+      title: section.title,
+      sectionTagSync: {
+        ...sectionTagSync,
+        supplemental: supplementalSectionTagSync
+      },
+      activities: []
+    };
+    if (options.sectionTagsOnly) {
+      report.sections.push(sectionReport);
+      continue;
+    }
+    if (targetActivities.length === 0) {
+      report.sections.push(sectionReport);
+      continue;
+    }
     for (const activity of targetActivities) {
       const entry = {
         title: activity.title,
@@ -3402,8 +4266,20 @@ async function tagModuleInPlace(page, config, report, options = {}, checkpoint =
       };
       try {
         await openSection(page, config, section);
-        await openSidebarActivity(page, activity.title, section);
-        console.log(`  Activity: ${activity.title}`);
+        let openedActivityTitle = activity.title;
+        const configuredMatch = await sidebarActivityMatch(page, activity.title, section);
+        if (configuredMatch.count !== 1) {
+          const copyTitle = `${activity.title} - Copy`;
+          const copyMatch = await sidebarActivityMatch(page, copyTitle, section);
+          if (configuredMatch.count === 0 && copyMatch.count === 1) {
+            openedActivityTitle = copyTitle;
+            console.log(
+              `  Activity: configured title "${activity.title}" is absent; tagging retained "${copyTitle}".`
+            );
+          }
+        }
+        await openSidebarActivity(page, openedActivityTitle, section);
+        console.log(`  Activity: ${openedActivityTitle}`);
         const questionResult = await tagEveryQuestion({
           page,
           activity,
@@ -3497,13 +4373,6 @@ async function scanModule(page, config, report, options = {}) {
 // Subject -> Level -> Content Map cascade in an unsaved question details modal.
 async function discoverCurriculumTaxonomies(page, config, options = {}) {
   const clues = inferCurriculumClues(config);
-  if (!clues.level) {
-    throw new GuardError(
-      `Neither the saved Module Tags nor the module title exposed a usable level. ` +
-      `Add a level or review the module metadata before crawling SLS.`
-    );
-  }
-
   const savedModuleTaxonomies = await harvestSavedModuleTaxonomies(page, config, clues);
   if (savedModuleTaxonomies.length > 0) {
     console.log(
@@ -3519,6 +4388,13 @@ async function discoverCurriculumTaxonomies(page, config, options = {}) {
         url: `${SLS_ORIGIN}/admin/community-gallery/module/edit/${config.module.id}`
       }
     };
+  }
+
+  if (!clues.level) {
+    throw new GuardError(
+      `Neither the saved Module Tags nor the module title exposed a usable level. ` +
+      `Add a level or review the module metadata before crawling SLS.`
+    );
   }
 
   if ((clues.existingContentMaps ?? []).length > 0) {
@@ -3566,7 +4442,9 @@ async function discoverCurriculumTaxonomies(page, config, options = {}) {
       }
       const cachePath = taxonomyCachePath(process.cwd(), candidate.label);
       await saveJson(cachePath, {
-        ...taxonomy,
+        contentMap: taxonomy.contentMap,
+        rowCount: taxonomy.rowCount,
+        outcomes: taxonomy.outcomes,
         subject: subject.label,
         level: level.label,
         harvestedAt: new Date().toISOString(),
@@ -3636,6 +4514,7 @@ async function harvestSavedModuleTaxonomies(page, config, clues) {
     }
 
     for (const contentMap of contentMaps) {
+      const savedPair = subjectLevelForSavedMap(config, contentMap);
       const summary = page
         .getByRole("button", {
           name: new RegExp(`^${escapeRegExp(contentMap)} - \\d+ selected$`)
@@ -3646,7 +4525,10 @@ async function harvestSavedModuleTaxonomies(page, config, clues) {
         continue;
       }
 
-      const taxonomy = await readMapTree(page, { contentMap });
+      const taxonomy = await readMapTree(page, { contentMap }).catch((error) => {
+        console.log(`    ${contentMap}: ${firstLine(error.message)}; skipped.`);
+        return null;
+      });
       if (!taxonomy?.outcomes?.length) {
         console.log(`    ${contentMap}: its saved learning-objective tree exposed no readable outcomes; skipped.`);
         continue;
@@ -3654,9 +4536,11 @@ async function harvestSavedModuleTaxonomies(page, config, clues) {
 
       const cachePath = taxonomyCachePath(process.cwd(), contentMap);
       const saved = {
-        ...taxonomy,
-        subject: subject || null,
-        level: level || null,
+        contentMap: taxonomy.contentMap,
+        rowCount: taxonomy.rowCount,
+        outcomes: taxonomy.outcomes,
+        subject: savedPair?.subject || subject || null,
+        level: savedPair?.level || level || null,
         harvestedAt: new Date().toISOString(),
         discoveredFromModule: config.module.id,
         discoverySource: "existing saved SLS Module Tags"
@@ -3667,10 +4551,11 @@ async function harvestSavedModuleTaxonomies(page, config, clues) {
           `${path.relative(process.cwd(), cachePath)}.`
       );
       harvested.push({
-        subject: subject || null,
-        level: level || null,
+        subject: savedPair?.subject || subject || null,
+        level: savedPair?.level || level || null,
         contentMap,
         outcomes: taxonomy.outcomes.length,
+        selectedOutcomes: taxonomy.selected ?? [],
         source: "existing saved SLS Module Tags"
       });
     }
@@ -3682,6 +4567,17 @@ async function harvestSavedModuleTaxonomies(page, config, clues) {
   }
 
   return harvested;
+}
+
+function subjectLevelForSavedMap(config, contentMap) {
+  const pairs = config.module?.savedCurriculumEvidence?.subjectLevels ?? [];
+  const mapText = normalize(contentMap).toLowerCase().replace(/[^a-z0-9]+/g, " ");
+  const matches = pairs.filter((entry) => {
+    const subjectName = normalize(entry?.subject).toLowerCase().split(/\s+-\s+/)[0];
+    const words = subjectName.replace(/[^a-z0-9]+/g, " ").split(" ").filter((word) => word.length > 2);
+    return words.length > 0 && words.every((word) => mapText.includes(word));
+  });
+  return matches.length === 1 ? matches[0] : null;
 }
 
 async function discoverMapsForSubject(page, subject, clues) {
@@ -3863,7 +4759,7 @@ export async function createSlsContext(browser, options) {
   const context = await browser.newContext({
     storageState: options.authStatePath,
     viewport: options.headless ? { width: 1440, height: 1000 } : null,
-    acceptDownloads: false
+    acceptDownloads: Boolean(options.acceptDownloads)
   });
   await suppressOverlayWidgets(context);
   return context;

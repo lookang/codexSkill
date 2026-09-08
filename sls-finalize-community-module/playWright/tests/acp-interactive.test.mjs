@@ -5,6 +5,7 @@ import {
   assessAcpPage,
   assessAcpPreAddState,
   buildAcpSpecificRequirements,
+  formatAcpQuestionTopic,
   inferRandomizationSourceValues,
   moduleWideAcpTarget,
   normalizeAcpOptions,
@@ -16,8 +17,10 @@ import {
   findAcpPreviewAddButton,
   formatAcpFailureSummary,
   formatPromptForCli,
+  readAcpPageState,
   readStableAcpPageState,
   selectTextComponentFromAddMenu,
+  waitForAcpPostAddCompletion,
 } from "../src/acp-interactive-runner.mjs";
 
 test("one unserved FA Math question is an ACP candidate", () => {
@@ -44,6 +47,86 @@ test("multiple FA Math questions on one page are guarded", () => {
   });
   assert.equal(result.status, "blocked");
   assert.match(result.reason, /page breaks/i);
+});
+
+test("a multipart FA Math card is one candidate with every nested part", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <style>
+        .lesson-activity-component, .multiple-part-child, .field-set,
+        .output-text, akit-interaction { display: block; width: 500px; min-height: 20px; }
+      </style>
+      <div id="component-564895393"
+           class="component lesson-activity-component component-editable question edit">
+        <div class="component-header"><h6 class="title">Q1</h6></div>
+        <div class="question-component mpq">
+          <div class="multiple-part-editor-view">
+            <form><dl class="field-set question-body">Use diagram ABCD.</dl></form>
+          </div>
+          <div class="multiple-part-editor-sub-question">
+            <div id="component-part-a" class="component multiple-part-child component-editable view">
+              <div class="wrapper">
+                <div class="component-header"><div class="component-title"><h6 class="title">a</h6></div></div>
+                <dl class="field-set instructions">Feedback Assistant - Mathematics will provide marks and feedback for this question.</dl>
+                <dl class="field-set default-answer"><akit-interaction>Show that the two triangles are similar.</akit-interaction></dl>
+                <div class="answer-info-content">
+                  <div class="cv-content-switcher-content"><div class="output-text">AA similarity using the common angle.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="multiple-part-editor-sub-question">
+            <div id="component-part-b" class="component multiple-part-child component-editable view">
+              <div class="wrapper">
+                <div class="component-header"><div class="component-title"><h6 class="title">b</h6></div></div>
+                <dl class="field-set instructions">Feedback Assistant - Mathematics will provide marks and feedback for this question.</dl>
+                <dl class="field-set default-answer"><akit-interaction>Given that AB = 6.5 cm and BD = 5.5 cm, find AC.</akit-interaction></dl>
+                <div class="answer-info-content">
+                  <div class="cv-content-switcher-content"><div class="output-text">AC = 7.8 cm.</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `);
+
+    const state = await readAcpPageState(page);
+    assert.equal(state.faQuestions.length, 1);
+    assert.equal(state.faQuestions[0].componentId, "component-564895393");
+    assert.equal(state.faQuestions[0].number, 1);
+    assert.equal(state.faQuestions[0].sharedText, "Use diagram ABCD.");
+    assert.deepEqual(state.faQuestions[0].parts.map((part) => part.label), ["a", "b"]);
+    assert.deepEqual(state.faQuestions[0].parts.map((part) => part.componentId), [
+      "component-part-a",
+      "component-part-b",
+    ]);
+    assert.match(state.faQuestions[0].parts[0].text, /triangles are similar/i);
+    assert.match(state.faQuestions[0].parts[1].answerKey, /AC = 7\.8 cm/i);
+    assert.equal(assessAcpPage(state).status, "candidate");
+  } finally {
+    await browser.close();
+  }
+});
+
+test("multipart prompt evidence keeps shared context, both parts, and answer keys", () => {
+  const question = {
+    sharedText: "Use diagram ABCD.",
+    parts: [
+      { label: "a", text: "Show that the triangles are similar.", answerKey: "AA similarity." },
+      { label: "b", text: "Find AC.", answerKey: "AC = 7.8 cm." },
+    ],
+  };
+  const topic = formatAcpQuestionTopic(question);
+  const requirements = buildAcpSpecificRequirements({ questionText: topic, question });
+  assert.match(topic, /Shared question context: Use diagram ABCD\./);
+  assert.match(topic, /Part a: Show that the triangles are similar\./);
+  assert.match(topic, /Part b: Find AC\./);
+  assert.match(requirements, /Part a: AA similarity\./);
+  assert.match(requirements, /Part b: AC = 7\.8 cm\./);
+  assert.match(requirements, /Do not reveal the complete answer before the learner attempts/i);
 });
 
 test("question text is compacted before it becomes a prompt topic", () => {
@@ -253,6 +336,61 @@ test("ACP preview Add button detection ignores hidden message text and mixed cas
     assert.equal(await addButton.isEnabled(), true);
     await addButton.click();
     assert.equal(await page.locator("body").getAttribute("data-added"), "true");
+  } finally {
+    await browser.close();
+  }
+});
+
+test("ACP preview Add button detection ignores ADD mounted under the generating overlay", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <div class="bx--modal-container">
+        <h1>Preview Interactive</h1>
+        <button>Add</button>
+        <div style="position:absolute;inset:0;background:white">
+          <strong>Generating your interactive...</strong>
+        </div>
+      </div>
+    `);
+
+    const addButton = await findAcpPreviewAddButton(page);
+    assert.equal(await addButton.count(), 0);
+  } finally {
+    await browser.close();
+  }
+});
+
+test("ACP post-ADD wait survives the second generating modal until the ZIP appears", async () => {
+  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.setContent(`
+      <div id="component-host" class="lesson-activity-component text" style="width:200px;height:50px"></div>
+      <div class="bx--modal-container" style="width:400px;height:200px">
+        <button class="bx--modal-close" aria-label="Close">Close</button>
+        <strong>Generating your interactive...</strong>
+      </div>
+      <script>
+        setTimeout(() => {
+          document.querySelector("#component-host").innerHTML =
+            "<button>Interactive_after_add.zip</button>";
+        }, 900);
+        document.querySelector(".bx--modal-close").addEventListener("click", () => {
+          document.querySelector(".bx--modal-container").remove();
+        });
+      </script>
+    `);
+
+    const state = await waitForAcpPostAddCompletion(page, {
+      completedBefore: 0,
+      timeoutMs: 6_000,
+      pollIntervalMs: 100,
+    });
+    assert.equal(state.completedInteractives, 1);
+    assert.deepEqual(state.completedInteractiveFiles, ["Interactive_after_add.zip"]);
+    assert.equal(await page.locator(".bx--modal-container:visible").count(), 0);
   } finally {
     await browser.close();
   }

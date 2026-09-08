@@ -1,0 +1,367 @@
+{
+  "contentMap": "Sec 3 & 4 Mathematics (G3) (2020)",
+  "rowCount": 68,
+  "outcomes": [
+    {
+      "outcome": "Use of standard form A x 10 to the power of n , where n is an integer and 1 less or equal than A less than 10",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Positive, negative, zero and fractional indices",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Laws of indices",
+      "outcomePath": [
+        "Number and Algebra",
+        "Numbers and their operations"
+      ]
+    },
+    {
+      "outcome": "Sketching the graphs of quadratic functions given in the form y equals left parenthesis x minus p right parenthesis squared plus q y equals negative left parenthesis x minus p right parenthesis squared plus q y equals left parenthesis x minus a right parenthesis left parenthesis x minus b right parenthesis y equals negative left parenthesis x minus a right parenthesis left parenthesis x minus b right parenthesis",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of power functions y equals a x to the power of n , where n = -2, -1, 0, 1, 2,3, and simple sums of not more than three of these",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Graphs of exponential functions y equals k a to the power of x , where a is a positive integer",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Estimation of the gradient of a curve by drawing a tangent",
+      "outcomePath": [
+        "Number and Algebra",
+        "Functions and Graphs"
+      ]
+    },
+    {
+      "outcome": "Solving quadratic equations in one variable by use of formula, completing the square for y equals x squared plus p x plus q , graphical method",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving fractional equations that can be reduced to quadratic equations such as fraction numerator 6 over denominator x plus 4 end fraction equals x plus 3 fraction numerator 1 over denominator x minus 2 end fraction plus fraction numerator 2 over denominator x minus 3 end fraction equals 5",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Solving linear inequalities in one variable, and representing the solution on the number line",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Formulating a quadratic equation in one variable to solve problems",
+      "outcomePath": [
+        "Number and Algebra",
+        "Equations and Inequalities"
+      ]
+    },
+    {
+      "outcome": "Use of set language and notation",
+      "outcomePath": [
+        "Number and Algebra",
+        "Set Language and notation"
+      ]
+    },
+    {
+      "outcome": "Union and intersection of two sets",
+      "outcomePath": [
+        "Number and Algebra",
+        "Set Language and notation"
+      ]
+    },
+    {
+      "outcome": "Venn diagrams",
+      "outcomePath": [
+        "Number and Algebra",
+        "Set Language and notation"
+      ]
+    },
+    {
+      "outcome": "Display of information in the form of a matrix of any order",
+      "outcomePath": [
+        "Number and Algebra",
+        "Matrices"
+      ]
+    },
+    {
+      "outcome": "Interpreting the data in a given matrix",
+      "outcomePath": [
+        "Number and Algebra",
+        "Matrices"
+      ]
+    },
+    {
+      "outcome": "Product of a scalar quantity and a matrix",
+      "outcomePath": [
+        "Number and Algebra",
+        "Matrices"
+      ]
+    },
+    {
+      "outcome": "Problems involving addition, subtraction and multiplication of matrices",
+      "outcomePath": [
+        "Number and Algebra",
+        "Matrices"
+      ]
+    },
+    {
+      "outcome": "Determining whether two triangles are congruent or similar",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Ratio of areas of similar plane figures",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Ratio of volumes of similar solids",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Scale drawings",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Properties and construction of perpendicular bisectors of line segments and angle bisectors",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Congruence and Similarity"
+      ]
+    },
+    {
+      "outcome": "Symmetry properties of circles: equal chords are equidistant from the centre the perpendicular bisector of a chord passes through the centre tangents from an external point are equal in length the line joining an external point to the centre of the circle bisects the angle between the tangents",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Properties of circles"
+      ]
+    },
+    {
+      "outcome": "Angle properties of circles: angle in a semicircle is a right angle angle between tangent and radius of a circle is a right angle angle at the centre is twice the angle at the circumference angles in the same segment are equal angles in opposite segments are supplementary",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Properties of circles"
+      ]
+    },
+    {
+      "outcome": "Extending sine and cosine to obtuse angles",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Use of the formula 1 half ab sin C for the area of a triangle",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Use of sine rule and cosine rule for any triangle",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Problems in two and three dimensions including those involving angles of elevation and depression and bearings",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Pythagoras' theorem and trigonometry"
+      ]
+    },
+    {
+      "outcome": "Arc length, sector area and area of a segment of a circle",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Use of radian measure of angle (including conversion between radians and degrees)",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Mensuration"
+      ]
+    },
+    {
+      "outcome": "Finding the gradient of a straight line given the coordinates of two points on it",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Coordinate Geometry"
+      ]
+    },
+    {
+      "outcome": "Finding the length of a line segment given the coordinates of its end points",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Coordinate Geometry"
+      ]
+    },
+    {
+      "outcome": "Interpreting and finding the equation of a straight line graph in the form y = mx + c",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Coordinate Geometry"
+      ]
+    },
+    {
+      "outcome": "Geometric problems involving the use of coordinates",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Coordinate Geometry"
+      ]
+    },
+    {
+      "outcome": "Use of notations: open parentheses table row x row y end table close parentheses , stack A B with rightwards harpoon with barb upwards on top , a, open vertical bar stack A B with rightwards harpoon with barb upwards on top close vertical bar and open vertical bar a close vertical bar",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Representing a vector as a directed line segment",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Translation by a vector",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Position vectors",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Magnitude of a vector open parentheses table row x row y end table close parentheses as square root of x squared plus y squared end root",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Use of sum and difference of two vectors to express given vectors in terms of two coplanar vectors",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Multiplication of a vector by a scalar",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Geometric problems involving the use of vectors",
+      "outcomePath": [
+        "Geometry and Measurement",
+        "Vectors in two dimensions"
+      ]
+    },
+    {
+      "outcome": "Quartiles and percentiles",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Range, interquartile range and standard deviation as measures of spread for a set of data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Analysis and interpretation of cumulative frequency diagrams and box-and-whisker plots.",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Purposes and uses, advantages and disadvantages of the different forms of statistical representations",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Calculation of the standard deviation for a set of data (grouped and ungrouped)",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Using the mean and standard deviation to compare two sets of data",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Data Analysis"
+      ]
+    },
+    {
+      "outcome": "Probability of simple combined events (including using possibility diagrams and tree diagrams, where appropriate)",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Probability"
+      ]
+    },
+    {
+      "outcome": "Addition and multiplication of probabilities (mutually exclusive events and independent events)",
+      "outcomePath": [
+        "Statistics and Probability",
+        "Probability"
+      ]
+    }
+  ],
+  "subject": "Mathematics - G3MATHS",
+  "level": "Secondary 3",
+  "harvestedAt": "2026-08-27T01:11:02.546Z",
+  "discoveredFromModule": "67002015-984b-414c-b852-db523a0b140e"
+}

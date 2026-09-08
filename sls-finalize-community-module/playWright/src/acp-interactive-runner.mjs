@@ -5,10 +5,17 @@ import {
   assessAcpPage,
   assessAcpPreAddState,
   buildAcpSpecificRequirements,
+  formatAcpQuestionTopic,
   normalizeAcpOptions,
   normalizeQuestionText,
   normalizeRandomizationParameters,
 } from "./acp-interactive.mjs";
+import {
+  assessGptPage,
+  buildGptZipFileName,
+  generateChatGptZip,
+  openChatGptSession,
+} from "./gpt-interactive.mjs";
 import { createRunPaths, saveJson } from "./io.mjs";
 import {
   GuardError,
@@ -34,13 +41,17 @@ const PROMPT_LIBRARY_URL =
   "https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html";
 let expect = baseExpect.configure({ timeout: 20_000 });
 
-export async function runAcpInteractiveWorkflow({ target, options, apply = false }) {
+export async function runAcpInteractiveWorkflow({ target, options, apply = false, provider = "sls" }) {
+  if (!new Set(["sls", "chatgpt"]).has(provider)) {
+    throw new Error(`Unsupported interactive provider: ${provider}`);
+  }
   expect = baseExpect.configure({ timeout: options.timeoutMs ?? 20_000 });
   const policy = normalizeAcpOptions(options.acpInteractive);
   const paths = await createRunPaths(options, target.id);
   const report = {
     schemaVersion: 2,
-    action: "acp-interactive",
+    action: provider === "chatgpt" ? "gpt-interactive" : "acp-interactive",
+    provider,
     mode: apply ? "apply" : "review",
     startedAt: new Date().toISOString(),
     target,
@@ -56,10 +67,14 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
   let context;
   let slsPage;
   let promptPage;
+  let chatGptSession;
   try {
     await assertAuthStateAvailable(options.authStatePath);
     browser = await launchSlsBrowser(options);
-    context = await createSlsContext(browser, options);
+    context = await createSlsContext(browser, {
+      ...options,
+      acceptDownloads: provider === "chatgpt",
+    });
     await context.tracing.start({ screenshots: true, snapshots: true, sources: true });
     slsPage = context.pages()[0] ?? (await context.newPage());
     slsPage.setDefaultTimeout(options.timeoutMs ?? 20_000);
@@ -71,6 +86,19 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
       promptPage.setDefaultTimeout(Math.max(options.timeoutMs ?? 20_000, 30_000));
       await promptPage.goto(PROMPT_LIBRARY_URL, { waitUntil: "domcontentloaded" });
       await expect(promptPage.locator("#topic")).toBeVisible();
+      if (provider === "chatgpt") {
+        chatGptSession = await openChatGptSession({
+          profileDir: options.gptInteractive.profileDir,
+          existingContext: context,
+          storageStatePath: options.authStatePath,
+          headless: options.headless,
+          slowMoMs: options.slowMoMs,
+          timeoutMs: options.timeoutMs,
+          waitForUser: options.gptInteractive.waitForUser,
+        });
+        report.chatGptModel = chatGptSession.model;
+        await saveJson(paths.reportPath, report);
+      }
     }
 
     report.sections = await processModule({
@@ -79,14 +107,19 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
       target,
       policy,
       apply,
+      runReport: report,
       generated: report.generated,
       failures: report.failures,
       paths,
+      provider,
+      chatGptSession,
     });
     await leaveEditMode(slsPage, target);
 
     if (apply && report.generated.length > 0) {
-      console.log("\nReopening generated activities to verify their ACP ZIPs persisted...");
+      console.log(
+        `\nReopening generated activities to verify their ${provider === "chatgpt" ? "ChatGPT" : "ACP"} ZIPs persisted...`,
+      );
       await enterEditMode(slsPage, target);
       for (const entry of report.generated) {
         try {
@@ -141,6 +174,9 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
       await context.close().catch(() => {});
     }
     if (browser) await browser.close().catch(() => {});
+    if (chatGptSession?.ownedContext && chatGptSession.context) {
+      await chatGptSession.context.close().catch(() => {});
+    }
     if (!context) {
       await fs.writeFile(
         path.join(paths.runDir, "trace-unavailable.txt"),
@@ -161,9 +197,23 @@ export async function runAcpInteractiveWorkflow({ target, options, apply = false
   };
 }
 
-async function processModule({ slsPage, promptPage, target, policy, apply, generated, failures, paths }) {
+async function processModule({
+  slsPage,
+  promptPage,
+  target,
+  policy,
+  apply,
+  runReport,
+  generated,
+  failures,
+  paths,
+  provider,
+  chatGptSession,
+}) {
   const sections = await inventorySections(slsPage, target);
   const report = [];
+  runReport.sections = report;
+  let attemptedInteractiveCount = 0;
   let matchedSection = !target.sectionId;
   let matchedActivity = !target.activityId;
   console.log(`Found ${sections.length} section(s).`);
@@ -176,6 +226,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
     matchedSection = true;
     const activities = await inventoryActivities(slsPage, section);
     const sectionReport = { ...section, id: opened.id, activities: [] };
+    report.push(sectionReport);
     console.log(`  ${activities.length} activit${activities.length === 1 ? "y" : "ies"}.`);
 
     for (const activity of activities) {
@@ -187,6 +238,7 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
         id: openedActivity.id,
         pages: [],
       };
+      sectionReport.activities.push(activityReport);
       console.log(`  Activity ${activity.index + 1}: ${activity.title}`);
       await settleActivity(slsPage);
       const pageCount = await visiblePageCount(slsPage);
@@ -199,31 +251,66 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
           await selectPage(slsPage, pageIndex);
           await settleActivity(slsPage);
           let state = await readStableAcpPageState(slsPage);
-          let assessment = assessAcpPage(state);
+          const expectedFileName = provider === "chatgpt"
+            ? buildGptZipFileName({ activityId: openedActivity.id, pageIndex })
+            : null;
+          const assessCurrentPage = (current) => provider === "chatgpt"
+            ? assessGptPage(current, { expectedFileName })
+            : assessAcpPage(current);
+          let assessment = assessCurrentPage(state);
           Object.assign(pageReport, { state, assessment });
           console.log(`    Page ${pageIndex + 1}: ${assessment.status} - ${assessment.reason}.`);
 
           if (!apply || assessment.status !== "candidate") continue;
-          if (policy.maximumInteractives !== null && generated.length >= policy.maximumInteractives) {
+          if (policy.maximumInteractives !== null && attemptedInteractiveCount >= policy.maximumInteractives) {
             pageReport.limited = true;
-            console.log(`      Run limit ${policy.maximumInteractives} reached; remaining candidates are unchanged.`);
+            console.log(`      Attempt limit ${policy.maximumInteractives} reached; remaining candidates are unchanged.`);
             continue;
           }
 
-          const questionText = normalizeQuestionText(assessment.question.text);
+          const sourceParts = assessment.question.parts?.length > 0
+            ? assessment.question.parts
+            : [{
+                componentId: assessment.question.componentId,
+                label: null,
+                text: assessment.question.text,
+                answerKey: assessment.question.answerKey ?? "",
+              }];
+          const enrichedParts = [];
+          for (const part of sourceParts) {
+            const partRandomization = await readFaMathRandomization(slsPage, part);
+            enrichedParts.push({ ...part, randomization: partRandomization });
+          }
+          const questionEvidence = { ...assessment.question, parts: enrichedParts };
+          const questionText = formatAcpQuestionTopic(questionEvidence);
           pageReport.questionText = questionText;
-          const randomization = await readFaMathRandomization(slsPage, assessment.question);
-          const specificRequirements = buildAcpSpecificRequirements({ questionText, randomization });
+          pageReport.questionEvidence = questionEvidence;
+          const randomizedParts = enrichedParts.filter((part) => part.randomization);
+          const randomization = randomizedParts.length > 0
+            ? { parts: randomizedParts.map((part) => ({ label: part.label ?? null, ...part.randomization })) }
+            : null;
+          const specificRequirements = buildAcpSpecificRequirements({ questionText, question: questionEvidence });
           pageReport.randomization = randomization;
           pageReport.specificRequirements = specificRequirements || null;
-          if (specificRequirements) {
+          const randomizedParameterCount = randomizedParts.reduce(
+            (total, part) => total + (part.randomization?.parameters?.length ?? 0),
+            0,
+          );
+          if (randomizedParameterCount > 0) {
             console.log(
-              `      Read ${randomization.parameters.length} randomized parameter(s); ` +
+              `      Read ${randomizedParameterCount} randomized parameter(s); ` +
                 "requesting constrained source-matching sliders.",
             );
           }
           const prompt = await buildPrompt(promptPage, questionText, policy, specificRequirements);
           pageReport.promptText = prompt;
+          pageReport.applyStatus = "generating";
+          await saveAcpProgress(runReport, paths, {
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+            status: "generating",
+          });
           console.log(`      Prompt Library generated ${prompt.length} characters; full text follows.`);
           console.log(formatPromptForCli(prompt, {
             section: { label: section.label, title: section.title, id: opened.id },
@@ -233,20 +320,61 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
           await slsPage.bringToFront();
           await selectPage(slsPage, pageIndex);
           const before = await readStableAcpPageState(slsPage);
-          assessment = assessAcpPage(before);
-          const sameQuestion = randomization
-            ? assessment.question?.componentId === pageReport.assessment.question?.componentId
-            : normalizeQuestionText(assessment.question?.text) === questionText;
+          assessment = assessCurrentPage(before);
+          const sameQuestion = assessment.question?.componentId && pageReport.assessment.question?.componentId
+            ? assessment.question.componentId === pageReport.assessment.question.componentId
+            : formatAcpQuestionTopic(assessment.question) === questionText;
           if (assessment.status !== "candidate" || !sameQuestion) {
             throw new GuardError(
               `The candidate changed before ACP generation in ${activity.title}, page ${pageIndex + 1}.`,
             );
           }
 
-          const result = await createInteractive(slsPage, prompt, {
-            timeoutMs: policy.generationTimeoutMs,
-            completedBefore: before.completedInteractives,
+          let result;
+          let persistenceBaseline = before;
+          attemptedInteractiveCount += 1;
+          runReport.attemptedInteractiveCount = attemptedInteractiveCount;
+          pageReport.attemptNumber = attemptedInteractiveCount;
+          await saveAcpProgress(runReport, paths, {
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+            status: "generation-started",
           });
+          if (provider === "chatgpt") {
+            const generatedZip = await generateChatGptZip(chatGptSession, prompt, {
+              fileName: expectedFileName,
+              downloadDir: path.join(paths.runDir, "chatgpt-downloads"),
+              timeoutMs: policy.generationTimeoutMs,
+            });
+            await slsPage.bringToFront();
+            await openActivityById(slsPage, target, opened.id, openedActivity.id);
+            await settleActivity(slsPage);
+            await selectPage(slsPage, pageIndex);
+            await settleActivity(slsPage);
+            const uploadBaseline = await readStableAcpPageState(slsPage);
+            const uploadAssessment = assessCurrentPage(uploadBaseline);
+            const sameUploadQuestion = uploadAssessment.question?.componentId && assessment.question?.componentId
+              ? uploadAssessment.question.componentId === assessment.question.componentId
+              : formatAcpQuestionTopic(uploadAssessment.question) === questionText;
+            if (uploadAssessment.status !== "candidate" || !sameUploadQuestion) {
+              throw new GuardError(
+                `The exact SLS candidate changed while ChatGPT generated ${expectedFileName}; the ZIP was not uploaded.`,
+              );
+            }
+            const uploadedZip = await uploadInteractiveZip(slsPage, generatedZip.filePath, {
+              completedBefore: uploadBaseline.completedInteractives,
+              expectedFileName,
+              timeoutMs: policy.generationTimeoutMs,
+            });
+            persistenceBaseline = uploadBaseline;
+            result = { ...generatedZip, ...uploadedZip };
+          } else {
+            result = await createInteractive(slsPage, prompt, {
+              timeoutMs: policy.generationTimeoutMs,
+              completedBefore: before.completedInteractives,
+            });
+          }
           await leaveEditMode(slsPage, target);
           await enterEditMode(slsPage, target);
           await openSection(slsPage, target, section);
@@ -255,17 +383,18 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
           await selectPage(slsPage, pageIndex);
           await settleActivity(slsPage);
           state = await readStableAcpPageState(slsPage);
-          if (state.completedInteractives !== before.completedInteractives + 1) {
+          if (state.completedInteractives !== persistenceBaseline.completedInteractives + 1) {
             throw new GuardError(
-              `ACP reported Add, but the reopened page changed from ${before.completedInteractives} ` +
+              `${provider === "chatgpt" ? "ChatGPT upload" : "ACP"} reported Add, but the reopened page changed from ` +
+                `${persistenceBaseline.completedInteractives} ` +
                 `to ${state.completedInteractives} completed interactives instead of increasing by one.`,
             );
           }
           if (result.fileName && !state.completedInteractiveFiles.includes(result.fileName)) {
-            throw new GuardError(`ACP ZIP ${result.fileName} was not present after reopening the activity.`);
+            throw new GuardError(`${provider === "chatgpt" ? "ChatGPT" : "ACP"} ZIP ${result.fileName} was not present after reopening the activity.`);
           }
           pageReport.stateAfter = state;
-          pageReport.assessmentAfter = assessAcpPage(state);
+          pageReport.assessmentAfter = assessCurrentPage(state);
           pageReport.applyStatus = "generated";
           const evidence = {
             section: { label: section.label, title: section.title, id: opened.id },
@@ -278,16 +407,23 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
             specificRequirements: specificRequirements || null,
             promptCharacters: prompt.length,
             promptText: prompt,
+            provider,
             reopenVerified: true,
             ...result,
           };
           generated.push(evidence);
-          console.log(`      Added and locally verified ACP interactive (${result.fileName || "generated ZIP"}).`);
+          console.log(
+            `      Added and locally verified ${provider === "chatgpt" ? "ChatGPT" : "ACP"} ` +
+              `interactive (${result.fileName || "generated ZIP"}).`,
+          );
         } catch (error) {
           if (!isRecoverableAcpPageError(error)) throw error;
           const message = firstErrorLine(error);
           if (!pageReport.assessment) {
-            pageReport.assessment = { status: "blocked", reason: `ACP page review failed: ${message}` };
+            pageReport.assessment = {
+              status: "blocked",
+              reason: `${provider === "chatgpt" ? "GPT" : "ACP"} page review failed: ${message}`,
+            };
           }
           pageReport.applyStatus = apply ? "failed" : null;
           pageReport.error = serializeAcpError(error);
@@ -303,7 +439,9 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
           });
           pageReport.failureId = failure.id;
           pageReport.assessmentAfter ??= { status: "error", reason: failure.message };
-          console.log(`      ACP follow-up logged; continuing after: ${failure.message}`);
+          console.log(
+            `      ${provider === "chatgpt" ? "GPT" : "ACP"} follow-up logged; continuing after: ${failure.message}`,
+          );
 
           if (apply) {
             try {
@@ -317,17 +455,34 @@ async function processModule({ slsPage, promptPage, target, policy, apply, gener
               throw recoveryError;
             }
           }
+        } finally {
+          await saveAcpProgress(runReport, paths, {
+            section: { label: section.label, title: section.title, id: opened.id },
+            activity: { title: activity.title, index: activity.index, id: openedActivity.id },
+            pageIndex,
+            status: pageReport.applyStatus || pageReport.assessment?.status || "reviewed",
+          });
         }
       }
-      sectionReport.activities.push(activityReport);
       if (target.activityId) break;
     }
-    report.push(sectionReport);
     if (target.activityId && matchedActivity) break sectionLoop;
   }
   if (!matchedSection) throw new GuardError(`Supplied section ${target.sectionId} was not found in the module.`);
   if (!matchedActivity) throw new GuardError(`Supplied activity ${target.activityId} was not found in the module.`);
   return report;
+}
+
+async function saveAcpProgress(report, paths, { section, activity, pageIndex, status }) {
+  report.checkpoint = {
+    updatedAt: new Date().toISOString(),
+    section,
+    activity,
+    pageIndex,
+    pageNo: Number.isInteger(pageIndex) ? pageIndex + 1 : null,
+    status,
+  };
+  await saveJson(paths.reportPath, report);
 }
 
 function isRecoverableAcpPageError(error) {
@@ -655,9 +810,10 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
 
   console.log("      ACP generation started; waiting for the generated preview and ADD control...");
   const started = Date.now();
+  const previewTimeoutMs = Math.min(timeoutMs, 200_000);
   let nextUpdate = started + 30_000;
   let addClicked = false;
-  while (Date.now() - started < timeoutMs) {
+  while (Date.now() - started < previewTimeoutMs) {
     await assertNoSlsError(page);
     const addButton = await findAcpPreviewAddButton(page);
     if (await isUsableLocator(addButton)) {
@@ -686,18 +842,73 @@ async function createInteractive(page, prompt, { timeoutMs, completedBefore }) {
     }
     await page.waitForTimeout(5_000);
   }
-  if (!addClicked) throw new GuardError(`ACP did not expose ADD within ${Math.round(timeoutMs / 1000)} seconds.`);
+  if (!addClicked) {
+    throw new GuardError(
+      `ACP did not expose a completed Preview Interactive ADD control within ` +
+        `${Math.round(previewTimeoutMs / 1000)} seconds.`,
+    );
+  }
 
-  await expect(page.locator(".bx--modal-container:visible")).toHaveCount(0, { timeout: 30_000 });
-
-  const completed = async () => (await readAcpPageState(page)).completedInteractives;
-  await expect.poll(completed, { timeout: 45_000, intervals: [1000, 2000, 3000] })
-    .toBe(completedBefore + 1);
-  const state = await readStableAcpPageState(page);
+  const state = await waitForAcpPostAddCompletion(page, {
+    completedBefore,
+    timeoutMs: Math.min(timeoutMs, 200_000),
+  });
   return {
     generationSeconds: Math.round((Date.now() - started) / 1000),
     fileName: state.completedInteractiveFiles.at(-1) ?? null,
   };
+}
+
+export async function waitForAcpPostAddCompletion(page, {
+  completedBefore,
+  timeoutMs = 600_000,
+  pollIntervalMs = 5_000,
+} = {}) {
+  const started = Date.now();
+  let nextUpdate = started + 30_000;
+  let lastState = null;
+
+  while (Date.now() - started < timeoutMs) {
+    await assertNoSlsError(page);
+    lastState = await readAcpPageState(page);
+    if (lastState.completedInteractives > completedBefore + 1) {
+      throw new GuardError(
+        `ACP post-ADD processing created ${lastState.completedInteractives - completedBefore} interactives instead of one.`,
+      );
+    }
+    if (lastState.completedInteractives === completedBefore + 1) {
+      const state = await readStableAcpPageState(page, {
+        timeoutMs: Math.min(20_000, Math.max(3_000, timeoutMs - (Date.now() - started))),
+        reloadOnPending: false,
+      });
+      if (state.completedInteractives !== completedBefore + 1) {
+        throw new GuardError("The ACP ZIP count changed while post-ADD persistence was stabilising.");
+      }
+
+      // SLS may retain its second "Generating your interactive" modal after
+      // ADD even though the ZIP has already materialised. Only dismiss that
+      // dialog after the completed ZIP is observable, so recovery cannot abort
+      // a still-running generation as the previous 30-second modal check did.
+      await closeVisibleAcpDialogs(page);
+      await expect(page.locator(".bx--modal-container:visible")).toHaveCount(0, { timeout: 15_000 });
+      return state;
+    }
+
+    const body = await page.locator("body").innerText().catch(() => "");
+    if (/generation (failed|was unsuccessful)|unable to generate|try again/i.test(body)) {
+      throw new GuardError("ACP reported that post-ADD interactive generation failed.");
+    }
+    if (Date.now() >= nextUpdate) {
+      console.log(`      Still finalising the added ACP interactive (${Math.round((Date.now() - started) / 1000)}s elapsed)...`);
+      nextUpdate += 30_000;
+    }
+    await page.waitForTimeout(Math.max(50, pollIntervalMs));
+  }
+
+  throw new GuardError(
+    `ACP ADD was clicked, but no completed ZIP appeared within ${Math.round(timeoutMs / 1000)} seconds ` +
+      `(last observed count: ${lastState?.completedInteractives ?? "unknown"}).`,
+  );
 }
 
 export async function findAcpPreviewAddButton(page) {
@@ -715,9 +926,21 @@ export async function findAcpPreviewAddButton(page) {
 
 async function activeAcpPreviewDialog(page) {
   const dialogs = page.locator(".bx--modal-container:visible");
-  const previewDialog = dialogs.filter({ hasText: /Preview Interactive/i }).last();
-  if (await isVisibleLocator(previewDialog)) return previewDialog;
-  return dialogs.last();
+  for (let index = (await dialogs.count()) - 1; index >= 0; index -= 1) {
+    const dialog = dialogs.nth(index);
+    const previewLabel = dialog.getByText(/Preview Interactive/i).first();
+    const generatingLabel = dialog.getByText(/Generating your interactive/i).first();
+    if (
+      await isVisibleLocator(previewLabel) &&
+      !(await isVisibleLocator(generatingLabel))
+    ) {
+      return dialog;
+    }
+  }
+  // Return an intentionally empty locator. Falling back to any visible modal
+  // can expose a mounted ADD button underneath SLS's generation overlay and
+  // make the runner click before the completed preview actually exists.
+  return page.locator(".bx--modal-container.__acp-preview-ready");
 }
 
 async function isUsableLocator(locator) {
@@ -752,6 +975,73 @@ export async function selectTextComponentFromAddMenu(page, { timeoutMs = 10_000 
     throw new GuardError("SLS's visible Text/Media menu exposed an ambiguous Text option.");
   }
   await textLabel.click();
+}
+
+export async function selectFileComponentFromAddMenu(page, { timeoutMs = 10_000 } = {}) {
+  const menu = page.locator(".add-component-bar .multi-layer-menu:visible").last();
+  const textMediaTrigger = menu.locator(
+    ":scope > ul.menu > li.text-media:visible > .item-wrapper:visible",
+  );
+  if ((await textMediaTrigger.count()) !== 1) {
+    throw new GuardError("Text/Media was not available in the visible ADD NEW menu.");
+  }
+  await textMediaTrigger.hover();
+  const textMediaItem = textMediaTrigger.locator("xpath=parent::li");
+  const fileLabel = textMediaItem.getByText("File from Device", { exact: true });
+  try {
+    await fileLabel.waitFor({ state: "visible", timeout: timeoutMs });
+  } catch {
+    throw new GuardError("SLS's visible Text/Media menu did not expose File from Device in time.");
+  }
+  if ((await fileLabel.count()) !== 1) {
+    throw new GuardError("SLS's visible Text/Media menu exposed an ambiguous File from Device option.");
+  }
+  await fileLabel.click();
+}
+
+export async function uploadInteractiveZip(page, zipPath, {
+  completedBefore,
+  expectedFileName = path.basename(zipPath),
+  timeoutMs = 200_000,
+} = {}) {
+  const started = Date.now();
+  await selectFileComponentFromAddMenu(page);
+  const modal = page.locator(".bx--modal-container:visible").filter({ hasText: /Upload File/i }).last();
+  await expect(modal).toBeVisible();
+  const input = modal.locator('input[type="file"]');
+  await expect(input).toHaveCount(1);
+  const accepted = await input.getAttribute("accept");
+  if (!String(accepted ?? "").toLowerCase().split(",").map((item) => item.trim()).includes(".zip")) {
+    throw new GuardError("SLS's Upload File dialog does not currently accept ZIP packages.");
+  }
+  await input.setInputFiles(zipPath);
+
+  const upload = modal.locator("button.bx--btn--primary:visible")
+    .filter({ hasText: /\bUpload\b/i })
+    .last();
+  await expect(upload).toBeVisible();
+  await expect(upload).toBeEnabled();
+  await upload.click();
+  await assertNoSlsError(page);
+  await expect(modal).toBeHidden({ timeout: Math.min(timeoutMs, 120_000) });
+
+  const state = await readStableAcpPageState(page, {
+    timeoutMs: Math.min(timeoutMs, 120_000),
+    reloadOnPending: false,
+  });
+  if (state.completedInteractives !== completedBefore + 1) {
+    throw new GuardError(
+      `SLS ZIP upload changed the completed interactive count from ${completedBefore} to ` +
+        `${state.completedInteractives} instead of increasing it by one.`,
+    );
+  }
+  if (!state.completedInteractiveFiles.includes(expectedFileName)) {
+    throw new GuardError(`SLS did not expose the uploaded ZIP filename ${expectedFileName}.`);
+  }
+  return {
+    fileName: expectedFileName,
+    uploadSeconds: Math.round((Date.now() - started) / 1000),
+  };
 }
 
 async function verifyGeneratedEntry(page, target, entry) {
@@ -819,29 +1109,68 @@ export async function readAcpPageState(page) {
       const componentKey = component.id.replace(/^component-/, "");
       const settings = document.getElementById(`settings-card-${componentKey}`);
       const settingsText = deepText(settings);
-      if (!/\bFA\s*Math\b/i.test(settingsText) &&
-          !/Feedback Assistant\s*-\s*Mathematics/i.test(settingsText)) return [];
       const number = Number(/\bQ(\d+)\b/i.exec(component.innerText || settingsText)?.[1]);
-      const algebraKit = Array.from(component.querySelectorAll("akit-interaction"))
-        .find((host) => deepText(host).trim());
-      let text = algebraKit ? deepText(algebraKit) : "";
-      if (!text) {
-        const shadowHost = Array.from(component.querySelectorAll("*"))
-          .find((host) => host.shadowRoot && deepText(host).trim());
-        text = shadowHost ? deepText(shadowHost) : "";
-      }
-      return [{ componentId: component.id || null, number: Number.isFinite(number) ? number : null, text }];
+      const nestedParts = Array.from(component.querySelectorAll(".multiple-part-child.component-editable"))
+        .filter(visible)
+        .filter((part) => part.closest(".lesson-activity-component") === component);
+      const leaves = nestedParts.length > 0 ? nestedParts : [component];
+      const parts = leaves.flatMap((leaf) => {
+        const instructions = leaf.querySelector(".field-set.instructions");
+        const faText = `${deepText(instructions)} ${leaf === component ? settingsText : ""}`;
+        if (!/\bFA\s*Math\b/i.test(faText) &&
+            !/Feedback Assistant\s*-\s*Mathematics/i.test(faText)) return [];
+
+        const preferredQuestion = leaf.querySelector(".field-set.default-answer akit-interaction");
+        const algebraKit = preferredQuestion || Array.from(leaf.querySelectorAll("akit-interaction"))
+          .find((host) => deepText(host).trim());
+        let text = algebraKit ? deepText(algebraKit) : "";
+        if (!text) {
+          const shadowHost = Array.from(leaf.querySelectorAll("*"))
+            .find((host) => host.shadowRoot && deepText(host).trim());
+          text = shadowHost ? deepText(shadowHost) : "";
+        }
+
+        const answerPanels = Array.from(leaf.querySelectorAll(
+          ".answer-info-content > .cv-content-switcher-content",
+        ));
+        const answerPanel = answerPanels.find(visible) || answerPanels[0] || null;
+        const answerKey = deepText(answerPanel?.querySelector(".output-text") || answerPanel);
+        const label = nestedParts.length > 0
+          ? deepText(leaf.querySelector(":scope > .wrapper > .component-header .component-title .title"))
+          : "";
+        return [{
+          componentId: leaf.id || null,
+          label: label || null,
+          text,
+          answerKey,
+        }];
+      });
+      if (parts.length === 0) return [];
+
+      const multipart = Array.from(component.querySelectorAll(".question-component.mpq"))
+        .find((node) => node.closest(".lesson-activity-component") === component);
+      const sharedQuestionBody = multipart?.querySelector(
+        ".multiple-part-editor-view > form .field-set.question-body",
+      );
+      return [{
+        componentId: component.id || null,
+        number: Number.isFinite(number) ? number : null,
+        sharedText: deepText(sharedQuestionBody),
+        text: parts.length === 1 ? parts[0].text : "",
+        answerKey: parts.length === 1 ? parts[0].answerKey : "",
+        parts,
+      }];
     });
 
     const textComponents = currentComponents.filter((component) => component.classList.contains("text"));
-    const completedInteractiveFiles = textComponents
+    const completedInteractiveFiles = [...new Set(currentComponents
       .flatMap((component) => {
         const names = Array.from(component.querySelectorAll('a[href*=".zip" i], button, a'))
           .map((node) => (node.textContent || node.getAttribute("download") || "").replace(/\s+/g, " ").trim())
           .flatMap((text) => text.match(/[\w.-]+\.zip\b/gi) || []);
         if (names.length > 0) return names;
         return (component.innerText || "").match(/[\w.-]+\.zip\b/gi) || [];
-      });
+      }))];
     const pendingTextComponentIds = textComponents.filter((component) => {
       const text = (component.innerText || "")
         .replace(/\bMove Up\b|\bMove Down\b|\bRead More\b|\bRead Less\b/gi, "")

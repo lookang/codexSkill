@@ -620,11 +620,21 @@ export async function openSection(page, target, section) {
   return { id };
 }
 
+export async function readActivityTitle(row) {
+  // ALP phase badges share the row but are not part of the authored title.
+  // textContent also stays consistent when the sidebar is hidden.
+  const title = row.locator("span.title, .ellipsis-text.title").first();
+  if (await title.count()) {
+    return normalizeText((await title.getAttribute("title")) || (await title.textContent()) || "");
+  }
+  return normalizeText(await row.innerText());
+}
+
 export async function inventoryActivities(page, section) {
   const rows = activityRowsForSection(page, section);
   const activities = [];
   for (let index = 0; index < await rows.count(); index += 1) {
-    activities.push({ index, title: normalizeText(await rows.nth(index).innerText()) });
+    activities.push({ index, title: await readActivityTitle(rows.nth(index)) });
   }
   return activities;
 }
@@ -645,7 +655,7 @@ export async function openActivity(page, target, section, sectionId, activity) {
     throw new GuardError(`Activity ${activity.index + 1} disappeared from section ${section.label}.`);
   }
   let row = rows.nth(activity.index);
-  const currentTitle = normalizeText(await row.innerText());
+  const currentTitle = await readActivityTitle(row);
   if (currentTitle !== activity.title) {
     throw new GuardError(
       `Activity ${activity.index + 1} changed from "${activity.title}" to "${currentTitle}" during the run.`,
@@ -675,7 +685,7 @@ export async function openActivity(page, target, section, sectionId, activity) {
     row = rows.nth(activity.index);
   }
   await expect(row).toBeVisible();
-  const revealedTitle = normalizeText(await row.innerText());
+  const revealedTitle = await readActivityTitle(row);
   if (revealedTitle !== activity.title) {
     throw new GuardError(
       `Revealing the sidebar changed activity ${activity.index + 1} from ` +

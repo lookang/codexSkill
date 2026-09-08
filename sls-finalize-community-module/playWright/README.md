@@ -1,10 +1,26 @@
 # SLS Playwright Automation
-https://docs.google.com/spreadsheets/d/e/2PACX-1vTTXhI28OmihOg_4Z5lkObQI4u3mEdWUzpdte4fjtlv3ld6Y7Q-0DgUUBbGkiFajk6Ypbogr2mPtq76/pubhtml
-This is the reproducible browser-automation package bundled with the
-[`sls-finalize-community-module`](../SKILL.md) Codex skill. It works through the
+
+This is the reproducible browser-automation package used by the
+[`sls-finalize-community-module`](https://github.com/lookang/codexSkill/tree/main/sls-finalize-community-module) Codex skill. It works through the
 real SLS Community Gallery authoring interface with guarded Playwright locators,
 visible review, traces, checkpoints, and save/reopen verification. It does not use
 screen coordinates or store credentials in source control.
+
+## Public Resources
+
+- **[SLS Modules Run by Automation Scripts](https://docs.google.com/spreadsheets/d/1GnyhDb2_jjOK2GBXHDtzBCSJz7-4xdwH-hOM3jl-Nr4/edit?usp=sharing)** — a public, filterable Google Sheet listing the SLS lesson/module titles and canonical URLs found in the automation run reports. It also records run counts, first and latest run times, workflows seen, latest status, and how each title was verified.
+
+### Video Walkthrough
+
+<a href="https://www.youtube.com/watch?v=GY5osFZ6ijA">
+  <img src="https://img.youtube.com/vi/GY5osFZ6ijA/maxresdefault.jpg" width="720" alt="Watch: What Happens When AI Feedback Meets an Interactive? Make Mathematics Visible">
+</a>
+
+**[What Happens When AI Feedback Meets an Interactive? Make Mathematics Visible](https://www.youtube.com/watch?v=GY5osFZ6ijA)**
+
+Watch the `lookang AI` walkthrough showing how AI feedback and interactive mathematics can work together to make learners' thinking visible. Click the preview to play it on YouTube.
+
+The spreadsheet is a point-in-time operational index derived from local run reports; SLS access permissions still apply when opening the linked lesson URLs. Authentication files, traces, screenshots, and private report contents are never published with this repository.
 
 ## What It Does
 
@@ -12,10 +28,13 @@ The package supports these complete workflows:
 
 | Launcher | Purpose | Mutation boundary |
 | --- | --- | --- |
-| `RUN-SLS-AUTOMATION.cmd` | Inspect, resolve curriculum, tag questions, and perform guarded duplicate-and-replace work | Originals require the explicit `DELETE` checkpoint |
+| `RUN-SLS-AUTOMATION.cmd` | Inspect, resolve curriculum, and surgically tag existing questions in place | No section or activity is copied, renamed, or deleted |
 | `RUN-SLS-PAGE-BREAK.cmd` | Put each question on its own page using safe SLS dividers | Ambiguous pages are skipped; `--dry-run` changes nothing |
 | `RUN-SLS-REMOVE-COPY.cmd` | Remove the trailing ` - Copy` text from retained activity titles | Safe candidates run automatically; collisions are skipped |
+| `RUN-SLS-RENAME-TITLES.cmd` | Prefix module titles from a Google Sheet tab | Live title preview, one confirmation, duplicate-prefix protection and save/reopen verification |
+| `RUN-SLS-REVERT-AST-TITLES.cmd` | Remove a leading title prefix only from titles containing a required token such as `AST` | Defaults to `AST` and `Topical Revision -`; unmatched titles are untouched |
 | `RUN-SLS-ACPINTERACTIVE.cmd` | Generate one matching ACP practice interactive per eligible FA Math question | Existing ZIPs are preserved; multi-question pages stop |
+| `RUN-SLS-GPT.cmd` | Generate a second comparison interactive with ChatGPT Work and upload its verified ZIP | Native ACP ZIPs are preserved; exact page and root `index.html` are rechecked |
 | `RUN-SLS-GAMIFICATION.cmd` | Generate and verify gamification | Existing usable games are reused |
 | `RUN-SLS-THUMBNAIL.cmd` | Generate and verify a Featured Image | Existing images are protected unless replacement is explicit |
 | `RUN-SLS-ADD-WEE-LOO-KANG.cmd` | Add the exact credited teacher and completed-assignment printing | Existing teachers and other permissions are preserved |
@@ -23,13 +42,93 @@ The package supports these complete workflows:
 | `RUN-SLS-SELECTED.cmd` | Select any combination of all seven finalization stages | Each stage inventories first; a guard stops later stages |
 | `RUN-PLAYWRIGHT-RECORD-WORKFLOW.cmd` | Record a new cross-site browser demonstration for later hardening | Produces a local raw recording only |
 
-All launchers accept public, admin, section, or activity URLs for the same module.
+Single-module launchers accept public, admin, section, or activity URLs for the same module.
 They normalize navigation through admin Module View, verify the module UUID and
 visible core title (including when SLS prepends its saved Subject and Level), and
 share `.state\last-module.json`, so the module chosen in one launcher is
 the Enter-key default in the others.
 
-Curriculum discovery first reads any existing saved **Module Tags** on Introduction—exact Subject, Level, and selected Content Map—and treats a single internally consistent set as authoritative evidence. It opens that saved map and crawls its complete official learning-objective tree before searching any unsaved chooser. If SLS exposes only one selected Content Map accordion, its exact official label supplies the corresponding Subject and Level. Outcome ranking is then restricted to those harvested objectives, so a different level or stream cannot win merely because its wording scores better. It then reads the module description, visible module text, section/activity wording, and question stems to select the most specific learning outcome. Title inference is now a fallback rather than the only source; ambiguous or contradictory saved metadata is reported and left unchanged.
+### Batch Module Title Prefixes
+
+Double-click `RUN-SLS-RENAME-TITLES.cmd` (macOS: `RUN-SLS-RENAME-TITLES.command`).
+The default source is the [requested Sheet tab](https://docs.google.com/spreadsheets/d/1GnyhDb2_jjOK2GBXHDtzBCSJz7-4xdwH-hOM3jl-Nr4/edit?gid=447883961#gid=447883961).
+Choose the Sheet, rows (`all` or e.g. `7-10,12`), and a purpose prefix such as
+`Topical Revision -`. The default child-facing format is
+`Topical Revision - Addition and Subtraction within 100 (FA-Math)`. The known
+authoring-process phrase `(Algorithm - Recall, Practise and Quiz using FA-Math)`
+is shortened to `(FA-Math)`, and an old leading level marker is removed from the
+visible title. Subject, level, content map and outcome remain available through
+the saved SLS curriculum tags. Use `--with-curriculum` when the visible title
+should also include those saved tags, such as
+`Topical Revision - P1 Mathematics - Addition within 100 (FA-Math)`. Adjacent
+levels are compacted (`P4-P5 Mathematics`), non-adjacent levels remain explicit
+(`P3 & P5 Mathematics`), and missing curriculum tags stop that optional mode
+instead of being guessed. The launcher remembers the Sheet and prefix separately in
+`.state/title-prefix.json`; row selection is deliberately asked again each run.
+It opens visible Chrome, reads the actual SLS titles, shows old/new titles, and
+asks once for `YES` before applying. A login boundary pauses for manual sign-in.
+The existing topic text is retained after the standardized searchable heading.
+After each SLS save is independently verified, Playwright writes the exact final
+title into the same source row under **New Module Title**. On the current Sheet
+this is column `K`; if that header already exists it is reused, otherwise the
+launcher creates it in the next unused header cell. It never writes during
+`--dry-run`, and `--no-sheet-update` explicitly disables tracking.
+Titles containing standalone `AST` text are excluded from ordinary prefix batches
+by default and are neither edited nor written to the tracking column. The console
+lists every exclusion. Use `--include-ast` only when an AST title is deliberately
+meant to receive the prefix.
+
+Only **module titles** and the dedicated **New Module Title** cells change:
+activity names, content, tags, credits, publication status and other Sheet columns
+are untouched. Public/admin links for the same UUID are processed once. Existing lowercase purpose text and a leading level marker
+are normalized rather than duplicated. Each save is checked after reopening, with no automatic retries
+of uncertain saves. A mismatch or concurrent title change stops the remaining batch.
+Reports under `output/title-prefix/<timestamp>/report.json` retain source rows,
+old/new titles, progress and errors; `trace.zip` aids private debugging. Rerunning
+the same selection and prefix skips previously completed SLS edits and backfills
+or verifies their Sheet tracking cells.
+
+```powershell
+# List Sheet titles without opening Chrome or editing anything:
+.\RUN-SLS-RENAME-TITLES.cmd --list
+# Preview actual SLS titles for a small selection without applying:
+.\RUN-SLS-RENAME-TITLES.cmd --rows "7-10" --prefix "Topical Revision -" --dry-run
+```
+
+For unattended execution, use `node scripts/rename-titles.mjs --sheet "<exact Sheet URL>" --prefix "Topical Revision -" --rows "7-10" --apply --no-pause`.
+Valid SLS and Google sessions are required; the visible launcher pauses for manual
+Google sign-in before any SLS mutation if the Sheet is view-only. Unattended runs
+stop before changing SLS when either session is unavailable. `--apply` requires
+an explicit Sheet and prefix and cannot be combined with preview modes.
+The CMD window remains open for copying output; `SLS_NO_PAUSE=1` suppresses that
+terminal pause. A browser-fixture test is not proof of a live SLS save: verify a
+single row after logging in before applying a large batch on a new SLS release.
+
+To undo the prefix only for AST resources, double-click
+`RUN-SLS-REVERT-AST-TITLES.cmd` (macOS: `RUN-SLS-REVERT-AST-TITLES.command`).
+It scans the selected live SLS titles and proposes a change only when both are true:
+the title contains standalone `AST` text and begins with `Topical Revision -`.
+The matching is case-insensitive and treats punctuation and underscores as token
+boundaries. Review the exact old/new list and type `YES` once to apply it. Each
+save is reopened and verified before the corresponding **New Module Title** Sheet
+cell is updated. Use `--contains "other text"`, `--prefix "another prefix -"`, or
+`--dry-run` when a different guarded rollback is needed.
+
+Curriculum discovery first reads any existing saved **Module Tags** on Introduction—every exact Subject/Level row, selected Content Map, and selected outcome—and treats a single internally consistent set as authoritative evidence. During the surgical Automation flow, a section whose **Section Tags** are completely empty receives an exact additive copy of those saved Module Tags before its questions are processed. It enters through the hover pencil on the main section title, reproduces every saved Subject/Level row and the exact checked outcomes, saves, reopens, and verifies the persisted values. Existing section selections are preserved. After the Module Tag copy check, reviewed supplemental curricula are appended to empty or already-tagged sections, with exact Subject/Level, Content Map, and outcome verification after reopening. This workflow never duplicates an activity and never re-infers curriculum from the section title. The runner opens the saved map and crawls its complete official learning-objective tree before searching any unsaved chooser. If SLS exposes only one selected Content Map accordion, its exact official label supplies the corresponding Subject and Level for inference. Outcome ranking is then restricted to those harvested objectives, so a different level or stream cannot win merely because its wording scores better. It then reads the module description, visible module text, section/activity wording, and question stems to select the most specific learning outcome. Title inference is now a fallback rather than the only source; ambiguous or contradictory saved metadata is reported and left unchanged.
+
+When that saved Module Tag tree already has learning outcomes selected, the
+read-only inventory also records their exact labels and branch paths. Those
+teacher-selected outcomes become the authoritative candidate pool for every
+question in the module; question and answer-key evidence chooses the best match
+inside that pool and can never select an unchosen branch merely because its
+wording scores better. If SLS says, for example, `18 selected` but the runner
+cannot recover exactly 18 checked outcomes, question tagging stops before any
+write instead of falling back to the whole syllabus. Symbolic set expressions
+such as `X ∪ Y`, `A ∩ B'`, and their LaTeX forms are recognised as set operations
+rather than generic equations. Differentiation, integration, product, quotient,
+chain-rule, and related Calculus evidence is also kept distinct, with an exact
+Suggested Answer rule used only to refine an already established Calculus
+question. The report retains the exact reference pool used for the run.
 
 Question tagging visits every numbered page in ordinary activities as well as
 quizzes before it caches question evidence. It reads live FA Math stems from
@@ -53,6 +152,21 @@ by question number. Each reviewed syllabus code is resolved uniquely against the
 exact wording harvested from the saved SLS Content Map; a stale or ambiguous code
 stops instead of falling back to a nearby lexical match.
 
+Reviewed ETD exemplars may also define `supplementalQuestionOutcomes` at the
+default, section, or activity level. Each entry names an exact Content Map and
+outcome, its source document, and optional `questionNumbers`. Before question
+tagging, the runner appends the supplemental Subject/Level, Content Map, and exact
+outcome to the owning section even when that section already has Mathematics
+tags. It then applies the same reviewed mapping to eligible questions. Both paths
+harvest the target map from SLS when it is not cached, require one exact official
+outcome match, preserve existing selections, and reopen to verify persistence.
+The Percentage, Rate, Fraction of a Set, Fractions and
+Decimals, and Length/Mass/Volume configs contain the reviewed mappings from their
+ETD Word exemplars. A saved `Sec 3 & 4 Mathematics (G2/G3) (2020)` map similarly
+enables an additive `Mathematics - G2MATHS` / `Secondary 5` / `Sec 5 Mathematics
+(G2) (2020)` mirror, but only when the exact source outcome also exists in the
+Secondary 5 map. Additional Mathematics never activates this rule.
+
 The scripts never ask for credentials in the terminal and stop when they reach an
 unverified SLS or MIMS login boundary.
 
@@ -66,7 +180,7 @@ For normal use, run only:
 RUN-SLS-AUTOMATION.cmd
 ```
 
-Every public launcher shares the last valid module URL in the private `.state\last-module.json` file. A module selected in Automation, Gamification, Page Break, Smoke Check, Thumbnail, ACP Interactive, Add Teacher, or the recorder therefore becomes the displayed default in every other launcher. Press **Enter** to reuse it or paste a new SLS URL to replace it. Recording a non-SLS website preserves the previous SLS module. The automation accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. A new or placeholder config is completed in the same run: the launcher first reads existing section metadata, then falls back to a strong unique match from locally harvested SLS taxonomies, reruns the question scan, and records confident section outcomes. When several curricula remain plausible, it prints numbered exact SLS candidates and asks the user to choose `1`, `2`, `3`, and so on; the reviewed selection is recorded locally and the read-only scan resumes in the same run. Pressing **Enter** at that prompt stops safely without selecting or changing SLS. When a standalone run finds no question-level tags, it asks whether to tag the existing activities surgically or use guarded duplicate-and-replace; **Enter** chooses surgical tagging and skips duplication. Repeated activity names are resolved inside their current section. Originals remain until the separate `DELETE` checkpoint. If the saved SLS session has expired, the launcher opens the authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors, and the CMD window remains open for copying debug output.
+Every public launcher shares the last valid module URL in the private `.state\last-module.json` file. A module selected in Automation, Gamification, Page Break, Smoke Check, Thumbnail, ACP Interactive, Add Teacher, or the recorder therefore becomes the displayed default in every other launcher. Press **Enter** to reuse it or paste a new SLS URL to replace it. Recording a non-SLS website preserves the previous SLS module. The automation accepts the normal Community Gallery viewing URL or an admin URL, opens the admin Module View page, clicks the real **Edit** button, verifies **Done** appears, and then continues in visible Chrome while streaming each stage in the terminal. A new or placeholder config is completed in the same run: the launcher first reads existing section metadata, then falls back to a strong unique match from locally harvested SLS taxonomies, reruns the question scan, and records confident section outcomes. When several curricula remain plausible, it prints numbered exact SLS candidates and asks the user to choose `1`, `2`, `3`, and so on; the reviewed selection is recorded locally and the read-only scan resumes in the same run. Pressing **Enter** at that prompt stops safely without selecting or changing SLS. Normal Automation then tags the existing questions surgically; it never duplicates, renames, or deletes a section or activity. The retired guarded replacement path is available only with the explicit `--duplicate-and-replace` flag and retains its separate `DELETE` checkpoint. If the saved SLS session has expired, the launcher opens the authentication window and retries inspection once. It stops automatically on configuration, selector, verification, or SLS errors, and the CMD window remains open for copying debug output.
 
 The numbered CMD files expose individual stages for troubleshooting. You do not need to run them one by one during normal use.
 
@@ -121,9 +235,48 @@ The finishing commands ask for a Community Gallery module or lesson URL, convert
 
 `RUN-SLS-REMOVE-COPY.cmd` reviews every section and ignores all clean activity titles. An activity ending exactly in ` - Copy` (including repeated suffixes) is renamed to its suffix-free title automatically when that clean title is absent. A clean-title collision, duplicate copy title, or several copy depths resolving to the same base is reported as **SKIPPED**. No activity is deleted. Use `--dry-run` when only a report is required; `--apply` remains accepted for compatibility but is no longer necessary. Every rename preserves the activity's optional flag and recommended time, verifies the live SLS metadata immediately, and checks the sidebar. The runner then reopens the module and verifies that every old copy title is absent and every clean title remains exactly once.
 
-`RUN-SLS-SELECTED.cmd` asks for the module and stages once, then accepts `1` for Automation, `2` for Page Break, `3` for Thumbnail, `4` for Gamification, `5` for ACP Interactive, `6` for Add Wee Loo Kang plus completed-assignment printing, and `7` for automatically removing unambiguous trailing ` - Copy` text. Enter a comma-separated subset such as `1,2,5,7`, a numeric range such as `1-4`, or combine them as `1-4,6,7`. Press **Enter** or type `AUTO` to run all seven. After that selection, coordinated child stages close their verified browsers automatically and a successful CMD exits without a final keypress. A failed or guarded run keeps the CMD open so the real error can be read instead of looking like a crash. Selecting stage `1` explicitly authorizes deletion only for exact originals whose retained copies pass every existing title, copy, and question-tag verification guard, so the coordinated run does not ask for the literal `DELETE`; the individual `RUN-SLS-AUTOMATION.cmd` still does. Mixed or unavailable question-tag state chooses the non-deleting surgical pass automatically. An unresolved curriculum or any other ambiguity still stops at a guard without prompting or guessing. If the reusable SLS login is absent or expires between stages, the coordinator opens the existing visible authentication flow once, saves the refreshed session, and retries the same stage before continuing. Saved credentials may complete this automatically; when SLS requires human sign-in, the visible browser and authentication prompt remain the only exceptional pause. Unrelated guards, including an upstream ACP authentication failure, are never treated as an expired SLS session. The coordinator uses the safe dependency order: Automation, Remove Copy Suffixes, Page Break, ACP Interactive, Thumbnail, Gamification, then credits and permissions. For a non-interactive selection, use `RUN-SLS-SELECTED.cmd --steps 1-4,6,7 --url "SLS-URL"`; `--auto` is the equivalent all-seven choice.
+`RUN-SLS-SELECTED.cmd` asks for the module and stages once, then accepts `1` for Automation, `2` for Page Break, `3` for Thumbnail, `4` for Gamification, `5` for ACP Interactive, `6` for Add Wee Loo Kang plus completed-assignment printing, and `7` for automatically removing unambiguous trailing ` - Copy` text. Press **Enter**, type `COMPLETE`, or pass `--complete` to run the four-stage flow: Automation, Page Break, Thumbnail, then Add Wee Loo Kang. Automation is always surgical in this normal flow: existing questions are updated in place, and no section or activity is copied, renamed, or deleted. Each successful launcher's redundant final review pause is suppressed so the next stage can start. Enter a comma-separated subset such as `1,2,5,7`, a numeric range such as `1-4`, or combine them as `1-4,6,7`. Type `AUTO` or pass `--auto` only when all seven stages are intended. The legacy guarded replacement path is outside the normal flow and requires the explicit `--duplicate-and-replace` flag. A failed or guarded run keeps the CMD open so the real error can be read. If the reusable SLS login is absent or expires between stages, the coordinator opens the existing visible authentication flow once, saves the refreshed session, and retries the same stage. Unrelated guards, including an upstream ACP authentication failure, are never treated as an expired SLS session. The seven-stage safe dependency order remains Automation, Remove Copy Suffixes, Page Break, ACP Interactive, Thumbnail, Gamification, then credits and permissions. For a non-interactive four-stage selection, use `RUN-SLS-SELECTED.cmd --complete --url "SLS-URL"`.
 
-`RUN-SLS-ACPINTERACTIVE.cmd` reviews every page in every activity and section. A nested section or activity URL selects the module UUID but does not narrow this traversal. By default, the run continues without a generation-count cap through the final page of the final activity; use `--max-interactives N` only for a deliberately limited batch. For a page containing exactly one `FA Math` question without an existing interactive ZIP, it sends the question to the iwant2study Prompt Library and selects the configured grade and Mathematics. When the FA Math response is randomized, the runner safely opens the outer question pencil and nested randomized-component pencil, reads the instruction template, correct expression, parameter definitions, dependent bounds, and current rendered values, then closes without saving. It fills **Specific Requirements** with that evidence and explicitly requests integer sliders, dynamic constraint enforcement, and a reset control that reproduces the exact source instance. Non-randomized questions receive no invented slider requirements. The full generated Prompt Library text is printed in the command prompt between copy markers and retained in the run report for that page. The generated prompt is inserted into a Text component through **Authoring Copilot > Interactive (Beta)**. The runner waits up to ten minutes for each preview, reopens every changed activity, and verifies the generated ZIP persisted. If one page cannot generate or fails final reopen verification, the runner records the exact section, activity, page, error, screenshot, and trace evidence, recovers the edit view, and continues to later pages; the command prompt ends with an `ACP pages needing follow-up` checklist. Empty Text components are treated as unresolved attachment hydration; the page is reopened once and must expose stable ZIP evidence before candidate status is allowed. Existing interactives are preserved. A page containing several FA Math questions stops at a guard so `RUN-SLS-PAGE-BREAK.cmd` can separate them first. The demonstrated default is `Primary 5-6`; override it with `--grade "Primary 3-4"` when required.
+`RUN-SLS-ACPINTERACTIVE.cmd` reviews every page in every activity and section. A nested section or activity URL selects the module UUID but does not narrow this traversal. By default, the run continues without a generation-count cap through the final page of the final activity; use `--max-interactives N` only for a deliberately limited batch. For a page containing exactly one top-level `FA Math` question without an existing interactive ZIP, it sends the question to the iwant2study Prompt Library and selects the configured grade and Mathematics. A multiple-part SLS question remains one candidate: the runner retains its shared stimulus, every nested FA Math part, each suggested-answer key, and each child component ID so one coherent ACP interactive can cover the complete question. When any FA Math response part is randomized, the runner safely opens that child question pencil and nested randomized-component pencil, reads the instruction template, correct expression, parameter definitions, dependent bounds, and current rendered values, then closes without saving. It fills **Specific Requirements** with that evidence and explicitly requests integer sliders, dynamic constraint enforcement, and a reset control that reproduces the exact source instance. Non-randomized questions receive no invented slider requirements. The full generated Prompt Library text is printed in the command prompt between copy markers and retained in the run report for that page. The generated prompt is inserted into a Text component through **Authoring Copilot > Interactive (Beta)**. The runner waits up to 200 seconds by default for the genuine completed **Preview Interactive** and clicks **ADD** only when the visible generation overlay is gone. After **ADD**, it waits up to the same limit for the completed ZIP to become observable. It flushes the prompt and page status to `report.json` before generation and after every page. Each successful page is then committed with **Done**, reopened in a fresh Edit session, and checked for the exact ZIP before the next page begins; this is the crash-safe checkpoint, so persistence is never deferred until the whole activity or module finishes. If one page cannot generate or fails final reopen verification, the runner records the exact section, activity, page, error, screenshot, and trace evidence, recovers the edit view, and continues to later pages; the command prompt ends with an `ACP pages needing follow-up` checklist. Empty Text components are treated as unresolved attachment hydration; the page is reopened once and must expose stable ZIP evidence before candidate status is allowed. Existing interactives are preserved. A page containing several separate top-level FA Math questions stops at a guard so `RUN-SLS-PAGE-BREAK.cmd` can separate them first. The demonstrated default is `Primary 5-6`; override it with `--grade "Primary 3-4"` when required.
+
+`RUN-SLS-GPT.cmd` reuses the same module traversal, FA Math extraction,
+randomisation evidence, answer keys, and Prompt Library specification, but sends
+the final specification to ChatGPT, preferring **GPT-5.6 Sol High** when it is
+available. When that exact model cannot be selected, the command prints a large
+warning, records the visible fallback model in `report.json`, and continues.
+ChatGPT must
+produce a real deterministic ZIP such as `ChatGPT56_109307754_P1.zip`. Before SLS
+is touched, the runner opens the download, validates the ZIP directory and CRC,
+decompresses the real root-level `index.html`, and checks that it contains
+recognisable non-empty HTML. It then returns to SLS, reopens the exact section,
+activity and page, and confirms the original question is still the candidate
+before uploading through **Text/Media > File from Device**. The page is saved,
+reopened, and checked for the exact filename before traversal continues. Existing
+native ACP ZIPs stay in place for comparison. Reruns skip that page only when its
+exact deterministic ChatGPT ZIP is already present; a different ChatGPT ZIP stops
+the ambiguous page without replacing anything. The first run uses a separate
+same visible Playwright Chrome context as SLS and the Prompt Generator. If a
+signed-in `chatgpt.com` tab is already open there, the runner reuses the newest
+one; otherwise it creates a ChatGPT tab and pauses for sign-in and model
+selection. Downloads are enabled for this GPT-only context, and the combined SLS
+and ChatGPT storage state is saved privately in `.auth/sls-state.json` for the
+next run. Generation defaults to 30 minutes per question because a completed Work
+result can take substantially longer than native ACP.
+
+The separate `.auth/chatgpt-profile` Chrome profile remains a guarded fallback
+for callers that do not supply the SLS browser context. An already-running
+everyday Chrome window still cannot be attached safely unless it was originally
+started with remote debugging, so the launcher does not borrow or modify the
+normal Chrome profile.
+
+```powershell
+# Recommended first trial: review and generate only the first eligible question.
+.\RUN-SLS-GPT.cmd --max-interactives 1
+# Inventory candidates only; do not open ChatGPT or change SLS.
+.\RUN-SLS-GPT.cmd --dry-run
+```
+
+macOS uses `RUN-SLS-GPT.command` with the same options.
 
 For an ACP review without changes:
 

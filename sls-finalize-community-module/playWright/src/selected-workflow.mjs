@@ -1,4 +1,5 @@
 export const SELECTED_WORKFLOW_CHILD_FLAG = "--selected-workflow";
+export const INDIVIDUAL_STAGE_BEHAVIOR_FLAG = "--individual-stage-behavior";
 
 export function isSelectedWorkflowChild(args = []) {
   return args.includes(SELECTED_WORKFLOW_CHILD_FLAG);
@@ -73,9 +74,21 @@ export const SELECTED_WORKFLOW_STAGES = [
   },
 ];
 
+export const COMPLETE_FLOW_STAGE_IDS = [
+  "automation",
+  "page-break",
+  "thumbnail",
+  "add-teacher",
+];
+
 export function parseSelectedWorkflowSteps(value) {
   const text = String(value ?? "").trim().toLocaleLowerCase();
-  if (!text || new Set(["auto", "all", "*"]).has(text)) {
+  if (!text || new Set(["complete", "standard", "four", "4-stage"]).has(text)) {
+    return SELECTED_WORKFLOW_STAGES.filter((stage) => COMPLETE_FLOW_STAGE_IDS.includes(stage.id)).sort(
+      (left, right) => left.safeOrder - right.safeOrder,
+    );
+  }
+  if (new Set(["auto", "all", "*"]).has(text)) {
     return [...SELECTED_WORKFLOW_STAGES].sort(
       (left, right) => left.safeOrder - right.safeOrder,
     );
@@ -123,7 +136,7 @@ export function parseSelectedWorkflowSteps(value) {
     if (!stage) {
       throw new Error(
         `Unknown stage "${token}". Choose 1-7; names automation, page-break, thumbnail, ` +
-          `gamification, acp-interactive, add-teacher, remove-copy; or AUTO.`,
+          `gamification, acp-interactive, add-teacher, remove-copy; COMPLETE; or AUTO.`,
       );
     }
     requested.add(stage);
