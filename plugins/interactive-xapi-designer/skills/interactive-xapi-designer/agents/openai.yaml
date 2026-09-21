@@ -1,0 +1,4 @@
+interface:
+  display_name: "Interactive xAPI Designer"
+  short_description: "Design SLS interactives with meaningful xAPI analytics"
+  default_prompt: "Use $interactive-xapi-designer to design an accessible SLS interactive with meaningful xAPI learning analytics."

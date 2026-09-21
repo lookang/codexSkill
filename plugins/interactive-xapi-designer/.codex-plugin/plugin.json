@@ -1,0 +1,37 @@
+{
+  "name": "interactive-xapi-designer",
+  "version": "0.1.0",
+  "description": "Design accessible SLS interactives and instrument them with meaningful xAPI learning analytics.",
+  "author": {
+    "name": "lookang",
+    "url": "https://iwant2study.org/"
+  },
+  "homepage": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
+  "repository": "https://github.com/lookang/codexSkill",
+  "keywords": [
+    "education",
+    "interactive",
+    "SLS",
+    "xAPI",
+    "learning-analytics",
+    "metacognition"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Interactive xAPI Designer",
+    "shortDescription": "Build SLS interactives with learning analytics.",
+    "longDescription": "Turns a learning goal into an accessible SLS interactive, then adds verified xAPI state and analytics that expose attempts, strategies, misconceptions, revisions, confidence, and progress for learner reflection and teacher insight.",
+    "developerName": "lookang",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
+    "defaultPrompt": [
+      "Design an SLS interactive and add meaningful xAPI analytics.",
+      "Turn this lesson idea into an accessible virtual lab.",
+      "Instrument this interactive for learner reflection and teacher insight."
+    ]
+  }
+}

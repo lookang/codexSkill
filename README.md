@@ -1,6 +1,21 @@
-# Codex Skills
+# Lookang Codex Skills and Plugins
 
-This repository contains Codex skills for Singapore MOE SLS workflows.
+This repository contains Codex skills and installable plugins for Singapore MOE SLS workflows.
+
+## Plugins
+
+### Interactive xAPI Designer
+
+[`interactive-xapi-designer`](plugins/interactive-xapi-designer/) turns a learning goal into an accessible SLS interactive and instruments it with meaningful xAPI learning analytics. It uses the [SLS Prompt Generator and Interactive Prompt Library](https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html) together with the [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) as the maintained basis for its workflow.
+
+The plugin plans evidence before tracking, distinguishes standard timeline integration from custom semantic instrumentation, and verifies that state captures meaningful predictions, attempts, strategies, misconceptions, hints, revisions, confidence, reflection, progress, and scores. It also covers accessible interaction design, local asset packaging, true 3D verification, state restoration, privacy, and SLS-ready ZIP delivery.
+
+Naming convention:
+
+- Marketplace ID: `lookang-codex-skills`
+- Plugin ID and folder: `interactive-xapi-designer`
+- Display name: **Interactive xAPI Designer**
+- Bundled skill invocation: `$interactive-xapi-designer`
 
 ## Skills
 
@@ -12,7 +27,25 @@ This repository contains Codex skills for Singapore MOE SLS workflows.
 - [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
 - [`websitesim-to-youtube`](websitesim-to-youtube/) turns live websites, browser apps, and simulations into narrated tutorial MP4s with human-looking cursor actions, numbered teaching captions, narration-first synchronization, correction takes, and final QA.
 
-## Install
+## Install the plugin
+
+The recommended installation uses this repository as a Codex marketplace:
+
+```powershell
+codex plugin marketplace add lookang/codexSkill
+codex plugin add interactive-xapi-designer@lookang-codex-skills
+```
+
+Start a new Codex task after installation so the bundled skill is discovered. To receive repository updates later, run:
+
+```powershell
+codex plugin marketplace upgrade lookang-codex-skills
+codex plugin add interactive-xapi-designer@lookang-codex-skills
+```
+
+The same plugin is also available as [`dist/interactive-xapi-designer.zip`](dist/interactive-xapi-designer.zip) for inspection, archival, or manual distribution.
+
+## Install standalone skills
 
 ### Option 1: Download a skill ZIP
 
@@ -93,6 +126,11 @@ After installation, restart Codex or start a new Codex session so the skill is d
 ## Use
 
 Ask Codex to use a skill by name:
+
+```text
+Use $interactive-xapi-designer to design an accessible SLS interactive about
+photosynthesis and add meaningful xAPI learning analytics.
+```
 
 ```text
 Use $sim-to-youtube to create a tutorial video package for this science simulation:

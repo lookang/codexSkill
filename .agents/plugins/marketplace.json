@@ -1,0 +1,20 @@
+{
+  "name": "lookang-codex-skills",
+  "interface": {
+    "displayName": "Lookang Codex Skills"
+  },
+  "plugins": [
+    {
+      "name": "interactive-xapi-designer",
+      "source": {
+        "source": "local",
+        "path": "./plugins/interactive-xapi-designer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
