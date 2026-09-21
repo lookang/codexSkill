@@ -1,6 +1,6 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Design accessible SLS interactives and instrument them with meaningful xAPI learning analytics.",
   "author": {
     "name": "lookang",
@@ -27,6 +27,9 @@
       "Interactive",
       "Write"
     ],
+    "brandColor": "#0B3F7F",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/icon.png",
     "websiteURL": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
     "defaultPrompt": [
       "Design an SLS interactive and add meaningful xAPI analytics.",

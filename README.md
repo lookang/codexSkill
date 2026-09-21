@@ -6,6 +6,8 @@ This repository contains Codex skills and installable plugins for Singapore MOE 
 
 ### Interactive xAPI Designer
 
+<img src="plugins/interactive-xapi-designer/assets/icon.png" alt="Interactive xAPI Designer icon" width="128">
+
 [`interactive-xapi-designer`](plugins/interactive-xapi-designer/) turns a learning goal into an accessible SLS interactive and instruments it with meaningful xAPI learning analytics. It uses the [SLS Prompt Generator and Interactive Prompt Library](https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html) together with the [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) as the maintained basis for its workflow.
 
 The plugin plans evidence before tracking, distinguishes standard timeline integration from custom semantic instrumentation, and verifies that state captures meaningful predictions, attempts, strategies, misconceptions, hints, revisions, confidence, reflection, progress, and scores. It also covers accessible interaction design, local asset packaging, true 3D verification, state restoration, privacy, and SLS-ready ZIP delivery.
