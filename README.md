@@ -17,6 +17,9 @@ Naming convention:
 - Display name: **Interactive xAPI Designer**
 - Bundled skill invocation: `$interactive-xapi-designer`
 
+- Prompt in ChatGPT can look like this
+- Using the $interactive-xapi-designer plugin (from lookang/codexSkill), create a simple Chinese language learning game packaged for SLS. Ensure it includes xAPI learning analytics to track student responses, scores, and attempts, and output an SLS-ready ZIP file."
+
 ## Skills
 
 - [`build-famath-interactives`](build-famath-interactives/) builds, extends, regenerates, packages, and validates FAMath formative mathematics interactives from syllabus learning objectives, with concrete-pictorial-abstract models, misconception-first tutorials, adaptive difficulty, challenge levels, and SLS xAPI packages.
