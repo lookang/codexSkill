@@ -19,6 +19,8 @@ Create a small table before implementation:
 
 Adapt the rows to the activity. Do not collect fields that have no plausible pedagogical use.
 
+For a multi-item assessment, also preserve a stable per-item record containing the item/prompt label, learner response, expected response, correctness, marks/max marks, attempt number, first and final response, revision count, misconception code and explanation, hint use, interaction mode, and relative time. Reconstruct this record from the activity's authoritative model or DOM at completion as a fallback; do not rely only on click interception.
+
 ## Recommended state shape
 
 Use a stable, versioned object compatible with `window.storeState(...)`. The exact fields may vary, but a useful shape is:
@@ -67,6 +69,17 @@ Use elapsed time or relative event time where possible; avoid unnecessary wall-c
 Learner feedback should compare intent with evidence: prediction versus observation, confidence versus correctness, first attempt versus revision, and chosen strategy versus a more productive one. Offer a next step without revealing an answer prematurely.
 
 Teacher summaries should show concept-level patterns, not surveillance-style activity logs. Prefer misconception distribution, confidence/correctness mismatches, hint dependence, revision quality, unfinished steps, and representative evidence. Explain limitations: the analytics indicate behavior in this interactive, not a definitive judgment of ability or intent.
+
+For scored activities, the SLS-visible feedback should be a compact visual report, not a score sentence. Reuse existing icons or pictures where possible and include:
+
+- score, accuracy, completion, and items needing review;
+- a simple progress/accuracy bar;
+- process indicators such as elapsed time, revisions, attempts, and hints;
+- misconception clusters with plain-language explanations;
+- question-by-question responses, expected answers, marks, and diagnostic insight; and
+- one or more targeted teaching prompts derived from the observed pattern.
+
+Build a plain semantic fallback into the same HTML so the report remains understandable if the host removes colour or inline styling.
 
 ## Privacy and proportionality
 

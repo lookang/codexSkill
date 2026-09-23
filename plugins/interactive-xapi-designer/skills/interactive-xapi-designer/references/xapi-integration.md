@@ -11,6 +11,11 @@ Download and inspect this reference before integrating. Copy its `lib/xAPI.js` a
 
 The inspected sample reads `score`, `max`, `feedback`, `history`, `details`, and `summary`. Its human-readable attempt formatter expects history fields `type`, `q`, `value`, `expected`, and `correct`/`result`. Map domain event IDs and answers to those fields for assessed attempts; merely adding `action` and `responseId` does not produce useful built-in answer feedback. Keep exploration events semantically distinct from assessed answers.
 
+Choose the feedback mode deliberately:
+
+- **Built-in attempt log:** use `type`, `q`, `value`, `expected`, and `correct`/`result` when the generic question/answer list is sufficient.
+- **Rich authored teacher report:** when marks, pictures, misconception explanations, process evidence, and teaching moves must remain visible, build the complete HTML in `feedback`; put item records in `quiz.items`, `hiddenMarks.items`, and `details`; and keep top-level `history` semantic without the formatter-triggering `q`/`value`/`expected` field combination. Verify the preserved transport does not replace the authored feedback.
+
 Inspect the current sample's cache rules: the verified version prefers cached state when the new history is shorter or the reason contains pause/hidden. Test the actual outgoing state after reset and history truncation; an in-memory payload alone can hide stale transmitted scores. Preserve bounded history compatibility in the payload, with prior-run records clearly separated from current scored attempts, and check that score inference does not reinstate old marks. Never edit the library to bypass this behavior.
 
 Use a local mock LRS with synthetic test launch parameters to observe actual wrapper state requests and score statements, including correct/incorrect answer text, reset, resume, and completion. Keep mock traffic local and test code outside the shipped package. Hash equality plus a call to storeState is insufficient: verify transmitted payloads. Do not claim successful SLS saving from the presence of URL parameters or a non-throwing call; label it as requested unless acknowledged. Distinguish local transport verification from a real SLS launch test.
@@ -50,6 +55,10 @@ Do not send directly to the LRS with `fetch` or XHR. Let the injected glue confi
 
 Save after meaningful state transitions: prediction committed, answer checked, hint revealed, model run, evidence captured, revision submitted, reflection completed, and activity completed. Debounce high-frequency controls and canvas input. Also flush a compact state on visibility loss or page exit, but do not depend only on exit events.
 
+Do not send a launch-time `score: 0, max: N` payload for an untouched scored activity. For activities with many micro-interactions, keep the detailed event model locally during the attempt and send the full report on the real check/submit/completion action. On pause or exit, send an explicitly labelled in-progress state only when meaningful evidence exists.
+
+At completion, independently reconstruct the visible/modelled results and compare them with the event-derived records. Use this as a fallback when event hooks were missed, and deduplicate so one completion action produces one final scored report.
+
 Restore the latest state on launch when available. Validate the schema version and tolerate missing or older fields. Rehydrate UI state without adding new history entries or resubmitting the restored score.
 
 Tracking code must be defensive: wrap calls, bound payload size, deduplicate unchanged payloads, and never allow analytics errors to stop the activity.
@@ -67,5 +76,6 @@ Run the integrated project in a browser and verify:
 7. Payloads contain no launch auth value, raw keystrokes, unnecessary free text, or personal data.
 8. Keyboard-only, touch, non-colour cues, labels, responsive layout, and reduced-motion behavior remain usable after integration.
 9. For complex simulations, inspect `window.__xapiLastState` or intercept `window.storeState` in a test harness and confirm the data reflects the visible learner actions. A constant `score: 0` or generic click log is not sufficient verification.
+10. Assert that an untouched launch sends no completed `0/N` record, the completion action sends the full item count, and the outgoing `feedback` still contains the intended teacher report after the real transport wrapper processes it.
 
 When a true SLS/LRS environment is unavailable, clearly separate locally verified behavior from SLS-only transport that still needs a launch test.

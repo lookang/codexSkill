@@ -1,7 +1,7 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.1.1",
-  "description": "Design accessible SLS interactives and instrument them with meaningful xAPI learning analytics.",
+  "version": "0.2.0",
+  "description": "Build accessible SLS interactives in one pass with verified scoring, misconception analytics, and visual teacher reports.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"
@@ -19,8 +19,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Interactive xAPI Designer",
-    "shortDescription": "Build SLS interactives with learning analytics.",
-    "longDescription": "Turns a learning goal into an accessible SLS interactive, then adds verified xAPI state and analytics that expose attempts, strategies, misconceptions, revisions, confidence, and progress for learner reflection and teacher insight.",
+    "shortDescription": "Build verified SLS interactives in one pass.",
+    "longDescription": "Turns a learning goal or existing interactive into an accessible SLS-ready package in one pass, with verified scoring, item evidence, misconceptions, revisions, privacy-safe process data, visual teacher feedback, completion fallback capture, and mock-LRS transport checks.",
     "developerName": "lookang",
     "category": "Productivity",
     "capabilities": [
@@ -32,9 +32,9 @@
     "logo": "./assets/icon.png",
     "websiteURL": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
     "defaultPrompt": [
-      "Design an SLS interactive and add meaningful xAPI analytics.",
+      "Build an SLS interactive in one pass with verified xAPI scoring and a visual teacher report.",
       "Turn this lesson idea into an accessible virtual lab.",
-      "Instrument this interactive for learner reflection and teacher insight."
+      "Improve this ZIP for SLS and make the teacher analytics useful."
     ]
   }
 }
