@@ -1,6 +1,6 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Build accessible SLS interactives in one pass with verified scoring, misconception analytics, and visual teacher reports.",
   "author": {
     "name": "lookang",

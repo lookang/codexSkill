@@ -1,6 +1,6 @@
-# Lookang Codex Skills and Plugins
+# Lookang Codex and Claude Code Skills and Plugins
 
-This repository contains Codex skills and installable plugins for Singapore MOE SLS workflows.
+This repository contains Codex and Claude Code skills and installable plugins for Singapore MOE SLS workflows.
 
 ## Plugins
 
@@ -32,7 +32,7 @@ Naming convention:
 - [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
 - [`websitesim-to-youtube`](websitesim-to-youtube/) turns live websites, browser apps, and simulations into narrated tutorial MP4s with human-looking cursor actions, numbered teaching captions, narration-first synchronization, correction takes, and final QA.
 
-## Install the plugin
+## Install the plugin in Codex
 
 The recommended installation uses this repository as a Codex marketplace:
 
@@ -49,6 +49,30 @@ codex plugin add interactive-xapi-designer@lookang-codex-skills
 ```
 
 The same plugin is also available as [`dist/interactive-xapi-designer.zip`](dist/interactive-xapi-designer.zip) for inspection, archival, or manual distribution.
+
+## Install the plugin in Claude Code
+
+The same canonical plugin source includes a Claude Code manifest and is published through the `lookang-claude-plugins` marketplace in this repository:
+
+```powershell
+claude plugin marketplace add lookang/codexSkill
+claude plugin install interactive-xapi-designer@lookang-claude-plugins
+```
+
+Restart Claude Code after installation, or run `/reload-plugins` in an existing session. The bundled skill is available as:
+
+```text
+/interactive-xapi-designer:interactive-xapi-designer
+```
+
+For local testing without marketplace installation, load the plugin directory or the distribution ZIP directly:
+
+```powershell
+claude --plugin-dir .\plugins\interactive-xapi-designer
+claude --plugin-dir .\dist\interactive-xapi-designer.zip
+```
+
+The Codex and Claude Code packages share one `skills/interactive-xapi-designer/` source tree so their instructional behavior stays aligned.
 
 ## Install standalone skills
 

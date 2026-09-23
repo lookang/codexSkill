@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "lookang-claude-plugins",
+  "version": "1.0.0",
+  "description": "Claude Code plugins for Singapore MOE SLS interactive learning workflows.",
+  "owner": {
+    "name": "lookang",
+    "url": "https://github.com/lookang"
+  },
+  "plugins": [
+    {
+      "name": "interactive-xapi-designer",
+      "displayName": "Interactive xAPI Designer",
+      "description": "Build accessible SLS interactives with verified scoring, misconception analytics, and visual teacher reports.",
+      "source": "./plugins/interactive-xapi-designer",
+      "category": "productivity",
+      "homepage": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
+      "repository": "https://github.com/lookang/codexSkill",
+      "keywords": [
+        "education",
+        "interactive",
+        "SLS",
+        "xAPI",
+        "learning-analytics"
+      ]
+    }
+  ]
+}
