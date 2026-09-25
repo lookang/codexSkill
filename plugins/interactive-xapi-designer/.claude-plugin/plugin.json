@@ -2,13 +2,13 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "interactive-xapi-designer",
   "displayName": "Interactive xAPI Designer",
-  "version": "0.2.1",
-  "description": "Build accessible SLS interactives with verified scoring, misconception analytics, and visual teacher reports.",
+  "version": "0.2.2",
+  "description": "Build compact, accessible SLS interactives with verified scoring, meaningful action histories, and targeted misconception feedback.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"
   },
-  "homepage": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
+  "homepage": "https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html",
   "repository": "https://github.com/lookang/codexSkill",
   "keywords": [
     "education",

@@ -1,4 +1,4 @@
 interface:
   display_name: "Interactive xAPI Designer"
-  short_description: "Build SLS interactives with verified teacher insights"
-  default_prompt: "Use $interactive-xapi-designer to build this SLS interactive in one pass, including verified scoring, item-level misconceptions, and a visual teacher analytics report."
+  short_description: "Build compact SLS interactives with useful learning evidence"
+  default_prompt: "Use $interactive-xapi-designer to build a compact SLS interactive that fits its 450px first viewport, with verified scoring, a meaningful action sequence, evidence-based misconceptions, learner feedback, and targeted teaching moves."

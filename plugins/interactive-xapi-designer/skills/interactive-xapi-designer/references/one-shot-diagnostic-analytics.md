@@ -7,12 +7,14 @@ Use this contract for quizzes, sorts, classifications, matching, multi-step ques
 The delivered package must satisfy all of these conditions:
 
 1. **Truth source:** derive scoring from the activity's real model or final UI state, not generic score-text scraping or click counts.
-2. **Stable items:** assign stable item IDs and preserve prompt/word, learner response, expected response, correctness, marks/max marks, attempt, first/final response, revisions, hints, interaction mode, relative time, misconception code, and a teacher-readable misconception explanation.
+2. **Stable items and action sequence:** assign stable item IDs and preserve prompt/word, learner response, expected response, correctness, marks/max marks, attempt, first/final response, revisions, hints, interaction mode, relative time, misconception code, and a teacher-readable misconception explanation. Also retain a bounded chronological sequence of meaningful actions with relative time, affected item/target, selected option or committed value, and relevant state after each action.
 3. **Completion gate:** do not submit an untouched launch as `0/N`. Accumulate micro-events locally. Submit the complete report on the real check/submit/completion action. Save an explicitly labelled in-progress report on pause/exit only when evidence exists.
 4. **Fallback capture:** at completion, reconstruct every item from the authoritative model or DOM. If the primary instrumentation already captured it, deduplicate; otherwise fill the missing record.
-5. **Useful visible feedback:** make `feedback` independently useful in SLS. Do not rely on hidden extensions for the teacher's main evidence.
+5. **Useful visible feedback:** make `feedback` independently useful in SLS. Do not rely on hidden extensions for the teacher's main evidence. Include the misconception explanation, a targeted teaching move, and a concise action-sequence summary when they clarify the student's response pattern.
 6. **Transport compatibility:** preserve vendor libraries byte for byte and verify the outgoing state after their formatting/cache logic runs.
 7. **Privacy:** never store literal keystrokes, launch authentication, learner identity copies, unrelated browser data, or unnecessary open text.
+
+For a wrong answer, use a stable misconception code only when the response is evidence for that reasoning error. Pair it with a learner-readable explanation and a specific teaching move linked to the affected item or representation. If the response is ambiguous, report it as unclear or unclassified instead of guessing. Capture answer text only when submitted; do not log every keystroke or pointer movement.
 
 ## Default final state
 
@@ -48,7 +50,7 @@ Adapt names to the activity while preserving the semantics:
 }
 ```
 
-Populate `quiz.items` and `hiddenMarks.items` with the final item records. Keep `history` bounded and semantic. When using a rich authored report with the canonical sample, avoid the top-level `type` + `q` + `value`/`expected` combination that activates the generic formatter and replaces `feedback`; store the full item evidence under `quiz`, `hiddenMarks`, and `details` instead.
+Populate `quiz.items` and `hiddenMarks.items` with the final item records. Keep `history` bounded, chronological, and semantic. Each retained event should include relative time, action, item or target ID, committed choice/value when relevant, and enough post-action state to understand the transition. Keep the readable teacher report consistent with the structured sequence. When using a rich authored report with the canonical sample, avoid the top-level `type` + `q` + `value`/`expected` combination that activates the generic formatter and replaces `feedback`; store the full item evidence under `quiz`, `hiddenMarks`, and `details` instead.
 
 ## Visual teacher report
 
@@ -62,8 +64,9 @@ Include, in this order:
 4. process line: elapsed time, revisions, attempts/checks, hints, and meaningful strategy evidence;
 5. misconception overview, grouped by concept and linked to the affected items;
 6. question-by-question table: picture/label, student answer, correct answer, mark, revision, and insight;
-7. targeted teaching move generated from the observed misconception pattern; and
-8. a short interpretation limit.
+7. targeted teaching move generated from the observed misconception pattern;
+8. a concise, chronological summary of the meaningful actions that produced the responses, when process evidence is available; and
+9. a short interpretation limit.
 
 If styling is removed, the remaining headings, table text, icons, and status symbols must still communicate the result.
 
@@ -101,6 +104,8 @@ Run a representative path containing at least one correct item, one misconceptio
 
 - no scored state request is sent on untouched launch;
 - completion sends the correct `score/max`, `progress: 1`, and full item count;
+- the bounded event sequence preserves action order, relative times, selected targets, and relevant state changes without capturing raw keystrokes or pointer frames;
+- each assigned misconception is supported by the learner's response and is paired with an explanation and a concrete teaching move;
 - the visible `feedback` still contains the visual report after the preserved transport wrapper runs;
 - `quiz.items`, `hiddenMarks.items`, `details`, and bounded `history` agree;
 - the payload contains no raw key values, auth values, learner identity copies, or unrelated text;
