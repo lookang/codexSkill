@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "interactive-xapi-designer",
   "displayName": "Interactive xAPI Designer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
   "author": {
     "name": "lookang",

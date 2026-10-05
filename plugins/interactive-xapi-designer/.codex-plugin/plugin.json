@@ -1,6 +1,6 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
   "author": {
     "name": "lookang",
@@ -33,7 +33,7 @@
     "logo": "./assets/icon.png",
     "websiteURL": "https://github.com/lookang/codexSkill/tree/main/plugins/interactive-xapi-designer",
     "defaultPrompt": [
-      "Add meaningful SLS xAPI reporting to this HTML or ZIP, preserve its interface and xAPI library, and return a named ZIP with prompt and iteration metadata.",
+      "Add SLS xAPI to this HTML/ZIP; keep its interface and xAPI library. Return a named ZIP with prompt and iteration metadata.",
       "Integrate this interactive with xAPI and make targeted improvements to feedback and accessibility.",
       "Build a fresh SLS interactive using the Prompt Library design principles and verified learner/teacher reporting."
     ],
