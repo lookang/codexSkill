@@ -1,7 +1,7 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.3.0",
-  "description": "Build fresh SLS interactives or preserve existing HTML/ZIP activities while adding verified xAPI reporting and useful learning evidence.",
+  "version": "0.3.1",
+  "description": "Create and instrument HTML5 learning activities for SLS with verified xAPI reporting.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"
@@ -19,22 +19,25 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Interactive xAPI Designer",
-    "shortDescription": "Build fresh or preserve existing SLS interactives.",
-    "longDescription": "Builds fresh SLS interactives with Prompt Library design principles or integrates existing HTML/ZIP activities with minimal changes by default. Offers Integrate only, Integrate and improve, and Build or redesign modes, with unchanged verified xAPI transport, model-aware payloads, meaningful learning evidence and learner/teacher reports.",
+    "shortDescription": "Build SLS activities with xAPI",
+    "longDescription": "Developer toolkit for teachers and educational-content authors building client-side HTML5 learning activities for Singapore Student Learning Space (SLS). Create new HTML/ZIP activities or add xAPI reporting to existing ones while preserving their interface and learning logic by default. Choose Integrate only, Integrate and improve, or Build or redesign.\n\nThe plugin inspects the activity model, writes an activity-specific payload adapter, and reuses verified xAPI libraries without changing their transport code. Reports can include checked multiple-choice answers, first/latest results, revisions, existing support use and committed slider or simulation changes. Apply the full Prompt Library design workflow to fresh builds and explicit redesigns.\n\nOutputs are source files and SLS-ready ZIP packages. The plugin does not host an LMS, provide a standalone tutoring service, or automatically connect to student records. Generic control use is not proof of mastery. Local browser/mock-LRS tests do not establish live SLS attribution or rendering; teachers must review and test their deployed activity.",
     "developerName": "lookang",
-    "category": "Productivity",
+    "category": "Developer Tools",
     "capabilities": [
-      "Interactive",
-      "Write"
+      "HTML5 activity authoring",
+      "SLS xAPI integration",
+      "Learning analytics reports"
     ],
     "brandColor": "#0B3F7F",
     "composerIcon": "./assets/icon.png",
     "logo": "./assets/icon.png",
-    "websiteURL": "https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html",
+    "websiteURL": "https://github.com/lookang/codexSkill/tree/main/plugins/interactive-xapi-designer",
     "defaultPrompt": [
       "Add meaningful SLS xAPI reporting to this HTML or ZIP while preserving its interface and learning logic.",
       "Integrate this interactive with xAPI and make targeted improvements to feedback and accessibility.",
       "Build a fresh SLS interactive using the Prompt Library design principles and verified learner/teacher reporting."
-    ]
+    ],
+    "supportURL": "https://github.com/lookang/codexSkill/issues",
+    "privacyPolicyURL": "https://github.com/lookang/codexSkill/blob/main/plugins/interactive-xapi-designer/PRIVACY.md"
   }
 }

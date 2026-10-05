@@ -1,4 +1,4 @@
 interface:
   display_name: "Interactive xAPI Designer"
-  short_description: "Build fresh or preserve existing SLS interactives"
+  short_description: "Build SLS activities with xAPI"
   default_prompt: "Use $interactive-xapi-designer to add meaningful SLS xAPI reporting to this HTML or ZIP while preserving its interface and learning logic by default; use the full Prompt Library design workflow for fresh builds or explicit redesigns."
