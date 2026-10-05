@@ -1,7 +1,7 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.2.3",
-  "description": "Build compact, accessible SLS interactives with verified scoring, meaningful action histories, and targeted misconception feedback.",
+  "version": "0.3.0",
+  "description": "Build fresh SLS interactives or preserve existing HTML/ZIP activities while adding verified xAPI reporting and useful learning evidence.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"
@@ -19,8 +19,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Interactive xAPI Designer",
-    "shortDescription": "Build compact SLS interactives with illuminating learning evidence.",
-    "longDescription": "Turns a learning goal or existing interactive into a compact, accessible SLS-ready package in one pass, with a 450px first-viewport design, verified scoring, chronological action evidence, explained misconceptions, learner next steps, targeted teaching moves, completion fallback capture, and mock-LRS transport checks.",
+    "shortDescription": "Build fresh or preserve existing SLS interactives.",
+    "longDescription": "Builds fresh SLS interactives with Prompt Library design principles or integrates existing HTML/ZIP activities with minimal changes by default. Offers Integrate only, Integrate and improve, and Build or redesign modes, with unchanged verified xAPI transport, model-aware payloads, meaningful learning evidence and learner/teacher reports.",
     "developerName": "lookang",
     "category": "Productivity",
     "capabilities": [
@@ -32,9 +32,9 @@
     "logo": "./assets/icon.png",
     "websiteURL": "https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html",
     "defaultPrompt": [
-      "Build an SLS interactive that fits the 450px first viewport, with verified scoring, useful learner feedback, and targeted teaching moves.",
-      "Turn this lesson idea into an accessible virtual lab with a meaningful, time-ordered record of learner exploration.",
-      "Improve this ZIP for SLS with a compact shared workspace, evidence-based misconceptions, and an illuminating learner and teacher report."
+      "Add meaningful SLS xAPI reporting to this HTML or ZIP while preserving its interface and learning logic.",
+      "Integrate this interactive with xAPI and make targeted improvements to feedback and accessibility.",
+      "Build a fresh SLS interactive using the Prompt Library design principles and verified learner/teacher reporting."
     ]
   }
 }

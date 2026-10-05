@@ -2,8 +2,8 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "interactive-xapi-designer",
   "displayName": "Interactive xAPI Designer",
-  "version": "0.2.3",
-  "description": "Build compact, accessible SLS interactives with verified scoring, meaningful action histories, and targeted misconception feedback.",
+  "version": "0.3.0",
+  "description": "Build fresh SLS interactives or preserve existing HTML/ZIP activities while adding verified xAPI reporting and useful learning evidence.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"

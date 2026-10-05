@@ -1,5 +1,7 @@
 # Prompt-library workflow
 
+Scope: apply the full design and initial-viewport architecture below to fresh builds and explicitly authorised redesigns. For existing HTML/ZIP in Integrate only, preserve its interface and learning flow; inspect and report legacy layout limits instead of automatically rewriting them. See design-modes.md.
+
 Use the live [SLS Prompt Generator](https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html) to refine the brief or to generate a starting prompt. Its current Full details output is the canonical source for the complete SLS Interactive Development Master Prompt; use it when the task needs the complete system context. The shorter Forum or Prompt output is not a replacement for a user-supplied master prompt. Preserve the user's supplied requirements and adapt examples to the requested learning outcome.
 
 ## Compact SLS interface contract

@@ -1,13 +1,13 @@
 # SLS xAPI integration
 
-Consult the live [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) and download a current sample ZIP before integrating. The implementation and sample libraries are the canonical reference when they differ from this guide.
+Use the pinned, bundled working SLS baseline by default. Consult the live [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) when current options or additional examples are relevant. Live availability is not a prerequisite for integration with the verified bundle. Preserve a user-supplied different working transport and document its hashes; never silently replace the baseline with a newly downloaded implementation.
 
 ## Choose the integration approach
 
 ### Canonical working sample: preserve transport, change payload
 
 The user's working reference is [the countable-nouns Timeline ZIP, plugin2](https://iwant2study.moe.edu.sg/lookangejss/appXapiIntegratorAgent/api/samples/timeline/scorable_newTab_timeline_countable-nouns-are-nouns-that-can-be-counted-with-pictures-replacements-by-acp_plugin2.zip). Read [working-sls-baseline.md](working-sls-baseline.md) before integration. The older filename above the plugin2 generation returned 404 in October 2026; do not guess or silently substitute a different sample.
-Download and inspect this reference before integrating. Copy its `lib/xAPI.js` and `lib/xapiwrapper.min.js` unchanged; compare SHA-256 hashes before delivery. Do not patch, replace, or monkey-patch transport to make an activity work. Keep activity-specific event handling and payload construction in application code calling `window.storeState(payload)`.
+Inspect the bundled reference before integrating, or use the checksum-verified --refresh option for the exact live URL. Copy its `lib/xAPI.js` and `lib/xapiwrapper.min.js` unchanged; compare SHA-256 hashes before delivery. Do not patch, replace, or monkey-patch transport to make an activity work. Keep activity-specific event handling and payload construction in application code calling `window.storeState(payload)`.
 
 Use the bundled `scripts/prepare_sls_transport.py` to reproduce the baseline offline, or `--refresh` to download and checksum-verify that exact URL. Inspect its activity analytics and save triggers as well as its libraries. Copy the wrapper-before-glue script order in the head. Request the completed state from the real answer check while the frame is open; for sequential items, the final checked item may trigger completion automatically. Keep a report button for review, not as an essential extra save step. Request labelled in-progress checkpoints only after meaningful evidence exists. Lifecycle saves supplement active saves and must never be the only route. Adapt these semantic call sites to the supplied activity without changing transport code or its caching functions.
 

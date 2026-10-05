@@ -36,7 +36,7 @@ Test correct, incorrect, explicit misconception, ambiguous answer, blank field, 
 
 Use a real browser and local mock LRS with synthetic full launch parameters. Observe the state received by the preserved wrapper and same-origin score statements. Assert that the final answer check sends completion before any Reports/Finish interaction, that authored teacher feedback survives formatting, and that marks agree across the UI/model, top-level score, quiz and hidden marks. Test tracking failure without breaking the task. Keep mocks and synthetic credentials out of the delivered package.
 
-Verify in a real 450px iframe at desktop and narrow mobile widths. The initial view must contain a goal, representation, usable primary control and result. Use a shared question stepper when five parts would otherwise make a tall stack. Do not hide real controls behind an untested layout. Check keyboard/native input access, non-colour cues, zoom/reflow and reduced motion.
+Verify in a real 450px iframe at desktop and narrow mobile widths. In Integrate only, compare original and integrated layouts and preserve the learning flow; report existing scrolling or clipping separately rather than redesigning it. Apply the full initial-viewport goal/representation/control/result gate and shared question architecture only to fresh builds or explicit redesigns. Do not obscure existing controls. Check keyboard/native input access, non-colour cues, zoom/reflow and reduced motion for added UI.
 
 ## Reading SLS logs without overclaiming
 
