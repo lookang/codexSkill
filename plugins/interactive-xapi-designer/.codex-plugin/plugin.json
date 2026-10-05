@@ -1,7 +1,7 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.3.1",
-  "description": "Create and instrument HTML5 learning activities for SLS with verified xAPI reporting.",
+  "version": "0.3.2",
+  "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
   "author": {
     "name": "lookang",
     "url": "https://iwant2study.org/"
@@ -20,7 +20,7 @@
   "interface": {
     "displayName": "Interactive xAPI Designer",
     "shortDescription": "Build SLS activities with xAPI",
-    "longDescription": "Developer toolkit for teachers and educational-content authors building client-side HTML5 learning activities for Singapore Student Learning Space (SLS). Create new HTML/ZIP activities or add xAPI reporting to existing ones while preserving their interface and learning logic by default. Choose Integrate only, Integrate and improve, or Build or redesign.\n\nThe plugin inspects the activity model, writes an activity-specific payload adapter, and reuses verified xAPI libraries without changing their transport code. Reports can include checked multiple-choice answers, first/latest results, revisions, existing support use and committed slider or simulation changes. Apply the full Prompt Library design workflow to fresh builds and explicit redesigns.\n\nOutputs are source files and SLS-ready ZIP packages. The plugin does not host an LMS, provide a standalone tutoring service, or automatically connect to student records. Generic control use is not proof of mastery. Local browser/mock-LRS tests do not establish live SLS attribution or rendering; teachers must review and test their deployed activity.",
+    "longDescription": "Developer toolkit for teachers and educational-content authors building client-side HTML5 learning activities for Singapore Student Learning Space (SLS). Create new HTML/ZIP activities or add xAPI reporting to existing ones while preserving their interface and learning logic by default. Choose Integrate only, Integrate and improve, or Build or redesign.\n\nThe plugin inspects the activity model, writes an activity-specific payload adapter, and reuses verified xAPI libraries without changing their transport code. Reports can include checked multiple-choice answers, first/latest results, revisions, existing support use and committed slider or simulation changes. Apply the full Prompt Library design workflow to fresh builds and explicit redesigns.\n\nEach SLS ZIP includes human-readable and machine-readable provenance with the authored activity prompt, concise iteration log, authoring platform, model and reasoning/thinking effort when reported, file hashes and verification notes. Unavailable model settings are marked not-reported. Filenames use iwant2study.moe.edu.sg_scorable_<slug>.zip for genuinely scored work and iwant2study.moe.edu.sg_interactive_<slug>.zip for unscored work.\n\nOutputs are source files and SLS-ready ZIP packages. The plugin does not host an LMS, provide a standalone tutoring service, or automatically connect to student records. Generic control use is not proof of mastery. Local browser/mock-LRS tests do not establish live SLS attribution or rendering; teachers must review and test their deployed activity.",
     "developerName": "lookang",
     "category": "Developer Tools",
     "capabilities": [
@@ -33,7 +33,7 @@
     "logo": "./assets/icon.png",
     "websiteURL": "https://github.com/lookang/codexSkill/tree/main/plugins/interactive-xapi-designer",
     "defaultPrompt": [
-      "Add meaningful SLS xAPI reporting to this HTML or ZIP while preserving its interface and learning logic.",
+      "Add meaningful SLS xAPI reporting to this HTML or ZIP, preserve its interface and xAPI library, and return a named ZIP with prompt and iteration metadata.",
       "Integrate this interactive with xAPI and make targeted improvements to feedback and accessibility.",
       "Build a fresh SLS interactive using the Prompt Library design principles and verified learner/teacher reporting."
     ],

@@ -11,7 +11,7 @@
     {
       "name": "interactive-xapi-designer",
       "displayName": "Interactive xAPI Designer",
-      "description": "Create and instrument HTML5 learning activities for SLS with verified xAPI reporting.",
+      "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
       "source": "./plugins/interactive-xapi-designer",
       "category": "development",
       "homepage": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",

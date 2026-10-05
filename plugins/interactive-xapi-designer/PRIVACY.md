@@ -20,6 +20,8 @@ When launched in SLS or another configured learning platform, the unchanged xAPI
 
 Some generated activities and the reference transport use browser storage for launch configuration, cached state or restoration. This may include platform-supplied launch settings and learning responses. Browser storage can persist beyond closing the activity. Clearing the relevant site's browser storage removes local copies; it does not delete records already held by SLS or another learning record store.
 
+SLS ZIP packages produced by the plugin include `IWANT2STUDY-METADATA.txt` and `IWANT2STUDY-METADATA.json`. These files can contain the activity-specific prompt or brief supplied for the work, a concise implementation-iteration log, the authoring platform and model/effort labels when reported, packaged-file hashes and verification notes. They are stored inside the ZIP and are not sent to SLS by the packaging helper. Authors should review them before sharing. The plugin excludes hidden model reasoning, learner identities and responses, launch credentials and unrelated conversation from this provenance record. If ChatGPT, Codex or Claude Code does not expose an exact model or effort setting, the metadata records `not-reported` rather than inferring it.
+
 ## Retention and control
 
 The teacher, school or platform operator determines deployment, access, the learning record destination, and retention of records held by the learning platform. Consult that institution or platform about access, correction or deletion of learner records. The publisher cannot delete records from a school's SLS instance or another operator's learning record store through this plugin.
