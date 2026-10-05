@@ -24,6 +24,10 @@ REQUIRED_PAYLOAD_TERMS = (
     "summary",
     "history",
 )
+PINNED_VENDOR = {
+    "lib/xAPI.js": "ba353b8d33f9bfe6e2a93e797e821a3989390186708c58e984812182c951e030",
+    "lib/xapiwrapper.min.js": "ca1955f8387cc9167b3bf3f3813a0a7ed33279f9c7282b5c122f079e51632ac5",
+}
 
 
 def sha256(path: Path) -> str:
@@ -69,11 +73,19 @@ def validate(root: Path, reference: Path | None) -> tuple[list[str], list[str]]:
     texts = read_text_files(root)
     combined = "\n".join(texts.values())
     index_text = index.read_text(encoding="utf-8", errors="replace")
+    scripts = re.findall(r'<script\b[^>]*\bsrc\s*=\s*["\']([^"\']+)["\']',
+                         re.sub(r'<!--[\s\S]*?-->', '', index_text), re.IGNORECASE)
+    vendor_order = [src.removeprefix('./') for src in scripts
+                    if src.removeprefix('./') in PINNED_VENDOR]
+    if vendor_order != ["lib/xapiwrapper.min.js", "lib/xAPI.js"]:
+        failures.append("load the wrapper once, followed by xAPI.js once")
 
     for library in ("lib/xAPI.js", "lib/xapiwrapper.min.js"):
         path = root / library
         if not path.is_file():
             failures.append(f"missing {library}")
+        elif not reference and sha256(path) != PINNED_VENDOR[library]:
+            failures.append(f"transport differs from pinned baseline: {library}; use --reference for another verified working package")
         if f'./{library}' not in index_text and library not in index_text:
             failures.append(f"index.html does not reference {library}")
 
@@ -124,7 +136,7 @@ def main() -> int:
     parser.add_argument(
         "--reference",
         type=Path,
-        help="optional extracted canonical sample directory for transport hash comparison",
+        help="another verified working sample directory; otherwise the bundled baseline hashes are required",
     )
     args = parser.parse_args()
 

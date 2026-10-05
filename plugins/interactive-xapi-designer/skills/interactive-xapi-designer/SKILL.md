@@ -14,6 +14,8 @@ Consult the live pages before substantial work because their options and integra
 
 ## One-shot default
 
+For every SLS integration, first read [references/working-sls-baseline.md](references/working-sls-baseline.md). Run `scripts/prepare_sls_transport.py OUTPUT_FOLDER` to install the bundled user-confirmed working transport without editing it. Use `--refresh` to verify the exact canonical live ZIP against the pinned reference. Preserve vendor bytes, load order, launch identity, and the working save lifecycle; change domain payloads and presentation in application code only. A real answer check/completion must request its save while the frame is active. Never make useful reporting depend on a separate report button or page exit.
+
 Complete the full design → instrumentation → verification → packaging loop in one turn whenever the user supplies enough learning intent or an existing interactive. Infer ordinary details, inspect the real interaction model, and do not make the user iteratively request score repair, item analytics, misconception explanations, or a useful teacher view.
 
 For any scored quiz, sort, classification, matching task, or multi-item activity, read [references/one-shot-diagnostic-analytics.md](references/one-shot-diagnostic-analytics.md) before implementation. Treat its acceptance contract as the default definition of done.

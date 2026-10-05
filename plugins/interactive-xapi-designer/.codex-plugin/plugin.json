@@ -1,6 +1,6 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Build compact, accessible SLS interactives with verified scoring, meaningful action histories, and targeted misconception feedback.",
   "author": {
     "name": "lookang",

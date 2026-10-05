@@ -17,3 +17,6 @@ desktop.ini
 # build-famath-interactives bundles the proven SLS xAPI sample as a skill asset. Its build script refuses
 # to run without it, so this archive is source, not a temporary artifact.
 !build-famath-interactives/assets/**/*.zip
+
+# Pinned public SLS reference is an offline source asset.
+!plugins/interactive-xapi-designer/skills/interactive-xapi-designer/assets/sls-working-reference.zip

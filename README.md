@@ -10,6 +10,8 @@ This repository contains Codex and Claude Code skills and installable plugins fo
 
 [`interactive-xapi-designer`](plugins/interactive-xapi-designer/) turns a learning goal or existing interactive into a compact, accessible SLS-ready package in one pass, with a 450px first-viewport design, verified scoring, meaningful action history, explained misconceptions, learner next steps, and targeted teaching moves. It uses the [SLS Prompt Generator and Interactive Prompt Library](https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html) together with the [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) as the maintained basis for its workflow.
 
+Version 0.2.3 bundles the exact user-confirmed SLS sample and a checksum-verified preparation helper. Preserve its xAPI libraries byte for byte; adapt domain payloads and application check handlers. Reports save at the active completion action, with first/latest results and support evidence kept distinct.
+
 The plugin plans evidence before tracking, distinguishes standard timeline integration from custom semantic instrumentation, and verifies completion through a local mock LRS. For scored activities, it requires stable item evidence, authoritative scoring, completion fallback capture, misconception explanations, and useful SLS-visible teacher feedback. It also covers accessible interaction design, local asset packaging, true 3D verification, state restoration, privacy, and SLS-ready ZIP delivery.
 
 Naming convention:
