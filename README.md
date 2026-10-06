@@ -10,7 +10,7 @@ This repository contains Codex and Claude Code skills and installable plugins fo
 
 [`interactive-xapi-designer`](plugins/interactive-xapi-designer/) builds fresh SLS interactives or preserves existing HTML/ZIP activities while adding verified scoring, meaningful action history, supported misconception explanations and learner/teacher reports. Fresh builds follow the 450px Prompt Library design; existing content defaults to minimal-change integration. It uses the [SLS Prompt Generator and Interactive Prompt Library](https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html) together with the [SLS xAPI Integrator Agent](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) as the maintained basis for its workflow.
 
-Version 0.3.3 keeps the same plugin identity and supports three scopes: **Integrate only** (default for existing HTML/ZIP), **Integrate and improve** (requested targeted changes), and **Build or redesign** (default for fresh requests). Preserve existing interfaces, content and learning logic; apply full Prompt Library design rules to fresh builds and explicit redesigns only. The listing starters are kept within the platform's 128-character limit.
+Version 0.3.4 keeps the same plugin identity and supports three scopes: **Integrate only** (default for existing HTML/ZIP), **Integrate and improve** (requested targeted changes), and **Build or redesign** (default for fresh requests). Preserve existing interfaces, content and learning logic; apply full Prompt Library design rules to fresh builds and explicit redesigns only. The listing starters are kept within the platform's 128-character limit. The downloadable plugin archive includes the pinned SLS reference as regular files, so it can be uploaded to Claude without nested ZIPs.
 
 The directory listing uses the subtitle **Build SLS activities with xAPI**, the **Developer Tools** category and a public [privacy policy](plugins/interactive-xapi-designer/PRIVACY.md). It describes a teacher-facing HTML/ZIP authoring toolkit, with no publisher-operated MCP server.
 
@@ -56,7 +56,7 @@ codex plugin marketplace upgrade lookang-codex-skills
 codex plugin add interactive-xapi-designer@lookang-codex-skills
 ```
 
-The same plugin is also available as [`dist/interactive-xapi-designer.zip`](dist/interactive-xapi-designer.zip) for inspection, archival, or manual distribution.
+The same plugin is also available as [`dist/interactive-xapi-designer.zip`](dist/interactive-xapi-designer.zip) for inspection, archival, manual distribution, or upload to Claude. Rebuild it from the canonical plugin folder with `python scripts/package_interactive_xapi_designer.py`; verify source-to-archive identity and the published checksum with `python scripts/package_interactive_xapi_designer.py --check`.
 
 ## Install the plugin in Claude Code
 

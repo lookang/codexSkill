@@ -1,0 +1,8 @@
+xAPI + AI Integration Summary
+-----------------------------
+Original file: countable-nouns-are-nouns-that-can-be-counted-with-pictures-replacements-by-acp.zip
+Base mode: timeline
+AI used: no
+AI provider: openai
+AI model: gpt-5.3-chat-latest
+AI status: not_requested
