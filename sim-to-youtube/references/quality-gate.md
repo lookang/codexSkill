@@ -9,6 +9,17 @@
 - No black segments, frozen-render faults, truncated audio, or broken final frame.
 - Audio is intelligible and not clipped.
 
+## House checks
+
+- Hook lands in the first 5 s; length matches the brief (short demo vs ~15 min deep dive).
+- Kokoro `am_michael` narration only; no trace of the original voice.
+- Footage full-frame; no letterbox/border; establishing shots before zooms.
+- No burned-in subtitles; SRT readable (digits, units) and matches the final cut.
+- Every number, label and duration in narration, cards, thumbnail and kit verified against full-resolution frames.
+- Privacy: no student names, emails, other staff names, file dialogs, or the owner's name (unless approved).
+- Deliverables beside the raw footage; output MP4 modified time is fresh and its duration matches `plan.json`.
+- `scripts/verify_tutorial_video.py <mp4>` passes; a blank/frozen-frame sweep (frame std-dev every 1 s) finds none.
+
 ## Synchronization
 
 - Each instruction names the visible target before the cursor acts.
@@ -16,6 +27,8 @@
 - Cursor travel is visible and purposeful.
 - The result remains on screen long enough to verify.
 - Captions follow the final audio and do not jump early.
+- Every highlight box passes `sync_check.py` (no DROP); cards/boxes end with their sentence.
+- Repeated-word anchors audited (see sync-and-overlays.md).
 
 ## Pedagogy
 
