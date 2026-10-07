@@ -1,5 +1,9 @@
 # Teaching Caption System
 
+**House rule:** no verbatim subtitles burned into the video - the `.srt` is uploaded to YouTube instead (see
+youtube-upload-package.md). The teaching signposts below (step tags, chapter tags, formula cards, stamps) are part of
+the picture and are encouraged; keep them short and synced (sync-and-overlays.md).
+
 ## Purpose
 
 Teaching captions show structure and attention. They are not a verbatim subtitle track.
@@ -52,4 +56,4 @@ Use three layers:
 }
 ```
 
-YouTube automatic captions may coexist with teaching captions. Burned-in teaching captions should remain useful even when automatic subtitles are turned off.
+Teaching signposts must remain useful with YouTube subtitles on or off, and must not sit where YouTube draws subtitles (bottom ~15%) for long periods.

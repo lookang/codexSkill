@@ -33,12 +33,11 @@ Naming convention:
 ## Skills
 
 - [`build-famath-interactives`](build-famath-interactives/) builds, extends, regenerates, packages, and validates FAMath formative mathematics interactives from syllabus learning objectives, with concrete-pictorial-abstract models, misconception-first tutorials, adaptive difficulty, challenge levels, and SLS xAPI packages.
-- [`sim-to-youtube`](sim-to-youtube/) turns science simulations into classroom-ready tutorial video packages, including pedagogy checks, screen-recorded walkthroughs, cursor choreography, readable overlays, narration, captions, thumbnails, and YouTube metadata.
+- [`sim-to-youtube`](sim-to-youtube/) turns simulations, websites, SLS workflows and your own screen recordings into engaging, verified YouTube tutorials: WebEJS source fixes, self-recorded or edited walkthroughs with a teaching cursor, Kokoro narration, HyperFrames motion graphics synced word-by-word and checked against the footage, privacy blurring of student names, SRT, thumbnail, and a YouTube kit with chapters, Problems and Quizzes. It replaces `simulation-youtube-tutorial` and `websitesim-to-youtube`.
+- `simulation-youtube-tutorial` and `websitesim-to-youtube` remain only as redirect stubs to `sim-to-youtube` so existing installs keep working.
 - [`sls-community-reviewer`](sls-community-reviewer/) reviews SLS Community Gallery modules awaiting approval.
 - [`sls-dev-module-transfer`](sls-dev-module-transfer/) transfers MOE SLS production modules into DEV draft modules while preserving rich formatting, response scaffolds, quiz settings, tags, and saved state.
 - [`sls-finalize-community-module`](sls-finalize-community-module/) is a full guarded SLS authoring skill with a reproducible [`playWright`](sls-finalize-community-module/playWright/) package for curriculum and question tagging, meaningful page breaks, ACP practice interactives, featured images, gamification, credits, permissions, workflow recording, and reopen verification.
-- [`simulation-youtube-tutorial`](simulation-youtube-tutorial/) creates HD YouTube tutorials from interactive web simulations, with highlighted cursor walkthroughs, Kokoro narration, captions, thumbnails, metadata, and verification.
-- [`websitesim-to-youtube`](websitesim-to-youtube/) turns live websites, browser apps, and simulations into narrated tutorial MP4s with human-looking cursor actions, numbered teaching captions, narration-first synchronization, correction takes, and final QA.
 
 ## Install the plugin in Codex
 

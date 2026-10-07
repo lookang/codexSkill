@@ -1,7 +1,7 @@
 interface:
   display_name: "Sim to YouTube"
-  short_description: "Improve WebEJS sims and turn them into lesson videos."
-  default_prompt: "Use $sim-to-youtube to review this simulation, improve the source if needed, and create a narrated YouTube-ready lesson package."
+  short_description: "Turn sims, websites and screen recordings into engaging, verified YouTube tutorials."
+  default_prompt: "Use $sim-to-youtube to turn this simulation or recording into an engaging YouTube tutorial: Kokoro am_michael narration, synced motion graphics, privacy blur, SRT, thumbnail and a full YouTube kit with Problems and Quizzes."
 
 policy:
   allow_implicit_invocation: true
