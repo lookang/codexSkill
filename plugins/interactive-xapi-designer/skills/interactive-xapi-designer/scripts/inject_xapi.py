@@ -10,12 +10,13 @@ import json
 from pathlib import Path
 import re
 import shutil
-import stat
-import subprocess
 import sys
 import tempfile
 from urllib.parse import urlsplit
 import zipfile
+
+from prepare_sls_transport import prepare_transport
+from zip_safety import extract_zip_safely
 
 
 class InspectHTML(HTMLParser):
@@ -71,18 +72,7 @@ def unpack(source, stage):
         (stage / 'index.html').write_bytes(source.read_bytes())
     elif source.suffix.lower() == '.zip':
         with zipfile.ZipFile(source) as archive:
-            members = archive.infolist()
-            if len(members) > 10000 or sum(m.file_size for m in members) > 200 * 1024 * 1024:
-                raise ValueError('Package exceeds helper limits; inspect and package it explicitly.')
-            seen = set()
-            for member in members:
-                name = member.filename
-                if '\\' in name or ':' in name or name.startswith('/') or '..' in Path(name).parts:
-                    raise ValueError('Unsafe ZIP path: ' + name)
-                if name in seen or stat.S_ISLNK(member.external_attr >> 16):
-                    raise ValueError('Duplicate path or symlink in ZIP: ' + name)
-                seen.add(name)
-            archive.extractall(stage)
+            extract_zip_safely(archive, stage)
     else:
         raise ValueError('Supply an HTML file, ZIP or extracted folder.')
     if not (stage / 'index.html').is_file():
@@ -122,10 +112,7 @@ def main():
             for name in ('sls-payload-adapter.js', 'SLS-PRESERVATION.json', 'SLS-BASELINE.json'):
                 if (stage / name).exists():
                     raise ValueError('Reserved integration filename already exists: ' + name)
-            helper = Path(__file__).with_name('prepare_sls_transport.py')
-            result = subprocess.run([sys.executable, str(helper), str(stage)], capture_output=True, text=True)
-            if result.returncode:
-                raise ValueError(result.stderr.strip() or result.stdout.strip())
+            prepare_transport(stage)
             vendor = '\n<script src="lib/xapiwrapper.min.js"></script>\n<script src="lib/xAPI.js"></script>\n'
             hook = '\n<script src="sls-payload-adapter.js"></script>\n'
             revised = text[:html.body_end] + hook + text[html.body_end:]

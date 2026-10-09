@@ -14,6 +14,8 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from zip_safety import extract_zip_safely
+
 
 TEXT_SUFFIXES = {".html", ".js", ".css", ".json", ".md", ".txt"}
 REQUIRED_PAYLOAD_TERMS = (
@@ -44,10 +46,7 @@ def extract_input(source: Path, target: Path) -> Path:
     if source.suffix.lower() != ".zip":
         raise ValueError("Input must be an extracted package directory or a .zip file.")
     with zipfile.ZipFile(source) as archive:
-        names = archive.namelist()
-        if any(name.startswith("/") or ".." in Path(name).parts for name in names):
-            raise ValueError("ZIP contains an unsafe path.")
-        archive.extractall(target)
+        extract_zip_safely(archive, target)
     return target
 
 

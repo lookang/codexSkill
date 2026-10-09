@@ -1,15 +1,12 @@
 #!/usr/bin/env python3
-"""Reproduce or verify the pinned public SLS transport without modifying it."""
+"""Reproduce or verify the pinned bundled SLS transport without network access."""
+
 import argparse
 import hashlib
-import io
 import json
 from pathlib import Path
-import urllib.request
-import zipfile
 
-URL = "https://iwant2study.moe.edu.sg/lookangejss/appXapiIntegratorAgent/api/samples/timeline/scorable_newTab_timeline_countable-nouns-are-nouns-that-can-be-counted-with-pictures-replacements-by-acp_plugin2.zip"
-ZIP_SHA = "16f4d7e700d032af5be801c273425b964ea4dd598872e6efdae9ceb989e73d99"
+
 FILES = {
     "lib/xAPI.js": "ba353b8d33f9bfe6e2a93e797e821a3989390186708c58e984812182c951e030",
     "lib/xapiwrapper.min.js": "ca1955f8387cc9167b3bf3f3813a0a7ed33279f9c7282b5c122f079e51632ac5",
@@ -27,83 +24,118 @@ BUNDLED_FILES = {
 }
 
 
-def digest(data):
+def digest(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def read_bundled_reference(directory):
+def read_bundled_reference(directory: Path) -> dict[str, bytes]:
+    paths = list(directory.rglob("*"))
+    if any(path.is_symlink() for path in paths):
+        raise ValueError("Bundled reference must not contain symbolic links.")
     actual = {
         path.relative_to(directory).as_posix()
-        for path in directory.rglob("*")
+        for path in paths
         if path.is_file()
     }
     expected = set(BUNDLED_FILES)
     if actual != expected:
         missing = sorted(expected - actual)
         extra = sorted(actual - expected)
-        raise SystemExit(f"Bundled reference inventory changed; missing={missing}, extra={extra}")
+        raise ValueError(f"Bundled reference inventory changed; missing={missing}, extra={extra}")
     contents = {
         name: (directory / Path(*name.split("/"))).read_bytes()
         for name in BUNDLED_FILES
     }
+    for name, expected_hash in BUNDLED_FILES.items():
+        if digest(contents[name]) != expected_hash:
+            raise ValueError("Bundled reference checksum mismatch: " + name)
     return contents
 
 
-def read_reference_archive(data):
-    with zipfile.ZipFile(io.BytesIO(data)) as archive:
-        actual = {
-            info.filename
-            for info in archive.infolist()
-            if not info.is_dir()
-        }
-        expected = set(BUNDLED_FILES)
-        if actual != expected:
-            missing = sorted(expected - actual)
-            extra = sorted(actual - expected)
-            raise SystemExit(f"Reference archive inventory changed; missing={missing}, extra={extra}")
-        return {name: archive.read(name) for name in BUNDLED_FILES}
+def _ensure_directory(root: Path, parts: tuple[str, ...]) -> Path:
+    current = root
+    for part in parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValueError(f"Refusing to write through a symbolic link: {current}")
+        current.mkdir(exist_ok=True)
+    return current
 
 
-def verify_reference_files(contents):
-    for name, expected in BUNDLED_FILES.items():
-        if digest(contents[name]) != expected:
-            raise SystemExit("Reference member checksum mismatch: " + name)
+def prepare_transport(output: Path, *, verify_only: bool = False) -> None:
+    """Copy the hash-pinned bundled transport without network or overwrite access."""
+    output = Path(output)
+    if output.is_symlink():
+        raise ValueError("Output directory must not be a symbolic link.")
+    if verify_only:
+        if not output.is_dir():
+            raise ValueError("Verification output path must be an existing directory.")
+    else:
+        output.mkdir(parents=True, exist_ok=True)
+    if not output.is_dir():
+        raise ValueError("Output path must be a directory.")
+    output = output.resolve()
+
+    bundled = Path(__file__).resolve().parents[1] / "assets" / "sls-working-reference"
+    contents = read_bundled_reference(bundled)
+    for name in FILES:
+        destination = output / Path(*name.split("/"))
+        parent_parts = tuple(name.split("/")[:-1])
+        if verify_only:
+            parent = output
+            for part in parent_parts:
+                parent = parent / part
+                if parent.is_symlink():
+                    raise ValueError("Refusing to use a symbolic link: " + part)
+                if not parent.is_dir():
+                    raise ValueError("Missing transport directory: " + part)
+        else:
+            _ensure_directory(output, parent_parts)
+        if destination.is_symlink():
+            raise ValueError("Refusing to use a symbolic link: " + name)
+        if destination.exists():
+            if not destination.is_file() or destination.read_bytes() != contents[name]:
+                raise ValueError("Existing transport differs; preserve the user's working implementation: " + name)
+        elif verify_only:
+            raise ValueError("Missing vendor file: " + name)
+
+    manifest = {
+        "reference": "bundled-sls-working-reference",
+        "referenceFilesSHA256": BUNDLED_FILES,
+        "vendorSHA256": FILES,
+        "verified": "exact-bytes",
+        "saveLifecycle": "active-check-completion-plus-recovery",
+    }
+    manifest_bytes = (json.dumps(manifest, indent=2) + "\n").encode("utf-8")
+    baseline = output / "SLS-BASELINE.json"
+    if baseline.is_symlink():
+        raise ValueError("Refusing to use a symbolic link: SLS-BASELINE.json")
+    if baseline.exists() and baseline.read_bytes() != manifest_bytes:
+        raise ValueError("Existing SLS-BASELINE.json differs; preserve the user's file.")
+
+    if not verify_only:
+        for name in FILES:
+            destination = output / Path(*name.split("/"))
+            if not destination.exists():
+                with destination.open("xb") as stream:
+                    stream.write(contents[name])
+        if not baseline.exists():
+            with baseline.open("xb") as stream:
+                stream.write(manifest_bytes)
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", type=Path)
-    parser.add_argument("--refresh", action="store_true", help="Verify the exact live sample against the pinned ZIP checksum")
     parser.add_argument("--verify-only", action="store_true", help="Verify existing vendor files without writing")
     args = parser.parse_args()
-    bundled = Path(__file__).resolve().parents[1] / "assets" / "sls-working-reference"
-    if args.refresh:
-        with urllib.request.urlopen(URL, timeout=45) as response:
-            data = response.read(4 * 1024 * 1024 + 1)
-        if digest(data) != ZIP_SHA:
-            raise SystemExit("Reference checksum changed; inspect and confirm the baseline. No files written.")
-        contents = read_reference_archive(data)
-    else:
-        contents = read_bundled_reference(bundled)
-    verify_reference_files(contents)
-    for name, expected in FILES.items():
-        destination = args.output / name
-        if args.verify_only and not destination.is_file():
-            raise SystemExit("Missing vendor file: " + name)
-        if destination.exists() and destination.read_bytes() != contents[name]:
-            raise SystemExit("Existing transport differs; preserve the user's working implementation: " + name)
-    if not args.verify_only:
-        for name, content in contents.items():
-            destination = args.output / name
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            destination.write_bytes(content)
-        (args.output / "SLS-BASELINE.json").write_text(json.dumps({
-            "referenceURL": URL, "zipSHA256": ZIP_SHA,
-            "vendorSHA256": FILES, "verified": "exact-bytes",
-            "saveLifecycle": "active-check-completion-plus-recovery",
-        }, indent=2) + "\n", encoding="utf-8")
-    print("Working SLS reference verified; vendor bytes unchanged.")
+    try:
+        prepare_transport(args.output, verify_only=args.verify_only)
+    except (OSError, ValueError) as exc:
+        parser.error(str(exc))
+    print("Bundled SLS reference verified; vendor bytes unchanged and no network request was made.")
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

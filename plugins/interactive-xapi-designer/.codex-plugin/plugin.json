@@ -1,6 +1,6 @@
 {
   "name": "interactive-xapi-designer",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
   "author": {
     "name": "lookang",
