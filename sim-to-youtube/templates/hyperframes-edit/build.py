@@ -11,6 +11,11 @@ import re
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
+try:                      # optional cute cast layer: copy ../cast/cast.py + cute_sfx.py next to this file
+    import cast as CAST
+    CAST.set_theme("navy")
+except ImportError:
+    CAST = None
 HF = HERE.parent / "hf"
 WORDS = json.loads((HERE / "tts" / "words.json").read_text(encoding="utf-8"))
 MARKS = {"fps": 30, "marks": []}
@@ -44,7 +49,7 @@ def dur(cue):
 
 
 def S(**k):
-    for key in ("beats", "cams", "hl", "hlines", "cards", "stamps", "sfx", "banners", "counts"):
+    for key in ("beats", "cams", "hl", "hlines", "cards", "stamps", "sfx", "banners", "counts", "cameos"):
         k.setdefault(key, [])
     return k
 
@@ -86,6 +91,7 @@ SCENES = [
       hl=[(w("mon_1", "One"), ("w", "mon_2", "That's"), 462, 448, 260, 92, "1 INTERACTION · 73 s · 0/4")],
       stamps=[(w("mon_1", "zero"), "0 / 4", RED)],
       cards=[(w("mon_2", "class"), ("end",), '28 STUDENTS × 1 BY 1 = <span class="r">THE WHOLE LESSON</span>')],
+      cameos=[(w("mon_1", "zero"), w("mon_2", "class"), [(w("mon_1", "zero"), "worry")])],
       sfx=[(w("mon_1", "zero"), "buzz")]),
     S(id="all", kind="foot", chapter="VIEW ALL RESPONSES", beats=[("all_1", 88, 108), ("all_2", 108, 124)],
       cams=[(0, FULL, 0)],
@@ -118,6 +124,7 @@ SCENES = [
              (w("err_3", "Error"), ("w", "warn", "Notice"), 'FIELD + CURRENT + DIRECTION → <span class="y">SIZE & DIRECTION OF F</span>'),
              (w("warn", "Notice"), ("end",), '⚠ GENERATIVE AI · <span class="y">REVIEW BEFORE YOU ACT</span>')],
       stamps=[(w("err_1", "zero."), "F = 0 mN", RED)],
+      cameos=[(w("warn", "Notice"), ("end",), [(w("warn", "review"), "think")])],
       sfx=[(w("err_1", "Error"), "hit"), (w("err_2", "Error"), "hit"), (w("err_3", "Error"), "hit"), (w("err_1", "zero."), "buzz")]),
     S(id="fb", kind="foot", chapter="CLOSE THE LOOP", beats=[("fb_1", 330, 342), ("fb_2", 342, 352)],
       cams=[(0, MODAL, 0)],
@@ -126,6 +133,8 @@ SCENES = [
           (w("fb_2", "Tick"), w("fb_2", "press"), 344, 664, 186, 30, "NOTIFY"),
           (w("fb_2", "press"), w("fb_2", "I"), 866, 714, 182, 52, "SEND")],
       cards=[(w("fb_2", "lands"), ("end",), 'STUDENT SEES IT IN THE <span class="y">🔔 NOTIFICATION BELL</span>')],
+      cameos=[(w("fb_2", "lands"), ("end", -0.2), [(w("fb_2", "bell"), "love"), (w("fb_2", "loop."), "say", "That's the loop!")],
+               dict(corner="br", who="teach", look=("#f3c9a5", "#3b2a20", "#1f8fff", "short")))],
       sfx=[(w("fb_2", "press"), "pop")]),
     G("teach", ["teach"]),
     G("close", ["close_1"]),
@@ -237,6 +246,8 @@ def A(sc, a):
         return s + a
     if a[0] == "end":
         return s + sc["dur"] + (a[1] if len(a) > 1 else 0)
+    if a[0] == "+":                                   # ("+", anchor, seconds): an anchor shifted in time
+        return A(sc, a[1]) + a[2]
     if a[0] == "w":
         cue = a[1]
         st = dict(sc["vo"])[cue]
@@ -269,6 +280,7 @@ try:
 except Exception:
     SYNC = {}
 HL_DUMP = []
+CAMEOS = []            # (scene, t0, t1, screen rect) for the overlap check
 
 
 def sent_end(sc, a):
@@ -355,7 +367,9 @@ def gfx_html(sc):
                 ("3", "COMBINE B, I, F", "Fleming's left-hand rule")]
         cards = "".join(f'<div id="te-{k}" class="tip"><div class="snum">{n}</div><div class="tt">{a}</div><div class="ts">{b}</div></div>'
                         for k, (n, a, b) in enumerate(tips))
-        return f'<div class="gstack"><div id="te-h" class="pill big">NEXT LESSON, FROM THE DATA</div><div class="tips">{cards}</div></div>'
+        cast = (CAST.actor_html("teach", "te-t", 40, 690, 250, "#f3c9a5", "#3b2a20", "#1f8fff", "short")
+                + CAST.actor_html("bot", "te-b", 1650, 740, 230)) if CAST else ""
+        return f'<div class="gstack"><div id="te-h" class="pill big">NEXT LESSON, FROM THE DATA</div><div class="tips">{cards}</div></div>{cast}'
     if i == "close":
         return '''<div class="gstack">
           <div class="flow"><div id="cl-0" class="fnode">xAPI <span class="y">captures the process</span></div><div class="farrow">➜</div>
@@ -411,6 +425,16 @@ def gfx_js(sc):
         for k, (cue, wd) in enumerate([("teach", "Start"), ("teach", "Then"), ("teach", "Finally,")]):
             js.append(f'tl.fromTo("#te-{k}",{{opacity:0,y:90,scale:.8}},{{opacity:1,y:0,scale:1,duration:.4,{pop}}},{W(cue, wd)});')
             sc["sfx"].append((A(sc, ("w", cue, wd)) - s, "pop"))
+        if CAST:      # cutaway cast: the teacher presents each tip, Bit cheers
+            e = s + sc["dur"]
+            js += [f'enter("#te-t",{T(0.3)},-300); idle("#te-t",{T(1.1)},{fmt(e - 0.2)},5);',
+                   f'enter("#te-b",{T(0.5)},300); idle("#te-b",{T(1.3)},{fmt(e - 0.2)},6);']
+            for k, wd in enumerate(["Start", "Then", "Finally,"]):
+                t = W("teach", wd)
+                js.append(f'raise("#te-t",{t},".armR",115,1.6); mood("#te-t",{t},"h","n"); hop("#te-b",{t}+0.15,26);')
+                sc["sfx"].append((A(sc, ("w", "teach", wd)) - s + 0.15, "boing2"))
+            js.append(f'mood("#te-b",{W("teach", "Finally,")},"h","o"); wave("#te-b",{W("teach", "combine")},".armL",3);')
+            sc["sfx"] += [(0.3, "whoop"), (A(sc, ("w", "teach", "combine")) - s, "sparkle")]
     elif i == "close":
         for k, wd in enumerate(["captures", "finds", "you"]):
             js.append(f'tl.fromTo("#cl-{k}",{{opacity:0,y:40,scale:.7}},{{opacity:1,y:0,scale:1,duration:.35,{pop}}},{W("close_1", wd)});')
@@ -433,7 +457,7 @@ def build():
     for sc in SCENES:
         s, d = sc["start"], sc["dur"]
         if sc["kind"] == "gfx":
-            gfx.append(f'<div id="g-{sc["id"]}" class="clip gscene" data-start="{fmt(s)}" data-duration="{fmt(d)}" data-track-index="3">{gfx_html(sc)}</div>')
+            gfx.append(f'<div id="g-{sc["id"]}" class="clip gscene" data-start="{fmt(s)}" data-duration="{fmt(d)}" data-track-index="3">{CAST.doodles() if CAST else ""}{gfx_html(sc)}</div>')
             js += gfx_js(sc)
             js.append(f'tl.set("#stage",{{opacity:0}},{fmt(s)});')
             continue
@@ -519,6 +543,19 @@ def build():
             scr.append(f'<div id="{sid}" class="clip stampw" data-start="{fmt(t0)}" data-duration="{fmt(min(2.0, s + d - t0))}" data-track-index="5"><div class="stamp" style="color:{col};border-color:{col}">{esc(text)}</div></div>')
             js.append(f'tl.fromTo("#{sid} .stamp",{{scale:3,opacity:0,rotation:-16}},{{scale:1,opacity:1,rotation:-6,duration:.22,ease:"power4.in"}},{fmt(t0)});')
             js.append(shake(t0)); js.append(flash(t0, 0.5))
+        # cute cast cameos (templates/cast): a character peeks in from a corner and reacts on narration words
+        for k, cm in enumerate(sc["cameos"]):
+            if CAST is None:
+                raise SystemExit("cameos need cast.py next to build.py (copy it from templates/cast/)")
+            a0, a1, beats = cm[:3]
+            opt = dict(cm[3]) if len(cm) > 3 else {}
+            t0, t1 = A(sc, a0) - 0.35, A(sc, a1)
+            bt = [(A(sc, b[0]),) + tuple(b[1:]) for b in beats]
+            htm, cjs, csfx, rect = CAST.cameo(f"cm-{sc['id']}-{k}", t0, t1, bt, fmt=fmt, **opt)
+            scr.append(htm)
+            js += cjs
+            sc["sfx"] += [(t - s, name) for t, name in csfx]
+            CAMEOS.append((sc, t0, t1, rect))
         # click ripples from the recording
         for m in MARKS["marks"]:
             if m["name"] != "click":
@@ -539,6 +576,7 @@ def build():
                 sc["sfx"].append((t0 - s, "click"))
     for sc in SCENES[1:]:
         js.append(flash(sc["start"], 0.45, 0.18))
+    cameo_check()
 
     # captions
     caps = []
@@ -576,7 +614,8 @@ def build():
     js.append(f'tl.fromTo("#blobA",{{x:-150,y:-80}},{{x:150,y:60,duration:{TOTAL / 4:.2f},yoyo:true,repeat:3,ease:"sine.inOut"}},0);')
     js.append(f'tl.fromTo("#blobB",{{x:150,y:80}},{{x:-160,y:-50,duration:{TOTAL / 3:.2f},yoyo:true,repeat:2,ease:"sine.inOut"}},0);')
     page = (TEMPLATE.replace("%TOTAL%", fmt(TOTAL)).replace("%VIDS%", "\n".join(vids)).replace("%CAM%", "\n".join(cam_layer))
-            .replace("%SCR%", "\n".join(scr)).replace("%GFX%", "\n".join(gfx)).replace("%CAPS%", "\n".join(caps)).replace("%JS%", "\n".join(js)))
+            .replace("%SCR%", "\n".join(scr)).replace("%GFX%", "\n".join(gfx)).replace("%CAPS%", "\n".join(caps)).replace("%JS%", "\n".join(js))
+            .replace("%CASTCSS%", CAST.cast_css() if CAST else "").replace("%CASTJS%", CAST.CAST_JS if CAST else ""))
     (HF / "index.html").write_text(page, encoding="utf-8")
 
     plan = dict(total=TOTAL, vo=[], sfx=[], scenes=[])
@@ -592,6 +631,45 @@ def build():
         rates = ",".join(f'{c["rate"]:.2f}' for c in sc.get("clips", []))
         print(f"{sc['start']:7.2f} +{sc['dur']:6.2f}  {sc['id']:7s} {rates}")
     print(f"TOTAL {TOTAL:.2f}s  videos {n}")
+
+
+def cam_at(sc, t):
+    """camera (tx, ty, scale) in force at absolute time t (end state of the last move started before t)"""
+    cur = cam_xy(FULL)
+    for a, rect, _ in sc["cams"]:
+        if A(sc, a) <= t + 1e-6:
+            cur = cam_xy(rect)
+    return cur
+
+
+def _hit(r1, r2, pad=12):
+    return not (r1[0] + r1[2] + pad <= r2[0] or r2[0] + r2[2] + pad <= r1[0]
+                or r1[1] + r1[3] + pad <= r2[1] or r2[1] + r2[3] + pad <= r1[1])
+
+
+def cameo_check():
+    """A cameo must never cover a highlight box, card, stamp, banner or chapter tag that is on screen with it."""
+    bad = 0
+    for sc, c0, c1, rect in CAMEOS:
+        busy = []
+        for a0, a1, x, y, w_, h, label in sc["hl"]:
+            t0, t1 = tight(sc, a0, a1)
+            tx, ty, k = cam_at(sc, t0)
+            busy.append((t0, t1, (x * k + tx, y * k + ty - 60, w_ * k, h * k + 60), f"highlight {label!r}"))
+        for a0, a1, _ in sc["cards"]:
+            t0, t1 = tight(sc, a0, a1)
+            busy.append((t0, t1, (880, 110, 1000, 130), "card"))
+        for a, text, _ in sc["stamps"]:
+            busy.append((A(sc, a), A(sc, a) + 2.0, (560, 330, 800, 200), f"stamp {text!r}"))
+        for a, text, _ in sc["banners"]:
+            busy.append((A(sc, a), A(sc, a) + 3.0, (160, 700, 1600, 220), f"banner {text!r}"))
+        if sc.get("chapter"):
+            busy.append((sc["start"], sc["start"] + 4.5, (0, 990, 1100, 80), "chapter tag"))
+        for t0, t1, r, what in busy:
+            if t0 < c1 and c0 < t1 and _hit(rect, r):
+                bad += 1
+                print(f"CAMEO OVERLAP {sc['id']} {c0:.2f}-{c1:.2f}: covers {what} ({t0:.2f}-{t1:.2f}) -> change corner/size or timing")
+    print(f"cameos {len(CAMEOS)}, overlaps {bad}")
 
 
 def shake(t):
@@ -698,6 +776,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #08102
 .fnode { display: block; font-size: 44px; padding: 8px 24px; border-radius: 18px; background: rgba(255,255,255,.1); border: 4px solid rgba(255,255,255,.35); }
 .fnode.hot { color: #111; background: #ffd21f; border-color: #ffd21f; }
 .farrow { display: block; font-size: 48px; color: #ffd21f; }
+%CASTCSS%
 .brand { position: absolute; left: 22px; bottom: 14px; font-family: "Body"; font-size: 20px; color: rgba(255,255,255,.6); }
 </style>
 </head>
@@ -719,6 +798,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #08102
 </div>
 <script>
 const tl = gsap.timeline({ paused: true });
+%CASTJS%
 %JS%
 window.__timelines["main"] = tl;
 </script>

@@ -12,6 +12,8 @@ The owner's test: "if the learner listens carefully and watches carefully, the v
 | Chapter tag | scene start | after 4.5 s |
 | Stamp | on its word, with shake + flash | after ~1.3-2 s |
 | Prediction countdown | after the question is asked | 3-2-1 at 0.5 s per beat, then the reveal |
+| Cast cameo (Bit / teacher) | slides in 0.35 s before its first reaction word | its leave anchor (usually the end of the next sentence or scene); never while a box, card or stamp shares its corner |
+| Cameo reaction / prop / speech bubble | on its word | after ~0.9-2.2 s, before the next reaction |
 
 Readability floor (from the earlier skills): short labels stay at least ~1.3 s; long phrases get ~0.18 s per word
 beyond six, capped around 6 s. Do not cover the active control, the graph at an evidence moment, or the cursor target.

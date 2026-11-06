@@ -47,6 +47,16 @@ YouTube (fast kinetic headlines, stamps, countdowns, synced pointers) - tuned do
   STEP captions, predict countdowns, teaching tip, end card credit only "© 2026 TTelosAI.com", never the owner's name,
   file-explorer dialogs blurred, footage full-frame (a bordered card "reduced the joy of watching").
 
+## "Will AI replace teachers?" explainer (graphics only, 13:38) and the cast layer
+
+- A research-paper explainer for teachers built entirely from HyperFrames scenes (no footage), phrase-cued to
+  Whisper word times. v2 added the robot Bit, a teacher cast with a different look per case study, a cutaway in
+  every section and 127 synthesized SFX cues; the owner's verdict: "it is great".
+- Lessons: 140 separate `<audio>` SFX clips crashed the Windows render at the audio stage -> pre-mix every SFX
+  into one bed; actors inside a `.card` use card-relative coordinates; props earlier in the DOM hide behind later
+  cards. The cast was then packaged as `templates/cast/` and tested on the Part 2 footage edit (3 cameos, 1 cutaway),
+  where the overlap check and the truth rule (no "Feedback sent!" on a demo that never sends) earned their place.
+
 ## Older patterns kept from the merged skills
 
 - AC/DC sorting sim tutorial (Playwright, 1366x768, Kokoro `af_heart` at 0.72-0.82 for young learners): visible
