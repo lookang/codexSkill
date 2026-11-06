@@ -171,6 +171,11 @@ def shimmer():
 FX = dict(boom=(boom, .9), hit=(hit, .8), pop=(pop, .45), zap=(zap, .35), tick=(tick, .4), boing=(boing, .5),
           snapfx=(snapfx, .8), buzz=(buzz, .5), shimmer=(shimmer, .3), flip=(lambda: whoosh(0.35) * 1.5, .25),
           ding=(chime, .4), whoosh=(lambda: whoosh(0.6), .35), click=(ui_click, .5))
+try:                    # cute cast SFX (templates/cast/cute_sfx.py): whoop, blip, bubble, sparkle, uhoh, tada, snore ...
+    from cute_sfx import CUTE
+    FX.update({k: v for k, v in CUTE.items() if k not in FX})
+except ImportError:
+    pass
 
 
 def sfx():

@@ -16,6 +16,9 @@ any line can be re-voiced and rebuilt. Templates: `templates/hyperframes-edit/` 
     tts/ (wav + words.json)   work/ (plan.json, mix.wav, video_master.mp4, refs.json, hl_*.json, contact sheets)
 ```
 
+For the cute cast layer, also copy `templates/cast/cast.py` and `cute_sfx.py` into `promo_build/`
+(see `references/cast-and-broll.md`).
+
 Initialise `hf/` with `npx hyperframes init` (or copy `hyperframes.json`/`package.json` from a previous project).
 Load the `hyperframes`, `hyperframes-core` and `hyperframes-animation` skills when available.
 
@@ -47,6 +50,8 @@ file's modified time and duration afterwards.
 - Overlay lists on a foot scene, all timed by **anchors**: `w(cue, word, n)` (the n-th occurrence of a word),
   `("src", seconds)` (a source time), a float (scene-local seconds) or `("end",)`.
   - `cams`: camera moves `(anchor, rect_in_source_px, tween_s)`; `FULL` / `PAGE` / `MODAL` presets.
+  - `cameos`: cast characters peeking in from a corner and reacting on words (`templates/cast/`); `build.py`
+    reports any cameo that would cover a box, card, stamp, banner or chapter tag.
   - `hl`: highlight boxes `(a0, a1, x, y, w, h, label)` with an animated pointer gliding to each.
   - `cards`: formula/explanation cards; `stamps`: big tilted words with shake + flash; `banners`; `counts`
     (prediction countdown on footage); `chapter` tag shown for the first 4.5 s of the scene; `sfx`.
@@ -67,5 +72,5 @@ dot -> cross and the force flips when the current reverses. Check stills at each
 ## Audio (`soundtrack.py`, `audio.py`, `master.py`)
 
 Synth bed (E minor, 120 BPM) with a riser into the title "drop", a calm breakdown under the teaching tips, SFX
-(pop, hit, boom, ding, buzz, whoosh, tick, shimmer) from the plan, music ducked ~7 dB under speech, mastered to
+(pop, hit, boom, ding, buzz, whoosh, tick, shimmer, plus the cute set from `cute_sfx.py` when present) from the plan, music ducked ~7 dB under speech, mastered to
 -16 LUFS / -1.5 dBTP. Update the two scene ids it references (`drop` scene and `calm` range) for each new video.

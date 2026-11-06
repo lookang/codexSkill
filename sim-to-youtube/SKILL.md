@@ -22,7 +22,7 @@ Every route then goes through the same production line:
 1. **Plan and script** -> `references/planning-and-narration.md`
 2. **Narration** (Kokoro + word timings) -> same file; template `templates/hyperframes-edit/tts.py`
 3. **Edit in HyperFrames** (HTML + GSAP -> MP4) -> `references/hyperframes-edit.md`, templates in `templates/hyperframes-edit/`
-4. **Sync and overlays** -> `references/sync-and-overlays.md`
+4. **Sync and overlays** -> `references/sync-and-overlays.md`; cute cast cameos and cutaway B-roll -> `references/cast-and-broll.md`, code in `templates/cast/`
 5. **Privacy pass** (Route C always; Route B when logged in) -> `references/privacy.md`
 6. **Package for YouTube** -> `references/youtube-upload-package.md`
 7. **Quality gate** -> `references/quality-gate.md`
@@ -45,6 +45,7 @@ These come from the channel owner's explicit feedback on recent videos. Apply th
 - A visible **cursor/pointer leads attention**: animated pointer glides to every highlight box; recorded cursor is large, high-contrast, with a click ripple.
 - **No burned-in subtitles.** YouTube shows the uploaded `.srt`. Short teaching signposts (chapter tags, step numbers, formula cards, stamps) are fine.
 - Exciting but honest motion graphics: kinetic headline chips, stamps with shake/flash, prediction countdowns, formula cards, animated diagrams of the concept, synthesized music bed ducked under the voice, SFX on key beats.
+- **Cute and animated** (owner: "more animated and cute, more interesting B-rolls and sound effects"): the robot **Bit** and a teacher cast react from a corner on key footage beats (worry at a wrong result, sparkle at a payoff), and illustrated cutaway scenes carry the ideas the footage cannot show, with cute synthesized SFX (boing, blip, bubble, sparkle, uh-oh, ta-da). Cameos never cover what is being taught. See `references/cast-and-broll.md`.
 
 **Sync (the difference between "good" and "great")**
 - Every pop-up appears **on its narration word** and leaves when **its sentence ends** (+0.7 s); never lingers to the end of the scene.
