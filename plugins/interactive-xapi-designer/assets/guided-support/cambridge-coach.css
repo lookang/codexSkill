@@ -1,0 +1,35 @@
+/* Coach mode (owned by Claude; prototype 2026-10-23). See cambridge-coach.js. */
+/* A base look for pages that do not style .button (X-310): zero specificity, so a page's own button style wins. */
+:where(.cc-toggle) { min-height: 44px; padding: 0 14px; border: 2px solid #6a3fb5; border-radius: 10px; background: #fff; color: #4b2a8a; font: 700 15px/1.2 system-ui, sans-serif; cursor: pointer; }
+.cc-toggle[aria-pressed="true"] { border-color: #6a3fb5 !important; background: #6a3fb5 !important; color: #fff !important; }
+.cc-panel { margin: 10px 0 0; padding: 10px 12px; border: 2px solid #6a3fb5; border-radius: 12px; background: #f6f1ff; color: #22163d; box-sizing: border-box; max-width: 100%; }
+.cc-panel[hidden] { display: none; }
+.cc-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: .86rem; }
+.cc-head strong { color: #4b2a8a; letter-spacing: .02em; }
+.cc-face { width: 22px; height: 22px; border-radius: 50%; background: #6a3fb5; box-shadow: inset 0 -4px 0 rgba(0, 0, 0, .18); flex: 0 0 auto; }
+.cc-panel.is-speaking .cc-face { animation: cc-talk .5s ease-in-out infinite alternate; }
+@keyframes cc-talk { from { transform: scale(1); } to { transform: scale(1.18); box-shadow: 0 0 0 5px rgba(106, 63, 181, .18); } }
+.cc-again { min-height: 32px; padding: 3px 10px; border: 1px solid #b9a3e0; border-radius: 999px; background: #fff; color: #4b2a8a; font: 700 .8rem/1.1 inherit; cursor: pointer; }
+.cc-voice { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; color: #4b2a8a; font-weight: 700; min-width: 0; }
+.cc-voice select { max-width: 13em; min-height: 32px; border: 1px solid #b9a3e0; border-radius: 8px; background: #fff; font: inherit; font-weight: 400; color: #22163d; }
+.cc-text { margin: 8px 0 0; font-size: 1rem; line-height: 1.45; }
+.cc-text:empty::before { content: "Listening…"; color: #7a6a99; }
+.cc-panel.is-paused { border-style: dashed; background: #faf8ff; }
+.cc-panel.is-paused .cc-text { color: #6b5d87; font-style: italic; }
+
+/* What the coach points at: yellow = look here, red = press or drag this (same meaning as Slow Solve). */
+.cc-press { outline: 3px solid #d62828 !important; outline-offset: 3px; border-radius: 8px; animation: cc-press 1.1s ease-in-out infinite; position: relative; z-index: 2; }
+@keyframes cc-press { 0%, 100% { box-shadow: 0 0 0 3px rgba(214, 40, 40, .5); } 50% { box-shadow: 0 0 0 8px rgba(214, 40, 40, .08); } }
+.cc-look { outline: 3px solid #f2b705 !important; outline-offset: 2px; border-radius: 8px; animation: cc-look 1s ease-in-out infinite; position: relative; z-index: 1; }
+@keyframes cc-look { 0%, 100% { box-shadow: 0 0 0 3px rgba(242, 183, 5, .55); } 50% { box-shadow: 0 0 0 7px rgba(242, 183, 5, .1); } }
+svg .cc-press { outline: none !important; stroke: #d62828 !important; stroke-width: 5px !important; filter: drop-shadow(0 0 3px #d62828) drop-shadow(0 0 7px rgba(214, 40, 40, .75)); animation: cc-svg 1.1s ease-in-out infinite; }
+svg .cc-look { outline: none !important; stroke: #f2b705 !important; stroke-width: 5px !important; filter: drop-shadow(0 0 3px #f2b705) drop-shadow(0 0 6px rgba(242, 183, 5, .7)); animation: cc-svg 1s ease-in-out infinite; }
+svg g.cc-press .body, svg g.cc-look .body { stroke: inherit; }
+@keyframes cc-svg { 50% { stroke-opacity: .35; } }
+@media (prefers-reduced-motion: reduce) {
+  .cc-press, .cc-look, svg .cc-press, svg .cc-look, .cc-panel.is-speaking .cc-face { animation: none; }
+}
+@media (max-width: 480px) {
+  .cc-voice { margin-left: 0; width: 100%; }
+  .cc-voice select { flex: 1 1 auto; max-width: none; }
+}
