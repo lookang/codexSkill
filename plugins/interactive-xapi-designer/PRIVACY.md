@@ -1,6 +1,6 @@
 # Interactive xAPI Designer privacy policy
 
-Publisher: **lookang (Lawrence Wee)**. Last updated: **5 October 2026**.
+Publisher: **lookang (Lawrence Wee)**. Last updated: **15 November 2026**.
 
 This policy describes the Interactive xAPI Designer plugin and the learning activities it helps users create. The publisher's source and support channel are at [lookang/codexSkill](https://github.com/lookang/codexSkill).
 
@@ -14,7 +14,7 @@ The plugin may use tools you authorise, such as file storage or a connected sour
 
 ## Data in generated learning activities
 
-An integrated activity can record checked responses, correctness and marks, first and latest answers, revisions, existing optional confidence, hints or worked-solution use, elapsed time, and relevant committed simulation settings and model results. The evidence depends on the activity and the authorised integration. A slider value alone is not treated as proof of learning achievement.
+An integrated activity can record checked responses, correctness and marks, first and latest answers, revisions, existing optional confidence, hints or worked-solution use, elapsed time, selected guided-support use, and relevant committed simulation settings and model results. Slow Solve use may record the step IDs visited. Coach use may record that the learner enabled it and bounded support-action categories. The default Coach speaks authored prompts through browser-provided speech synthesis; it does not request microphone access or record speech. The evidence depends on the activity and the authorised integration. A slider value alone is not treated as proof of learning achievement.
 
 When launched in SLS or another configured learning platform, the unchanged xAPI transport can send learning state and statements to the learning record endpoint supplied by that platform. Standard xAPI statements may include the learner identity supplied by the platform. The plugin instructs authors not to invent identities, copy launch credentials into diagnostic reports, or collect raw keystrokes or unrelated browser data. Local browser and mock-LRS checks should use synthetic data and an unauthenticated isolated browser context; live SLS checks require an explicit user request.
 

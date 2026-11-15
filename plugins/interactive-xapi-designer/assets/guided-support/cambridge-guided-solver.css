@@ -1,0 +1,77 @@
+/* Guided Slow Solve tutor (owned by Claude; see AGENTS.md). */
+
+/* Hide the pilot's generic step text until the guided text is in place. */
+body[data-gs-active] .solver-step:not([data-gs-ready]) { visibility: hidden; }
+.solver-step .gs-text { display: block; margin-top: 3px; }
+.solver-step .gs-text b { color: #b3261e; }
+
+/* Pulsing red box around the thing to look at or press. */
+.gs-focus {
+  outline: 3px solid #d62828 !important;
+  outline-offset: 3px;
+  border-radius: 8px;
+  animation: gs-pulse 1.1s ease-in-out infinite;
+  position: relative;
+  z-index: 2;
+}
+@keyframes gs-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(214, 40, 40, .55); }
+  50% { box-shadow: 0 0 0 8px rgba(214, 40, 40, 0); }
+}
+
+/* "Look at this": yellow blinking glow for text, numbers and model parts (not something to press). */
+.gs-look {
+  outline: 3px solid #f2b705 !important;
+  outline-offset: 2px;
+  border-radius: 8px;
+  animation: gs-look 1s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+@keyframes gs-look {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(242, 183, 5, .55); }
+  50% { box-shadow: 0 0 0 7px rgba(242, 183, 5, .1); }
+}
+
+/* SVG shapes ignore outline/box-shadow: highlight their edges instead. */
+/* SVG parts get the colour on their own stroke and as a glow outside them, so a part already drawn in red or rose
+   still reads as "press this" (scatter-08). */
+svg .gs-focus { outline: none !important; stroke: #d62828 !important; stroke-width: 5px !important; filter: drop-shadow(0 0 3px #d62828) drop-shadow(0 0 7px rgba(214, 40, 40, .75)); animation: gs-svg-press 1.1s ease-in-out infinite; }
+svg .gs-look { outline: none !important; stroke: #f2b705 !important; stroke-width: 5px !important; filter: drop-shadow(0 0 3px #f2b705) drop-shadow(0 0 6px rgba(242, 183, 5, .7)); animation: gs-svg-look 1s ease-in-out infinite; }
+@keyframes gs-svg-press { 50% { stroke-opacity: .35; } }
+@keyframes gs-svg-look { 50% { stroke-opacity: .4; } }
+
+/* Blinking highlight for a word or number inside a sentence or label. */
+mark.gs-mark {
+  background: #ffe066;
+  color: inherit;
+  border-radius: 4px;
+  padding: 0 3px;
+  box-shadow: 0 0 0 2px #d62828;
+  animation: gs-blink 1s ease-in-out infinite;
+}
+@keyframes gs-blink { 50% { background: #fff6c7; box-shadow: 0 0 0 2px rgba(214, 40, 40, .35); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-focus, .gs-look, mark.gs-mark, svg .gs-focus, svg .gs-look { animation: none; }
+  .gs-focus { outline-width: 4px !important; }
+}
+/* Place Value Studio styles .solver-step as a small caps label; once the tutor writes into it, show normal reading text. */
+#solver-panel .solver-step[data-gs-ready] { display: block; font-size: 15px; font-weight: 400; line-height: 1.45; color: #17313a; text-transform: none; letter-spacing: 0; }
+#solver-panel .solver-step[data-gs-ready] > strong { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: #0b5d68; }
+/* Graph Data: the page step titles are fixed per step; while the tutor is active its own live title replaces them. */
+body[data-gs-active] #challenge-solver-step-title { display: none; }
+#challenge-solver-copy[data-gs-ready] > strong { display: block; margin-bottom: 2px; }
+/* A ring the tutor draws over a grid point that has no element of its own (Transformation Studio). It ignores the pointer, so the tap reaches the grid. */
+.gs-grid-ring { position: absolute; z-index: 40; box-sizing: border-box; border-radius: 50%; pointer-events: none; }
+.gs-grid-ring:not(.gs-focus) { display: none; }
+.gs-grid-ring.gs-focus { border: 3px solid #d62828; box-shadow: 0 0 0 3px rgba(214, 40, 40, .25); }
+/* Always-reachable Back / Next: shown only while the guide's own Next button is off screen (lookang, 2026-10-19). */
+.gs-nav { position: fixed; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 60; display: flex; gap: 8px; padding: 6px; background: #fff; border: 2px solid #0b5d68; border-radius: 14px; box-shadow: 0 6px 22px rgba(8, 38, 83, .22); max-width: calc(100vw - 24px); box-sizing: border-box; }
+.gs-nav[hidden], .gs-nav [hidden] { display: none; }
+.gs-nav button { min-height: 44px; min-width: 44px; padding: 6px 14px; border-radius: 10px; font: 800 15px/1.15 Arial, sans-serif; cursor: pointer; border: 2px solid #8eb3cd; background: #fff; color: #082653; }
+.gs-nav .gs-nav-next { background: #0b6f78; border-color: #0b6f78; color: #fff; }
+.gs-nav button:disabled { opacity: .45; cursor: default; }
+.gs-nav button:focus-visible { outline: 3px solid #f0b331; outline-offset: 2px; }
+@media (max-width: 480px) { .gs-nav { left: 8px; right: 8px; transform: none; } .gs-nav button { flex: 1; } }
+@media print { .gs-nav { display: none; } }

@@ -1,0 +1,71 @@
+/* EJSS Guide Kit: the Slow Solve and Coach buttons, and the one floating window that holds both.
+   See ejss-guide-kit.js. The window floats over the page, so it never pushes the simulation down. */
+.eg-toggle, .eg-toggle + .cc-toggle {
+  min-height: 30px; margin: 0 0 0 6px; padding: 2px 12px; border-radius: 8px;
+  font: inherit; font-weight: 700; line-height: 1.2; cursor: pointer; white-space: nowrap;
+}
+.eg-toggle { border: 2px solid #0b6f78; background: #fff; color: #0b5d68; }
+.eg-toggle.is-open { background: #0b6f78; color: #fff; }
+.eg-toggle:focus-visible, .eg-window button:focus-visible, .eg-bar:focus-visible { outline: 3px solid #f0b331; outline-offset: 2px; }
+
+/* For simulations whose control row is full: the two buttons float in the bottom-left corner. */
+.eg-launcher { position: fixed; left: 12px; bottom: 12px; z-index: 999; display: flex; gap: 6px; padding: 5px; border-radius: 12px; background: rgba(255, 255, 255, .92); box-shadow: 0 4px 16px rgba(8, 38, 83, .28); font: 700 15px/1.2 Arial, Helvetica, sans-serif; }
+.eg-launcher .eg-toggle, .eg-launcher .cc-toggle { margin: 0; min-height: 36px; }
+@media print { .eg-launcher { display: none; } }
+
+/* ---------- The floating window ---------- */
+.eg-window {
+  position: fixed; z-index: 1000; box-sizing: border-box; display: flex; flex-direction: column;
+  min-width: 240px; max-width: calc(100vw - 8px); min-height: 0; max-height: calc(100vh - 8px);
+  border: 2px solid #0b6f78; border-radius: 12px; background: #fff; color: #17313a;
+  box-shadow: 0 8px 28px rgba(8, 38, 83, .3);
+  font: 16px/1.45 Arial, Helvetica, sans-serif; text-align: left;
+}
+.eg-window[hidden] { display: none; }
+/* Until the learner moves it, it sits in the bottom-right corner and grows upwards as its text grows. */
+.eg-window.eg-docked { right: 12px; bottom: 12px; }
+.eg-window.is-moving { box-shadow: 0 12px 34px rgba(8, 38, 83, .45); user-select: none; }
+.eg-bar {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 8px; padding: 3px 10px; border-radius: 9px 9px 0 0;
+  background: #0b6f78; color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .02em;
+  cursor: move; touch-action: none; user-select: none; -webkit-user-select: none;
+}
+.eg-grip { font-size: 14px; line-height: 1; }
+.eg-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 8px 10px 14px; }
+/* Corner grip: drag to resize. Big enough for a finger. */
+.eg-size {
+  position: absolute; right: 0; bottom: 0; width: 24px; height: 24px; border-radius: 0 0 10px 0;
+  cursor: nwse-resize; touch-action: none;
+  background: linear-gradient(135deg, transparent 0 50%, #0b6f78 50% 58%, transparent 58% 68%, #0b6f78 68% 76%, transparent 76% 86%, #0b6f78 86% 94%, transparent 94%);
+}
+
+/* ---------- Slow Solve, inside the window ---------- */
+.eg-panel { margin: 0; padding: 0; box-sizing: border-box; max-width: 100%; }
+.eg-panel[hidden] { display: none; }
+.eg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.eg-title { color: #0b5d68; letter-spacing: .02em; }
+.eg-count { color: #4a626b; font-size: 13px; }
+.eg-close { width: 30px; height: 30px; border: 1px solid #8eb3cd; border-radius: 50%; background: #fff; color: #17313a; font: 700 18px/1 Arial, sans-serif; cursor: pointer; }
+.eg-step { margin: 6px 0 0; }
+.eg-step > strong { display: block; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: #0b5d68; }
+.eg-step .gs-text { display: block; margin-top: 2px; }
+.eg-nav { display: flex; gap: 8px; margin-left: auto; }
+.eg-nav button { min-height: 32px; padding: 3px 14px; border-radius: 10px; border: 2px solid #8eb3cd; background: #fff; color: #082653; font: 700 15px/1.15 Arial, sans-serif; cursor: pointer; }
+.eg-nav .eg-next { background: #0b6f78; border-color: #0b6f78; color: #fff; }
+.eg-nav .eg-back::before { content: "◂ "; }
+.eg-nav .eg-next::after { content: " ▸"; }
+.eg-nav button:disabled { opacity: .45; cursor: default; }
+
+/* ---------- Coach, inside the same window ---------- */
+.eg-body .cc-panel { margin: 0; text-align: left; font: 16px/1.45 Arial, Helvetica, sans-serif; }
+.eg-panel:not([hidden]) + .cc-panel { margin-top: 8px; }
+.eg-body .cc-voice select { max-width: 9em; }
+
+/* ---------- Highlights inside the simulation's SVG ---------- */
+/* An <image> has no stroke: give it a glow only. */
+svg image.gs-focus, svg image.cc-press { filter: drop-shadow(0 0 4px #d62828) drop-shadow(0 0 10px rgba(214, 40, 40, .9)); }
+svg image.gs-look, svg image.cc-look { filter: drop-shadow(0 0 4px #f2b705) drop-shadow(0 0 9px rgba(242, 183, 5, .9)); }
+/* A whole group (the tray of paper clips): glow around it, without recolouring every part inside. */
+svg g.gs-look, svg g.cc-look { stroke: none !important; filter: drop-shadow(0 0 4px #f2b705) drop-shadow(0 0 9px rgba(242, 183, 5, .9)); }
+svg g.gs-focus, svg g.cc-press { stroke: none !important; filter: drop-shadow(0 0 4px #d62828) drop-shadow(0 0 10px rgba(214, 40, 40, .9)); }
+@media print { .eg-toggle, .eg-window { display: none; } }

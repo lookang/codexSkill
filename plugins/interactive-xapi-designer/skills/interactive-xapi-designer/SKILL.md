@@ -1,6 +1,6 @@
 ---
 name: interactive-xapi-designer
-description: Design fresh SLS educational interactives or add meaningful xAPI reporting to existing HTML/ZIP activities while preserving their interface and learning logic by default. Use for simulations, quizzes, virtual labs, minimal-change integration, slider analytics, learner/teacher reports, targeted improvements and explicit redesigns.
+description: Design fresh SLS educational interactives or add meaningful xAPI reporting to existing HTML/ZIP activities while preserving their interface and learning logic by default. Use for simulations, quizzes, virtual labs, optional Slow Solve and spoken Coach support, minimal-change integration, slider analytics, learner/teacher reports, targeted improvements and explicit redesigns.
 ---
 
 # Interactive xAPI Designer
@@ -11,11 +11,13 @@ Infer the mode from the request. State the chosen default briefly; offer alterna
 
 | Mode | Default trigger | Permitted changes |
 |---|---|---|
-| Integrate only | Existing HTML/ZIP; add tracking/reporting | Unchanged transport, domain payload adapter, minimal semantic check hooks, optional closed Reports disclosure |
-| Integrate and improve | User asks for targeted improvements | Integration plus the requested feedback, accessibility or usability changes |
-| Build or redesign | Fresh learning goal or explicit redesign | Full Prompt Library design workflow plus verified xAPI integration |
+| Integrate only | Existing HTML/ZIP; add tracking/reporting | Unchanged transport, domain payload adapter, minimal semantic check hooks, optional closed Reports disclosure; guided support only if selected |
+| Integrate and improve | User asks for targeted improvements | Integration plus the requested feedback, accessibility or usability changes; guided support only if selected |
+| Build or redesign | Fresh learning goal or explicit redesign | Full Prompt Library design workflow plus verified xAPI integration; guided support only if selected |
 
 For an existing activity, say: “I’ll preserve your interactive and add xAPI reporting. Targeted improvements or a full redesign are also available.” Do not replace a supplied activity with a template, split its questions into a new stepper, reorganise its navigation, change its assessment timing, or apply a new visual theme merely to satisfy a fresh-build design rule.
+
+For an activity creation, integration, or improvement request, offer the single opt-in choice in [references/guided-support.md](references/guided-support.md) after inspecting the task and before implementation, unless the user already chose or declined it. This applies when checking an existing HTML/ZIP for integration too. If the user chooses guided support, treat that choice as authorization for this targeted teaching addition; preserve all unrelated content and controls. Do not add support when the user chooses None or explicitly requests xAPI-only work.
 
 Use the full [SLS Prompt Library](https://iwant2study.moe.edu.sg/lookangejss/promptLibrary/ai-prompt-library.html) design principles for fresh builds and explicit redesigns only. Read [references/design-modes.md](references/design-modes.md) for scope and preservation acceptance criteria. Accessibility of newly added UI is required in every mode. Inspect existing mobile/iframe limitations and report them; do not automatically redesign legacy content to pass a 450px layout gate.
 
@@ -32,6 +34,10 @@ Use the full [SLS Prompt Library](https://iwant2study.moe.edu.sg/lookangejss/pro
 Read [references/working-sls-baseline.md](references/working-sls-baseline.md) before every integration. Use the exact bundled, user-confirmed sample rather than a similarly named URL. Run `scripts/prepare_sls_transport.py OUTPUT_FOLDER` for the verified default transport; it uses only the bundled, hash-pinned reference. Use `--verify-only` to verify packaged bytes. Preserve a user's different known-working transport and record its hashes instead of replacing it.
 
 Keep xAPI vendor code, wrapper-before-glue load order, launch parameters, identity handling and cache behaviour unchanged. Adapt application payloads and minimal domain hooks only. Never monkey-patch transport functions or send xAPI traffic through a custom fetch/XHR implementation. Never manufacture learner identity. Consult the [Integrator](https://iwant2study.org/lookangejss/appXapiIntegratorAgent/public/) if it provides relevant current examples; its availability is not required when the verified bundled baseline is sufficient.
+
+## Optional guided support
+
+Read [references/guided-support.md](references/guided-support.md) whenever a user selects Slow Solve, Coach, or both. Reuse the checked-in shared engines in `assets/guided-support/` where their adapter contract fits. Add only the selected runtime files to the activity package. These engines are reusable; the activity-specific adapter is not: inspect the real controls and model state, then author the steps, meaningful Coach reactions, selectors, and event hooks for that activity. For non-EJSS activities, preserve the existing interface and build a small host adapter rather than inserting the EJSS floating-window kit by default.
 
 ## Complete a one-shot integration
 
