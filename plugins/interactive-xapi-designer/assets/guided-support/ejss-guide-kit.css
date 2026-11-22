@@ -1,5 +1,7 @@
-/* EJSS Guide Kit: the Slow Solve and Coach buttons, and the one floating window that holds both.
-   See ejss-guide-kit.js. The window floats over the page, so it never pushes the simulation down. */
+/* Guide window kit: the Slow Solve and Coach buttons, and the one floating window that holds both.
+   See ejss-guide-kit.js. Works on EJSS and plain HTML pages. The window floats over the page, so it never pushes
+   the activity down. */
+.eg-anchor { display: none; }
 .eg-toggle, .eg-toggle + .cc-toggle {
   min-height: 30px; margin: 0 0 0 6px; padding: 2px 12px; border-radius: 8px;
   font: inherit; font-weight: 700; line-height: 1.2; cursor: pointer; white-space: nowrap;
@@ -8,9 +10,13 @@
 .eg-toggle.is-open { background: #0b6f78; color: #fff; }
 .eg-toggle:focus-visible, .eg-window button:focus-visible, .eg-bar:focus-visible { outline: 3px solid #f0b331; outline-offset: 2px; }
 
-/* For simulations whose control row is full: the two buttons float in the bottom-left corner. */
+/* The floating launcher (always used on non-EJSS pages): the buttons float in the bottom-left corner. */
 .eg-launcher { position: fixed; left: 12px; bottom: 12px; z-index: 999; display: flex; gap: 6px; padding: 5px; border-radius: 12px; background: rgba(255, 255, 255, .92); box-shadow: 0 4px 16px rgba(8, 38, 83, .28); font: 700 15px/1.2 Arial, Helvetica, sans-serif; }
 .eg-launcher .eg-toggle, .eg-launcher .cc-toggle { margin: 0; min-height: 36px; }
+.eg-launcher { align-items: center; }
+.eg-launcher-grip { display: inline-flex; align-items: center; justify-content: center; width: 22px; min-height: 36px; border-radius: 8px; color: #0b5d68; font-size: 16px; cursor: move; touch-action: none; user-select: none; -webkit-user-select: none; }
+.eg-launcher-grip:hover { background: #e6f4f5; }
+.eg-launcher-grip:focus-visible { outline: 3px solid #f0b331; outline-offset: 2px; }
 @media print { .eg-launcher { display: none; } }
 
 /* ---------- The floating window ---------- */
@@ -68,4 +74,8 @@ svg image.gs-look, svg image.cc-look { filter: drop-shadow(0 0 4px #f2b705) drop
 /* A whole group (the tray of paper clips): glow around it, without recolouring every part inside. */
 svg g.gs-look, svg g.cc-look { stroke: none !important; filter: drop-shadow(0 0 4px #f2b705) drop-shadow(0 0 9px rgba(242, 183, 5, .9)); }
 svg g.gs-focus, svg g.cc-press { stroke: none !important; filter: drop-shadow(0 0 4px #d62828) drop-shadow(0 0 10px rgba(214, 40, 40, .9)); }
+/* The guided-solver engine adds a floating Back/Next bar when its Next button is off screen. The kit's window is
+   always kept on screen, so that bar is never needed here; a simulation's own message box covering the window
+   would otherwise make it appear over the buttons. */
+.gs-nav { display: none !important; }
 @media print { .eg-toggle, .eg-window { display: none; } }

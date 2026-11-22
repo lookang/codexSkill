@@ -1,25 +1,30 @@
 "use strict";
-// EJSS Guide Kit: puts a Slow Solve guide and a spoken Coach on any EJSS / WebEJS simulation.
-// Generic: nothing in this file knows about one particular simulation. Each simulation adds its own small file
-// (here sim-guide.js) that calls EjssGuide.define({...}) with its steps and coach lines.
+// Guide window kit (file name kept as ejss-guide-kit.js): puts a Slow Solve guide and a spoken Coach on any
+// interactive, EJSS / WebEJS or plain HTML. Generic: nothing in this file knows about one activity. Each activity
+// adds its own small adapter file (e.g. sim-guide.js) that calls EjssGuide.define({...}) (alias GuideWindow.define)
+// with its steps and coach lines.
 //
 // It reuses two engines unchanged: cambridge-guided-solver.js (step text + red/yellow highlights) and
-// cambridge-coach.js (spoken tutor). This kit supplies what an EJSS page lacks: the two buttons, one floating
-// window that holds both the Slow Solve steps and the Coach, and a way to read the model.
+// cambridge-coach.js (spoken tutor). This kit supplies the host UI: the two buttons, one floating window that holds
+// both the Slow Solve steps and the Coach, and a way to read the activity's state.
 //
-// The window floats over the page, so opening it never moves the simulation. The learner can drag it by its top
-// bar, resize it by its corner grip, and double-click the bar to send it back to its corner. Its place and size are
-// remembered in this browser only.
+// The window floats over the page, so opening it never moves or reflows the activity. The learner can drag it by its
+// top bar, resize it by its corner grip, and double-click the bar to send it back to its corner. Its place and size
+// are remembered in this browser only. The floating buttons have their own drag handle too.
 //
-// The model is read with _model._userSerialize(), which every EJSS page has. The kit never writes to the model.
+// State: on EJSS pages the model is read with _model._userSerialize(). On any other page, pass read(), which must
+// return a NEW plain object each call (a snapshot), built from the activity's own state or DOM. Never write to it.
 //
-// Definition (one per simulation):
+// Definition (one per activity):
 //   {
 //     id: "em-strength",
-//     mount(): { button: Element, panel: Element },  // the buttons go after `button`; the window is added after
-//                                                    // `panel` (it floats, so this only decides which part of the
-//                                                    // page owns it, e.g. the part that goes full screen)
-//     floatButtons: true,              // optional: the control row has no room, so the buttons float bottom-left
+//     read(): object,                  // optional on EJSS pages; required elsewhere: a fresh snapshot of the state
+//     mount(): { button: Element, panel: Element },  // optional. The buttons go after `button`; the window is added
+//                                                    // after `panel` (it floats, so this only decides which part of
+//                                                    // the page owns it, e.g. the part that goes full screen).
+//                                                    // Without mount(), both are added at the end of <body> and the
+//                                                    // buttons float (the usual choice for non-EJSS activities).
+//     floatButtons: true,              // optional: the buttons float bottom-left instead of joining a control row
 //     key(s): string,                  // changes whenever the guide text should be worked out again
 //     steps(s): [{ title, html, focus: [{ target, look? }] }],   // html must be well-formed (XHTML pages): <b>..</b> only
 //     loopStep: 1, loopLabel: "Run another trial",   // optional: what Next does on the last step
@@ -44,9 +49,10 @@
 
   const warn = (what, e) => { if (window.console) console.warn("EJSS guide: " + what, e); };
 
-  // ---------- Reading the model ----------
+  // ---------- Reading the activity's state ----------
   function read() {
     try {
+      if (def && typeof def.read === "function") return def.read() || null;
       const m = window._model;
       return m && typeof m._userSerialize === "function" ? m._userSerialize() : null;
     } catch (e) { return null; }
@@ -139,6 +145,28 @@
     applyGeo(); saveGeo();
   }
 
+  // ---------- Moving the floating buttons ----------
+  const LAUNCH_KEY = "ejss-guide-launcher";
+  function placeLauncher(left, top, save) {
+    if (!holder) return;
+    const w = holder.offsetWidth || 200, h = holder.offsetHeight || 46;
+    left = Math.max(EDGE, Math.min(left, window.innerWidth - w - EDGE));
+    top = Math.max(EDGE, Math.min(top, window.innerHeight - h - EDGE));
+    holder.style.left = left + "px"; holder.style.top = top + "px"; holder.style.bottom = "auto";
+    if (save) { try { localStorage.setItem(LAUNCH_KEY, JSON.stringify({ left, top })); } catch (e) { /* lasts for this page only */ } }
+  }
+  function moveLauncher(e) {
+    if (e.button) return;
+    e.preventDefault();
+    const r = holder.getBoundingClientRect(), x0 = e.clientX - r.left, y0 = e.clientY - r.top;
+    const move = ev => placeLauncher(ev.clientX - x0, ev.clientY - y0, false);
+    const end = ev => {
+      window.removeEventListener("pointermove", move, true); window.removeEventListener("pointerup", end, true); window.removeEventListener("pointercancel", end, true);
+      placeLauncher(ev.clientX - x0, ev.clientY - y0, true);
+    };
+    window.addEventListener("pointermove", move, true); window.addEventListener("pointerup", end, true); window.addEventListener("pointercancel", end, true);
+  }
+
   // ---------- Buttons and the window ----------
   function make(tag, attrs, text) {
     const el = doc.createElement(tag);
@@ -152,7 +180,22 @@
     btn.addEventListener("click", () => setOpen(!open));
     // floatButtons: the simulation's own control row is full, so the two buttons float in the bottom-left corner
     // instead of joining it. The coach engine puts its button right after ours, inside the same holder.
-    if (def.floatButtons) { holder = make("div", { class: "eg-launcher" }); holder.appendChild(btn); }
+    // The holder has its own drag handle, because a corner of a small page may cover one of the simulation's controls.
+    if (def.floatButtons || typeof def.mount !== "function") {
+      holder = make("div", { class: "eg-launcher" });
+      const handle = make("span", { class: "eg-launcher-grip", tabindex: "0", role: "button", "aria-label": "Move these buttons. Drag, or use the arrow keys. Double-click to put them back.", title: "Drag to move these buttons · double-click to put them back" }, "⠿");
+      handle.addEventListener("pointerdown", e => moveLauncher(e));
+      handle.addEventListener("dblclick", () => { holder.style.left = holder.style.top = holder.style.bottom = ""; try { localStorage.removeItem(LAUNCH_KEY); } catch (err) { /* nothing saved */ } });
+      handle.addEventListener("keydown", e => {
+        const d = { ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16] }[e.key];
+        if (!d) return;
+        e.preventDefault();
+        const r = holder.getBoundingClientRect();
+        placeLauncher(r.left + d[0], r.top + d[1], true);
+      });
+      holder.appendChild(handle); holder.appendChild(btn);
+      try { const p = JSON.parse(localStorage.getItem(LAUNCH_KEY) || "null"); if (p && Number.isFinite(p.left) && Number.isFinite(p.top)) setTimeout(() => placeLauncher(p.left, p.top, false), 0); } catch (err) { /* starts in the corner */ }
+    }
 
     win = make("div", { id: "ejss-guide-window", class: "eg-window eg-docked", role: "region", "aria-label": "Guide" });
     win.hidden = true;
@@ -192,9 +235,18 @@
     win.appendChild(bar); win.appendChild(body); win.appendChild(grip);
     loadGeo();
   }
+  // Without a mount(), the kit keeps two empty anchors at the end of <body> (the buttons and the window float anyway).
+  // Two, not one: each anchor must be followed by its own element, or mount() would keep moving them.
+  let anchorA = null, anchorB = null;
+  function defaultMount() {
+    if (!doc.body) return null;
+    if (!anchorA || !anchorA.isConnected) { anchorA = make("div", { class: "eg-anchor", "aria-hidden": "true" }); doc.body.appendChild(anchorA); }
+    if (!anchorB || !anchorB.isConnected) { anchorB = make("div", { class: "eg-anchor", "aria-hidden": "true" }); doc.body.appendChild(anchorB); }
+    return { button: anchorA, panel: anchorB };
+  }
   function mount() {
     let where = null;
-    try { where = def.mount(); } catch (e) { where = null; }
+    try { where = typeof def.mount === "function" ? def.mount() : defaultMount(); } catch (e) { where = null; }
     if (!where || !where.button || !where.panel) return false;
     if (!btn) build();
     // The simulation may rebuild or move its own controls: follow them.
@@ -310,7 +362,7 @@
     tick();
   }
 
-  window.EjssGuide = Object.freeze({
+  window.EjssGuide = window.GuideWindow = Object.freeze({
     define(d) { def = d; if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", start); else start(); },
     state,
     el: id => doc.getElementById(id),

@@ -37,7 +37,7 @@ Keep xAPI vendor code, wrapper-before-glue load order, launch parameters, identi
 
 ## Optional guided support
 
-Read [references/guided-support.md](references/guided-support.md) whenever a user selects Slow Solve, Coach, or both. Reuse the checked-in shared engines in `assets/guided-support/` where their adapter contract fits. Add only the selected runtime files to the activity package. These engines are reusable; the activity-specific adapter is not: inspect the real controls and model state, then author the steps, meaningful Coach reactions, selectors, and event hooks for that activity. For non-EJSS activities, preserve the existing interface and build a small host adapter rather than inserting the EJSS floating-window kit by default.
+Read [references/guided-support.md](references/guided-support.md) whenever a user selects Slow Solve, Coach, or both. Reuse the checked-in shared engines in `assets/guided-support/` where their adapter contract fits. Add only the selected runtime files to the activity package. These engines are reusable; the activity-specific adapter is not: inspect the real controls and model state, then author the steps, meaningful Coach reactions, selectors, and event hooks for that activity. Always present Slow Solve and Coach in the shared draggable floating guide window (`ejss-guide-kit.js`/`.css`), for EJSS/WebEJS and plain HTML alike: never build them into the activity's layout, control row or page flow. Follow the window specification in guided-support.md exactly.
 
 ## Complete a one-shot integration
 
