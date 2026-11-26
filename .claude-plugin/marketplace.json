@@ -11,8 +11,8 @@
     {
       "name": "interactive-xapi-designer",
       "displayName": "Interactive xAPI Designer",
-      "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting.",
-      "source": "./plugins/interactive-xapi-designer",
+      "description": "Create, instrument and package SLS HTML5 activities with verified xAPI reporting (instructions-only Claude edition).",
+      "source": "./plugins/interactive-xapi-designer-claude",
       "category": "development",
       "homepage": "https://iwant2study.org/lookangejss/promptLibrary/ai-prompt-library.html",
       "repository": "https://github.com/lookang/codexSkill",
